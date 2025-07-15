@@ -1,49 +1,57 @@
 <ion-footer class="menu-fixed-bottom">
   <div class="content-menu-border">
     <div class="footer-item">
-      <ion-icon
-        name="home-outline"
-        aria-label="Início"
-        (click)="goToHome(true)"
-      ></ion-icon>
-      <ion-label>INÍCIO</ion-label>
+      <div class="icon-wrapper">
+        <ion-icon
+          name="home-outline"
+          aria-label="Início"
+          (click)="goToHome(true)"
+        ></ion-icon>
+        <span class="footer-label">Início</span>
+      </div>
     </div>
 
-    <div class="footer-item promotion-wrapper" style="pointer-events: none">
-      <ion-icon
-        name="pricetags-outline"
-        (click)="goToPromotions()"
-        aria-label="Promoções"
-      ></ion-icon>
-      <span class="coming-soon-badge">EM BREVE</span>
-      <ion-label>PROMOÇÕES</ion-label>
+    <div class="footer-item">
+      <div class="icon-wrapper">
+        <ion-icon
+          name="pricetags-outline"
+          (click)="goToPromotions()"
+          aria-label="Promoções"
+        ></ion-icon>
+        <!-- <span class="coming-soon-badge">EM BREVE</span> -->
+        <span class="footer-label">Promoções</span>
+      </div>
     </div>
 
     <div class="placeholder"></div>
 
-    <div class="footer-item notification-wrapper">
-      <ion-icon
-        name="notifications-outline"
-        aria-label="Notificações"
-        (click)="goToNotifications()"
-      ></ion-icon>
-      <span
-        class="notification-badge"
-        *ngIf="notificationsCount$ | async as contador"
-        [hidden]="contador === 0"
-      >
-        {{ contador }}
-      </span>
-      <ion-label>NOTIFICAÇÕES</ion-label>
+    <div class="footer-item">
+      <div class="icon-wrapper notification-wrapper">
+        <ion-icon
+          name="notifications-outline"
+          aria-label="Notificações"
+          (click)="goToNotifications()"
+        ></ion-icon>
+        <span
+          class="notification-badge"
+          *ngIf="notificationsCount$ | async as contador"
+          [hidden]="contador === 0"
+        >
+          {{ contador }}
+        </span>
+        <span class="footer-label">Notificações</span>
+      </div>
     </div>
 
     <div class="footer-item">
-      <ion-icon
-        name="menu-outline"
-        aria-label="Menu"
-        (click)="openMenu()"
-      ></ion-icon>
-      <ion-label>MENUS</ion-label>
+      <div class="icon-wrapper">
+        <ion-icon
+          name="menu-outline"
+          aria-label="Menu"
+          (click)="openMenu()"
+        ></ion-icon>
+        <span class="footer-label">Menu</span>
+      </div>
     </div>
   </div>
 
@@ -51,6 +59,5 @@
     <div class="fila-button">
       <ion-icon name="people-outline" aria-label="Filas"></ion-icon>
     </div>
-    <ion-label>FILAS</ion-label>
   </div>
 </ion-footer>

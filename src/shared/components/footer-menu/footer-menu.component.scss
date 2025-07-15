@@ -11,76 +11,47 @@
   grid-template-columns: repeat(5, 1fr);
   align-items: center;
   position: relative;
-  height: 60px;
+  height: 64px;
   text-align: center;
 }
 
 .footer-item {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  font-size: 12px;
-  color: #555;
-  text-align: center;
-  cursor: pointer;
-
-  ion-icon {
-    font-size: 24px;
-    color: #3880ff;
-    margin-bottom: 2px;
-    padding: 8px;
-  }
-
-  ion-label {
-    margin: 0;
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  &.active ion-icon,
-  &.active ion-label {
-    color: #005eff;
-    font-weight: bold;
-  }
-}
-
-.go-fila-central {
-  position: absolute;
-  top: -32px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 20;
-
-  ion-label {
-    margin-top: 4px;
-    font-size: 12px;
-    font-weight: bold;
-    color: #3880ff;
-  }
-
-  &:hover .fila-button {
-    transform: scale(1.1);
-  }
-}
-
-.fila-button {
-  background: #3dc2ff;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  display: flex;
   justify-content: center;
+  height: 100%;
+}
+
+.icon-wrapper {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  box-shadow: 0 6px 12px rgba(56, 128, 255, 0.4);
-  transition: transform 0.2s ease;
+  justify-content: flex-start;
+  position: relative;
 
   ion-icon {
-    color: white;
-    font-size: 30px;
+    font-size: 32px;
+    color: #3880ff;
+    margin: 0;
+    padding: 0;
   }
+}
+
+.coming-soon-badge {
+  margin-top: 1px;
+  background-color: red;
+  color: white;
+  border-radius: 10px;
+  font-size: 10px;
+  padding: 2px 6px;
+  font-weight: bold;
+  line-height: 1;
+  white-space: nowrap;
+  transform: scale(0.95);
+}
+
+.icon-with-badge ion-icon {
+  transform: translateY(9px);
 }
 
 .notification-wrapper {
@@ -89,7 +60,7 @@
   .notification-badge {
     position: absolute;
     top: 2px;
-    right: 16px;
+    right: 10px;
     background-color: red;
     color: white;
     border-radius: 50%;
@@ -110,29 +81,48 @@
   height: 1px;
 }
 
-.promotion-wrapper {
-  position: relative;
-  
-  .coming-soon-badge {
-    position: absolute;
-    top: -2px;
-    right: 8px;
-    background-color: red;
-    color: white;
-    border-radius: 10px;
-    font-size: 8px;
-    padding: 2px 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    line-height: 1;
-    z-index: 5;
-    white-space: nowrap;
-    transform: scale(0.9);
+.go-fila-central {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 20;
+
+  &:hover .fila-button {
+    transform: scale(1.1);
   }
 }
 
-.footer-item ion-label {
+.fila-button {
+  background: #3dc2ff;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 6px 12px rgba(56, 128, 255, 0.4);
+  transition: transform 0.2s ease;
+
+  ion-icon {
+    color: white;
+    font-size: 30px;
+  }
+}
+
+.footer-label {
+  display: block;
+  font-size: 12px;
+  text-align: center;
+  color: #555;
   margin-top: 2px;
+}
+
+.icon-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
