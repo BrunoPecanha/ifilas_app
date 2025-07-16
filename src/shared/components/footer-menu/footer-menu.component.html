@@ -13,12 +13,12 @@
 
     <div class="footer-item">
       <div class="icon-wrapper">
+        <span class="coming-soon-badge">EM BREVE</span>
         <ion-icon
           name="pricetags-outline"
           (click)="goToPromotions()"
           aria-label="Promoções"
         ></ion-icon>
-        <!-- <span class="coming-soon-badge">EM BREVE</span> -->
         <span class="footer-label">Promoções</span>
       </div>
     </div>
@@ -56,8 +56,12 @@
   </div>
 
   <div class="go-fila-central" (click)="goToHome()">
-    <div class="fila-button">
+    <div class="fila-button fila-notification-wrapper">
       <ion-icon name="people-outline" aria-label="Filas"></ion-icon>
+      <span class="notification-badge" *ngIf="total > 0">
+        {{ total }}
+      </span>
     </div>
+    <span class="footer-label">Fila</span>
   </div>
 </ion-footer>

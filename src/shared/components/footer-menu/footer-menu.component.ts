@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { StoreModel } from 'src/models/store-model';
 import { NotificationService } from 'src/services/notification.service';
 import { SessionService } from 'src/services/session.service';
+import { UserService } from 'src/services/user-service';
 
 @Component({
   selector: 'app-footer-menu',
@@ -15,27 +16,30 @@ export class FooterMenuComponent implements OnInit {
   notificationsCount$!: Observable<number>;
   profile = 0;
   store: StoreModel | null = null;
+  userFromSession: any;
+  total: number = 0;
 
   constructor(
     private notificationService: NotificationService,
     private navController: NavController,
     private router: Router,
-    private sesseionService: SessionService,
+    private userService: UserService,
+    private sessionService: SessionService,
     private cdr: ChangeDetectorRef
   ) {
-    this.profile = this.sesseionService.getProfile();
-    this.store = this.sesseionService.getStore();
+    this.profile = this.sessionService.getProfile();
+    this.store = this.sessionService.getStore();
   }
 
   ngOnInit() {
     this.notificationsCount$ = this.notificationService.notificacoesNaoLidas$;
+    this.loadUserQueInfo();
 
-    // 🛠️ Sempre que o contador mudar, força a atualização da view
+
     this.notificationsCount$.subscribe(() => {
       this.cdr.detectChanges();
     });
 
-    // 🔁 Atualiza contador inicial
     this.notificationService.atualizarContadorNaoLidas();
   }
 
@@ -68,12 +72,30 @@ export class FooterMenuComponent implements OnInit {
   }
 
   goToPromotions() {
-    this.navController.navigateForward('/promotions');
+    //this.navController.navigateForward('/promotions');
   }
 
   openMenu() {
     const menu = document.querySelector('ion-menu');
     menu?.open();
     window.dispatchEvent(new CustomEvent('menuOpened'));
+  }
+
+  loadUserQueInfo() {
+    this.userFromSession = this.sessionService.getUser();
+
+    if (this.userFromSession) {
+      const userId = this.userFromSession.id;
+      this.profile = this.sessionService.getProfile();
+
+      this.userService.getUserInfoById(userId, this.profile).subscribe({
+        next: (value) => {
+          this.total = value.data;
+        },
+        error: (error) => {
+          console.error('Erro ao buscar info do usuário:', error);
+        }
+      });
+    }
   }
 }
