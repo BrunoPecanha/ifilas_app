@@ -6,6 +6,7 @@ import { AuthService } from 'src/services/auth.service';
 import { SessionService } from 'src/services/session.service';
 import { StoreListResponse } from 'src/models/responses/store-list-response';
 import { UserModel } from 'src/models/user-model';
+import { SignalRService } from 'src/services/seignalr.service';
 
 
 @Component({
@@ -24,7 +25,8 @@ export class LoginPage {
     private authService: AuthService,
     private sessionService: SessionService,
     private alertController: AlertController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private signalRService: SignalRService
   ) { }
 
   ngOnInit() {

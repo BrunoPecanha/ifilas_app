@@ -321,10 +321,10 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
   }
 
   private getQueueForEmployee() {
-    if (!this.storeId)
+    if (!this.employee.id)
       return;
 
-    this.queueService.getOpenedQueueListByEmployeeId(this.storeId)
+    this.queueService.getOpenedQueueListByEmployeeId(this.employee.id)
       .subscribe({
         next: (response) => {
           if (response.valid && response.data?.length > 0) {

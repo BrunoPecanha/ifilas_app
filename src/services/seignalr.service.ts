@@ -22,8 +22,11 @@ export class SignalRService {
       return this.connectionPromiseQueue;
     }
 
+    console.log('Token usado para SignalR:', sessionStorage.getItem('token'));
+
     this.hubConnectionQueue = new signalR.HubConnectionBuilder()
       .withUrl(environment.queueHub, {
+        transport: signalR.HttpTransportType.WebSockets,
         accessTokenFactory: () => sessionStorage.getItem('token') || ''
       })
       .withAutomaticReconnect({
@@ -41,10 +44,11 @@ export class SignalRService {
 
     this.connectionPromiseQueue = this.hubConnectionQueue.start()
       .then(() => {
+        console.log('SignalR (Queue) conectado via WebSockets');
         this.rejoinQueueGroups();
       })
       .catch(err => {
-        console.error('Erro ao conectar SignalR QUEUE', err);
+        console.error('Erro ao conectar SignalR QUEUE:', err);
         this.connectionPromiseQueue = null;
         throw err;
       });
@@ -59,6 +63,7 @@ export class SignalRService {
 
     this.hubConnectionNotification = new signalR.HubConnectionBuilder()
       .withUrl(environment.notificationHub, {
+        transport: signalR.HttpTransportType.WebSockets,
         accessTokenFactory: () => sessionStorage.getItem('token') || ''
       })
       .withAutomaticReconnect({
@@ -75,11 +80,12 @@ export class SignalRService {
     this.setupNotificationConnectionEvents();
 
     this.connectionPromiseNotification = this.hubConnectionNotification.start()
-      .then(() => {        
+      .then(() => {
+        console.log('✅ SignalR (Notification) conectado via WebSockets');
         this.rejoinNotificationGroups();
       })
       .catch(err => {
-        console.error('Erro ao conectar SignalR NOTIFICATION', err);
+        console.error('❌ Erro ao conectar SignalR NOTIFICATION:', err);
         this.connectionPromiseNotification = null;
         throw err;
       });
@@ -88,7 +94,7 @@ export class SignalRService {
   }
 
   private setupQueueConnectionEvents(): void {
-    if (!this.hubConnectionQueue) 
+    if (!this.hubConnectionQueue)
       return;
 
     this.hubConnectionQueue.onreconnecting(error => {
@@ -133,7 +139,7 @@ export class SignalRService {
 
     try {
       await this.hubConnectionQueue?.invoke('JoinGroup', groupName);
-      this.joinedGroupsQueue.add(groupName);      
+      this.joinedGroupsQueue.add(groupName);
     } catch (err) {
       console.error(`Erro ao entrar no grupo QUEUE ${groupName}:`, err);
       throw err;
@@ -194,9 +200,12 @@ export class SignalRService {
     );
   }
 
-  public onReceiveNotification(callback: (notification: any) => void): void {    
+  public onReceiveNotification(callback: (notification: any) => void): void {
     this.hubConnectionNotification?.off('ReceiveNotification');
-    this.hubConnectionNotification?.on('ReceiveNotification', callback);
+    this.hubConnectionNotification?.on('ReceiveNotification', (notification) => {
+      console.log('🎯 Notificação recebida via SignalR:', notification);
+      callback(notification);
+    });
   }
 
   public async notifyNotificationGroup(groupName: string, data: any): Promise<void> {
@@ -238,7 +247,7 @@ export class SignalRService {
     );
   }
 
-  public async leaveQueueGroup(groupName: string): Promise<void> {    
+  public async leaveQueueGroup(groupName: string): Promise<void> {
     if (!this.isQueueConnected()) {
       return;
     }
@@ -275,7 +284,7 @@ export class SignalRService {
 
     try {
       await this.hubConnectionNotification?.invoke('LeaveGroup', groupName);
-      this.joinedGroupsNotification.delete(groupName);     
+      this.joinedGroupsNotification.delete(groupName);
     } catch (err) {
       console.error(`Erro ao sair do grupo NOTIFICATION ${groupName}:`, err);
       throw err;
