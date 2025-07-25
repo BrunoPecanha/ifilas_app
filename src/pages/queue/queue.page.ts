@@ -163,7 +163,8 @@ export class QueuePage {
   }
 
   public formatEstimatedTime(timeToWait: number | string | undefined): string {
-    if (!timeToWait) return 'Calculando...';
+    if (!timeToWait) 
+      return 'Calculando...';
 
     if (typeof timeToWait === 'string') {
       const minutes = this.convertTimeStringToMinutes(timeToWait);

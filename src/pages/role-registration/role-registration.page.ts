@@ -14,8 +14,8 @@ export class RoleRegistrationPage implements OnInit {
 
   constructor(private router: Router, private sessionService: SessionService) {
   }
-
   ngOnInit() {
+    this.user = this.sessionService.getUser();
   }
 
   ionViewWillEnter() {

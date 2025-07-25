@@ -10,13 +10,16 @@ import { NotificationService } from 'src/services/notification.service';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  constructor(private platform: Platform, private signalRService: SignalRService,
-    private notificationService: NotificationService) {
+  constructor(
+    private platform: Platform,
+    private signalRService: SignalRService
+  ) {
     this.initializeApp();
   }
 
   initializeApp() {
     this.signalRService.startNotificationConnection();
+
     this.platform.ready().then(() => {
       StatusBar.setOverlaysWebView({ overlay: false });
       StatusBar.setBackgroundColor({ color: '#f5f5f5' });
