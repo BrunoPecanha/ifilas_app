@@ -51,7 +51,7 @@ body {
 }
 
 .bg-logo img {
-  width: 220px;
+  width: 260px;
   height: auto;
 }
 
@@ -99,22 +99,25 @@ body {
 }
 
 
-.university-logo {
+.startup-logo {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1;
-  margin-top: 50px;
   opacity: 0;
   animation: fadeIn 2s ease-out forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
-.university-logo img {
-  width: 120px;
+.startup-logo img {
+  width: 180px;
   height: auto;
 }
 
 .version {
-  z-index: 1;
   font-size: 14px;
   color: var(--white);
   text-align: center;
-  margin-top: 50px;
 }

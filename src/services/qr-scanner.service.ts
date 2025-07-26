@@ -9,10 +9,6 @@ export class QrScannerService {
 
   constructor(private toastService: ToastService) {}
 
-  /**
-   * Faz a leitura do QR Code
-   * @returns string | null - conteúdo do QR ou null se cancelado
-   */
   async scanQrCode(): Promise<string | null> {
     try {
       const result = await BarcodeScanner.scan();

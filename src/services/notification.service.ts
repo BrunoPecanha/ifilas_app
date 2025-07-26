@@ -113,12 +113,9 @@ export class NotificationService {
     this.atualizarContadorNaoLidasInterno(this.notificacoesSubject.value);
   }
   private iniciarSignalR() {
-    console.log('Iniciando SignalR no NotificationService ...');
 
     this.signalRService.startNotificationConnection()
       .then(() => {
-        console.log('SignalR Notification conectado');
-
         this.registrarNotificacao();
       })
       .catch(err => console.error('Falha SignalR:', err));
