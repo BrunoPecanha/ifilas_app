@@ -21,9 +21,6 @@ export class SignalRService {
     if (this.connectionPromiseQueue) {
       return this.connectionPromiseQueue;
     }
-
-    console.log('Token usado para SignalR:', sessionStorage.getItem('token'));
-
     this.hubConnectionQueue = new signalR.HubConnectionBuilder()
       .withUrl(environment.queueHub, {
         transport: signalR.HttpTransportType.WebSockets,
@@ -44,11 +41,9 @@ export class SignalRService {
 
     this.connectionPromiseQueue = this.hubConnectionQueue.start()
       .then(() => {
-        console.log('SignalR (Queue) conectado via WebSockets');
         this.rejoinQueueGroups();
       })
       .catch(err => {
-        console.error('Erro ao conectar SignalR QUEUE:', err);
         this.connectionPromiseQueue = null;
         throw err;
       });
@@ -81,11 +76,9 @@ export class SignalRService {
 
     this.connectionPromiseNotification = this.hubConnectionNotification.start()
       .then(() => {
-        console.log('✅ SignalR (Notification) conectado via WebSockets');
         this.rejoinNotificationGroups();
       })
       .catch(err => {
-        console.error('❌ Erro ao conectar SignalR NOTIFICATION:', err);
         this.connectionPromiseNotification = null;
         throw err;
       });
@@ -98,15 +91,13 @@ export class SignalRService {
       return;
 
     this.hubConnectionQueue.onreconnecting(error => {
-      console.warn(`SignalR QUEUE reconectando... (${error?.message || 'Sem erro'})`);
     });
 
-    this.hubConnectionQueue.onreconnected(connectionId => {
+    this.hubConnectionQueue.onreconnected(() => {
       this.rejoinQueueGroups();
     });
 
-    this.hubConnectionQueue.onclose(error => {
-      console.error(`Conexão SignalR QUEUE fechada. ${error ? 'Erro: ' + error.message : 'Conexão encerrada'}`);
+    this.hubConnectionQueue.onclose(error => {     
       this.connectionPromiseQueue = null;
     });
   }
@@ -114,16 +105,13 @@ export class SignalRService {
   private setupNotificationConnectionEvents(): void {
     if (!this.hubConnectionNotification) return;
 
-    this.hubConnectionNotification.onreconnecting(error => {
-      console.warn(`SignalR NOTIFICATION reconectando... (${error?.message || 'Sem erro'})`);
-    });
+    this.hubConnectionNotification.onreconnecting(() => {});
 
-    this.hubConnectionNotification.onreconnected(connectionId => {
+    this.hubConnectionNotification.onreconnected(() => {
       this.rejoinNotificationGroups();
     });
 
-    this.hubConnectionNotification.onclose(error => {
-      console.error(`Conexão SignalR 'notification' fechada. ${error ? 'Erro: ' + error.message : 'Conexão encerrada'}`);
+    this.hubConnectionNotification.onclose(() => {
       this.connectionPromiseNotification = null;
     });
   }
@@ -141,7 +129,6 @@ export class SignalRService {
       await this.hubConnectionQueue?.invoke('JoinGroup', groupName);
       this.joinedGroupsQueue.add(groupName);
     } catch (err) {
-      console.error(`Erro ao entrar no grupo QUEUE ${groupName}:`, err);
       throw err;
     }
   }
@@ -187,7 +174,6 @@ export class SignalRService {
       await this.hubConnectionNotification?.invoke('JoinGroup', groupName);
       this.joinedGroupsNotification.add(groupName);
     } catch (err) {
-      console.error(`Erro ao entrar no grupo NOTIFICATION ${groupName}:`, err);
       throw err;
     }
   }
@@ -202,8 +188,7 @@ export class SignalRService {
 
   public onReceiveNotification(callback: (notification: any) => void): void {
     this.hubConnectionNotification?.off('ReceiveNotification');
-    this.hubConnectionNotification?.on('ReceiveNotification', (notification) => {
-      console.log('🎯 Notificação recebida via SignalR:', notification);
+    this.hubConnectionNotification?.on('ReceiveNotification', (notification) => {    
       callback(notification);
     });
   }
@@ -260,7 +245,6 @@ export class SignalRService {
       await this.hubConnectionQueue?.invoke('LeaveGroup', groupName);
       this.joinedGroupsQueue.delete(groupName);
     } catch (err) {
-      console.error(`Erro ao sair do grupo fila ${groupName}:`, err);
       throw err;
     }
   }
@@ -286,7 +270,6 @@ export class SignalRService {
       await this.hubConnectionNotification?.invoke('LeaveGroup', groupName);
       this.joinedGroupsNotification.delete(groupName);
     } catch (err) {
-      console.error(`Erro ao sair do grupo NOTIFICATION ${groupName}:`, err);
       throw err;
     }
   }

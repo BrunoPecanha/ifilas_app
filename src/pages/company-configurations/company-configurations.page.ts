@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -17,7 +17,7 @@ import { StoresService } from 'src/services/stores.service';
   templateUrl: './company-configurations.page.html',
   styleUrls: ['./company-configurations.page.scss'],
 })
-export class CompanyConfigurationsPage {
+export class CompanyConfigurationsPage implements OnDestroy {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('wallpaperInput') wallpaperInput!: ElementRef<HTMLInputElement>;
 
@@ -60,8 +60,6 @@ export class CompanyConfigurationsPage {
     this.loadCategories();
   }
 
-  ngOnInit() {
-  }
 
   ionViewWillEnter() {
     this.user = this.sessionService.getUser();

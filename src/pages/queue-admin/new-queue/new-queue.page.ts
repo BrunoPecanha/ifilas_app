@@ -55,7 +55,7 @@ export class NewQueuePage implements OnInit {
     defaultClosingTime.setHours(18, 0, 0);
 
     this.form = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
       date: [today.split('T')[0], Validators.required],
       openingTime: [defaultOpeningTime.toISOString(), Validators.required],
       closingTime: [defaultClosingTime.toISOString(), [
