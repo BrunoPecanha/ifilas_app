@@ -128,7 +128,7 @@ export class SelectProfessionalPage implements OnInit {
     const motivo = queue.pauseReason || 'A fila está temporariamente pausada.';
 
     const alert = await this.alertController.create({
-      header: 'Em Pausada',
+      header: 'Em Pausa',
       message: 'Motivo: ' + motivo,
       buttons: ['Entendi']
     });

@@ -37,16 +37,16 @@ export class CreateAccountPage {
     }
 
     if (this.phone.length > 0) {
-      formatted += this.phone.charAt(0); 
+      formatted += this.phone.charAt(0);
     }
 
     if (this.phone.length > 1) {
-      formatted += this.phone.substring(1, 5); 
+      formatted += this.phone.substring(1, 5);
     }
     if (this.phone.length > 5) {
-      formatted += `-${this.phone.substring(5, 9)}`; 
+      formatted += `-${this.phone.substring(5, 9)}`;
     }
-    
+
     this.phone = this.ddd + this.phone;
     event.target.value = formatted
   }
@@ -193,10 +193,16 @@ export class CreateAccountPage {
       });
       await alert.present();
 
-    } catch (err) {
+    } catch (err: any) {
+      let errorMessage = 'Erro ao cadastrar usuário.';
+
+      if (err?.status === 400 && typeof err.error === 'string') {
+        errorMessage = err.error;
+      }
+
       const alert = await this.alertController.create({
         header: 'Erro',
-        message: 'Erro ao cadastrar usuário:',
+        message: errorMessage,
         buttons: ['OK']
       });
       await alert.present();
