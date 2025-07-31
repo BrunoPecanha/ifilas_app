@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from 'src/services/auth.service';
+import { SessionService } from 'src/services/session.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private sessionService: SessionService) { }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {    
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (req.url.includes('/auth/refresh-token')) {
       return next.handle(req);
     }
@@ -33,6 +34,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 throw new Error("Novo token ausente");
               }
 
+              this.sessionService.setToken(newToken);
               this.authService.setToken(newToken);
 
               const newReq = req.clone({

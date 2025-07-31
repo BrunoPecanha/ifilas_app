@@ -244,6 +244,11 @@ ion-content {
   transform: rotate(180deg);
 }
 
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 
 .add-fab {
   margin-bottom: 80px;

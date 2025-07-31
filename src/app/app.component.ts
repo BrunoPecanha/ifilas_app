@@ -21,6 +21,8 @@ export class AppComponent {
     this.signalRService.startNotificationConnection();
 
     this.platform.ready().then(() => {
+      document.body.classList.remove('dark');
+
       StatusBar.setOverlaysWebView({ overlay: false });
       StatusBar.setBackgroundColor({ color: '#f5f5f5' });
     });

@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, OnDestroy } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { CategoryModel } from 'src/models/category-model';
@@ -114,6 +114,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
     });
 
     this.setupQRCodeToggleListeners();
+    this.setupOpeningHoursValidation();
   }
 
   private setupQRCodeToggleListeners() {
@@ -252,6 +253,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
 
     this.setupQRCodeToggleListeners();
 
+
     if (storeData.logoPath) {
       this.logoOreview = storeData.logoPath;
     }
@@ -286,6 +288,8 @@ export class CompanyConfigurationsPage implements OnDestroy {
         dayGroup.get('activated')?.updateValueAndValidity();
       }
     });
+
+    this.setupOpeningHoursValidation();
 
     const highlightsArray = this.cadastroForm.get('highLights') as FormArray;
     highlightsArray.clear();
@@ -508,5 +512,32 @@ export class CompanyConfigurationsPage implements OnDestroy {
       formatted,
       isValid
     };
+  }
+
+  setupOpeningHoursValidation() {
+    const openingHoursArray = this.cadastroForm.get('openingHours') as FormArray;
+
+    openingHoursArray.controls.forEach((group: import('@angular/forms').AbstractControl) => {
+      const formGroup = group as FormGroup;
+      const activatedCtrl = formGroup.get('activated');
+
+      activatedCtrl?.valueChanges.subscribe((activated: boolean) => {
+        const startCtrl = formGroup.get('start');
+        const endCtrl = formGroup.get('end');
+
+        if (activated) {
+          startCtrl?.setValidators([Validators.required]);
+          endCtrl?.setValidators([Validators.required]);
+        } else {
+          startCtrl?.reset();
+          endCtrl?.reset();
+          startCtrl?.clearValidators();
+          endCtrl?.clearValidators();
+        }
+
+        startCtrl?.updateValueAndValidity();
+        endCtrl?.updateValueAndValidity();
+      });
+    });
   }
 }
