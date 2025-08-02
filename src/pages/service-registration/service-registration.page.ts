@@ -212,7 +212,8 @@ export class ServiceRegistrationPage implements OnInit {
     const formData = new FormData();
 
     Object.entries(serviceData).forEach(([key, value]) => {
-      if (value === null || value === undefined) return;
+      if (value === null || value === undefined)
+        return;
       if (key === 'price') {
         value = (
           typeof value === 'number'
@@ -223,7 +224,10 @@ export class ServiceRegistrationPage implements OnInit {
       formData.append(key, value != null ? String(value) : '');
     });
 
-    if (imageFile) {
+    if (imageFile != null && typeof imageFile === 'string') {
+      formData.append('imageUrl', imageFile);
+    }
+    else if (imageFile != null && imageFile instanceof File) {
       formData.append('imageFile', imageFile);
     }
 
@@ -286,6 +290,7 @@ export class ServiceRegistrationPage implements OnInit {
         variablePrice: updated.variablePrice,
         variableTime: updated.variableTime,
         storeId: this.store.id,
+        imageUrl: updated.imgPath
       },
       null
     );

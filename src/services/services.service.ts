@@ -28,7 +28,7 @@ export class ServiceService {
     return this.http.post(`${this.apiUrl}/services`, id);
   }
 
-  updateService(serviceId: number, form: any): Observable<any> {
+  updateService(serviceId: number, form: FormData): Observable<any> {
     return this.http.put(`${this.apiUrl}/services/${serviceId}`, form);
   }
 }

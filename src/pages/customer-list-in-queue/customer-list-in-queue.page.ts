@@ -63,8 +63,8 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     this.loadInitialData();
   }
 
-  ionViewWillEnter() {
-    this.getQueueForEmployee();
+  ionViewDidEnter() {
+    this.loadInitialData();
     this.store = this.sessionService.getStore();
   }
 
@@ -247,7 +247,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     if (this.store.inCaseFailureAcceptFinishWithoutQRCode && this.store.startServiceWithQRCode) {
       buttons.push({
         text: 'Iniciar sem QR Code',
-        handler: async () => {          
+        handler: async () => {
           this.startService(customer.id, employeeId);
         },
       });
@@ -283,7 +283,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     return !!this.store && !!this.store.startServiceWithQRCode;
   }
 
-  
+
   async handleRefresh(event: any) {
     try {
       await this.loadAllCustomersInQueueByEmployeeAndStoreId();
