@@ -1,4 +1,3 @@
-/* Global */
 .services-management-content {
   padding: 12px;
 }
@@ -25,7 +24,6 @@
   margin-bottom: 8px;
 }
 
-/* Lista de serviços */
 .services-list {
   display: flex;
   flex-direction: column;
@@ -90,7 +88,6 @@
   justify-content: center;
 }
 
-/* Formulário Modal */
 .form-content {
   --padding-start: 12px;
   --padding-end: 12px;
@@ -130,7 +127,6 @@ ion-item ion-label {
   font-size: 14px;
 }
 
-/* Campos de duração */
 .duration-item {
   display: flex;
   align-items: center;
@@ -149,7 +145,6 @@ ion-item ion-label {
   width: 40px;
 }
 
-/* Upload de imagem */
 .image-upload-container {
   display: flex;
   gap: 12px;
