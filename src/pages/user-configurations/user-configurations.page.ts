@@ -83,7 +83,8 @@ export class UserConfigurationsPage {
     { acronym: 'TO', name: 'Tocantins' }
   ];
 
-  private fillForm() {    
+  private fillForm() {
+    debugger
     this.cadastroForm.patchValue({
       cpf: this.user.cpf,
       name: this.user.name,
@@ -159,7 +160,7 @@ export class UserConfigurationsPage {
     this.cadastroForm.get('cpf')?.setValue(value, { emitEvent: false });
   }
 
-  async save() {
+  async save() {    
     if (this.cadastroForm.invalid) {
       const toast = await this.toastCtrl.create({
         message: 'Preencha todos os campos obrigatórios corretamente',
@@ -214,8 +215,7 @@ export class UserConfigurationsPage {
       this.showErrorToast('Erro ao enviar dados. Tente novamente.');
     } finally {
       this.enviando = false;
-       this.userService.notifyProfileUpdate();
-      
+      this.userService.notifyProfileUpdate();
     }
   }
 
@@ -244,7 +244,7 @@ export class UserConfigurationsPage {
   }
 
   private buildFormData(userData: any, imageFile?: File | null): FormData {
-    const formData = new FormData();    
+    const formData = new FormData();
 
     if (imageFile) {
       formData.append('RemoveProfileImage', 'false');
