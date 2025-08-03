@@ -13,7 +13,7 @@
   <div class="search-section">
     <ion-searchbar
       [(ngModel)]="searchTerm"
-      (ionChange)="filterServices()"
+      (ionInput)="filterServices()"
       placeholder="Pesquisar serviços..."
       animated
       debounce="300"
@@ -22,81 +22,80 @@
 
   <div *ngIf="isInitialLoading" class="loading-state">
     <ion-spinner name="crescent"></ion-spinner>
-    <p>Carregando serviços...</p>
+    <p>Carregando itens...</p>
   </div>
 
   <div *ngIf="!isInitialLoading && noRecordsFound" class="empty-state">
     <ion-icon name="construct-outline"></ion-icon>
-    <h3>Nenhum serviço cadastrado</h3>
-    <p>Adicione seu primeiro serviço</p>
+    <h3>Nenhum serviço/produto cadastrado</h3>
+    <p>Adicione seu primeiro serviço ou produto</p>
     <ion-button color="primary" (click)="startNewService()">
-      Adicionar Serviço
+      Adicionar Serviço ou Produto
     </ion-button>
   </div>
 
   <div *ngIf="!isInitialLoading && !noRecordsFound" class="services-list">
     <ion-card *ngFor="let service of filteredServices" class="service-card">
-      <ion-card-header>
-        <ion-item lines="none">
-          <ion-avatar slot="start" class="service-avatar">
-            <ng-container *ngIf="service.imgPath; else fallbackIcon">
-              <img [src]="service.imgPath" alt="Imagem do serviço" />
-            </ng-container>
-            <ng-template #fallbackIcon>
-              <div class="avatar-placeholder">
-                <ion-icon name="cube-outline"></ion-icon>
-              </div>
-            </ng-template>
-          </ion-avatar>
-
-          <ion-label>
-            <h2>{{ service.name }}</h2>
-            <p>{{ service.description || 'Sem descrição' }}</p>
-            <div class="service-meta">
-              <ion-badge color="success"
-                >{{ service.price | priceFormat }}</ion-badge
-              >
-              <ion-badge>{{ service.duration }} min</ion-badge>
-              <ion-badge *ngIf="service.variablePrice" color="warning"
-                >Preço variável</ion-badge
-              >
-              <ion-badge *ngIf="service.variableTime" color="warning"
-                >Tempo variável</ion-badge
-              >
+      <ion-item lines="none" class="service-header">
+        <ion-avatar slot="start" class="service-avatar">
+          <ng-container *ngIf="service.imgPath; else fallbackIcon">
+            <img [src]="service.imgPath" alt="Imagem do serviço" />
+          </ng-container>
+          <ng-template #fallbackIcon>
+            <div class="avatar-placeholder">
+              <ion-icon name="cube-outline"></ion-icon>
             </div>
-          </ion-label>
+          </ng-template>
+        </ion-avatar>
 
+        <ion-label class="service-info">
+          <h2 class="service-name">{{ service.name }}</h2>
+          <p class="service-description">
+            {{ service.description || 'Sem descrição' }}
+          </p>
+          <div class="service-meta">
+            <ion-badge color="success">
+              <ion-icon name="cash-outline"></ion-icon>
+              {{ service.price | priceFormat }}
+            </ion-badge>
+            <ion-badge>
+              <ion-icon name="time-outline"></ion-icon>
+              {{ service.duration }} min
+            </ion-badge>
+            <ion-badge *ngIf="service.variablePrice" color="warning">
+              Preço variável
+            </ion-badge>
+            <ion-badge *ngIf="service.variableTime" color="warning">
+              Tempo variável
+            </ion-badge>
+          </div>
+        </ion-label>
+
+        <div class="service-actions" slot="end">
           <ion-toggle
-            slot="end"
             [checked]="service.activated"
             (ionChange)="toggleActive(service)"
+          ></ion-toggle>
+          <ion-button fill="clear" size="small" (click)="editService(service)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear"
+            size="small"
+            color="danger"
+            (click)="confirmDelete(service)"
           >
-          </ion-toggle>
-        </ion-item>
-      </ion-card-header>
-
-      <ion-card-content>
-        <ion-button expand="block" fill="clear" (click)="editService(service)">
-          <ion-icon name="create-outline" slot="start"></ion-icon>
-          Editar
-        </ion-button>
-        <ion-button
-          expand="block"
-          fill="outline"
-          color="danger"
-          (click)="confirmDelete(service)"
-        >
-          <ion-icon name="trash-outline" slot="start"></ion-icon>
-          Excluir
-        </ion-button>
-      </ion-card-content>
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
     </ion-card>
   </div>
 
   <ion-modal [isOpen]="showForm">
     <ng-template>
       <app-custom-header
-        [title]="editingService ? 'EDITAR' : 'NOVO'"
+        [title]="editingService ? 'EDITAR SERVIÇO/PRODUTO' : 'NOVO SERVIÇO/PRODUTO'"
         startIconName="close"
         (onStartClick)="closeForm()"
         [showStartButton]="true"
@@ -106,113 +105,97 @@
         [endDisabled]="serviceForm.invalid || isSaving"
       ></app-custom-header>
 
-      <ion-content>
+      <ion-content class="form-content">
         <form [formGroup]="serviceForm" class="service-form">
-          <ion-item>
-            <ion-label position="floating">Nome</ion-label>
-            <ion-input formControlName="name"></ion-input>
-          </ion-item>
 
-          <ion-item>
-            <ion-label position="floating">Categoria</ion-label>
-            <ion-select formControlName="category">
-              <ion-select-option *ngFor="let cat of categories" [value]="cat">
-                {{ cat.name }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
+          <ion-card class="form-section">
+            <ion-card-header>
+              <ion-card-title>Informações Básicas</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-item>
+                <ion-label position="floating">Nome</ion-label>
+                <ion-input formControlName="name"></ion-input>
+              </ion-item>
 
-          <ion-item>
-            <ion-label position="floating">Descrição</ion-label>
-            <ion-textarea formControlName="description"></ion-textarea>
-          </ion-item>
+              <ion-item>
+                <ion-label position="floating">Categoria</ion-label>
+                <ion-select formControlName="category">
+                  <ion-select-option *ngFor="let cat of categories" [value]="cat">
+                    {{ cat.name }}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
 
-          <ion-item>
-            <ion-label position="floating">Preço</ion-label>
-            <ion-input
-              type="text"
-              formControlName="price"
-              (ionBlur)="formatPrice($event)"
-            ></ion-input>
-          </ion-item>
+              <ion-item>
+                <ion-label position="floating">Descrição</ion-label>
+                <ion-textarea formControlName="description"></ion-textarea>
+              </ion-item>
+            </ion-card-content>
+          </ion-card>
 
-          <ion-item class="duration-item">
-            <ion-label position="floating">Duração</ion-label>
-            <div class="time-fields">
-              <ion-input
-                type="number"
-                formControlName="durationHours"
-                min="0"
-                max="23"
-                placeholder="00"
-              ></ion-input>
-              <span>:</span>
-              <ion-input
-                type="number"
-                formControlName="durationMinutes"
-                min="0"
-                max="59"
-                placeholder="00"
-              ></ion-input>
-            </div>
-          </ion-item>
+          <ion-card class="form-section">
+            <ion-card-header>
+              <ion-card-title>Preço e Tempo</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-item>
+                <ion-label position="floating">Preço</ion-label>
+                <ion-input type="text" formControlName="price" (ionBlur)="formatPrice($event)"></ion-input>
+              </ion-item>
 
-          <ion-item>
-            <ion-label>Preço variável</ion-label>
-            <ion-toggle formControlName="variablePrice"></ion-toggle>
-          </ion-item>
+              <ion-item class="duration-item">
+                <ion-label>Duração</ion-label>
+                <div class="time-fields">
+                  <ion-input type="number" formControlName="durationHours" min="0" max="23" placeholder="00"></ion-input>
+                  <span>:</span>
+                  <ion-input type="number" formControlName="durationMinutes" min="0" max="59" placeholder="00"></ion-input>
+                </div>
+              </ion-item>
 
-          <ion-item>
-            <ion-label>Tempo variável</ion-label>
-            <ion-toggle formControlName="variableTime"></ion-toggle>
-          </ion-item>
+              <ion-item>
+                <ion-label>Preço Variável</ion-label>
+                <ion-toggle formControlName="variablePrice"></ion-toggle>
+              </ion-item>
 
-          <div class="image-upload-container">
-            <div class="image-preview">
-              <img *ngIf="previewUrl" [src]="previewUrl" alt="Preview" />
-              <div *ngIf="!previewUrl" class="no-image">
-                <ion-icon name="image-outline"></ion-icon>
-                <p>Nenhuma imagem</p>
+              <ion-item>
+                <ion-label>Tempo Variável</ion-label>
+                <ion-toggle formControlName="variableTime"></ion-toggle>
+              </ion-item>
+            </ion-card-content>
+          </ion-card>
+
+          <ion-card class="form-section">
+            <ion-card-header>
+              <ion-card-title>Imagem</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <div class="image-upload-container">
+                <div class="image-preview">
+                  <img *ngIf="previewUrl" [src]="previewUrl" alt="Preview" />
+                  <div *ngIf="!previewUrl" class="no-image">
+                    <ion-icon name="image-outline"></ion-icon>
+                    <p>Nenhuma imagem</p>
+                  </div>
+                </div>
+                <div class="image-actions">
+                  <input type="file" #fileInput accept="image/*" (change)="onImageSelected($event)" hidden />
+                  <ion-button fill="clear" (click)="fileInput.click()">
+                    <ion-icon name="camera-outline" slot="start"></ion-icon>
+                    Selecionar
+                  </ion-button>
+                  <ion-button *ngIf="previewUrl" fill="clear" color="danger" (click)="removeImage()">
+                    <ion-icon name="trash-outline" slot="start"></ion-icon>
+                    Remover
+                  </ion-button>
+                </div>
               </div>
-            </div>
-            <div class="image-actions">
-              <input
-                type="file"
-                #fileInput
-                accept="image/*"
-                (change)="onImageSelected($event)"
-                hidden
-              />
-              <ion-button fill="clear" (click)="fileInput.click()">
-                <ion-icon name="camera-outline" slot="start"></ion-icon>
-                Selecionar
-              </ion-button>
-              <ion-button
-                *ngIf="previewUrl"
-                fill="clear"
-                color="danger"
-                (click)="removeImage()"
-              >
-                <ion-icon name="trash-outline" slot="start"></ion-icon>
-                Remover
-              </ion-button>
-            </div>
-          </div>
-<!-- 
-          <div class="form-actions">
-            <ion-button
-              expand="block"
-              color="primary"
-              (click)="saveService()"
-              [disabled]="serviceForm.invalid || isSaving"
-            >
-              <ion-spinner *ngIf="isSaving" name="crescent"></ion-spinner>
-              <span *ngIf="!isSaving">SALVAR</span>
-            </ion-button>
-          </div> -->
+            </ion-card-content>
+          </ion-card>
         </form>
       </ion-content>
     </ng-template>
   </ion-modal>
 </ion-content>
+
 <app-footer-menu></app-footer-menu>
