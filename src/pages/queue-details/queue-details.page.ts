@@ -42,9 +42,13 @@ export class QueueDetailsPage implements OnInit {
           const atendimentoDuration = Math.round((end.getTime() - start.getTime()) / 60000); 
           return { ...client, atendimentoDuration };
         });
-
+        
         this.report = response;
-        this.selectedDate = new Date(this.report.data[0].queueDate).toISOString().split("T")[0];
+        if(this.report.data[0])
+          this.selectedDate = new Date(this.report.data[0].queueDate).toISOString().split("T")[0];
+        else
+          this.selectedDate = new Date().toISOString().split("T")[0];
+
         this.getTotalAttendedClients();
         this.getTotalAmmount();
       },
