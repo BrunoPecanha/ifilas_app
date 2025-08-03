@@ -28,6 +28,7 @@ export class SplashPage {
 
   async tryAutoLogin() {
     try {
+      
       const response = await this.authService.refreshToken().toPromise();
 
       if (response && response.valid && response?.data.token && response.data?.user) {
@@ -41,11 +42,10 @@ export class SplashPage {
         return;
       }
     } catch (error) {
+      this.sessionService.clearSessionData();
+      this.ngZone.run(() => {
+        this.router.navigate(['/login']);
+      });
     }
-
-    this.sessionService.clearSessionData();
-    this.ngZone.run(() => {
-      this.router.navigate(['/login']);
-    });
   }
 }
