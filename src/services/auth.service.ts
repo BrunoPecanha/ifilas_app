@@ -29,6 +29,7 @@ export class AuthService {
     const refreshToken = this.getRefreshToken();    
     
     if (!refreshToken) {
+      this.clearSession();
       return throwError(() => new Error('Refresh token não encontrado'));
     }
 

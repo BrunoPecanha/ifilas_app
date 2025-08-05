@@ -50,7 +50,8 @@
       >
         <ion-icon name="settings-outline"></ion-icon>
       </ion-button>
-      <ion-button
+      <ion-button 
+        [disabled]="client.pricePending || (isAnyClientInService && !client.inService)"
         fill="clear"
         size="small"
         (click)="callCustomer(client)"

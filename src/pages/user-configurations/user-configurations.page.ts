@@ -83,8 +83,7 @@ export class UserConfigurationsPage {
     { acronym: 'TO', name: 'Tocantins' }
   ];
 
-  private fillForm() {
-    debugger
+  private fillForm() {    
     this.cadastroForm.patchValue({
       cpf: this.user.cpf,
       name: this.user.name,

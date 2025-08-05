@@ -119,6 +119,10 @@ export class QueueService {
     return this.http.get<QueueListResponse>(`${this.apiUrl}/queue/${employeeId}/employee`);
   }
 
+  isThereQueueOpenedTodayAsync(storeId: number): Observable<QueueListResponse> {
+    return this.http.get<QueueListResponse>(`${this.apiUrl}/queue/${storeId}/queueOpenedToday`);
+  }
+
   getAllCustomersInQueueByEmployeeAndStoreId(storeId: number, employeeId: number): Observable<CustomerInQueueForEmployeeResponse> {
     return this.http.get<CustomerInQueueForEmployeeResponse>(`${this.apiUrl}/queue/${storeId}/${employeeId}/customers-in-queue`);
   }
