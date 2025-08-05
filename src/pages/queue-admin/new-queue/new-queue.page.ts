@@ -8,14 +8,11 @@ import { UserModel } from 'src/models/user-model';
 import { QueueService } from 'src/services/queue.service';
 import { SessionService } from 'src/services/session.service';
 
-
-
 @Component({
   selector: 'app-new-queue',
   templateUrl: './new-queue.page.html',
   styleUrls: ['./new-queue.page.scss']
 })
-
 export class NewQueuePage implements OnInit {
 
   isEditing = false;
@@ -47,26 +44,30 @@ export class NewQueuePage implements OnInit {
   }
 
   private initializeForm() {
-    const today = new Date().toISOString();
-    const defaultOpeningTime = new Date();
-    defaultOpeningTime.setHours(8, 0, 0);
+    const today = new Date();
 
-    const defaultClosingTime = new Date();
-    defaultClosingTime.setHours(18, 0, 0);
+    const defaultOpeningTime = this.createTimeForIonDatetime(8, 0);
+    const defaultClosingTime = this.createTimeForIonDatetime(18, 0);
 
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
-      date: [today.split('T')[0], Validators.required],
-      openingTime: [defaultOpeningTime.toISOString(), Validators.required],
-      closingTime: [defaultClosingTime.toISOString(), [
-        Validators.required,
-        this.validateClosingTime.bind(this)
-      ]],
-      type: ['normal', Validators.required],
+      date: [today.toISOString().split('T')[0]],
+      openingTime: [defaultOpeningTime, Validators.required],
+      closingTime: [defaultClosingTime, [Validators.required, this.validateClosingTime.bind(this)]],
+      type: ['normal'],
+      eligibleGroups: [[]],
+      maxServiceTime: [''],
       isRecurring: [false],
       recurringDays: [[]],
       recurringEndDate: ['']
     });
+  }
+
+  private createTimeForIonDatetime(hour: number, minute: number): string {
+    const date = new Date();
+    date.setHours(hour, minute, 0, 0);
+    const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return offsetDate.toISOString().substring(0, 16); 
   }
 
   patchFormWithQueueData() {
@@ -74,8 +75,8 @@ export class NewQueuePage implements OnInit {
       this.form?.patchValue({
         name: this.queueToEdit.name,
         date: this.queueToEdit.date,
-        openingTime: this.queueToEdit.openingTime || new Date().toISOString(),
-        closingTime: this.queueToEdit.closingTime || new Date().toISOString(),
+        openingTime: this.queueToEdit.openingTime,
+        closingTime: this.queueToEdit.closingTime,
         type: this.queueToEdit.type || 'normal',
         isRecurring: this.queueToEdit.isRecurring || false,
         recurringDays: this.queueToEdit.recurringDays || [],
@@ -85,15 +86,21 @@ export class NewQueuePage implements OnInit {
   }
 
   validateClosingTime(control: any) {
-    if (!this.form) return null;
+    if (!this.form) 
+      return null;
+
+    const name = this.form.get('name')?.value;
+    if (!name?.trim()) 
+      return null;
 
     const openingTime = this.form.get('openingTime')?.value;
     const closingTime = control.value;
 
-    if (!openingTime || !closingTime) return null;
+    if (!openingTime || !closingTime) 
+      return null;
 
-    const opening = new Date(openingTime).getTime();
-    const closing = new Date(closingTime).getTime();
+    const opening = new Date(openingTime).getHours() * 60 + new Date(openingTime).getMinutes();
+    const closing = new Date(closingTime).getHours() * 60 + new Date(closingTime).getMinutes();
 
     return closing > opening ? null : { invalidClosingTime: true };
   }
@@ -134,13 +141,12 @@ export class NewQueuePage implements OnInit {
           await this.showToast('Erro ao salvar fila. Tente novamente.', 'danger');
         }
       });
-
     } catch (error) {
       console.error(error);
       await this.showToast('Erro ao salvar fila. Tente novamente.', 'danger');
     }
   }
-  
+
   cancel() {
     this.router.navigate(['/queue-admin']);
   }
@@ -153,11 +159,5 @@ export class NewQueuePage implements OnInit {
       position: 'top'
     });
     await toast.present();
-  }
-
-  formatTime(timeString: string): string {
-    if (!timeString) return '';
-    const date = new Date(timeString);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 }

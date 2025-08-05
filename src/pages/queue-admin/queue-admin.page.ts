@@ -13,6 +13,7 @@ import { ToastService } from 'src/services/toast.service';
 import { QueuePauseRequest } from 'src/models/requests/queue-pause-request';
 import { SignalRService } from 'src/services/seignalr.service';
 import { QueueCloseRequest } from 'src/models/requests/queue-close-request';
+import { isToday } from 'src/utils/date-utils';
 
 @Component({
   selector: 'app-queue-admin',
@@ -50,11 +51,8 @@ export class QueueAdminPage implements OnInit {
   }
 
   ngOnInit() {
+    this.activeFilter = 'all'; 
     this.loadInitialData();
-  }
-
-  ionViewWillEnter() {
-    this.loadQueuesWithCurrentFilters();
   }
 
   private loadInitialData() {
@@ -129,11 +127,11 @@ export class QueueAdminPage implements OnInit {
     };
   }
 
-  private loadQueuesWithCurrentFilters() {
+  private loadQueuesWithCurrentFilters() {    
     const filter = this.buildCurrentFilters();
 
     this.queueService.loadAllTodayQueue(this.store.id, filter).subscribe({
-      next: (response) => {
+      next: (response) => {        
         this.queues = response.data || [];
         this.originalQueues = [...this.queues];
         this.applyLocalFilters();
@@ -150,7 +148,7 @@ export class QueueAdminPage implements OnInit {
     const filter = this.buildCurrentFilters();
 
     this.queueService.loadAllTodayQueue(this.store.id, filter).subscribe({
-      next: (response) => {
+      next: (response) => {        
         this.queues = response.data || [];
         this.originalQueues = [...this.queues];
         this.applyLocalFilters();
@@ -176,7 +174,7 @@ export class QueueAdminPage implements OnInit {
         queue.name.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     }
-
+    
     this.queues = filtered;
     this.anyQueueOpenStatus(filtered);
   }
@@ -211,8 +209,8 @@ export class QueueAdminPage implements OnInit {
     return queue.status === this._statusQueueEnum.open;
   }
 
-  anyQueueOpenStatus(queues: QueueModel[]): void {
-    this.anyQueueOpen = queues.some(queue => queue.status === this._statusQueueEnum.open) && this.store.shareQueue;
+  anyQueueOpenStatus(queues: QueueModel[]): void {    
+    this.anyQueueOpen = queues.some(queue => queue.status === this._statusQueueEnum.open || isToday(queue.date)) /*&& this.store.shareQueue*/;
   }
 
   filterChanged() {

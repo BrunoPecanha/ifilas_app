@@ -19,15 +19,18 @@ export class SplashPage {
     private ngZone: NgZone
   ) { }
 
-  ionViewDidEnter() {
+  ionViewDidEnter() {    
     if (!this.triedAutoLogin) {
       this.triedAutoLogin = true;
       this.tryAutoLogin();
     }
+    else
+      this.clearSessionAndLogout();
   }
 
   async tryAutoLogin() {
     try {
+
       const response = await this.authService.refreshToken().toPromise();
 
       if (response && response.valid && response?.data.token && response.data?.user) {
@@ -40,9 +43,12 @@ export class SplashPage {
         });
         return;
       }
-    } catch (error) {
+    } catch {
+      this.clearSessionAndLogout();
     }
+  }
 
+  private clearSessionAndLogout() {
     this.sessionService.clearSessionData();
     this.ngZone.run(() => {
       this.router.navigate(['/login']);

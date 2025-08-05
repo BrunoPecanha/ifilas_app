@@ -13,6 +13,7 @@ import { SignalRService } from 'src/services/seignalr.service';
 import { SessionService } from 'src/services/session.service';
 import { ToastService } from 'src/services/toast.service';
 import { ServiceConfigModalComponent } from 'src/shared/components/service-config-modal-component/service-config-modal.component';
+import { isToday } from 'src/utils/date-utils';
 
 @Component({
   selector: 'app-customer-list-in-queue',
@@ -58,12 +59,12 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     this.signalRGroup = this.storeId.toString();
   }
 
-  ngOnInit() {
+  ngOnInit() {    
     this.initSignalRConnection();
     this.loadInitialData();
   }
 
-  ionViewDidEnter() {
+  ionViewDidEnter() {    
     this.loadInitialData();
     this.store = this.sessionService.getStore();
   }
@@ -183,7 +184,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     });
   }
 
-  private loadQueueData() {
+  private loadQueueData() {    
     this.store = this.sessionService.getStore();
 
     if (!this.storeId || !this.employee.id)
@@ -320,34 +321,38 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     return this.clients?.some(client => client.inService) && !this.store.attendSimultaneously;
   }
 
-  private getQueueForEmployee() {
-    if (!this.employee.id)
-      return;
 
-    this.queueService.getOpenedQueueListByEmployeeId(this.employee.id)
-      .subscribe({
-        next: (response) => {
-          if (response.valid && response.data?.length > 0) {
-            const openQueue = response.data.find(q =>
-              q.status === StatusQueueEnum.open || q.status === StatusQueueEnum.paused
-            );
+private getQueueForEmployee() {
+  if (!this.employee.id) return;
 
-            if (openQueue) {
-              this.queue = openQueue;
-              this.isPaused = openQueue.status === StatusQueueEnum.paused;
-            } else {
-              this.navigateToQueueAdmin();
-            }
+  this.queueService.getOpenedQueueListByEmployeeId(this.employee.id)
+    .subscribe({
+      next: (response) => {
+        if (response.valid && response.data?.length > 0) {
+          const openQueue = response.data.find(q =>
+            (q.status === StatusQueueEnum.open || q.status === StatusQueueEnum.paused) &&
+            isToday(q.date)
+          );
+
+          if (openQueue) {
+            this.queue = openQueue;
+            this.isPaused = openQueue.status === StatusQueueEnum.paused;
           } else {
+            this.toast.show('Não há fila aberta para hoje.', 'danger');
             this.navigateToQueueAdmin();
           }
-        },
-        error: (err) => {
-          console.error('Erro ao carregar fila:', err);
-          this.toast.show('Erro ao carregar informações da fila', 'danger');
+
+        } else {
+          this.navigateToQueueAdmin();
         }
-      });
-  }
+      },
+      error: (err) => {
+        console.error('Erro ao carregar fila:', err);
+        this.navCtrl.navigateRoot('/splash');
+        this.toast.show('Erro ao carregar informações da fila', 'danger');
+      }
+    });
+}
 
   private navigateToQueueAdmin() {
     this.navCtrl.navigateForward('/queue-admin');

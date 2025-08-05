@@ -5,7 +5,7 @@
   (onStartClick)="cancel()"
   [showEndButton]="true"
   endIconName="checkmark"
-  [endDisabled]="!form.valid"
+  [endDisabled]="!form.get('name')?.valid || form.get('closingTime')?.errors"
   (onEndClick)="save()"
 ></app-custom-header>
 
@@ -13,7 +13,7 @@
   <form [formGroup]="form">
     <ion-item fill="solid" class="ion-margin-bottom">
       <ion-label position="floating">Nome da Fila</ion-label>
-      <ion-input formControlName="name" type="text" maxlength="30" ></ion-input>
+      <ion-input formControlName="name" type="text" maxlength="30"></ion-input>
     </ion-item>
 
     <div class="time-range-container">
@@ -22,6 +22,8 @@
         <ion-datetime
           presentation="time"
           formControlName="openingTime"
+          hour-cycle="h23"
+          preferWheel="false"
         ></ion-datetime>
       </ion-item>
 
@@ -30,6 +32,8 @@
         <ion-datetime
           presentation="time"
           formControlName="closingTime"
+          hour-cycle="h23"
+          preferWheel="false"
         ></ion-datetime>
       </ion-item>
     </div>
@@ -42,15 +46,11 @@
         <ion-select-option value="express">Expressa</ion-select-option>
       </ion-select>
     </ion-item>
-    
+
     <div *ngIf="form?.get('type')?.value === 'priority'">
       <ion-item fill="solid" class="ion-margin-bottom">
         <ion-label position="stacked">Grupos elegíveis</ion-label>
-        <ion-select
-          formControlName="eligibleGroups"
-          multiple
-          interface="popover"
-        >
+        <ion-select formControlName="eligibleGroups" multiple interface="popover">
           <ion-select-option value="elderly">Idosos</ion-select-option>
           <ion-select-option value="pregnant">Gestantes</ion-select-option>
           <ion-select-option value="pcd">PCD</ion-select-option>
@@ -65,18 +65,14 @@
       </ion-item>
     </div>
 
-    <ion-item fill="solid" class="ion-margin-bottom" lines="none">
+    <ion-item fill="solid" disabled="true" class="ion-margin-bottom" lines="none">
       <ion-toggle formControlName="isRecurring">Fila recorrente</ion-toggle>
     </ion-item>
 
     <div class="recurring-options" *ngIf="form?.get('isRecurring')?.value">
       <ion-item fill="solid" class="ion-margin-bottom">
         <ion-label position="stacked">Dias da semana</ion-label>
-        <ion-select
-          formControlName="recurringDays"
-          multiple
-          interface="popover"
-        >
+        <ion-select formControlName="recurringDays" multiple interface="popover">
           <ion-select-option value="1">Segunda</ion-select-option>
           <ion-select-option value="2">Terça</ion-select-option>
           <ion-select-option value="3">Quarta</ion-select-option>
@@ -89,12 +85,10 @@
 
       <ion-item fill="solid" class="ion-margin-bottom">
         <ion-label position="stacked">Período de recorrência</ion-label>
-        <ion-datetime
-          presentation="date"
-          formControlName="recurringEndDate"
-        ></ion-datetime>
+        <ion-datetime presentation="date" formControlName="recurringEndDate"></ion-datetime>
       </ion-item>
     </div>
   </form>
 </ion-content>
+
 <app-footer-menu></app-footer-menu>

@@ -100,17 +100,17 @@
       *ngIf="queues.length === 0 && filteredQueues.length === 0"
     >
       <ion-icon name="list-outline"></ion-icon>
-      <h3>Nenhuma fila encontrada</h3>
+      <h3>Nenhuma fila encontrada para hoje</h3>
       <p *ngIf="activeFilter !== 'today'">
         Nenhuma fila foi criada para o período selecionado
       </p>
-      <ion-button
+      <!-- <ion-button
         fill="outline"
         (click)="openAddQueuePage()"
         *ngIf="activeFilter === 'today'"
       >
         Criar fila para hoje
-      </ion-button>
+      </ion-button> -->
     </div>
 
     <ion-list lines="none">

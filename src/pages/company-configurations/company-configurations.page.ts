@@ -398,7 +398,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.cadastroForm.get('cnpj')?.setValue(valor, { emitEvent: false });
   }
 
-  save(): void {
+  save(): void {    
     this.successMessage = null;
     this.errorMessage = null;
     this.saved = false;
@@ -514,7 +514,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
     };
   }
 
-  setupOpeningHoursValidation() {
+  setupOpeningHoursValidation() {    
     const openingHoursArray = this.cadastroForm.get('openingHours') as FormArray;
 
     openingHoursArray.controls.forEach((group: import('@angular/forms').AbstractControl) => {
@@ -523,7 +523,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
 
       activatedCtrl?.valueChanges.subscribe((activated: boolean) => {
         const startCtrl = formGroup.get('start');
-        const endCtrl = formGroup.get('end');
+        const endCtrl = formGroup.get('end');        
 
         if (activated) {
           startCtrl?.setValidators([Validators.required]);
