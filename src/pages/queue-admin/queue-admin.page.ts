@@ -41,6 +41,7 @@ export class QueueAdminPage implements OnInit {
   constructor(
     private alertController: AlertController,
     private router: Router,
+    private user: SessionService,
     private queueService: QueueService,
     private sessionService: SessionService,
     private storeService: StoresService,
@@ -48,10 +49,11 @@ export class QueueAdminPage implements OnInit {
     private signalRService: SignalRService
   ) {
     this.store = this.sessionService.getStore();
+    this.selectedResponsible = this.user.getUser()?.id || null;
   }
 
   ngOnInit() {
-    this.activeFilter = 'all'; 
+    this.activeFilter = 'all';
     this.loadInitialData();
   }
 
@@ -118,20 +120,20 @@ export class QueueAdminPage implements OnInit {
       _startDate = null;
       _endDate = null;
     }
-
-    return {
+        
+    return {      
       startDate: _startDate,
       endDate: _endDate,
       queueStatus: this.selectedStatus ?? undefined,
-      responsibleId: this.selectedResponsible ?? undefined
+      responsibleId: this.store.shareQueue ? undefined : this.selectedResponsible
     };
   }
 
-  private loadQueuesWithCurrentFilters() {    
+  private loadQueuesWithCurrentFilters() {
     const filter = this.buildCurrentFilters();
 
     this.queueService.loadAllTodayQueue(this.store.id, filter).subscribe({
-      next: (response) => {        
+      next: (response) => {
         this.queues = response.data || [];
         this.originalQueues = [...this.queues];
         this.applyLocalFilters();
@@ -148,7 +150,7 @@ export class QueueAdminPage implements OnInit {
     const filter = this.buildCurrentFilters();
 
     this.queueService.loadAllTodayQueue(this.store.id, filter).subscribe({
-      next: (response) => {        
+      next: (response) => {
         this.queues = response.data || [];
         this.originalQueues = [...this.queues];
         this.applyLocalFilters();
@@ -174,7 +176,7 @@ export class QueueAdminPage implements OnInit {
         queue.name.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     }
-    
+
     this.queues = filtered;
     this.anyQueueOpenStatus(filtered);
   }
@@ -209,8 +211,8 @@ export class QueueAdminPage implements OnInit {
     return queue.status === this._statusQueueEnum.open;
   }
 
-  anyQueueOpenStatus(queues: QueueModel[]): void {    
-    this.anyQueueOpen = queues.some(queue => queue.status === this._statusQueueEnum.open || isToday(queue.date)) /*&& this.store.shareQueue*/;
+  anyQueueOpenStatus(queues: QueueModel[]): void {
+    this.anyQueueOpen = queues.some(queue => queue.status === this._statusQueueEnum.open);
   }
 
   filterChanged() {

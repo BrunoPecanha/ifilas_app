@@ -115,8 +115,8 @@ export class QueueService {
     return this.http.put(`${this.apiUrl}/queue/remove`, command);
   }
 
-  getOpenedQueueListByEmployeeId(employeeId: number): Observable<QueueListResponse> {
-    return this.http.get<QueueListResponse>(`${this.apiUrl}/queue/${employeeId}/employee`);
+  getOpenedQueueListByEmployeeId(employeeId: number, storeId: number | null, sharedQueue: boolean): Observable<QueueListResponse> {
+    return this.http.get<QueueListResponse>(`${this.apiUrl}/queue/${employeeId}/${storeId}/${sharedQueue}/employee`);
   }
 
   isThereQueueOpenedTodayAsync(storeId: number): Observable<QueueListResponse> {
@@ -138,8 +138,8 @@ export class QueueService {
     );
   }
 
-  hasOpenQueueForEmployeeToday(employeeId: number): Observable<boolean> {
-    return this.getOpenedQueueListByEmployeeId(employeeId).pipe(
+  hasOpenQueueForEmployeeToday(employeeId: number, storeId: number | null): Observable<boolean> {
+    return this.getOpenedQueueListByEmployeeId(employeeId, storeId, false).pipe(
       map((response: QueueListResponse) => {
         return response.valid &&
           response.data?.length > 0 &&

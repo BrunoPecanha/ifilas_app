@@ -59,12 +59,12 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     this.signalRGroup = this.storeId.toString();
   }
 
-  ngOnInit() {    
+  ngOnInit() {
     this.initSignalRConnection();
     this.loadInitialData();
   }
 
-  ionViewDidEnter() {    
+  ionViewDidEnter() {
     this.loadInitialData();
     this.store = this.sessionService.getStore();
   }
@@ -184,7 +184,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     });
   }
 
-  private loadQueueData() {    
+  private loadQueueData() {
     this.store = this.sessionService.getStore();
 
     if (!this.storeId || !this.employee.id)
@@ -321,38 +321,37 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     return this.clients?.some(client => client.inService) && !this.store.attendSimultaneously;
   }
 
+  private getQueueForEmployee() {
+    if (!this.employee.id)
+      return;
 
-private getQueueForEmployee() {
-  if (!this.employee.id) return;
+    this.queueService.getOpenedQueueListByEmployeeId(this.employee.id, this.store.id, this.store.shareQueue)
+      .subscribe({
+        next: (response) => {          
+          if (response.valid && response.data?.length > 0) {
+            const openQueue = response.data.find(q =>
+              (q.status === StatusQueueEnum.open || q.status === StatusQueueEnum.paused) &&
+              isToday(q.date)
+            );
 
-  this.queueService.getOpenedQueueListByEmployeeId(this.employee.id)
-    .subscribe({
-      next: (response) => {
-        if (response.valid && response.data?.length > 0) {
-          const openQueue = response.data.find(q =>
-            (q.status === StatusQueueEnum.open || q.status === StatusQueueEnum.paused) &&
-            isToday(q.date)
-          );
+            if (openQueue) {
+              this.queue = openQueue;
+              this.isPaused = openQueue.status === StatusQueueEnum.paused;
+            } else {
+              this.toast.show('Não há fila aberta para hoje.', 'warning');
+              this.navigateToQueueAdmin();
+            }
 
-          if (openQueue) {
-            this.queue = openQueue;
-            this.isPaused = openQueue.status === StatusQueueEnum.paused;
           } else {
-            this.toast.show('Não há fila aberta para hoje.', 'danger');
             this.navigateToQueueAdmin();
           }
-
-        } else {
-          this.navigateToQueueAdmin();
+        },
+        error: (err) => {
+          this.navCtrl.navigateRoot('/splash');
+          this.toast.show('Erro ao carregar informações da fila', 'danger');
         }
-      },
-      error: (err) => {
-        console.error('Erro ao carregar fila:', err);
-        this.navCtrl.navigateRoot('/splash');
-        this.toast.show('Erro ao carregar informações da fila', 'danger');
-      }
-    });
-}
+      });
+  }
 
   private navigateToQueueAdmin() {
     this.navCtrl.navigateForward('/queue-admin');

@@ -51,7 +51,7 @@
           *ngFor="let establishment of establishments"
           lines="none"
           button
-          (click)="selecionarEmpresa(establishment)"
+          (click)="selectCompany(establishment)"
         >
           <ion-icon [name]="establishment.icon" class="icon-depois"></ion-icon>
 
@@ -62,7 +62,7 @@
 
           <ion-icon
             name="enter-outline"
-            (click)="$event.stopPropagation(); acessarEmpresa($event, establishment)"
+            (click)="$event.stopPropagation(); enterCompany($event, establishment)"
             slot="end"
           ></ion-icon>
         </ion-item>
