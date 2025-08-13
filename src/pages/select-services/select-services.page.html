@@ -11,145 +11,110 @@
 ></app-custom-header>
 
 <ion-content class="services-content">
-  <div class="services-section">
-    <h2 class="section-title">SERVIÇOS DISPONÍVEIS</h2>
-    <div class="services-list">
+
+  <!-- Serviços -->
+  <section class="card-section">
+    <h2 class="section-title">Serviços Disponíveis</h2>
+    <div class="services-grid">
       <div
-        class="service-option"
+        class="service-card"
         *ngFor="let service of serviceOptions"
         (click)="addService(service)"
       >
-        <div class="service-image-wrapper">
+        <div class="service-thumb">
           <img
             *ngIf="service.category.imgPath"
             [src]="service.category.imgPath"
-            class="service-image"
             alt=""
           />
           <ion-icon
             *ngIf="!service.category.imgPath"
             name="cut-outline"
-            class="service-icon"
           ></ion-icon>
         </div>
-
-        <div class="service-details">
-          <h3 class="service-name">{{ service.name }}</h3>
-          <div class="service-meta">
-            <span class="meta-item">
-              <ion-icon name="time-outline"></ion-icon>
-              <span *ngIf="!service.variableTime; else undefinedDuration">
-                {{ service.duration }} min
-              </span>
-              <ng-template #undefinedDuration>A definir</ng-template>
-            </span>
-
-            <span class="meta-item price">
-              <ion-icon name="cash-outline"></ion-icon>
-              <span *ngIf="!service.variablePrice; else undefinedPrice">
-                R$ {{ service.price | number:'1.2-2' }}
-              </span>
-              <ng-template #undefinedPrice>A combinar</ng-template>
-            </span>
-          </div>
+        <div class="service-info">
+          <h3>{{ service.name }}</h3>
+          <p>
+            <ion-icon name="time-outline"></ion-icon>
+            {{ service.variableTime ? 'A definir' : service.duration + ' min' }}
+          </p>
+          <p class="price">
+            <ion-icon name="cash-outline"></ion-icon>
+            {{ service.variablePrice ? 'A combinar' : ('R$ ' + (service.price | number:'1.2-2')) }}
+          </p>
         </div>
-
-        <ion-icon
-          name="add-circle-outline"
-          color="primary"
-          class="add-icon"
-        ></ion-icon>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="selected-section" *ngIf="selectedServices.length > 0">
-    <h2 class="section-title">SEUS SERVIÇOS</h2>
-
+  <!-- Selecionados -->
+  <section class="card-section" *ngIf="selectedServices.length > 0">
+    <h2 class="section-title">Seus Serviços</h2>
     <div class="selected-list">
       <div
-        class="selected-item"
+        class="selected-card"
         *ngFor="let selected of selectedServices; let i = index"
       >
-        <div class="selected-item-content">
-          <div class="item-image" *ngIf="selected.imgPath">
-            <img [src]="selected.imgPath" alt="" />
-          </div>
-          <ion-icon
-            *ngIf="!selected.imgPath"
-            name="cut-outline"
-            class="item-icon"
-          ></ion-icon>
-
-          <div class="item-info">
-            <span class="item-name">{{ selected.name }}</span>
-            <div class="item-actions">
-              <ion-button fill="clear" (click)="removeService(i)">
-                <ion-icon name="remove-circle" color="danger"></ion-icon>
-              </ion-button>
-              <span class="item-quantity" *ngIf="selected.quantity > 1"
-                >{{ selected.quantity }}x</span
-              >
-            </div>
-          </div>
+        <div class="thumb">
+          <img *ngIf="selected.imgPath" [src]="selected.imgPath" />
+          <ion-icon *ngIf="!selected.imgPath" name="cut-outline"></ion-icon>
         </div>
+        <span class="name">
+          {{ selected.name }}
+          <span *ngIf="selected.quantity > 1">({{ selected.quantity }}x)</span>
+        </span>
+        <ion-button fill="clear" (click)="removeService(i)">
+          <ion-icon name="trash-outline" color="danger"></ion-icon>
+        </ion-button>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="notes-section">
+  <!-- Notas e pagamento -->
+  <section class="card-section">
     <ion-item lines="none" class="notes-input">
       <ion-label position="stacked">Observações</ion-label>
       <ion-textarea
         [(ngModel)]="notes"
         rows="2"
         maxlength="33"
-        placeholder="Alguma observação especial sobre os serviços..."
+        placeholder="Alguma observação?"
       ></ion-textarea>
     </ion-item>
-  </div>
 
-  <div class="payment-section">
-    <h2 class="section-title">FORMA DE PAGAMENTO</h2>
     <div class="payment-options">
       <ion-button
-        fill="outline"
+        fill="solid"
         [color]="paymentMethod === '1' ? 'primary' : 'medium'"
         (click)="paymentMethod = '1'"
       >
-        <ion-icon name="cash-outline" slot="start"></ion-icon>
-        Dinheiro
+        <ion-icon name="cash-outline" slot="start"></ion-icon> Dinheiro
       </ion-button>
-
       <ion-button
-        fill="outline"
+        fill="solid"
         [color]="paymentMethod === '3' ? 'primary' : 'medium'"
         (click)="paymentMethod = '3'"
       >
-        <ion-icon name="qr-code-outline" slot="start"></ion-icon>
-        Pix
+        <ion-icon name="qr-code-outline" slot="start"></ion-icon> Pix
       </ion-button>
-
       <ion-button
-        fill="outline"
+        fill="solid"
         [color]="paymentMethod === '2' ? 'primary' : 'medium'"
         (click)="paymentMethod = '2'"
       >
-        <ion-icon name="card-outline" slot="start"></ion-icon>
-        Cartão
+        <ion-icon name="card-outline" slot="start"></ion-icon> Cartão
       </ion-button>
     </div>
-  </div>
+  </section>
 
-  <div class="summary-section">
-    <div class="summary-item">
-      <span>Tempo Total:</span>
-      <span class="summary-value">{{ totalTimeString }}</span>
+  <!-- Resumo -->
+  <section class="summary-bar">
+    <div>
+      <strong>Tempo:</strong> {{ totalTimeString }}<br />
+      <strong>Total:</strong> {{ totalPriceString }}
     </div>
-    <div class="summary-item total">
-      <span>Valor Total:</span>
-      <span class="summary-value">{{ totalPriceString }}</span>
-    </div>
-  </div>
+  </section>
+
 </ion-content>
+
 <app-footer-menu></app-footer-menu>

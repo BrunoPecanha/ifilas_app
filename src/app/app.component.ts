@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { StatusBar } from '@capacitor/status-bar';
 import { SignalRService } from 'src/services/seignalr.service';
-import { NotificationService } from 'src/services/notification.service';
+import { PushNotificationService } from 'src/services/push-notification.service';
+import { SessionService } from 'src/services/session.service';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,9 @@ import { NotificationService } from 'src/services/notification.service';
 export class AppComponent {
   constructor(
     private platform: Platform,
-    private signalRService: SignalRService
+    private signalRService: SignalRService,
+    private pushService: PushNotificationService,
+    private session: SessionService
   ) {
     this.initializeApp();
   }
@@ -26,5 +29,10 @@ export class AppComponent {
       StatusBar.setOverlaysWebView({ overlay: false });
       StatusBar.setBackgroundColor({ color: '#f5f5f5' });
     });
+    
+    const isLoggedIn = !!this.session.getToken();
+    if (isLoggedIn) {
+      this.pushService.init();
+    }
   }
 }

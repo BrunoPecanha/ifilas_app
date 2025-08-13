@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Observable, tap, throwError } from "rxjs";
 import { environment } from "src/environments/environment";
 import { AuthResponse } from "src/models/responses/auth-responsel";
+import { PushNotificationService } from "./push-notification.service";
 
 
 @Injectable({
@@ -11,7 +12,7 @@ import { AuthResponse } from "src/models/responses/auth-responsel";
 export class AuthService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private pushService: PushNotificationService) { }
 
   login(credentials: { email: string, password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
@@ -56,8 +57,9 @@ export class AuthService {
     localStorage.setItem('refresh_token', authResponse.data.refreshToken);
   }
 
-  private clearSession() {
+  private async clearSession() {
     localStorage.removeItem('refresh_token');
+    await this.pushService.clearTokenOnLogout();
   }
 
   public isLoggedIn(): boolean {
