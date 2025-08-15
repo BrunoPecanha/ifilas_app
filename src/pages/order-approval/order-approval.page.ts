@@ -43,6 +43,10 @@ export class OrderApprovalPage implements OnInit {
     this.loadOrders();
   }
 
+  ionViewWillEnter() {
+    this.loadOrders();
+  }
+
   async loadOrders() {
     try {
       this.isLoading = true;

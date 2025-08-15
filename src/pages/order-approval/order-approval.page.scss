@@ -316,3 +316,8 @@ ion-content {
     }
   }
 }
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
