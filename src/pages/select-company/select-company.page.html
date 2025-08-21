@@ -73,8 +73,7 @@
       pullingText="Puxe para atualizar"
       refreshingSpinner="circles"
       refreshingText="Atualizando..."
-    >
-    </ion-refresher-content>
+    ></ion-refresher-content>
   </ion-refresher>
 
   <div *ngIf="isLoading" class="loading-container">
@@ -88,74 +87,72 @@
   </div>
 
   <div class="companies-grid">
-    <ion-card
-      *ngFor="let card of filteredCards"
-      class="company-card"
-      (click)="selectCard(card)"
-    >
-      <div class="card-header">
-        <div class="logo-wrapper">
-          <ng-container *ngIf="card.logoPath; else defaultLogo">
-            <img
-              [src]="card.logoPath"
-              alt="{{ card.name }}"
-              class="company-logo"
-            />
-          </ng-container>
-          <ng-template #defaultLogo>
-            <div class="default-logo">
-              <ion-icon name="business"></ion-icon>
-            </div>
-          </ng-template>
-        </div>
-
-        <div class="new-badge" *ngIf="card.isNew">NOVO</div>
-
-        <ion-button
-          fill="clear"
-          class="like-button"
-          (click)="toggleLike(card, $event)"
-        >
-          <ion-icon
-            [name]="card.liked ? 'heart' : 'heart-outline'"
-            [color]="card.liked ? 'danger' : 'medium'"
-          >
-          </ion-icon>
-        </ion-button>
+  <ion-card
+    *ngFor="let card of filteredCards"
+    class="company-card"
+    (click)="selectCard(card)"
+  >
+    <div class="company-row">
+      <div class="logo-small">
+        <img
+          *ngIf="card.logoPath; else defaultLogo"
+          [src]="card.logoPath"
+          alt="{{ card.name }}"
+        />
+        <ng-template #defaultLogo>
+          <ion-icon name="business"></ion-icon>
+        </ng-template>
       </div>
 
-      <ion-card-content class="card-content">
-        <h2 class="company-name">
+      <div class="company-info">
+        <h3 class="company-name">
           {{ card.name }}
           <ion-icon
             *ngIf="card.isVerified"
             name="checkmark-circle"
-            class="verified-icon"
             color="primary"
-          >
-          </ion-icon>
-        </h2>
-        <p class="company-category">{{ card.category }}</p>
+            class="verified-icon"
+          ></ion-icon>
+        </h3>
 
-        <div class="company-stats">
-          <div class="stat-item">
-            <ion-icon name="people-outline" class="stat-icon"></ion-icon>
-            <span>
-              {{ card.minorQueue === -1 ? 'Sem fila aberta' : card.minorQueue ==
-              0 ? 'Ninguém na fila' : 'Fila com ' + card.minorQueue + ' pessoas'
-              }}
-            </span>
-          </div>
+        <!-- categoria agora é badge -->
+        <div class="badges">
+          <ion-badge class="category-badge">
+            {{ card.category }}
+          </ion-badge>
 
-          <div class="rating-badge">
-            <ion-icon name="star" class="star-icon"></ion-icon>
-            <span>{{ card.rating || '0' }}</span>
-            <small>({{ card.votes || '0' }} avaliações)</small>
-          </div>
+          <ion-badge color="primary">
+            <ion-icon name="people-outline"></ion-icon>
+            {{
+              card.minorQueue === -1
+                ? 'Sem fila'
+                : card.minorQueue == 0
+                ? 'Sem espera'
+                : card.minorQueue + ' na fila'
+            }}
+          </ion-badge>
+
+          <ion-badge color="warning">
+            <ion-icon name="star"></ion-icon>
+            {{ card.rating || '0' }}
+          </ion-badge>
         </div>
-      </ion-card-content>
-    </ion-card>
-  </div>
+      </div>
+
+      <ion-button
+        fill="clear"
+        class="like-button"
+        (click)="toggleLike(card, $event)"
+      >
+        <ion-icon
+          [name]="card.liked ? 'heart' : 'heart-outline'"
+          [color]="card.liked ? 'danger' : 'medium'"
+        ></ion-icon>
+      </ion-button>
+    </div>
+  </ion-card>
+</div>
+
 </ion-content>
 
 <app-footer-menu></app-footer-menu>

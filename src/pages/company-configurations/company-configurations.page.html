@@ -3,7 +3,7 @@
   [showStartButton]="true"
   (onStartClick)="getBack()"
   startIconName="close-outline"
-  [showEndButton]="true"
+  [endDisabled]="cadastroForm.invalid"
   endIconName="checkmark"
   [endLoading]="sending"
   (onEndClick)="save()"

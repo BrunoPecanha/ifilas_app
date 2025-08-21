@@ -81,13 +81,13 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.cadastroForm = this.fb.group({
       ownerId: this.user?.id,
       logo: [null],
-      cnpj: [''],
-      name: [''],
-      address: [''],
-      number: [''],
-      city: [''],
-      state: [''],
-      categoryId: [''],
+      cnpj: ['', Validators.required], 
+      name: ['', Validators.required], 
+      address: ['', Validators.required], 
+      number: ['', Validators.required], 
+      city: ['', Validators.required], 
+      state: ['', Validators.required], 
+      categoryId: [null, Validators.required],
       phoneNumber: [''],
       website: [''],
       facebook: [''],
@@ -96,13 +96,13 @@ export class CompanyConfigurationsPage implements OnDestroy {
       openingHours: this.fb.array(
         this.weekDays.map(day => this.createHorarioForm(day))
       ),
-      openAutomatic: [{ value: false, disabled: true, validators: false }],
-      attendSimultaneously: [{ value: false, disabled: true, validators: false }],
-      acceptOtherQueues: [{ value: false, disabled: true, validators: false }],
-      answerOutOfOrder: [{ value: false, disabled: true, validators: false }],
-      answerScheduledTime: [{ value: false, disabled: true, validators: false }],
+      openAutomatic: [false],
+      attendSimultaneously: [false],
+      acceptOtherQueues: [false],
+      answerOutOfOrder: [false],
+      answerScheduledTime: [false],
       whatsAppNotice: [false],
-      timeRemoval: [{ value: '', disabled: true, validators: false }],
+      timeRemoval: [0],
       releaseOrdersBeforeGetsQueued: [false],
       endServiceWithQRCode: [false],
       startServiceWithQRCode: [false],
@@ -112,6 +112,13 @@ export class CompanyConfigurationsPage implements OnDestroy {
       storeSubtitle: [''],
       highLights: this.fb.array([])
     });
+
+    this.cadastroForm.get('openAutomatic')?.disable();
+    this.cadastroForm.get('attendSimultaneously')?.disable();
+    this.cadastroForm.get('acceptOtherQueues')?.disable();
+    this.cadastroForm.get('answerOutOfOrder')?.disable();
+    this.cadastroForm.get('answerScheduledTime')?.disable();
+    this.cadastroForm.get('timeRemoval')?.disable();
 
     this.setupQRCodeToggleListeners();
     this.setupOpeningHoursValidation();
@@ -425,8 +432,14 @@ export class CompanyConfigurationsPage implements OnDestroy {
       cnpjControl.setValue(cnpjLimpo);
     }
 
+    if (this.cadastroForm.invalid) {
+      this.errorMessage = 'Preencha todos os campos obrigatórios.';
+      this.markFormGroupTouched(this.cadastroForm);
+      return;
+    }
+
     if (!(await this.validateForm(this.cadastroForm))) {
-      return; 
+      return;
     }
 
     if (this.cadastroForm.valid) {
@@ -479,11 +492,11 @@ export class CompanyConfigurationsPage implements OnDestroy {
 
       if (control && control.invalid) {
         await this.presentToast(`O campo "${this.getLabelCampo(key)}" está inválido.`);
-        
+
         control.markAsTouched();
         control.updateValueAndValidity();
 
-        return false; 
+        return false;
       }
     }
     return true;
