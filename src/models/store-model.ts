@@ -48,4 +48,5 @@ export interface StoreModel extends To {
   shareQueue: boolean;
   isVerified: boolean;
   inCaseFailureAcceptFinishWithoutQRCode: boolean;
+  distance?: number; 
 }
