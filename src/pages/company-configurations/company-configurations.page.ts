@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild, OnDestroy } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NavController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { CategoryModel } from 'src/models/category-model';
 import { CategoryResponse } from 'src/models/responses/category-response';
@@ -10,7 +10,6 @@ import { CategoryService } from 'src/services/category.service';
 import { SessionService } from 'src/services/session.service';
 import { StatesService } from 'src/services/states.service';
 import { StoresService } from 'src/services/stores.service';
-
 
 @Component({
   selector: 'app-company-configurations',
@@ -53,7 +52,8 @@ export class CompanyConfigurationsPage implements OnDestroy {
     private categoryService: CategoryService,
     private storeService: StoresService,
     private navCtrl: NavController,
-    public sessionService: SessionService
+    public sessionService: SessionService,
+    private toastController: ToastController
   ) {
     this.initializeForm();
     this.loadStates();
@@ -81,13 +81,13 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.cadastroForm = this.fb.group({
       ownerId: this.user?.id,
       logo: [null],
-      cnpj: [''],
-      name: [''],
-      address: [''],
-      number: [''],
-      city: [''],
-      state: [''],
-      categoryId: [''],
+      cnpj: ['', Validators.required], 
+      name: ['', Validators.required], 
+      address: ['', Validators.required], 
+      number: ['', Validators.required], 
+      city: ['', Validators.required], 
+      state: ['', Validators.required], 
+      categoryId: [null, Validators.required],
       phoneNumber: [''],
       website: [''],
       facebook: [''],
@@ -96,13 +96,13 @@ export class CompanyConfigurationsPage implements OnDestroy {
       openingHours: this.fb.array(
         this.weekDays.map(day => this.createHorarioForm(day))
       ),
-      openAutomatic: [{ value: false, disabled: true }],
-      attendSimultaneously: [{ value: false, disabled: true }],
-      acceptOtherQueues: [{ value: false, disabled: true }],
-      answerOutOfOrder: [{ value: false, disabled: true }],
-      answerScheduledTime: [{ value: false, disabled: true }],
+      openAutomatic: [false],
+      attendSimultaneously: [false],
+      acceptOtherQueues: [false],
+      answerOutOfOrder: [false],
+      answerScheduledTime: [false],
       whatsAppNotice: [false],
-      timeRemoval: [{ value: '', disabled: true }],
+      timeRemoval: [0],
       releaseOrdersBeforeGetsQueued: [false],
       endServiceWithQRCode: [false],
       startServiceWithQRCode: [false],
@@ -112,6 +112,13 @@ export class CompanyConfigurationsPage implements OnDestroy {
       storeSubtitle: [''],
       highLights: this.fb.array([])
     });
+
+    this.cadastroForm.get('openAutomatic')?.disable();
+    this.cadastroForm.get('attendSimultaneously')?.disable();
+    this.cadastroForm.get('acceptOtherQueues')?.disable();
+    this.cadastroForm.get('answerOutOfOrder')?.disable();
+    this.cadastroForm.get('answerScheduledTime')?.disable();
+    this.cadastroForm.get('timeRemoval')?.disable();
 
     this.setupQRCodeToggleListeners();
     this.setupOpeningHoursValidation();
@@ -388,6 +395,22 @@ export class CompanyConfigurationsPage implements OnDestroy {
     }
   }
 
+  private logInvalidControls(control: AbstractControl, prefix: string = ''): void {
+    if (control instanceof FormGroup) {
+      Object.keys(control.controls).forEach(key => {
+        this.logInvalidControls(control.get(key)!, `${prefix}${key}.`);
+      });
+    }
+    else if (control instanceof FormArray) {
+      control.controls.forEach((ctrl, index) => {
+        this.logInvalidControls(ctrl, `${prefix}[${index}].`);
+      });
+    }
+    else {
+      console.log(`Campo: ${prefix.slice(0, -1)} | Valid: ${control.valid} | Erros:`, control.errors, '| Valor:', control.value);
+    }
+  }
+
   formatCNPJ(event: any) {
     let valor = event.detail.value;
     valor = valor.replace(/\D/g, '');
@@ -398,7 +421,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.cadastroForm.get('cnpj')?.setValue(valor, { emitEvent: false });
   }
 
-  save(): void {    
+  async save(): Promise<void> {
     this.successMessage = null;
     this.errorMessage = null;
     this.saved = false;
@@ -407,6 +430,16 @@ export class CompanyConfigurationsPage implements OnDestroy {
     if (cnpjControl && cnpjControl.value) {
       const cnpjLimpo = cnpjControl.value.replace(/[\.\/\-]/g, '');
       cnpjControl.setValue(cnpjLimpo);
+    }
+
+    if (this.cadastroForm.invalid) {
+      this.errorMessage = 'Preencha todos os campos obrigatórios.';
+      this.markFormGroupTouched(this.cadastroForm);
+      return;
+    }
+
+    if (!(await this.validateForm(this.cadastroForm))) {
+      return;
     }
 
     if (this.cadastroForm.valid) {
@@ -446,9 +479,47 @@ export class CompanyConfigurationsPage implements OnDestroy {
       });
     } else {
       this.errorMessage = 'Por favor, preencha todos os campos obrigatórios.';
-      console.warn('Formulário inválido');
+      console.warn('Formulário inválido:');
+
+      this.logInvalidControls(this.cadastroForm);
       this.markFormGroupTouched(this.cadastroForm);
     }
+  }
+
+  async validateForm(formGroup: FormGroup) {
+    for (const key of Object.keys(formGroup.controls)) {
+      const control = formGroup.get(key);
+
+      if (control && control.invalid) {
+        await this.presentToast(`O campo "${this.getLabelCampo(key)}" está inválido.`);
+
+        control.markAsTouched();
+        control.updateValueAndValidity();
+
+        return false;
+      }
+    }
+    return true;
+  }
+
+  getLabelCampo(campo: string): string {
+    const labels: any = {
+      nome: 'Nome',
+      email: 'E-mail',
+      telefone: 'Telefone',
+      senha: 'Senha'
+    };
+    return labels[campo] || campo;
+  }
+
+  async presentToast(mensagem: string) {
+    const toast = await this.toastController.create({
+      message: mensagem,
+      duration: 3000,
+      position: 'top',
+      color: 'warning'
+    });
+    toast.present();
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {
@@ -514,7 +585,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
     };
   }
 
-  setupOpeningHoursValidation() {    
+  setupOpeningHoursValidation() {
     const openingHoursArray = this.cadastroForm.get('openingHours') as FormArray;
 
     openingHoursArray.controls.forEach((group: import('@angular/forms').AbstractControl) => {
@@ -523,7 +594,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
 
       activatedCtrl?.valueChanges.subscribe((activated: boolean) => {
         const startCtrl = formGroup.get('start');
-        const endCtrl = formGroup.get('end');        
+        const endCtrl = formGroup.get('end');
 
         if (activated) {
           startCtrl?.setValidators([Validators.required]);

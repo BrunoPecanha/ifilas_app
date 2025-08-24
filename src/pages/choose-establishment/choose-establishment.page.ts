@@ -46,17 +46,17 @@ export class ChooseEstablishmentPage implements OnInit {
     }
   }
 
-  selecionarEmpresa(est: StoreModel) {
+  selectCompany(est: StoreModel) {
     this.selectedHeaderImage = est.logoPath ?? '';
     this.selectedLogo = est.logoPath ?? '';
   }
 
-  acessarEmpresa(event: Event, selectedStore: StoreModel) {
+  enterCompany(event: Event, selectedStore: StoreModel) {
     event.stopPropagation();
 
     this.session.setStore(selectedStore);
 
-    this.queueService.hasOpenQueueForEmployeeToday(this.user?.id).subscribe((isQueueOpenToday: boolean) => {
+    this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, null).subscribe((isQueueOpenToday: boolean) => {
       if (this.profileSelected === 2)
         this.router.navigate(['/queue-list-for-owner']);
       else if (isQueueOpenToday) {

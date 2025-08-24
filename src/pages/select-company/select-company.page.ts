@@ -22,19 +22,14 @@ export class SelectCompanyPage implements OnInit {
   ) { }
 
   isLoading = false;
+   filtersExpanded: boolean = false;
   isEmptyResult = false;
   searching = false;
   categories: CategoryModel[] = [];
   companies: StoreModel[] = [];
   searchQuery = '';
-  showRecentCards = false;
   selectedCategoryId: number | null = null;
-  selectedFilter: 'minorQueue' | 'favorites' | 'recent' | null = null;
-  slideOpts = {
-    slidesPerView: 1,
-    pagination: true,
-    navigation: false
-  };
+  selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
 
   ngOnInit() {
   }
@@ -76,7 +71,9 @@ export class SelectCompanyPage implements OnInit {
           ...store,
           isNew: this.checkIfNew(store.createdAt),
           liked: store.liked || false,
-          minorQueue: store.minorQueue || false
+          minorQueue: store.minorQueue || false,
+          // Adicionando propriedade de distância se disponível
+          distance: store.distance || this.calculateRandomDistance()
         } as StoreModel));
 
         this.isEmptyResult = this.companies.length === 0;
@@ -88,6 +85,11 @@ export class SelectCompanyPage implements OnInit {
         this.isEmptyResult = true;
       }
     });
+  }
+
+  // Novo método para calcular distância aleatória (apenas para demonstração)
+  private calculateRandomDistance(): number {
+    return Math.round((Math.random() * 10 + 0.5) * 10) / 10;
   }
 
   async handleRefresh(event: any) {
@@ -114,13 +116,18 @@ export class SelectCompanyPage implements OnInit {
   get filteredCards() {
     const query = this.searchQuery.toLowerCase();
     return this.companies.filter(card =>
-      card.name.toLowerCase().includes(query)
+      card.name.toLowerCase().includes(query) ||
+      card.category?.toLowerCase().includes(query)
     );
   }
 
   toggleSearch() {
     this.searching = !this.searching;
-    if (!this.searching) this.searchQuery = '';
+    if (!this.searching) {
+      this.searchQuery = '';
+      // Recarregar a lista completa ao fechar a busca
+      this.loadFilteredStores();
+    }
   }
 
   toggleLike(card: StoreModel, event: MouseEvent): void {
@@ -156,20 +163,26 @@ export class SelectCompanyPage implements OnInit {
         this.showErrorToast('Falha na conexão. Tente novamente.');
       },
       complete: () => {
-        setTimeout(() => heart.classList.remove('heart-animation'), 500);
+        setTimeout(() => {
+          if (heart.classList.contains('heart-animation')) {
+            heart.classList.remove('heart-animation');
+          }
+        }, 500);
       }
     });
   }
 
   private showLoginAlert(): void {
     console.warn('Usuário não logado. Redirecionar para login.');
+    // Você pode implementar um alerta ou redirecionamento para login aqui
   }
 
   private showErrorToast(message: string): void {
     console.error(message);
+    // Você pode implementar um toast de erro aqui
   }
 
-  selectCard(card: any): void {
+  selectCard(card: StoreModel): void {
     this.router.navigate(['/select-professional'], {
       queryParams: { storeId: card.id }
     });
@@ -177,6 +190,7 @@ export class SelectCompanyPage implements OnInit {
 
   onSearch(event: any) {
     this.searchQuery = event.detail.value;
+    // Não é necessário filtrar manualmente pois usamos getter filteredCards
   }
 
   selectCategory(idCategory: number): void {
@@ -194,21 +208,7 @@ export class SelectCompanyPage implements OnInit {
     this.navCtrl.back();
   }
 
-  scrollLeft() {
-    const container = document.querySelector('.categories-scroll');
-    if (container) {
-      container.scrollBy({ left: -100, behavior: 'smooth' });
-    }
-  }
-
-  scrollRight() {
-    const container = document.querySelector('.categories-scroll');
-    if (container) {
-      container.scrollBy({ left: 100, behavior: 'smooth' });
-    }
-  }
-
-  applyFilter(filter: 'minorQueue' | 'favorites' | 'recent') {
+  applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
     if (this.selectedFilter === filter) {
       this.selectedFilter = null;
       this.loadFilteredStores();
@@ -228,8 +228,32 @@ export class SelectCompanyPage implements OnInit {
       case 'recent':
         quickFilter = 'recent';
         break;
+      case 'nearby':
+        quickFilter = 'nearby';
+        break;
+      default:
+        quickFilter = '';
     }
+
     const categoryId = this.selectedCategoryId !== null ? this.selectedCategoryId : undefined;
     this.loadFilteredStores(categoryId, quickFilter);
+  }
+
+
+
+
+  toggleFilters() {
+    this.filtersExpanded = !this.filtersExpanded;
+  }
+
+  hasActiveFilters(): boolean {
+    return !!this.selectedFilter || !!this.selectedCategoryId || !!this.searchQuery;
+  }
+
+  clearFilters() {
+    this.selectedFilter = null;
+    this.selectedCategoryId = null;
+    this.searchQuery = '';
+    this.applyFilter( 'nearby');
   }
 }

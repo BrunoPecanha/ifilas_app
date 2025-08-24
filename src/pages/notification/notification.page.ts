@@ -18,7 +18,7 @@ export class NotificationPage implements OnInit, OnDestroy {
   notifications: any[] = [];
   notificacoesNaoLidas = 0;
   user!: UserModel;
-  
+
   private subscriptions: Subscription[] = [];
 
   actionSheetButtons: ActionSheetButton[] = [
@@ -71,7 +71,7 @@ export class NotificationPage implements OnInit, OnDestroy {
     this.notificationService.getUserNotifications(this.user.id).subscribe(notifs => {
       this.notifications = notifs.map(n => ({
         ...n,
-        data: new Date(Date.now()),
+        data: new Date(n.sentAt ?? Date.now())
       }));
       this.notificationService.atualizarContadorNaoLidas();
     });
@@ -79,7 +79,11 @@ export class NotificationPage implements OnInit, OnDestroy {
 
   get filteredNotifications() {
     return this.notifications
-      .filter(noti => this.activeFilter === 'all' || !noti.lida)
+      .filter(noti => {
+        if (this.activeFilter === 'all') return true;
+        if (this.activeFilter === 'unread') return !noti.isRead;
+        return true;
+      })
       .sort((a, b) => b.data.getTime() - a.data.getTime());
   }
 
@@ -94,30 +98,29 @@ export class NotificationPage implements OnInit, OnDestroy {
   }
 
   toggleNotification(notification: any) {
-    if (!notification.lida) {
-
+    if (!notification.isRead) {
       this.notificationService.markAsRead(+notification.id).subscribe(() => {
-        notification.lida = true;
+        notification.isRead = true;
         this.notificationService.atualizarContadorNaoLidas();
       });
     } else {
-      notification.lida = false;
+      notification.isRead = false;
       this.notificationService.atualizarContadorNaoLidas();
     }
   }
-
   removeNotification(id: string) {
     this.notifications = this.notifications.filter(noti => noti.id !== id);
     this.notificationService.deleteNotification(+id).subscribe();
     this.notificationService.atualizarContadorNaoLidas();
   }
 
+
   markAllAsRead() {
-    this.notifications.forEach(noti => noti.lida = true);
+    this.notifications.forEach(noti => noti.isRead = true);
     this.notificationService.atualizarContadorNaoLidas();
   }
 
-  clearNotifications() {    
+  clearNotifications() {
     this.notifications.forEach(noti => this.notificationService.deleteNotification(+noti.id).subscribe());
     this.notifications = [];
     this.notificationService.atualizarContadorNaoLidas();

@@ -19,7 +19,7 @@
     >
     </ion-refresher-content>
   </ion-refresher>
-  
+
   <div class="filters-section">
     <ion-segment value="all" (ionChange)="filterChanged($event)">
       <ion-segment-button value="all">
@@ -43,15 +43,15 @@
         <div class="notification-indicator" [class.unread]="!noti.isRead"></div>
 
         <ion-avatar slot="start" class="notification-avatar">
-          <ion-icon [name]="getNotificationIcon(noti.tipo)"></ion-icon>
+          <ion-icon [name]="getNotificationIcon(noti.type)"></ion-icon>
         </ion-avatar>
 
         <ion-label class="notification-content">
           <h3>{{ noti.title }}</h3>
           <p>{{ noti.message }}</p>
-          <span class="notification-time"
-            >{{ noti.data | date:'shortTime' }}</span
-          >
+          <span class="notification-time">
+            {{ noti.data | date:'shortTime' }}
+          </span>
         </ion-label>
 
         <ion-button

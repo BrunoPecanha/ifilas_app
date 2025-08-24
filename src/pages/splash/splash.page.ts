@@ -19,13 +19,17 @@ export class SplashPage {
     private ngZone: NgZone
   ) { }
 
-  ionViewDidEnter() {    
+  ionViewDidEnter() {
     if (!this.triedAutoLogin) {
       this.triedAutoLogin = true;
-      this.tryAutoLogin();
-    }
-    else
+
+      setTimeout(() => {
+        this.tryAutoLogin();
+      }, 5000);
+
+    } else {
       this.clearSessionAndLogout();
+    }
   }
 
   async tryAutoLogin() {
