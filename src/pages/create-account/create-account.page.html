@@ -1,7 +1,7 @@
 <ion-content class="ion-padding register-page" scroll="false">
   <div class="register-header">
     <div class="logo-wrapper">
-       <img src="assets/images/login/logo.png" class="logo" />
+      <img src="assets/images/login/logo.png" class="logo" />
     </div>
   </div>
 
@@ -14,95 +14,220 @@
         />
       </a>
     </div>
+
     <h1 class="title">Criar Nova Conta</h1>
     <p class="subtitle">Preencha os dados para continuar</p>
 
-    <form (submit)="onSubmit($event)">
-      <div class="input-group">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit($event)">
+      <!-- Campos existentes (nome, sobrenome, CPF, email, telefone) -->
+      <div class="input-group" [class.invalid]="isFieldInvalid('name')">
+        <ion-icon name="person-outline" class="input-icon"></ion-icon>
         <ion-input
           type="text"
           placeholder="Nome *"
-          required
-          [(ngModel)]="name"
-          name="name"
+          formControlName="name"
         ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('name')">
+          {{ getErrorMessage('name') }}
+        </div>
       </div>
 
-      <div class="input-group">
+      <div class="input-group" [class.invalid]="isFieldInvalid('lastname')">
+        <ion-icon name="people-outline" class="input-icon"></ion-icon>
         <ion-input
           type="text"
-          placeholder="Sobrenome*"
-          required
-          [(ngModel)]="lastname"
-          name="lastname"
+          placeholder="Sobrenome *"
+          formControlName="lastname"
         ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('lastname')">
+          {{ getErrorMessage('lastname') }}
+        </div>
       </div>
 
-      <div class="input-group">
+      <div class="input-group" [class.invalid]="isFieldInvalid('cpf')">
+        <ion-icon name="id-card-outline" class="input-icon"></ion-icon>
         <ion-input
           type="tel"
-          placeholder="CPF*"
-          required
-          [(ngModel)]="cpf"
-          name="cpf"
+          placeholder="CPF *"
+          formControlName="cpf"
           (ionInput)="formatCPF($event)"
-          maxlength="15"
+          maxlength="14"
         ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('cpf')">
+          {{ getErrorMessage('cpf') }}
+        </div>
       </div>
 
-      <div class="input-group">
+      <div class="input-group" [class.invalid]="isFieldInvalid('email')">
+        <ion-icon name="mail-outline" class="input-icon"></ion-icon>
         <ion-input
           type="email"
-          placeholder="E-mail*"
-          required
-          [(ngModel)]="email"
-          name="email"
+          placeholder="E-mail *"
+          formControlName="email"
         ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('email')">
+          {{ getErrorMessage('email') }}
+        </div>
       </div>
 
-      <div class="input-group">
-       <ion-input mask="(00) 0 0000-0000" [(ngModel)]="phone"
+      <div class="input-group" [class.invalid]="isFieldInvalid('phone')">
+        <ion-icon name="call-outline" class="input-icon"></ion-icon>
+        <ion-input
           type="tel"
-          placeholder="Telefone* (DDD + Número)"
-          required
-          name="phone"
+          placeholder="Telefone * (DDD + Número)"
+          formControlName="phone"
           (ionBlur)="formatPhone($event)"
-          maxlength="16"
+          maxlength="15"
         ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('phone')">
+          {{ getErrorMessage('phone') }}
+        </div>
       </div>
 
-      <div class="input-group">
+      <!-- Campos de endereço -->
+      <div class="input-group" [class.invalid]="isFieldInvalid('cep')">
+        <ion-icon name="location-outline" class="input-icon"></ion-icon>
+        <ion-input
+          type="text"
+          placeholder="CEP *"
+          formControlName="cep"
+          (ionBlur)="searchCep()"
+          maxlength="9"
+        ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('cep')">
+          {{ getErrorMessage('cep') }}
+        </div>
+        <div class="cep-loading" *ngIf="searchingCep">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          Buscando endereço...
+        </div>
+      </div>
+
+      <div class="input-group" [class.invalid]="isFieldInvalid('address')">
+        <ion-icon name="home-outline" class="input-icon"></ion-icon>
+        <ion-input
+          type="text"
+          placeholder="Endereço *"
+          formControlName="address"
+          [readonly]="true"
+        ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('address')">
+          {{ getErrorMessage('address') }}
+        </div>
+      </div>
+
+      <div class="input-group" [class.invalid]="isFieldInvalid('number')">
+        <ion-icon name="business-outline" class="input-icon"></ion-icon>
+        <ion-input
+          type="text"
+          placeholder="Número *"
+          formControlName="number"
+        ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('number')">
+          {{ getErrorMessage('number') }}
+        </div>
+      </div>
+
+      <div class="input-group" [class.invalid]="isFieldInvalid('neighborhood')">
+        <ion-icon name="navigate-outline" class="input-icon"></ion-icon>
+        <ion-input
+          type="text"
+          placeholder="Bairro *"
+          formControlName="neighborhood"
+          [readonly]="true"
+        ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('neighborhood')">
+          {{ getErrorMessage('neighborhood') }}
+        </div>
+      </div>
+
+      <div class="input-group" [class.invalid]="isFieldInvalid('city')">
+        <ion-icon name="business-outline" class="input-icon"></ion-icon>
+        <ion-input
+          type="text"
+          placeholder="Cidade *"
+          formControlName="city"
+          [readonly]="true"
+        ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('city')">
+          {{ getErrorMessage('city') }}
+        </div>
+      </div>
+
+      <div class="input-group" [class.invalid]="isFieldInvalid('state')">
+        <ion-icon name="flag-outline" class="input-icon"></ion-icon>
+        <ion-input
+          type="text"
+          placeholder="Estado *"
+          formControlName="state"
+          [readonly]="true"
+        ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('state')">
+          {{ getErrorMessage('state') }}
+        </div>
+      </div>
+
+      <!-- Campos de senha e confirmação -->
+      <div class="input-group" [class.invalid]="isFieldInvalid('password')">
+        <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
         <ion-input
           type="password"
-          placeholder="Senha*"
-          required
-          [(ngModel)]="password"
-          name="password"
+          placeholder="Senha *"
+          formControlName="password"
         ></ion-input>
+        <div class="error-message" *ngIf="isFieldInvalid('password')">
+          {{ getErrorMessage('password') }}
+        </div>
       </div>
 
-      <div class="input-group">
+      <div
+        class="input-group"
+        [class.invalid]="isFieldInvalid('confirmPassword') || registerForm.hasError('mismatch')"
+      >
+        <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
         <ion-input
           type="password"
-          placeholder="Confirmar senha*"
-          required
-          [(ngModel)]="confirmPassword"
-          name="confirmPassword"
+          placeholder="Confirmar senha *"
+          formControlName="confirmPassword"
         ></ion-input>
+        <div class="error-message" *ngIf="registerForm.hasError('mismatch')">
+          As senhas não coincidem
+        </div>
+        <div
+          class="error-message"
+          *ngIf="isFieldInvalid('confirmPassword') && !registerForm.hasError('mismatch')"
+        >
+          {{ getErrorMessage('confirmPassword') }}
+        </div>
       </div>
 
-      <div class="input-check-validation">
+      <div
+        class="input-check-validation"
+        [class.invalid]="isFieldInvalid('termsAccepted')"
+      >
         <ion-checkbox
           slot="start"
-          required
-          [(ngModel)]="termsAccepted"
-          name="termsAccepted"
+          formControlName="termsAccepted"
         ></ion-checkbox>
-        <label>Política de Privacidade e Termos de Uso</label>
+        <label
+          >Li e aceito a
+          <a href="#" class="terms-link">Política de Privacidade</a> e
+          <a href="#" class="terms-link">Termos de Uso</a></label
+        >
+        <div class="error-message" *ngIf="isFieldInvalid('termsAccepted')">
+          {{ getErrorMessage('termsAccepted') }}
+        </div>
       </div>
 
       <div class="submit-button">
-        <ion-button expand="full" type="submit">Cadastrar</ion-button>
+        <ion-button
+          expand="full"
+          type="submit"
+          [disabled]="registerForm.invalid && registerForm.touched"
+        >
+          <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+          <span *ngIf="!loading">Cadastrar</span>
+        </ion-button>
       </div>
 
       <div class="back-to-login">

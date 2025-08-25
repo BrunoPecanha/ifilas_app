@@ -8,5 +8,7 @@ export interface UserRequest {
   stateId: string;
   cpf: string | null; 
   email: string;
+  cep: string;
   password?: string;
+  neighborhood: string;
 }
