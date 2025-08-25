@@ -8,7 +8,9 @@ export interface UserModel extends To {
   ddd: string;
   phone: string;
   address: string;
+  cep: string;
   number: string;
+  neighborhood: string;
   city: string;
   stateId: string;
   status: number;
