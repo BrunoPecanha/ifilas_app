@@ -64,13 +64,14 @@ export class StoresService {
     );
   }
 
-  prepareStoreData(cadastroForm: FormGroup, ownerId: number): FormData {    
+  prepareStoreData(cadastroForm: FormGroup, ownerId: number): FormData {
     const formValue = cadastroForm.value;
     const formData = new FormData();
-    
+
     formData.append('OwnerId', String(ownerId));
     formData.append('Name', formValue.name || '');
-     formData.append('Cnpj', formValue.cnpj || '');
+    formData.append('Cnpj', formValue.cnpj || '');
+    formData.append('Cep', formValue.cep || '');
     formData.append('Address', formValue.address || '');
     formData.append('Number', formValue.number || '');
     formData.append('City', formValue.city || '');
@@ -111,7 +112,7 @@ export class StoresService {
     return formData;
   }
 
-  private getOpeningHoursRequest(cadastroForm: FormGroup): OpeningHoursRequest[] {    
+  private getOpeningHoursRequest(cadastroForm: FormGroup): OpeningHoursRequest[] {
     const openingHoursArray = cadastroForm.get('openingHours') as FormArray;
 
     return openingHoursArray.controls

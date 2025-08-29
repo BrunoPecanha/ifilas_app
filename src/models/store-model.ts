@@ -4,13 +4,14 @@ import { OpeningHoursModel } from "./opening-hours-model";
 import { StatusEnum } from "./enums/status-enum";
 import { To } from "./to";
 import { UserModel } from "./user-model";
+import { AddressModel } from "./address-model";
 
 export interface StoreModel extends To {
   id: number;
   cnpj: string;
   phoneNumber: string;
   name: string;
-  address: string;
+  address: AddressModel;
   number: string;
   rating: number;
   votes: number;
@@ -21,6 +22,8 @@ export interface StoreModel extends To {
   state: string;
   openAutomatic: boolean;
   storeSubtitle: string;
+  neighborhood: string;
+  cep: string;
   acceptOtherQueues: boolean;
   answerOutOfOrder: boolean;
   answerScheduledTime: boolean;
