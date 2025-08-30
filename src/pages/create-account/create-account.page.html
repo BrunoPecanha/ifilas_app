@@ -1,11 +1,11 @@
 <ion-content class="ion-padding register-page" scroll="false">
-  <div class="register-header">
+  <div class="curved-header">
     <div class="logo-wrapper">
       <img src="assets/images/login/logo.png" class="logo" />
     </div>
   </div>
 
-  <div class="register-container">
+  <div class="form-container">
     <div class="go-back">
       <a routerLink="/login">
         <img
@@ -19,7 +19,6 @@
     <p class="subtitle">Preencha os dados para continuar</p>
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit($event)">
-      <!-- Campos existentes (nome, sobrenome, CPF, email, telefone) -->
       <div class="input-group" [class.invalid]="isFieldInvalid('name')">
         <ion-icon name="person-outline" class="input-icon"></ion-icon>
         <ion-input
@@ -84,7 +83,6 @@
         </div>
       </div>
 
-      <!-- Campos de endereço -->
       <div class="input-group" [class.invalid]="isFieldInvalid('cep')">
         <ion-icon name="location-outline" class="input-icon"></ion-icon>
         <ion-input
@@ -128,7 +126,10 @@
         </div>
       </div>
 
-      <div class="input-group" [class.invalid]="isFieldInvalid('neighborhood')">
+      <div
+        class="input-group"
+        [class.invalid]="isFieldInvalid('neighborhood')"
+      >
         <ion-icon name="navigate-outline" class="input-icon"></ion-icon>
         <ion-input
           type="text"
@@ -167,7 +168,6 @@
         </div>
       </div>
 
-      <!-- Campos de senha e confirmação -->
       <div class="input-group" [class.invalid]="isFieldInvalid('password')">
         <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
         <ion-input
@@ -224,6 +224,7 @@
           expand="full"
           type="submit"
           [disabled]="registerForm.invalid && registerForm.touched"
+          class="primary-btn"
         >
           <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
           <span *ngIf="!loading">Cadastrar</span>
