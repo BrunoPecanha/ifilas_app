@@ -21,7 +21,8 @@ export class QueuePage {
   currentDate = new Date();
   qrCodeBase64: string | null = null;
   tolerance = 5;
-  currentlyExpandedCardId: number | null = null;
+  currentlyExpandedCardId: number | null = null;  
+  activeFilter: string = 'all';
 
   private cardDetailsMap = new Map<number, CustomerInQueueCardDetailModel>();
 
@@ -43,7 +44,7 @@ export class QueuePage {
 
   async startSignalRConnection() {
     try {
-      
+
       await this.signalRService.startQueueConnection();
       const user = this.sessionService.getUser();
 
@@ -56,7 +57,7 @@ export class QueuePage {
       const groupNames = stores
         .filter(store => !!store?.id)
         .map(store => store.id.toString());
-        
+
       if (groupNames.length > 0) {
         await Promise.all(
           groupNames.map(group => this.signalRService.joinQueueGroup(group))
@@ -163,7 +164,7 @@ export class QueuePage {
   }
 
   public formatEstimatedTime(timeToWait: number | string | undefined): string {
-    if (!timeToWait) 
+    if (!timeToWait)
       return 'Calculando...';
 
     if (typeof timeToWait === 'string') {
@@ -331,6 +332,53 @@ export class QueuePage {
         customerId: card.id
       }
     });
+  }
+
+  setFilter(filter: string) {
+    this.activeFilter = filter;
+  }
+
+  get filteredCards() {
+    if (!this.customerCards) return [];
+
+    switch (this.activeFilter) {
+      case 'active':
+        return this.customerCards.filter(card =>
+          card.status !== 6 && card.status !== 4
+        );
+      case 'waiting':
+        return this.customerCards.filter(card => card.status === 6);
+      default:
+        return this.customerCards;
+    }
+  }
+
+  getStatusClass(card: any): string {
+    if (card.status === 2) return 'status-active';
+    if (card.isPaused) return 'status-paused';
+    return 'status-waiting';
+  }
+
+  getStatusIcon(card: any): string {
+    if (card.status === 2) return 'checkmark-circle';
+    if (card.isPaused) return 'pause-circle';
+    return 'time';
+  }
+
+  getPositionClass(card: any): string {
+    if (card.position === 0 || card.status === 2) return 'position-high';
+    return 'position-normal';
+  }
+
+  getPositionText(card: any): string {
+    if (card.status === 2) return 'Em atendimento';
+    if (card.position === 0) return 'Sua vez!';
+    return `${card.position}º na fila`;
+  }
+
+  getProgressWidth(position: number, total: number): number {
+    if (position === 0) return 100;
+    return ((total - position) / total) * 100;
   }
 
   public async presentInfoPopup(): Promise<void> {

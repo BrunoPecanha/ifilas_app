@@ -6,7 +6,6 @@ import { UserRequest } from 'src/models/requests/user-request';
 import { Observable, Subject } from 'rxjs';
 import { UserResponse } from 'src/models/responses/user-response';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -16,9 +15,7 @@ export class UserService {
   private profileUpdated = new Subject<void>();
   profileUpdated$ = this.profileUpdated.asObservable();
 
-  constructor(private http: HttpClient) {
-
-  }
+  constructor(private http: HttpClient) {}
 
   createUser(user: UserRequest): Observable<UserModel> {
     return this.http.post<UserModel>(`${this.apiUrl}/user`, user);
@@ -48,5 +45,18 @@ export class UserService {
     }
 
     return this.http.put<UserResponse>(`${this.apiUrl}/user`, data, options);
+  }
+
+  setNewPassword(email: string, password: string): Observable<any> {
+    const body = {
+      email: email,
+      passWord: password
+    };
+
+    return this.http.patch<any>(`${this.apiUrl}/user/new-password`, body, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    });
   }
 }

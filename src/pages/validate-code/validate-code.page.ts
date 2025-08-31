@@ -1,4 +1,9 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/services/auth.service';
+import { SessionService } from 'src/services/session.service';
+import { ToastService } from 'src/services/toast.service';
+import { UserService } from 'src/services/user-service';
 
 @Component({
   selector: 'app-validate-code',
@@ -11,6 +16,14 @@ export class ValidateCodePage {
   newPassword = "";
   confirmPassword = "";
 
+  constructor(private authService: AuthService,
+    private toastService: ToastService,
+    private sessionService: SessionService,
+    private router: Router,
+    private userService: UserService) {
+
+  }
+
   nextInput(event: any, index: number) {
     if (event.target.value && index < 5) {
       const next = document.querySelectorAll("ion-input")[index + 1] as any;
@@ -19,39 +32,70 @@ export class ValidateCodePage {
   }
 
   validateCode() {
-    const codeValue = this.code.join("");
-    if (codeValue.length === 6) {
-      // Chamada para backend validar código
-      this.isCodeValid = true; // Ao validar, substitui a tela
-    } else {
-      console.log("Código inválido");
+    const userData = this.sessionService.getGenericKey('pendingUser') || '';
+
+    if (!userData) {
+      this.toastService.show(
+        'Erro ao validar. Por favor, refaça o procedimento em "Esqueci minha senha".',
+        'danger'
+      );
+      return;
     }
+
+    const codeValue = this.code.join("");
+
+    if (codeValue.length !== 6) {
+      this.toastService.show('O código deve ter 6 dígitos.', 'warning');
+      return;
+    }
+
+    this.authService.validateUser({ email: userData.email, codeToValidate: codeValue }).subscribe({
+      next: (response: { valid: boolean }) => {
+
+        if (response) {
+          this.toastService.show('Código validado com sucesso!', 'success');
+
+          if (!userData.newUser) {
+            setTimeout(() => {
+              this.isCodeValid = true;
+            }, 1000);
+          }
+          else {
+            setTimeout(() => {
+              this.router.navigate(['/login']);
+            }, 1000);
+          }
+        } else {
+          this.toastService.show('Código inválido. Tente novamente.', 'danger');
+        }
+      },
+      error: (err) => {
+        this.toastService.show('Ocorreu um erro ao validar o código. Tente novamente.', 'danger');
+      }
+    });
   }
 
   updatePassword() {
-    if (this.newPassword === this.confirmPassword) {
-      // Chamada para backend salvar senha
-      console.log("Senha redefinida!");
-    } else {
-      console.log("As senhas não conferem");
+    if (this.newPassword !== this.confirmPassword) {
+      this.toastService.show('As senhas não conferem', 'danger');
+      return;
     }
-  }
 
-  cancelPasswordReset() {
-    this.isCodeValid = false;
-    this.code = ["", "", "", "", "", ""]; // opcional: limpa os inputs
-    this.newPassword = "";
-    this.confirmPassword = "";
-  }
+    debugger
+    const email = this.sessionService.getGenericKey('pendingUser')?.email;
 
-  returnToLogin() {
-    // Navegar de volta para a tela de login
-    console.log("Retornando para a tela de login");
-  }
+    this.userService.setNewPassword(email, this.newPassword).subscribe({
+      next: () => {
+        this.toastService.show('Senha redefinida com sucesso!', 'success');
 
-
-  resendCode() {
-    // Chamada para backend reenviar o código
-    console.log("Novo código enviado para o e-mail do usuário");
+        setTimeout(() => {
+          this.sessionService.removeGenericKey('pendingUser');
+          this.router.navigate(['/login']);
+        }, 1500);
+      },
+      error: () => {
+        this.toastService.show('Erro ao atualizar senha. Tente novamente.', 'danger');
+      }
+    });
   }
 }
