@@ -22,7 +22,7 @@ export class SelectCompanyPage implements OnInit {
   ) { }
 
   isLoading = false;
-   filtersExpanded: boolean = false;
+  filtersExpanded: boolean = false;
   isEmptyResult = false;
   searching = false;
   categories: CategoryModel[] = [];
@@ -54,25 +54,70 @@ export class SelectCompanyPage implements OnInit {
     });
   }
 
-  loadStores() {
-    this.loadFilteredStores();
-  }
-
-  private loadFilteredStores(categoryId?: number, quickFilter?: string) {
-    this.isLoading = true;
-    this.isEmptyResult = false;
-
+  private loadStores() {
     const user = this.session.getUser();
     const userId = user?.id;
 
-    this.service.loadFilteredStores(categoryId, quickFilter, userId).subscribe({
+    if (!userId) {
+      console.warn('Usuário não logado');
+      this.companies = [];
+      this.isEmptyResult = true;
+      return;
+    }
+
+    if (!this.selectedFilter && !this.selectedCategoryId && !this.searchQuery) {
+      this.isLoading = true;
+      this.isEmptyResult = false;
+
+      this.service.loadNearbyStoresById(userId).subscribe({
+        next: (response) => {
+          this.companies = response.data.map(store => ({
+            ...store,
+            isNew: this.checkIfNew(store.createdAt),
+            liked: store.liked || false,
+            minorQueue: store.minorQueue || false,
+            distance: store.distance || this.calculateRandomDistance()
+          } as StoreModel));
+
+          this.isEmptyResult = this.companies.length === 0;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Erro ao carregar lojas por proximidade:', err);
+          this.companies = [];
+          this.isLoading = false;
+          this.isEmptyResult = true;
+        }
+      });
+    } else {
+      const categoryId = this.selectedCategoryId ?? undefined;
+      const quickFilter = this.selectedFilter ?? undefined;
+      this.loadFilteredStores(categoryId, quickFilter);
+    }
+  }
+
+
+  private loadFilteredStores(categoryId?: number, quickFilter?: string) {
+    const user = this.session.getUser();
+    const userId = user?.id;
+
+    if (!userId) {
+      console.warn('Usuário não logado');
+      this.companies = [];
+      this.isEmptyResult = true;
+      return;
+    }
+
+    this.isLoading = true;
+    this.isEmptyResult = false;
+
+    this.service.loadFilteredStores(userId, categoryId, quickFilter).subscribe({
       next: (response) => {
         this.companies = response.data.map(store => ({
           ...store,
           isNew: this.checkIfNew(store.createdAt),
           liked: store.liked || false,
           minorQueue: store.minorQueue || false,
-          // Adicionando propriedade de distância se disponível
           distance: store.distance || this.calculateRandomDistance()
         } as StoreModel));
 
@@ -80,21 +125,21 @@ export class SelectCompanyPage implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erro ao carregar lojas:', err);
+        console.error('Erro ao carregar lojas filtradas:', err);
+        this.companies = [];
         this.isLoading = false;
         this.isEmptyResult = true;
       }
     });
   }
 
-  // Novo método para calcular distância aleatória (apenas para demonstração)
   private calculateRandomDistance(): number {
     return Math.round((Math.random() * 10 + 0.5) * 10) / 10;
   }
 
   async handleRefresh(event: any) {
     try {
-      await this.loadFilteredStores();
+      await this.loadStores();
     } finally {
       event.target.complete();
     }
@@ -125,7 +170,6 @@ export class SelectCompanyPage implements OnInit {
     this.searching = !this.searching;
     if (!this.searching) {
       this.searchQuery = '';
-      // Recarregar a lista completa ao fechar a busca
       this.loadFilteredStores();
     }
   }
@@ -174,12 +218,10 @@ export class SelectCompanyPage implements OnInit {
 
   private showLoginAlert(): void {
     console.warn('Usuário não logado. Redirecionar para login.');
-    // Você pode implementar um alerta ou redirecionamento para login aqui
   }
 
   private showErrorToast(message: string): void {
     console.error(message);
-    // Você pode implementar um toast de erro aqui
   }
 
   selectCard(card: StoreModel): void {
@@ -190,7 +232,6 @@ export class SelectCompanyPage implements OnInit {
 
   onSearch(event: any) {
     this.searchQuery = event.detail.value;
-    // Não é necessário filtrar manualmente pois usamos getter filteredCards
   }
 
   selectCategory(idCategory: number): void {
@@ -239,9 +280,6 @@ export class SelectCompanyPage implements OnInit {
     this.loadFilteredStores(categoryId, quickFilter);
   }
 
-
-
-
   toggleFilters() {
     this.filtersExpanded = !this.filtersExpanded;
   }
@@ -254,6 +292,6 @@ export class SelectCompanyPage implements OnInit {
     this.selectedFilter = null;
     this.selectedCategoryId = null;
     this.searchQuery = '';
-    this.applyFilter( 'nearby');
+    this.applyFilter('nearby');
   }
 }

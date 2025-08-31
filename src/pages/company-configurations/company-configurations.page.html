@@ -87,19 +87,25 @@
         </ion-card-header>
         <ion-card-content>
           <div class="compact-form-grid">
-            <ion-item class="compact-input" lines="none">
-              <ion-label position="stacked">CNPJ</ion-label>
+            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('cnpj')">
+              <ion-label position="stacked">CNPJ *</ion-label>
               <ion-input
                 type="text"
                 formControlName="cnpj"
                 maxlength="18"
                 (ionInput)="formatCNPJ($event)"
               ></ion-input>
+              <div class="error-message" *ngIf="isFieldInvalid('cnpj')">
+                {{ getErrorMessage('cnpj') }}
+              </div>
             </ion-item>
 
-            <ion-item class="compact-input" lines="none">
-              <ion-label position="stacked">Nome</ion-label>
+            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('name')">
+              <ion-label position="stacked">Nome *</ion-label>
               <ion-input maxlength="30" formControlName="name"></ion-input>
+              <div class="error-message" *ngIf="isFieldInvalid('name')">
+                {{ getErrorMessage('name') }}
+              </div>
             </ion-item>
 
             <ion-item class="compact-input" lines="none">
@@ -110,8 +116,8 @@
               ></ion-input>
             </ion-item>
 
-            <ion-item class="compact-input" lines="none">
-              <ion-label position="stacked">Categoria</ion-label>
+            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('categoryId')">
+              <ion-label position="stacked">Categoria *</ion-label>
               <ion-select formControlName="categoryId" interface="action-sheet">
                 <ion-select-option
                   *ngFor="let category of categories"
@@ -120,6 +126,9 @@
                   {{ category.name }}
                 </ion-select-option>
               </ion-select>
+              <div class="error-message" *ngIf="isFieldInvalid('categoryId')">
+                {{ getErrorMessage('categoryId') }}
+              </div>
             </ion-item>
           </div>
         </ion-card-content>
@@ -139,8 +148,8 @@
         </ion-card-header>
         <ion-card-content>
           <div class="compact-form-grid">
-            <ion-item class="compact-input" lines="none">
-              <ion-label position="stacked">Telefone</ion-label>
+            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('phoneNumber')">
+              <ion-label position="stacked">Telefone *</ion-label>
               <ion-input
                 type="tel"
                 formControlName="phoneNumber"
@@ -148,6 +157,9 @@
                 (ionInput)="formatarTelefone($event)"
                 placeholder="(99) 99999-9999"
               ></ion-input>
+              <div class="error-message" *ngIf="isFieldInvalid('phoneNumber')">
+                {{ getErrorMessage('phoneNumber') }}
+              </div>
             </ion-item>
 
             <ion-item class="compact-input" lines="none">
@@ -194,54 +206,87 @@
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <div class="compact-form-grid">
-            <ion-item class="compact-input" lines="none">
-              <ion-label position="stacked">Endereço</ion-label>
-              <div style="display: flex; align-items: center">
-                <ion-input
-                  formControlName="address"
-                  placeholder="Nome da rua"
-                  style="flex: 1; margin-right: 8px"
-                ></ion-input>
-
-                <div
-                  style="
-                    border-right: 1px solid #ccc;
-                    height: 30px;
-                    margin-right: 8px;
-                  "
-                ></div>
-                <ion-input
-                  formControlName="number"
-                  placeholder="Nº"
-                  type="number"
-                  style="width: 70px"
-                ></ion-input>
+          <div class="compact-form-grid">          
+            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('cep')">
+              <ion-label position="stacked">CEP *</ion-label>
+              <ion-input
+                type="text"
+                formControlName="cep"
+                (ionBlur)="searchCep()"
+                maxlength="9"
+                placeholder="00000-000"
+              ></ion-input>
+              <div class="error-message" *ngIf="isFieldInvalid('cep')">
+                {{ getErrorMessage('cep') }}
+              </div>
+              <div class="cep-loading" *ngIf="searchingCep">
+                <ion-spinner name="crescent" color="primary"></ion-spinner>
+                Buscando endereço...
               </div>
             </ion-item>
 
-            <ion-item class="compact-input" lines="none">
-              <ion-label position="stacked">Cidade</ion-label>
-              <ion-input formControlName="city"></ion-input>
+            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('address')">
+              <ion-label position="stacked">Endereço *</ion-label>
+              <ion-input
+                formControlName="address"
+                placeholder="Nome da rua"
+                [readonly]="true"
+              ></ion-input>
+              <div class="error-message" *ngIf="isFieldInvalid('address')">
+                {{ getErrorMessage('address') }}
+              </div>
             </ion-item>
 
-            <ion-item class="compact-input" lines="none">
-              <ion-label position="stacked">Estado</ion-label>
-              <ion-select formControlName="state" interface="action-sheet">
-                <ion-select-option
-                  *ngFor="let state of states"
-                  [value]="state.id"
-                >
-                  {{ state.id }} ({{ state.name }})
-                </ion-select-option>
-              </ion-select>
+            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('number')">
+              <ion-label position="stacked">Número *</ion-label>
+              <ion-input
+                formControlName="number"
+                placeholder="Nº"
+                type="number"
+              ></ion-input>
+              <div class="error-message" *ngIf="isFieldInvalid('number')">
+                {{ getErrorMessage('number') }}
+              </div>
+            </ion-item>
+
+            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('neighborhood')">
+              <ion-label position="stacked">Bairro *</ion-label>
+              <ion-input 
+                formControlName="neighborhood" 
+                [readonly]="true"
+              ></ion-input>
+              <div class="error-message" *ngIf="isFieldInvalid('neighborhood')">
+                {{ getErrorMessage('neighborhood') }}
+              </div>
+            </ion-item>
+
+            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('city')">
+              <ion-label position="stacked">Cidade *</ion-label>
+              <ion-input 
+                formControlName="city" 
+                [readonly]="true"
+              ></ion-input>
+              <div class="error-message" *ngIf="isFieldInvalid('city')">
+                {{ getErrorMessage('city') }}
+              </div>
+            </ion-item>
+
+            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('state')">
+              <ion-label position="stacked">Estado *</ion-label>
+              <ion-input 
+                formControlName="state" 
+                [readonly]="true"
+              ></ion-input>
+              <div class="error-message" *ngIf="isFieldInvalid('state')">
+                {{ getErrorMessage('state') }}
+              </div>
             </ion-item>
           </div>
         </ion-card-content>
       </ion-card>
     </div>
 
-    <div class="form-row">
+   <div class="form-row">
       <ion-card class="compact-card">
         <ion-card-header class="compact-header">
           <ion-card-title class="section-title">

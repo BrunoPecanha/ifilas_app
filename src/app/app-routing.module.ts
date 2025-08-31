@@ -109,7 +109,12 @@ const routes: Routes = [
   {
     path: 'order-approval',
     loadChildren: () => import('../pages/order-approval/order-approval.module').then( m => m.OrderApprovalPageModule)
+  },
+  {
+    path: 'validate-code',
+    loadChildren: () => import('../pages/validate-code/validate-code.module').then( m => m.ValidateCodePageModule)
   }
+
 
 ];
 

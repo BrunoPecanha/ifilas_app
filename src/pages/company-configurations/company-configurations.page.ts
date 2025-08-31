@@ -1,15 +1,18 @@
 import { Component, ElementRef, ViewChild, OnDestroy } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, ToastController } from '@ionic/angular';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { NavController, ToastController, AlertController, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { CategoryModel } from 'src/models/category-model';
+import { addressResponse } from 'src/models/responses/address-response';
 import { CategoryResponse } from 'src/models/responses/category-response';
 import { StoreModel } from 'src/models/store-model';
 import { UserModel } from 'src/models/user-model';
 import { CategoryService } from 'src/services/category.service';
+import { GeoLocateService } from 'src/services/geo-locate.service';
 import { SessionService } from 'src/services/session.service';
 import { StatesService } from 'src/services/states.service';
 import { StoresService } from 'src/services/stores.service';
+
 
 @Component({
   selector: 'app-company-configurations',
@@ -41,7 +44,8 @@ export class CompanyConfigurationsPage implements OnDestroy {
   fallbackRoute = '/role-registration';
   store: StoreModel | null = null;
   user: UserModel | null = null;
-
+  searchingCep = false;
+  serverErrors: { [key: string]: string } = {};
   private subscriptions: Subscription[] = [];
 
   weekDays = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
@@ -53,7 +57,10 @@ export class CompanyConfigurationsPage implements OnDestroy {
     private storeService: StoresService,
     private navCtrl: NavController,
     public sessionService: SessionService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private loadingController: LoadingController,
+    private geoLocalizationService: GeoLocateService,
+    private alertController: AlertController
   ) {
     this.initializeForm();
     this.loadStates();
@@ -81,15 +88,17 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.cadastroForm = this.fb.group({
       ownerId: this.user?.id,
       logo: [null],
-      cnpj: ['', Validators.required], 
-      name: ['', Validators.required], 
-      address: ['', Validators.required], 
-      number: ['', Validators.required], 
-      city: ['', Validators.required], 
-      state: ['', Validators.required], 
+      cnpj: ['', Validators.required],
+      name: ['', Validators.required],
+      address: ['', Validators.required],
+      number: ['', Validators.required],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
       categoryId: [null, Validators.required],
       phoneNumber: [''],
       website: [''],
+      neighborhood: [''],
+      cep: ['', [Validators.required, this.cepValidator()]],
       facebook: [''],
       instagram: [''],
       youtube: [''],
@@ -112,6 +121,11 @@ export class CompanyConfigurationsPage implements OnDestroy {
       storeSubtitle: [''],
       highLights: this.fb.array([])
     });
+
+    this.cadastroForm.get('address')?.disable();
+    this.cadastroForm.get('neighborhood')?.disable();
+    this.cadastroForm.get('city')?.disable();
+    this.cadastroForm.get('state')?.disable();
 
     this.cadastroForm.get('openAutomatic')?.disable();
     this.cadastroForm.get('attendSimultaneously')?.disable();
@@ -146,6 +160,87 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.subscriptions = [];
 
     this.resetFormAndPreviews();
+  }
+
+  cnpjValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const cnpj = control.value?.replace(/\D/g, '') || '';
+
+      if (!cnpj || cnpj.length !== 14) {
+        return { invalidCnpj: true };
+      }
+
+      if (/^(\d)\1{13}$/.test(cnpj)) {
+        return { invalidCnpj: true };
+      }
+
+      // Validação do CNPJ
+      let tamanho = cnpj.length - 2;
+      let numeros = cnpj.substring(0, tamanho);
+      let digitos = cnpj.substring(tamanho);
+      let soma = 0;
+      let pos = tamanho - 7;
+
+      for (let i = tamanho; i >= 1; i--) {
+        soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+        if (pos < 2) pos = 9;
+      }
+
+      let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+      if (resultado !== parseInt(digitos.charAt(0))) {
+        return { invalidCnpj: true };
+      }
+
+      tamanho = tamanho + 1;
+      numeros = cnpj.substring(0, tamanho);
+      soma = 0;
+      pos = tamanho - 7;
+
+      for (let i = tamanho; i >= 1; i--) {
+        soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+        if (pos < 2) pos = 9;
+      }
+
+      resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+      if (resultado !== parseInt(digitos.charAt(1))) {
+        return { invalidCnpj: true };
+      }
+
+      return null;
+    };
+  }
+
+  cepValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const cep = control.value?.replace(/\D/g, '') || '';
+      return (!cep || cep.length !== 8) ? { invalidCep: true } : null;
+    };
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.cadastroForm.get(fieldName);
+    return !!field && field.invalid && (field.dirty || field.touched);
+  }
+
+  getErrorMessage(fieldName: string): string {
+    const field = this.cadastroForm.get(fieldName);
+
+    if (!field || !field.errors) return '';
+
+    if (this.serverErrors[fieldName]) {
+      return this.serverErrors[fieldName];
+    }
+
+    const errors = field.errors;
+
+    if (errors['required']) return 'Este campo é obrigatório';
+    if (errors['email']) return 'Email inválido';
+    if (errors['minlength']) return `Mínimo de ${errors['minlength'].requiredLength} caracteres`;
+    if (errors['maxlength']) return `Máximo de ${errors['maxlength'].requiredLength} caracteres`;
+    if (errors['invalidCnpj']) return 'CNPJ inválido';
+    if (errors['invalidCep']) return 'CEP inválido';
+
+    return 'Campo inválido';
   }
 
   private resetFormAndPreviews() {
@@ -233,8 +328,10 @@ export class CompanyConfigurationsPage implements OnDestroy {
       ownerId: storeData.ownerId === 0 ? this.user?.id : storeData.ownerId,
       cnpj: storeData.cnpj,
       name: storeData.name,
-      address: storeData.address,
+      cep: storeData.cep || '',
+      address: storeData.address || '',
       number: storeData.number || '',
+      neighborhood: storeData.neighborhood || '',
       city: storeData.city,
       state: storeData.state,
       categoryId: storeData.categoryId,
@@ -315,6 +412,84 @@ export class CompanyConfigurationsPage implements OnDestroy {
       icon: [''],
       phrase: [''],
     }));
+  }
+
+  async searchCep() {
+    const cepControl = this.cadastroForm.get('cep');
+    if (!cepControl || cepControl.invalid) 
+      return;
+
+    const cep = cepControl.value.replace(/\D/g, '');
+    if (cep.length !== 8) 
+      return;
+
+    this.searchingCep = true;
+    let loading: HTMLIonLoadingElement | null = null;
+
+    try {
+      loading = await this.loadingController.create({
+        message: 'Buscando CEP...',
+        duration: 10000
+      });
+      await loading.present();
+
+      this.geoLocalizationService.getAddressByCep(cep).subscribe({
+        next: (response: addressResponse) => {
+          if (loading) {
+            loading.dismiss();
+            loading = null;
+          }
+
+          if (response.valid && response.data) {
+            this.cadastroForm.get('address')?.enable();
+            this.cadastroForm.get('neighborhood')?.enable();
+            this.cadastroForm.get('city')?.enable();
+            this.cadastroForm.get('state')?.enable();
+
+            this.cadastroForm.patchValue({
+              address: response.data.lagradouro,
+              neighborhood: response.data.bairro,
+              city: response.data.localidade,
+              state: response.data.uf || response.data.estado
+            });
+
+            this.cadastroForm.get('address')?.disable();
+            this.cadastroForm.get('neighborhood')?.disable();
+            this.cadastroForm.get('city')?.disable();
+            this.cadastroForm.get('state')?.disable();
+          } else {
+            this.showCepError(response.message);
+            cepControl.setErrors({ invalidCep: true });
+          }
+        },
+        error: (error) => {
+          if (loading) {
+            loading.dismiss();
+            loading = null;
+          }
+          this.showCepError('Erro ao buscar CEP. Tente novamente.');
+          console.error('Erro na busca do CEP:', error);
+        }
+      });
+
+    } catch (error) {
+      console.error('Erro no searchCep:', error);
+      this.showCepError('Erro inesperado. Tente novamente.');
+    } finally {
+      this.searchingCep = false;
+      if (loading) {
+        loading.dismiss();
+      }
+    }
+  }
+
+  private async showCepError(message: string) {
+    const alert = await this.alertController.create({
+      header: 'Erro na busca',
+      message: message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   loadCategories(): void {
@@ -426,25 +601,51 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.errorMessage = null;
     this.saved = false;
 
+    this.cadastroForm.get('address')?.enable();
+    this.cadastroForm.get('neighborhood')?.enable();
+    this.cadastroForm.get('city')?.enable();
+    this.cadastroForm.get('state')?.enable();
+
     const cnpjControl = this.cadastroForm.get('cnpj');
     if (cnpjControl && cnpjControl.value) {
       const cnpjLimpo = cnpjControl.value.replace(/[\.\/\-]/g, '');
       cnpjControl.setValue(cnpjLimpo);
     }
 
+    const cepControl = this.cadastroForm.get('cep');
+    if (cepControl && cepControl.value) {
+      const cepLimpo = cepControl.value.replace(/\D/g, '');
+      cepControl.setValue(cepLimpo);
+    }
+
     if (this.cadastroForm.invalid) {
       this.errorMessage = 'Preencha todos os campos obrigatórios.';
       this.markFormGroupTouched(this.cadastroForm);
+
+      this.cadastroForm.get('address')?.disable();
+      this.cadastroForm.get('neighborhood')?.disable();
+      this.cadastroForm.get('city')?.disable();
+      this.cadastroForm.get('state')?.disable();
+
       return;
     }
 
     if (!(await this.validateForm(this.cadastroForm))) {
+      this.cadastroForm.get('address')?.disable();
+      this.cadastroForm.get('neighborhood')?.disable();
+      this.cadastroForm.get('city')?.disable();
+      this.cadastroForm.get('state')?.disable();
       return;
     }
 
     if (this.cadastroForm.valid) {
       this.sending = true;
       this.loading = true;
+
+      this.cadastroForm.get('address')?.enable();
+      this.cadastroForm.get('neighborhood')?.enable();
+      this.cadastroForm.get('city')?.enable();
+      this.cadastroForm.get('state')?.enable();
 
       const storeData = this.storeService.prepareStoreData(this.cadastroForm, this.user!.id);
       const storeId = this.store ? this.store.id : null;
@@ -457,6 +658,11 @@ export class CompanyConfigurationsPage implements OnDestroy {
         next: (response) => {
           this.sending = false;
           this.loading = false;
+
+          this.cadastroForm.get('address')?.disable();
+          this.cadastroForm.get('neighborhood')?.disable();
+          this.cadastroForm.get('city')?.disable();
+          this.cadastroForm.get('state')?.disable();
 
           if (response.valid) {
             this.saved = true;
@@ -474,15 +680,22 @@ export class CompanyConfigurationsPage implements OnDestroy {
         error: (error) => {
           this.sending = false;
           this.loading = false;
+
+          this.cadastroForm.get('address')?.disable();
+          this.cadastroForm.get('neighborhood')?.disable();
+          this.cadastroForm.get('city')?.disable();
+          this.cadastroForm.get('state')?.disable();
+
           this.errorMessage = error;
         }
       });
     } else {
       this.errorMessage = 'Por favor, preencha todos os campos obrigatórios.';
-      console.warn('Formulário inválido:');
 
-      this.logInvalidControls(this.cadastroForm);
-      this.markFormGroupTouched(this.cadastroForm);
+      this.cadastroForm.get('address')?.disable();
+      this.cadastroForm.get('neighborhood')?.disable();
+      this.cadastroForm.get('city')?.disable();
+      this.cadastroForm.get('state')?.disable();
     }
   }
 

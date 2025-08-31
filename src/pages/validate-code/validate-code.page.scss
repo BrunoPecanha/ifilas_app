@@ -1,6 +1,6 @@
-.forgot-password-page {
+.login-screen {
   --background: #f4f6f8;
-  font-family: "Inter", "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 
   .curved-header {
     background: #007bff;
@@ -26,7 +26,7 @@
     align-items: center;
     justify-content: center;
 
-    .logo {
+    img {
       width: 70px;
       height: 70px;
       object-fit: contain;
@@ -69,7 +69,7 @@
       }
     }
 
-    .title {
+    h1 {
       font-size: 1.8rem;
       font-weight: 600;
       margin-top: 0.5rem;
@@ -81,6 +81,32 @@
       font-size: 0.95rem;
       color: #666;
       margin-bottom: 1.8rem;
+    }
+
+    .code-inputs {
+      display: flex;
+      justify-content: space-between;
+      margin: 1.5rem 0 2rem;
+      gap: 8px;
+    }
+
+    .code-inputs ion-input {
+      width: 48px;
+      height: 58px;
+      border: 1.8px solid #ddd;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #333;
+      background: #fafafa;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+      transition: border-color 0.2s ease;
+
+      &:focus {
+        border-color: #007bff;
+        outline: none;
+      }
     }
 
     .input-field {
@@ -113,41 +139,73 @@
       margin-top: 0.5rem;
     }
 
-    .error-message {
-      color: #ff3b30;
-      font-size: 12px;
-      margin: -10px 0 15px 0;
-      text-align: left;
-      padding-left: 5px;
-      animation: fadeIn 0.3s ease;
+    .secondary-btn {
+      --background: #f4f6f8;
+      --color: #007bff;
+      --border-radius: 12px;
+      --padding-top: 16px;
+      --padding-bottom: 16px;
+      --box-shadow: none;
+      font-weight: 600;
+      margin-top: 0.5rem;
+
+      &:hover {
+        --background: #e2e6ea;
+      }
     }
 
-    .login-link {
-      margin-top: 1.5rem;
-      font-size: 14px;
+    .resend-link {
+      display: block;
+      margin-top: 1rem;
+      font-size: 0.9rem;
       color: #666;
+      text-decoration: none;
 
-      a {
+      strong {
         color: #007bff;
-        font-weight: bold;
-        text-decoration: none;
+        cursor: pointer;
       }
     }
   }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+.animated-container {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+  transform: translateY(50px);
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.animated-container.show {
+  transform: translateY(0);
+  opacity: 1;
+  position: relative;
+  pointer-events: auto;
+}
+
+.animated-container.hide {
+  transform: translateY(-50px);
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
 }
 
 @media (max-width: 480px) {
-  .forgot-password-page {
+  .login-screen {
     .form-container {
       padding: 25px 20px;
       margin-top: 50px;
 
-      .title {
+      .code-inputs ion-input {
+        width: 42px;
+        height: 52px;
+      }
+
+      h1 {
         font-size: 1.6rem;
       }
     }

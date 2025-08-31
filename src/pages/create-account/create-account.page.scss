@@ -1,72 +1,86 @@
 .register-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #f5f7fb;
-  height: 100vh;
-  padding: 0;
+  --background: #f4f6f8;
+  font-family: "Inter", "Poppins", sans-serif;
 
-  .register-header {
-    background-color: #0076ff;
-    width: 100%;
+  .curved-header {
+    background: #007bff;
     height: 180px;
-    border-bottom-left-radius: 50% 20%;
-    border-bottom-right-radius: 50% 20%;
+    border-bottom-left-radius: 50% 30%;
+    border-bottom-right-radius: 50% 30%;
     display: flex;
     justify-content: center;
-    align-items: flex-end;
+    align-items: center;
     position: relative;
+  }
 
-    .logo-wrapper {
-      background: #ffffff;
-      padding: 10px;
-      border-radius: 50%;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      position: absolute;
-      bottom: -30px; 
+  .logo-wrapper {
+    width: 90px;
+    height: 90px;
+    background: white;
+    border-radius: 50%;
+    padding: 8px;
+    position: absolute;
+    bottom: -30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-      .logo {
-        width: 70px;
-        height: 70px;
-      }
+    .logo {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
     }
   }
 
-  .register-container {
-    background: #ffffff;
-    margin-top: 40px; 
+  .form-container {
+    background: #fff;
+    margin-top: 60px;
+    padding: 30px 25px;
+    border-radius: 20px;
     width: 100%;
     max-width: 400px;
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.08);
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
     position: relative;
 
     .go-back {
       position: absolute;
       top: 20px;
       left: 20px;
+      z-index: 10;
 
-      img {
-        width: 24px;
-        height: 24px;
+      a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+
+        img {
+          width: 18px;
+          height: 18px;
+        }
       }
     }
 
     .title {
-      font-family: "Poppins", sans-serif;
-      font-size: 24px;
-      font-weight: 700;
-      color: #212121;
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
       margin-bottom: 0.5rem;
+      color: #1a1a1a;
     }
 
     .subtitle {
-      font-family: "Poppins", sans-serif;
-      font-size: 14px;
+      font-size: 0.95rem;
       color: #666;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.8rem;
     }
 
     form {
@@ -109,7 +123,7 @@
           }
 
           &:focus-within {
-            border-color: #0076ff;
+            border-color: #007bff;
             background: #fff;
             box-shadow: 0 0 0 3px rgba(0, 118, 255, 0.1);
           }
@@ -142,19 +156,18 @@
         ion-checkbox {
           margin-right: 10px;
           --border-color: #ccc;
-          --border-color-checked: #0076ff;
-          --background-checked: #0076ff;
+          --border-color-checked: #007bff;
+          --background-checked: #007bff;
           --checkmark-color: white;
         }
 
         label {
           margin-left: 0;
           line-height: 1.4;
-          font-family: "Poppins", sans-serif;
         }
 
         .terms-link {
-          color: #0076ff;
+          color: #007bff;
           text-decoration: none;
           font-weight: 500;
 
@@ -175,13 +188,15 @@
       .submit-button {
         margin: 1.5rem 0;
 
-        ion-button {
-          --background: #0076ff;
+        .primary-btn {
+          --background: #007bff;
           --background-activated: #005dd1;
           --background-hover: #0066e6;
-          --border-radius: 30px;
+          --border-radius: 12px;
+          --padding-top: 16px;
+          --padding-bottom: 16px;
           height: 50px;
-          font-weight: bold;
+          font-weight: 600;
           font-size: 16px;
           text-transform: none;
 
@@ -202,7 +217,7 @@
 
         a {
           text-decoration: none;
-          color: #0076ff;
+          color: #007bff;
         }
 
         strong {
@@ -220,15 +235,13 @@
 
 @media (max-width: 480px) {
   .register-page {
-    .register-container {
-      width: 100%;
-      padding: 1.5rem;
-      margin-top: 35px;
+    .form-container {
+      padding: 25px 20px;
+      margin-top: 50px;
+
+      .title {
+        font-size: 1.6rem;
+      }
     }
   }
-}
-
-ion-content::part(scroll) {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }

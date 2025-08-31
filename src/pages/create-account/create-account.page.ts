@@ -6,6 +6,7 @@ import { UserRequest } from 'src/models/requests/user-request';
 import { UserService } from 'src/services/user-service';
 import { GeoLocateService } from 'src/services/geo-locate.service';
 import { addressResponse } from 'src/models/responses/address-response';
+import { SessionService } from 'src/services/session.service';
 
 @Component({
   selector: 'app-create-account',
@@ -24,7 +25,8 @@ export class CreateAccountPage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private loadingController: LoadingController,
-    private geLocation: GeoLocateService
+    private geLocation: GeoLocateService,
+    private sessionService: SessionService
   ) {
     this.registerForm = this.createForm();
   }
@@ -306,6 +308,7 @@ export class CreateAccountPage implements OnInit {
     try {
       await this.userService.createUser(userData).toPromise();
 
+      this.sessionService.setGenericKey({ email: userData.email, newUser: true}, 'pendingUser');
       const alert = await this.alertController.create({
         header: 'Sucesso',
         message: 'Cadastro realizado com sucesso!',
@@ -313,7 +316,7 @@ export class CreateAccountPage implements OnInit {
           {
             text: 'OK',
             handler: () => {
-              this.router.navigate(['/login']);
+              this.router.navigate(['/validate-code']);
             }
           }
         ],

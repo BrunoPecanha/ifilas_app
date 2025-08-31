@@ -1,0 +1,110 @@
+<ion-content class="ion-padding login-screen" scroll="false">
+  <div class="curved-header">
+    <div class="logo-wrapper">
+      <img src="assets/images/login/logo.png" alt="Logo" />
+    </div>
+  </div>
+
+  <div class="form-container">
+    <div class="go-back">
+      <a routerLink="/login">
+        <img
+          src="assets/images/create-account/icon-go-back.svg"
+          alt="Icon go back"
+        />
+      </a>
+    </div>
+    
+    <div
+      class="animated-container"
+      [class.show]="!isCodeValid"
+      [class.hide]="isCodeValid"
+    >
+      <h1>Validar Conta</h1>
+      <p class="subtitle">Digite o código enviado para seu e-mail</p>
+
+      <div class="code-inputs">
+        <ion-input
+          maxlength="1"
+          type="tel"
+          [(ngModel)]="code[0]"
+          (ionInput)="nextInput($event,0)"
+        ></ion-input>
+        <ion-input
+          maxlength="1"
+          type="tel"
+          [(ngModel)]="code[1]"
+          (ionInput)="nextInput($event,1)"
+        ></ion-input>
+        <ion-input
+          maxlength="1"
+          type="tel"
+          [(ngModel)]="code[2]"
+          (ionInput)="nextInput($event,2)"
+        ></ion-input>
+        <ion-input
+          maxlength="1"
+          type="tel"
+          [(ngModel)]="code[3]"
+          (ionInput)="nextInput($event,3)"
+        ></ion-input>
+        <ion-input
+          maxlength="1"
+          type="tel"
+          [(ngModel)]="code[4]"
+          (ionInput)="nextInput($event,4)"
+        ></ion-input>
+        <ion-input
+          maxlength="1"
+          type="tel"
+          [(ngModel)]="code[5]"
+          (ionInput)="nextInput($event,5)"
+        ></ion-input>
+      </div>
+
+      <ion-button expand="block" class="primary-btn" (click)="validateCode()"
+        >Validar Código</ion-button
+      >
+      <ion-button expand="block" class="secondary-btn" routerLink="/login">
+        Cancelar
+      </ion-button>
+      <a routerLink="/generate-password" class="resend-link"
+        >Não recebeu o código? <strong>Reenviar</strong></a
+      >
+    </div>
+
+    <div
+      class="animated-container"
+      [class.show]="isCodeValid"
+      [class.hide]="!isCodeValid"
+    >      
+
+      <h1>Definir Nova Senha</h1>
+      <p class="subtitle">Escolha uma senha forte para proteger sua conta</p>
+
+      <ion-item lines="none" class="input-field">
+        <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+        <ion-input
+          type="password"
+          placeholder="Nova senha"
+          [(ngModel)]="newPassword"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-item lines="none" class="input-field">
+        <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+        <ion-input
+          type="password"
+          placeholder="Confirmar nova senha"
+          [(ngModel)]="confirmPassword"
+          required
+        ></ion-input>
+      </ion-item>
+
+      <ion-button expand="block" class="primary-btn" (click)="updatePassword()"
+        >Atualizar Senha</ion-button
+      >
+    </div>
+  </div>
+</ion-content>

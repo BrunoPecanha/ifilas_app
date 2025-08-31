@@ -31,7 +31,7 @@ export class FooterMenuComponent implements OnInit {
     this.store = this.sessionService.getStore();
   }
 
-  ngOnInit() {
+  ionViewWillEnter() {
     this.notificationsCount$ = this.notificationService.notificacoesNaoLidas$;
     this.loadUserQueInfo();
 
@@ -41,6 +41,9 @@ export class FooterMenuComponent implements OnInit {
     });
 
     this.notificationService.atualizarContadorNaoLidas();
+  }
+
+  ngOnInit() {
   }
 
   async goToHome(main: boolean = false) {

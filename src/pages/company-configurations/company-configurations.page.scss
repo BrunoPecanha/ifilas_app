@@ -324,3 +324,55 @@
   display: inline-block;
   vertical-align: middle;
 }
+
+// Estilos para validação
+.invalid {
+  --border-color: var(--ion-color-danger) !important;
+  
+  ion-input, ion-select {
+    --background: #fff5f5 !important;
+  }
+  
+  ion-label {
+    color: var(--ion-color-danger) !important;
+  }
+}
+
+.error-message {
+  color: var(--ion-color-danger);
+  font-size: 12px;
+  margin-top: 5px;
+  padding-left: 16px;
+  animation: fadeIn 0.3s ease;
+}
+
+.cep-loading {
+  display: flex;
+  align-items: center;
+  color: var(--ion-color-primary);
+  font-size: 12px;
+  margin-top: 5px;
+  padding-left: 16px;
+  
+  ion-spinner {
+    margin-right: 5px;
+    width: 12px;
+    height: 12px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+ion-input[readonly] {
+  opacity: 0.8;
+  --background: #f9f9f9;
+}

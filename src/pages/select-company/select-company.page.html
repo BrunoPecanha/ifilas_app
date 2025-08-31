@@ -1,4 +1,3 @@
-<!-- estabelecimentos.component.html -->
 <app-custom-header
   [title]="'ESTABELECIMENTOS'"
   [showStartButton]="true"
@@ -21,13 +20,12 @@
 ></ion-searchbar>
 
 <div class="content-container">
-  <!-- Toggle de filtros -->
   <div class="filter-toggle-section">
     <div class="toggle-filters-btn" (click)="toggleFilters()">
       <ion-icon
         [name]="filtersExpanded ? 'filter' : 'filter-outline'"
       ></ion-icon>
-      <span>{{ filtersExpanded ? 'Ocultar Filtros' : 'Mostrar Filtros' }}</span>
+      
       <ion-icon
         [name]="filtersExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"
       ></ion-icon>
@@ -87,7 +85,6 @@
       </div>
     </div>
 
-    <!-- Categorias -->
     <div class="categories-section" *ngIf="categories?.length">
       <div class="section-title">Categorias</div>
       <div class="categories-scroll">
@@ -196,10 +193,10 @@
                 <span>{{ card.rating || '0' }}</span>
               </div>
 
-              <div class="stat" *ngIf="true">
+              <!-- <div class="stat" *ngIf="true">
                 <ion-icon name="navigate-outline"></ion-icon>
                 <span>12 km</span>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>

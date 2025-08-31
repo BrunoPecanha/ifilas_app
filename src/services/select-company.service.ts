@@ -31,11 +31,20 @@ export class SelectCompanyService {
     return this.http.get<StoreListResponse>(`${this.apiUrl}/store/all`);
   }
 
-  loadFilteredStores(categoryId?: number, quickFilter?: string, userId?: number): Observable<StoreListResponse> {
+  loadNearbyStoresById(userId: number, page?: number, pageSize?: number): Observable<StoreListResponse> {
+    const params = new HttpParams()
+      .set('userId', userId.toString())
+      .set('page', page || 1)
+      .set('pageSize', pageSize || 10);   
+
+    return this.http.get<StoreListResponse>(`${this.apiUrl}/store/nearby`, { params });
+  }
+
+  loadFilteredStores(userId: number, categoryId?: number, quickFilter?: string): Observable<StoreListResponse> {
     const params = new HttpParams()
       .set('categoryId', categoryId ? categoryId.toString() : '')
       .set('quickFilter', quickFilter || '')
-      .set('userId', userId ? userId.toString() : '');
+      .set('userId', userId.toString());
 
     return this.http.get<StoreListResponse>(`${this.apiUrl}/store/filter`, { params });
   }

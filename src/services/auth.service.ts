@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, tap, throwError } from "rxjs";
+import { catchError, Observable, of, tap, throwError } from "rxjs";
 import { environment } from "src/environments/environment";
 import { AuthResponse } from "src/models/responses/auth-responsel";
 import { PushNotificationService } from "./push-notification.service";
@@ -22,13 +22,25 @@ export class AuthService {
     );
   }
 
+  validateUser(command: { email: string, codeToValidate: string }): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/validate/newUser`, command).pipe(
+      tap(response => {
+        return response;
+      })
+    );
+  }
+
+  generateNewCodeForValidate(email: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/auth/${email}`);
+  }
+
   logout(): void {
     this.clearSession();
   }
 
   refreshToken(): Observable<AuthResponse> {
-    const refreshToken = this.getRefreshToken();    
-    
+    const refreshToken = this.getRefreshToken();
+
     if (!refreshToken) {
       this.clearSession();
       return throwError(() => new Error('Refresh token não encontrado'));
