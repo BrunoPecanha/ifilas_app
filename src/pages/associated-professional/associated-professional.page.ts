@@ -104,7 +104,7 @@ export class AssociatedProfessionalPage implements OnInit {
     return loading;
   }
 
-  async confirmarRemocaoProfissional(employeeId: number) {
+  async confirmProfessionalRemoval(employeeId: number) {
     const professional = this.professionals.find(p => p.employeeId === employeeId);
     if (!professional) return;
 
@@ -154,7 +154,7 @@ export class AssociatedProfessionalPage implements OnInit {
     });
   }
 
-  async confirmarCancelamentoConvite(employeeId: number) {
+  async confirmCancellationInvitation(employeeId: number) {
     const invite = this.sentInvites.find(i => i.employeeId === employeeId);
     if (!invite) return;
 
@@ -204,7 +204,7 @@ export class AssociatedProfessionalPage implements OnInit {
     });
   }
 
-  async enviarConvite(cpf: string) {
+  async sendInvite(cpf: string) {
     const cpfNumerico = cpf.replace(/\D/g, '');
 
     if (!cpfNumerico) {
@@ -212,7 +212,7 @@ export class AssociatedProfessionalPage implements OnInit {
       return;
     }
 
-    if (!this.isCpfValido(cpfNumerico)) {
+    if (!this.isCpfValid(cpfNumerico)) {
       this.presentAlert('Por favor, informe um CPF válido com 11 dígitos.', 'CPF Inválido');
       return;
     }
@@ -228,7 +228,7 @@ export class AssociatedProfessionalPage implements OnInit {
       next: (response) => {
         loading.dismiss();
         if (response.valid) {
-          this.presentAlert(`Convite enviado para CPF ${this.formatarCPF(cpfNumerico)}`, 'Convite Enviado');
+          this.presentAlert(`Convite enviado para CPF ${this.formatCPF(cpfNumerico)}`, 'Convite Enviado');
           this.loadStoreInvites();
         } else {
           this.presentAlert(response.message, 'Erro ao enviar convite');
@@ -241,30 +241,7 @@ export class AssociatedProfessionalPage implements OnInit {
     });
   }
 
-  async aceitarConvite(storeId: number) {
-    const invite = this.pendingInvites.find(i => i.storeId === storeId);
-    if (!invite) return;
-
-    const alert = await this.alertController.create({
-      header: 'Aceitar Convite',
-      message: `Deseja aceitar o convite de ${invite.storeName}?`,
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Aceitar',
-          handler: () => {
-            this.processarAceiteConvite(storeId);
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
-
-  async processarAceiteConvite(storeId: number): Promise<void> {
+  async processInvite(storeId: number): Promise<void> {
     const loading = await this.presentLoading('Processando aceite...');
 
     const request: EmployeeStoreRespondInviteRequest = {
@@ -290,7 +267,7 @@ export class AssociatedProfessionalPage implements OnInit {
     });
   }
 
-  async recusarConvite(storeId: number) {
+  async denyInvite(storeId: number) {
     const invite = this.pendingInvites.find(i => i.storeId === storeId);
     if (!invite) return;
 
@@ -306,7 +283,7 @@ export class AssociatedProfessionalPage implements OnInit {
           text: 'Recusar',
           role: 'destructive',
           handler: () => {
-            this.processarRecusaConvite(storeId);
+            this.processDenyInvite(storeId);
           }
         }
       ]
@@ -314,7 +291,7 @@ export class AssociatedProfessionalPage implements OnInit {
     await alert.present();
   }
 
-  async processarRecusaConvite(storeId: number): Promise<void> {
+  async processDenyInvite(storeId: number): Promise<void> {
     const loading = await this.presentLoading('Processando recusa...');
 
     const request: EmployeeStoreRespondInviteRequest = {
@@ -340,9 +317,11 @@ export class AssociatedProfessionalPage implements OnInit {
     });
   }
 
-  async confirmarSaidaEstabelecimento(storeId: number) {
+  async confirmEstablishmentExit(storeId: number) {
     const establishment = this.associatedEstablishments.find(e => e.storeId === storeId);
-    if (!establishment) return;
+
+    if (!establishment) 
+      return;
 
     const alert = await this.alertController.create({
       header: 'Sair do Estabelecimento',
@@ -356,7 +335,7 @@ export class AssociatedProfessionalPage implements OnInit {
           text: 'Sair',
           role: 'destructive',
           handler: () => {
-            this.sairDoEstabelecimento(storeId);
+            this.exitFromStore(storeId);
           }
         }
       ]
@@ -364,7 +343,7 @@ export class AssociatedProfessionalPage implements OnInit {
     await alert.present();
   }
 
-  async sairDoEstabelecimento(storeId: number): Promise<void> {
+  async exitFromStore(storeId: number): Promise<void> {
     const loading = await this.presentLoading('Processando saída...');
 
     const request: EmployeeStoreRespondInviteRequest = {
@@ -390,11 +369,11 @@ export class AssociatedProfessionalPage implements OnInit {
     });
   }
 
-  isCpfValido(cpf: string): boolean {
+  isCpfValid(cpf: string): boolean {
     return /^\d{11}$/.test(cpf) && !/(\d)\1{10}/.test(cpf);
   }
 
-  formatarCPF(cpf: string): string {
+  formatCPF(cpf: string): string {
     cpf = cpf.replace(/\D/g, '');
     return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
@@ -412,7 +391,7 @@ export class AssociatedProfessionalPage implements OnInit {
             maxlength: 14
           },
           handler: (input) => {
-            input.value = this.formatarCPF(input.value);
+            input.value = this.formatCPF(input.value);
             return input;
           }
         }
@@ -426,8 +405,8 @@ export class AssociatedProfessionalPage implements OnInit {
           text: 'Enviar',
           handler: (data) => {
             const cpfLimpo = data.cpf.replace(/\D/g, '');
-            if (cpfLimpo.length === 11 && this.isCpfValido(cpfLimpo)) {
-              this.enviarConvite(cpfLimpo);
+            if (cpfLimpo.length === 11 && this.isCpfValid(cpfLimpo)) {
+              this.sendInvite(cpfLimpo);
               return true;
             } else {
               this.presentAlert('Por favor, informe um CPF válido com 11 dígitos.', 'CPF Inválido');
