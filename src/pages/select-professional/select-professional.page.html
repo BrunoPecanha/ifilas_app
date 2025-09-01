@@ -62,13 +62,8 @@
         <span>{{ queue.status === StatusQueueEnum.paused ? 'Pausada' : 'Aberta' }}</span>
         <ion-icon *ngIf="queue.status === StatusQueueEnum.paused" name="help-circle-outline" 
                   (click)="openPauseReason(queue, $event)"></ion-icon>
-      </div>
+      </div>      
       
-      <!-- <div class="like-icon">
-        <ion-icon [name]="queue.liked ? 'heart' : 'heart-outline'" color="danger" 
-                  (click)="toggleLike(queue, $event)"></ion-icon>
-      </div>
-       -->
       <div class="professional-info">
         <h2 class="nome-profissional">{{ queue.name }}</h2>
         <p class="nome-fila">{{ queue.queueName }}</p>
@@ -85,13 +80,12 @@
           <span>{{ queue.customersWaiting || 0 }} pessoas na fila</span>
           <span>{{ queue.averageWaitingTime | slice:0:5 || '--' }} min</span>
         </div>
-        <div class="barra-progresso-wrapper" [attr.title]="getStatusFilaTexto(queue.customersWaiting)">
+        <div class="barra-progresso-wrapper" [attr.title]="getQueueStatusText(queue.customersWaiting)">
           <div class="barra-progresso" 
-               [style.width.%]="getProgressoFila(queue.customersWaiting)"
-               [ngStyle]="{ 'background-color': getCorProgresso(queue.customersWaiting) }"></div>
+               [style.width.%]="getQueueProgress(queue.customersWaiting)"
+               [ngStyle]="{ 'background-color': getColorProgress(queue.customersWaiting) }"></div>
         </div>
-      </div>
-      
+      </div>      
 
       <div class="additional-info">
         <ion-chip *ngIf="queue.servicesProvided" class="service-chip">

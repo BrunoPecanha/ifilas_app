@@ -315,7 +315,7 @@ export class UserConfigurationsPage {
         const updatedUser = {
           ...this.user,
           ...userData,
-          neighborhood: formValue.neighborhood, // Novo campo
+          neighborhood: formValue.neighborhood, 
           imageUrl: response.data.imageUrl || this.user.imageUrl
         };
 
@@ -327,7 +327,6 @@ export class UserConfigurationsPage {
     } catch (error: any) {
       console.error('Erro ao enviar dados:', error);
 
-      // Tratamento de erros do servidor
       if (error?.status === 400 || error?.status === 409 || error?.status === 422) {
         if (error.error?.errors && Array.isArray(error.error.errors)) {
           error.error.errors.forEach((err: any) => {

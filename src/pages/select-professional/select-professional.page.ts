@@ -4,6 +4,7 @@ import { AlertController } from '@ionic/angular';
 import { StatusQueueEnum } from 'src/models/enums/status-queue.enum';
 import { ProfessionalModel } from 'src/models/professional-model';
 import { StoreProfessionalModel } from 'src/models/store-professional-model';
+import { UserModel } from 'src/models/user-model';
 import { SignalRService } from 'src/services/seignalr.service';
 import { SessionService } from 'src/services/session.service';
 import { StoresService } from 'src/services/stores.service';
@@ -20,8 +21,10 @@ export class SelectProfessionalPage implements OnInit {
   signalRGroup: string = '';
   bannerLoaded = false;
   logoLoaded = false;
+  user: UserModel = {} as UserModel;
 
-  constructor(private router: Router, private route: ActivatedRoute, private service: StoresService, private alertController: AlertController,
+  constructor(private router: Router, private route: ActivatedRoute,
+    private service: StoresService, private alertController: AlertController,
     private signalRService: SignalRService, private sessionService: SessionService
   ) { }
 
@@ -29,8 +32,12 @@ export class SelectProfessionalPage implements OnInit {
     this.getSelectedStoreId();
     this.resetImageStates();
     this.loadStoreAndProfessionals(this.storeId);
+    this.user = this.sessionService.getUser();
   }
 
+  ngOnDestroy() {
+    this.cleanupSignalR();
+  }
 
   ionViewWillEnter() {
     this.initSignalRConnection();
@@ -40,6 +47,19 @@ export class SelectProfessionalPage implements OnInit {
     this.service.loadStoreAndProfessionals(storeId).subscribe({
       next: (response) => {
         this.store = response.data;
+
+        if (this.store && this.store.professionals) {
+          const isProfessional = this.store.professionals.some(
+            (prof) => prof.id === this.user.id
+          );
+
+          if (isProfessional) {
+            this.store.professionals = this.store.professionals.filter(
+              (prof) => prof.id !== this.user.id
+            );
+          }
+        }
+
         this.sessionService.setStore(this.store);
       },
       error: (err) => {
@@ -65,11 +85,6 @@ export class SelectProfessionalPage implements OnInit {
       default:
         return '';
     }
-  }
-
-
-  ngOnDestroy() {
-    this.cleanupSignalR();
   }
 
   private async initSignalRConnection() {
@@ -106,10 +121,16 @@ export class SelectProfessionalPage implements OnInit {
     }
   }
 
-  getInTheQueue(fila: ProfessionalModel) {
-    this.router.navigate(['/select-services'], {
-      queryParams: { queueId: fila.queueId, storeId: this.storeId },
-    });
+  async getInTheQueue(professional: ProfessionalModel) {
+    var isCostumerInQueue = await this.service.isCostumerInQueue(professional.queueId, this.user.id).toPromise();
+
+    if (isCostumerInQueue?.data) {
+      this.router.navigate(['/queue']);
+    }
+    else
+      this.router.navigate(['/select-services'], {
+        queryParams: { queueId: professional.queueId, storeId: this.storeId },
+      });
   }
 
   toggleLike(queue: ProfessionalModel, event: Event) {
@@ -136,20 +157,19 @@ export class SelectProfessionalPage implements OnInit {
     await alert.present();
   }
 
-
-  getProgressoFila(qtdPessoas: number): number {
+  getQueueProgress(qtdPessoas: number): number {
     const maxPessoas = 10;
     const progresso = (qtdPessoas / maxPessoas) * 100;
     return Math.min(progresso, 100);
   }
 
-  getCorProgresso(qtdPessoas: number): string {
+  getColorProgress(qtdPessoas: number): string {
     if (qtdPessoas <= 3) return '#4caf50';
     if (qtdPessoas <= 7) return '#ff9800';
     return '#f44336';
   }
 
-  getStatusFilaTexto(qtdPessoas: number): string {
+  getQueueStatusText(qtdPessoas: number): string {
     if (qtdPessoas === 0) return 'Fila vazia';
     if (qtdPessoas <= 3) return 'Fila leve';
     if (qtdPessoas <= 7) return 'Fila moderada';

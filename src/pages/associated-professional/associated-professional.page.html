@@ -26,7 +26,7 @@
             fill="clear"
             color="danger"
             class="action-button"
-            (click)="confirmarRemocaoProfissional(prof.employeeId)"
+            (click)="confirmProfessionalRemoval(prof.employeeId)"
           >
             <ion-icon name="trash-outline"></ion-icon>
           </ion-button>
@@ -56,7 +56,7 @@
             fill="clear"
             color="danger"
             class="action-button"
-            (click)="confirmarCancelamentoConvite(invite.employeeId)"
+            (click)="confirmCancellationInvitation(invite.employeeId)"
           >
             <ion-icon name="trash-outline"></ion-icon>
           </ion-button>
@@ -86,7 +86,7 @@
             fill="clear"
             color="danger"
             class="leave-button"
-            (click)="confirmarSaidaEstabelecimento(establishment.storeId)"
+            (click)="confirmEstablishmentExit(establishment.storeId)"
           >
             <ion-icon name="exit-outline"></ion-icon>
           </ion-button>
@@ -112,7 +112,7 @@
               fill="clear"
               color="success"
               class="action-button"
-              (click)="processarAceiteConvite(invite.storeId)"
+              (click)="processInvite(invite.storeId)"
             >
               <ion-icon name="checkmark-circle-outline"></ion-icon>
             </ion-button>
@@ -120,7 +120,7 @@
               fill="clear"
               color="medium"
               class="action-button"
-              (click)="recusarConvite(invite.storeId)"
+              (click)="denyInvite(invite.storeId)"
             >
               <ion-icon name="close-circle-outline"></ion-icon>
             </ion-button>
