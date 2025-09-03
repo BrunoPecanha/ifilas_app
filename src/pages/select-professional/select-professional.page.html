@@ -41,7 +41,6 @@
 </div>
 
 <ion-content class="scroll-area">
-  <!-- Pull to refresh -->
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-outline"
@@ -52,7 +51,6 @@
     </ion-refresher-content>
   </ion-refresher>
 
-  <!-- Listagem de Filas -->
   <div
     class="filas-wrapper"
     *ngIf="store?.professionals?.length; else semFilas"
@@ -72,9 +70,7 @@
             "
           ></ion-icon>
           <span>
-            {{
-              queue.status === StatusQueueEnum.paused ? 'Pausada' : 'Aberta'
-            }}
+            {{ queue.status === StatusQueueEnum.paused ? 'Pausada' : 'Aberta' }}
           </span>
           <ion-icon
             *ngIf="queue.status === StatusQueueEnum.paused"
@@ -90,11 +86,8 @@
       </div>
 
       <ion-card-content>
-        <p class="subtitulo">
-          {{ queue.subtitle || 'Serviço disponível' }}
-        </p>
+        <p class="subtitulo">{{ queue.subtitle || 'Serviço disponível' }}</p>
 
-        <!-- Progresso da fila -->
         <div class="queue-progress-container">
           <div class="progress-info">
             <span>{{ queue.customersWaiting || 0 }} pessoas na fila</span>
@@ -114,7 +107,6 @@
           </div>
         </div>
 
-        <!-- Chips adicionais -->
         <div class="additional-info">
           <ion-chip *ngIf="queue.servicesProvided" class="service-chip">
             <ion-icon name="construct-outline"></ion-icon>
@@ -133,7 +125,6 @@
     </ion-card>
   </div>
 
-  <!-- Caso não tenha filas -->
   <ng-template #semFilas>
     <div class="mensagem-vazia">
       <p>Nenhuma fila disponível no momento.</p>
