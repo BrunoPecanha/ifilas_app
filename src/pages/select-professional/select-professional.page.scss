@@ -1,12 +1,13 @@
+/* --- Header loja --- */
 .header-loja-dinamico {
   position: relative;
   margin-bottom: 16px;
 }
 
 .banner-loja {
-  height: 150px;
+  position: relative;
+  height: 180px;
   overflow: hidden;
-  background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
 }
 
 .banner-image {
@@ -15,101 +16,61 @@
   object-fit: cover;
 }
 
+.banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), transparent 70%);
+}
+
 .info-loja {
   position: relative;
   text-align: center;
-  padding: 0 16px;
-  margin-top: 20px;
+  margin-top: -50px; /* efeito sobreposto */
   z-index: 2;
 }
 
 .logo-loja {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid white;
-  background-color: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border: 4px solid #fff;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.logo-loja:hover {
+  transform: scale(1.05);
 }
 
 .nome-loja {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  margin: 8px 0 4px;
-  color: #333;
+  margin: 12px 0 6px;
+  color: #2c3e50;
 }
 
 .descricao-loja {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 8px;
-}
-
-.tags-loja {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.tag {
-  background-color: #f0f0f0;
-  color: #555;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-
-.header-loja {
-  text-align: center;
-  padding: 24px 16px 16px;
-  background: linear-gradient(135deg, #fefefe, #e8ecf1);
-  border-radius: 0 0 24px 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  font-size: 0.95rem;
+  color: #777;
   margin-bottom: 16px;
 }
 
-
-.header-loja-fixo {
-  position: sticky;
-  top: 56px;
-  z-index: 10;
-  background: linear-gradient(135deg, #fefefe, #e8ecf1);
-  padding: 24px 16px 16px;
-  border-radius: 0 0 24px 24px;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+.verified-icon {
+  font-size: 16px;
+  margin-left: 4px;
+  color: var(--ion-color-primary);
 }
 
-
+/* --- Conteúdo --- */
 ion-content.scroll-area {
   padding-bottom: 100px;
   padding-top: 12px;
   overflow-y: auto;
-}
-
-.fila-card {
-  border-radius: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease;
-}
-
-.fila-card:hover {
-  transform: translateY(-4px);
-}
-
-.fila-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  font-size: 14px;
-  color: #333;
 }
 
 .mensagem-vazia {
@@ -119,342 +80,77 @@ ion-content.scroll-area {
   font-style: italic;
 }
 
-
-ion-footer {
-  bottom: 0;
-  width: 100%;
-  z-index: 1000;
-  background-color: #ffffff;
-  border-top: 1px solid #E8E8E8;
-}
-
-.menu-fixed-bottom {
-  width: 100%;
-  background: #ffffff;
-}
-
-.content-menu-border {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px 0;
-}
-
-.go-init,
-.go-fila,
-.go-config {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-ion-icon {
-  font-size: 24px;
-}
-
-ion-label {
-  margin-top: 5px;
-  font-size: 12px;
-  text-transform: uppercase;
-  color: #8A8A8A;
-}
-
-
-.notification-footer {
-  position: relative;
-}
-
-.notification-badge {
-  position: absolute;
-  top: 0px;
-  right: 8px;
-  background: red;
-  color: white;
-  font-size: 10px;
-  font-weight: bold;
-  padding: 2px 5px;
-  border-radius: 50%;
-  min-width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-@media (max-width: 600px) {
-  ion-content.scroll-area {
-    padding-bottom: 80px;
-  }
-
-  .fila-card {
-    margin-bottom: 12px;
-  }
-
-  .banner-loja {
-    height: 120px;
-  }
-  
-  .logo-loja {
-    width: 70px;
-    height: 70px;
-  }
-  
-  .nome-loja {
-    font-size: 1.2rem;
-  }
-}
-
-ion-content::part(scroll) {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.tempo-estimado-texto {
-  display: flex;
-  flex-direction: column;
-  margin-left: 8px;
-}
-
-.tempo-estimado-observacao {
-  font-size: 0.75rem;
-  color: #666;
-}
-
-.barra-progresso-wrapper {
-  width: 100%;
-  height: 6px;
-  background-color: #e0e0e0;
-  border-radius: 4px;
-  margin: 8px 0;
-  overflow: hidden;
-  cursor: help;
-}
-
-.barra-progresso {
-  height: 100%;
-  transition: width 0.4s ease-in-out, background-color 0.3s;
-}
-
-.tag:hover {
-  background-color: #e0e0e0;
-  transition: background-color 0.2s ease;
-}
-
-.logo-loja {
-  transition: transform 0.3s ease;
-}
-
-.logo-loja:hover {
-  transform: scale(1.05);
-}
-
-.shimmer-placeholder {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: inherit;
-}
-
-.logo-placeholder {
-  border-radius: 50%;
-}
-
-.shimmer {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.shimmer.loaded {
-  opacity: 1;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-.verified-icon {
-  font-size: 16px;
-  vertical-align: auto;
-  margin-left: 4px;
-  color: var(--ion-color-primary);
-}
-
+/* --- Cards --- */
 .fila-card {
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  margin-bottom: 12px;
-  position: relative;
+  border-radius: 20px;
+  margin: 0 16px 16px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
-  background: white;
+  overflow: hidden;
 }
 
 .fila-card:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
-  transform: translateY(-2px);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
-.like-icon {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 5;
-  background: white;
-  border-radius: 50%;
-  padding: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-ion-card-header {
-  padding: 40px 16px 4px;
-}
-
-.nome-profissional {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin: 0;
-  color: #333;
-}
-
-.nome-fila {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #555;
-  margin: 2px 0;
-}
-
-.subtitulo {
-  font-size: 0.8rem;
-  color: #888;
-  margin: 2px 0 0;
-}
-
-ion-card-content {
-  padding: 8px 16px 12px;
-}
-
-.infos-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  gap: 8px;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.8rem;
-  color: #444;
-}
-
-ion-icon {
-  font-size: 16px;
-}
-
-.barra-progresso-wrapper {
-  width: 100%;
-  height: 6px;
-  background-color: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.barra-progresso {
-  height: 100%;
-  transition: width 0.4s ease-in-out, background-color 0.3s;
+.card-header {
+  position: relative;
+  padding: 20px 16px 10px;
+  background: linear-gradient(135deg, #f9f9f9, #eceff1);
+  border-bottom: 1px solid #eee;
 }
 
 .status-badge {
   position: absolute;
   top: 12px;
-  right: 12px;
+  left: 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  z-index: 2;
-  background-color: #f5f5f5;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  font-size: 12px;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: #333;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  z-index: 10;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .status-badge.active {
-  background-color: #e6f9e7;
+  background-color: #e8f5e9;
   color: #2e7d32;
 }
 
 .status-badge.paused {
   background-color: #fff3e0;
-  color: #ef6c00;
-  margin-left: 5px;
-}
-
-.status-badge ion-icon {
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.fila-card {
-  border-radius: 12px;
-  margin: 0 16px 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: hidden;
-}
-
-.fila-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.card-header {
-  position: relative;
-  padding: 16px 16px 8px;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  border-bottom: 1px solid #eee;
+  color: #e65100;
 }
 
 .professional-info {
   margin-top: 24px;
-  margin-bottom: 8px;
 }
 
 .nome-profissional {
   font-size: 1.2rem;
   font-weight: 600;
-  margin: 0;
   color: #2c3e50;
 }
 
 .nome-fila {
   font-size: 0.9rem;
   color: #7f8c8d;
-  margin: 4px 0 0;
 }
 
 .subtitulo {
   font-size: 0.85rem;
   color: #555;
-  margin: 0 0 12px;
+  margin: 8px 0 12px;
   line-height: 1.4;
 }
 
+/* --- Progresso --- */
 .queue-progress-container {
   margin: 12px 0;
 }
@@ -471,19 +167,21 @@ ion-icon {
   height: 8px;
   border-radius: 4px;
   background-color: #ecf0f1;
+  overflow: hidden;
 }
 
 .barra-progresso {
   height: 100%;
   border-radius: 4px;
-  transition: all 0.3s ease;
+  transition: width 0.4s ease-in-out, background-color 0.3s;
 }
 
+/* --- Chips --- */
 .additional-info {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 ion-chip {
@@ -491,54 +189,29 @@ ion-chip {
   --color: #34495e;
   font-size: 0.75rem;
   height: 24px;
+  border-radius: 16px;
 }
 
 ion-chip ion-icon {
   font-size: 14px;
 }
 
+/* --- Responsividade --- */
+@media (max-width: 600px) {
+  ion-content.scroll-area {
+    padding-bottom: 80px;
+  }
 
-.status-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
+  .banner-loja {
+    height: 120px;
+  }
 
-.status-badge.active {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
+  .logo-loja {
+    width: 80px;
+    height: 80px;
+  }
 
-.status-badge.paused {
-  background-color: #fff3e0;
-  color: #e65100;
-}
-
-
-.like-icon {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  z-index: 2;
-}
-
-.like-icon ion-icon {
-  font-size: 18px;
+  .nome-loja {
+    font-size: 1.2rem;
+  }
 }

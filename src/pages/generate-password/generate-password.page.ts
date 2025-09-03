@@ -15,12 +15,11 @@ export class GeneratePasswordPage {
   constructor(private router: Router, private alertController: AlertController,
     private authService: AuthService, private sessionService: SessionService) { }
 
-  async onSubmit() {    
+  async onSubmit() {
     if (!this.email) {
       return;
     }
 
-    debugger
     this.sessionService.setGenericKey({ email: this.email, newUser: false }, 'pendingUser',);
 
     this.authService.generateNewCodeForValidate(this.email).subscribe({
@@ -31,7 +30,7 @@ export class GeneratePasswordPage {
           buttons: [
             {
               text: 'OK',
-              handler: () => {                
+              handler: () => {
                 this.router.navigate(['/validate-code']);
               }
             }
