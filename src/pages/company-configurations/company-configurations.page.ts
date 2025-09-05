@@ -13,7 +13,6 @@ import { SessionService } from 'src/services/session.service';
 import { StatesService } from 'src/services/states.service';
 import { StoresService } from 'src/services/stores.service';
 
-
 @Component({
   selector: 'app-company-configurations',
   templateUrl: './company-configurations.page.html',
@@ -29,6 +28,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
   sending = false;
   sent = false;
   releaseOrdersBeforeGoToQueue = false;
+  useAgenda = false;
   category: number | null = null;
   cnpj: string | null = null;
   name: string | null = null;
@@ -106,6 +106,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
         this.weekDays.map(day => this.createHorarioForm(day))
       ),
       openAutomatic: [false],
+      useAgenda: [false],
       attendSimultaneously: [false],
       acceptOtherQueues: [false],
       answerOutOfOrder: [false],
@@ -174,7 +175,6 @@ export class CompanyConfigurationsPage implements OnDestroy {
         return { invalidCnpj: true };
       }
 
-      // Validação do CNPJ
       let tamanho = cnpj.length - 2;
       let numeros = cnpj.substring(0, tamanho);
       let digitos = cnpj.substring(tamanho);
@@ -251,7 +251,8 @@ export class CompanyConfigurationsPage implements OnDestroy {
       acceptOtherQueues: false,
       answerOutOfOrder: false,
       answerScheduledTime: false,
-      whatsAppNotice: false
+      whatsAppNotice: false,
+      useAgenda: false
     });
 
     const openingHoursArray = this.cadastroForm.get('openingHours') as FormArray;
@@ -346,6 +347,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
       answerOutOfOrder: storeData.answerOutOfOrder,
       answerScheduledTime: storeData.answerScheduledTime,
       whatsAppNotice: storeData.whatsAppNotice,
+      useAgenda: storeData.useAgenda,
       timeRemoval: storeData.timeRemoval,
       storeSubtitle: storeData.storeSubtitle,
       releaseOrdersBeforeGetsQueued: storeData.releaseOrdersBeforeGetsQueued,
@@ -416,11 +418,11 @@ export class CompanyConfigurationsPage implements OnDestroy {
 
   async searchCep() {
     const cepControl = this.cadastroForm.get('cep');
-    if (!cepControl || cepControl.invalid) 
+    if (!cepControl || cepControl.invalid)
       return;
 
     const cep = cepControl.value.replace(/\D/g, '');
-    if (cep.length !== 8) 
+    if (cep.length !== 8)
       return;
 
     this.searchingCep = true;

@@ -82,6 +82,7 @@ export class StoresService {
     formData.append('City', formValue.city || '');
     formData.append('State', formValue.state || '');
     formData.append('OpenAutomatic', String(formValue.openAutomatic || false));
+    formData.append('UseAgenda', String(formValue.useAgenda || false));
     formData.append('AttendSimultaneously', String(formValue.attendSimultaneously || false));
     formData.append('PhoneNumber', formValue.phoneNumber || '');
     formData.append('StoreSubtitle', formValue.storeSubtitle || '');

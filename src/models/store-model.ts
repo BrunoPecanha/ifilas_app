@@ -25,6 +25,7 @@ export interface StoreModel extends To {
   neighborhood: string;
   cep: string;
   acceptOtherQueues: boolean;
+  useAgenda: boolean;
   answerOutOfOrder: boolean;
   answerScheduledTime: boolean;
   timeRemoval?: number;
