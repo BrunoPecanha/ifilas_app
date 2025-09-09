@@ -75,6 +75,7 @@ export class SelectCompanyPage implements OnInit {
             ...store,
             isNew: this.checkIfNew(store.createdAt),
             liked: store.liked || false,
+            useAgenda: store.useAgenda || false,
             minorQueue: store.minorQueue || false,
             distance: store.distance || this.calculateRandomDistance()
           } as StoreModel));
@@ -224,10 +225,18 @@ export class SelectCompanyPage implements OnInit {
     console.error(message);
   }
 
-  selectCard(card: StoreModel): void {
-    this.router.navigate(['/select-professional'], {
-      queryParams: { storeId: card.id }
-    });
+  selectCard(card: StoreModel): void {    
+    let storeSelected = this.companies.filter(card => card.id === card.id)[0];    
+
+    if (!storeSelected.useAgenda) {
+      this.router.navigate(['/select-professional'], {
+        queryParams: { storeId: card.id }
+      });
+    } else {
+      this.router.navigate(['/schedule-appointment'], {
+        queryParams: { storeId: card.id }
+      });
+    }
   }
 
   onSearch(event: any) {

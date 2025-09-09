@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { StatusQueueEnum } from 'src/models/enums/status-queue.enum';
 
 interface AvailableDate {
   date: Date;
@@ -19,15 +21,16 @@ interface TimeSlot {
   styleUrls: ['./schedule-appointment.page.scss'],
 })
 export class ScheduleAppointmentPage implements OnInit {
-  selectedStore: any; 
+  selectedStore: any;
   availableDates: AvailableDate[] = [];
   selectedDate: Date | null = null;
   selectedTimeSlots: TimeSlot[] = [];
+  storeId: number = 0;
 
   minDate!: string;
   maxDate!: string;
 
-  constructor() {}
+  constructor(private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.initDates();
@@ -56,6 +59,25 @@ export class ScheduleAppointmentPage implements OnInit {
         available: Math.random() > 0.3,
         timeSlots: this.generateTimeSlots(date),
       });
+    }
+  }
+
+  getSelectedStoreId() {
+    this.route.queryParams.subscribe(params => {
+      this.storeId = params['storeId'];
+    });
+  }
+
+  getStatusClass(status: StatusQueueEnum): string {
+    switch (status) {
+      case StatusQueueEnum.open:
+        return 'open';
+      case StatusQueueEnum.paused:
+        return 'paused';
+      case StatusQueueEnum.closed:
+        return 'closed';
+      default:
+        return '';
     }
   }
 
@@ -104,7 +126,7 @@ export class ScheduleAppointmentPage implements OnInit {
   selectTimeSlot(slot: TimeSlot) {
     if (slot.available) {
       console.log('Horário escolhido:', slot.time);
-    
+
     }
   }
 
