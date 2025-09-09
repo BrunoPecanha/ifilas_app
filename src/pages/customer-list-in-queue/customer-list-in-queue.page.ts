@@ -21,7 +21,7 @@ import { isToday } from 'src/utils/date-utils';
   styleUrls: ['./customer-list-in-queue.page.scss'],
 })
 export class CustomerListInQueuePage implements OnInit, OnDestroy {
-  clients: CustomerInQueueForEmployeeModel[] = [];
+  clients: CustomerInQueueForEmployeeModel[] =  [];
   currentDate = new Date();
   isLoading: boolean = false;
   isPaused: boolean = false;
@@ -71,6 +71,24 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.cleanupSignalR();
+  }
+
+  // NOVO MÉTODO ADICIONADO
+  getClientsInServiceCount(): number {
+    return this.clients.filter(client => client.inService).length;
+  }
+
+  // MÉTODO AJUSTADO - agora retorna apenas o tempo formatado
+  calculateWaitingTime(arrivalTime: string): string {
+    const agora = new Date();
+    const [h, m] = arrivalTime.split(':').map(Number);
+    const entrada = new Date();
+    entrada.setHours(h, m, 0, 0);
+
+    const diffMs = agora.getTime() - entrada.getTime();
+    const diffMin = Math.floor(diffMs / 60000);
+    
+    return this.formatMinutesToHHMM(diffMin);
   }
 
   async openServiceConfig(client: any) {
@@ -284,7 +302,6 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     return !!this.store && !!this.store.startServiceWithQRCode;
   }
 
-
   async handleRefresh(event: any) {
     try {
       await this.loadAllCustomersInQueueByEmployeeAndStoreId();
@@ -412,19 +429,6 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
       .join(', ') || '';
   }
 
-  calculateWaitingTime(arrivalTime: string): string {
-    const agora = new Date();
-    const [h, m] = arrivalTime.split(':').map(Number);
-    const entrada = new Date();
-    entrada.setHours(h, m, 0, 0);
-
-    const diffMs = agora.getTime() - entrada.getTime();
-    const diffMin = Math.floor(diffMs / 60000);
-    const fomatedTime = this.formatMinutesToHHMM(diffMin);
-
-    return `Esperando há ${fomatedTime} min`;
-  }
-
   private async removeCustomer(customerId: number, reason?: string) {
     try {
       await this.queueService.removeMissingCustomer(customerId, reason || 'Removido pelo funcionário')
@@ -492,6 +496,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
       });
   }
 
+  // MÉTODO MANTIDO PARA COMPATIBILIDADE (se usado em outro lugar)
   calculateWaitTime(entryTime: string): string {
     const now = new Date();
     const [hours, minutes] = entryTime.split(':').map(Number);
@@ -510,9 +515,8 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
   }
 
-
   openWhatsapp(customer: CustomerInQueueForEmployeeModel) {
-    const phone = customer;
+    const phone = customer.id;
     if (!phone) {
       this.toast.show('Número de telefone não disponível', 'warning');
       return;
@@ -521,5 +525,16 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     const message = encodeURIComponent(`Olá ${customer.name}, sua vez na fila chegou!`);
     const url = `https://wa.me/55${phone}?text=${message}`;
     window.open(url, '_blank');
+  }
+
+  getPaymentColor(paymentIcon: string): string {
+    const colorMap: {[key: string]: string} = {
+      'cash-outline': 'success',
+      'card-outline': 'primary',
+      'wallet-outline': 'warning',
+      'pricetags-outline': 'secondary'
+    };
+    
+    return colorMap[paymentIcon] || 'medium';
   }
 }

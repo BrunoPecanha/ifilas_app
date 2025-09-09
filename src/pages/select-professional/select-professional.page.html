@@ -14,7 +14,9 @@
       alt="Banner da loja"
       class="banner-image"
     />
+    <div class="banner-overlay"></div>
   </div>
+
   <div class="info-loja">
     <img
       [src]="store?.storeLogoPath || 'assets/images/utils/default-logo.png'"
@@ -31,8 +33,7 @@
         name="checkmark-circle"
         class="verified-icon"
         color="primary"
-      >
-      </ion-icon>
+      ></ion-icon>
     </h2>
 
     <p class="descricao-loja">{{ store?.subtitle }}</p>
@@ -40,7 +41,7 @@
 </div>
 
 <ion-content class="scroll-area">
-   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-outline"
       pullingText="Puxe para atualizar"
@@ -54,52 +55,74 @@
     class="filas-wrapper"
     *ngIf="store?.professionals?.length; else semFilas"
   >
-  <ion-card class="fila-card" *ngFor="let queue of store?.professionals" (click)="getInTheQueue(queue)">
-    
-    <div class="card-header">
-      <div class="status-badge" [ngClass]="getStatusClass(queue.status)">
-        <ion-icon [name]="queue.status === StatusQueueEnum.paused ? 'pause-circle' : 'checkmark-circle'"></ion-icon>
-        <span>{{ queue.status === StatusQueueEnum.paused ? 'Pausada' : 'Aberta' }}</span>
-        <ion-icon *ngIf="queue.status === StatusQueueEnum.paused" name="help-circle-outline" 
-                  (click)="openPauseReason(queue, $event)"></ion-icon>
-      </div>      
-      
-      <div class="professional-info">
-        <h2 class="nome-profissional">{{ queue.name }}</h2>
-        <p class="nome-fila">{{ queue.queueName }}</p>
-      </div>
-    </div>
-  
-
-    <ion-card-content>
-      <p class="subtitulo">{{ queue.subtitle || 'Serviço disponível' }}</p>
-      
-
-      <div class="queue-progress-container">
-        <div class="progress-info">
-          <span>{{ queue.customersWaiting || 0 }} pessoas na fila</span>
-          <span>{{ queue.averageWaitingTime | slice:0:5 || '--' }} min</span>
+    <ion-card
+      class="fila-card"
+      *ngFor="let queue of store?.professionals"
+      (click)="getInTheQueue(queue)"
+    >
+      <div class="card-header">
+        <div class="status-badge" [ngClass]="getStatusClass(queue.status)">
+          <ion-icon
+            [name]="
+              queue.status === StatusQueueEnum.paused
+                ? 'pause-circle'
+                : 'checkmark-circle'
+            "
+          ></ion-icon>
+          <span>
+            {{ queue.status === StatusQueueEnum.paused ? 'Pausada' : 'Aberta' }}
+          </span>
+          <ion-icon
+            *ngIf="queue.status === StatusQueueEnum.paused"
+            name="help-circle-outline"
+            (click)="openPauseReason(queue, $event)"
+          ></ion-icon>
         </div>
-        <div class="barra-progresso-wrapper" [attr.title]="getQueueStatusText(queue.customersWaiting)">
-          <div class="barra-progresso" 
-               [style.width.%]="getQueueProgress(queue.customersWaiting)"
-               [ngStyle]="{ 'background-color': getColorProgress(queue.customersWaiting) }"></div>
-        </div>
-      </div>      
 
-      <div class="additional-info">
-        <ion-chip *ngIf="queue.servicesProvided" class="service-chip">
-          <ion-icon name="construct-outline"></ion-icon>
-          <ion-label>{{ queue.servicesProvided }}</ion-label>
-        </ion-chip>
-        
-        <ion-chip class="time-chip">
-          <ion-icon name="time-outline"></ion-icon>
-          <ion-label>Tempo médio: {{ queue.averageWaitingTime | slice:0:5 || '--' }} min</ion-label>
-        </ion-chip>
+        <div class="professional-info">
+          <h2 class="nome-profissional">{{ queue.name }}</h2>
+          <p class="nome-fila">{{ queue.queueName }}</p>
+        </div>
       </div>
-    </ion-card-content>
-  </ion-card>
+
+      <ion-card-content>
+        <p class="subtitulo">{{ queue.subtitle || 'Serviço disponível' }}</p>
+
+        <div class="queue-progress-container">
+          <div class="progress-info">
+            <span>{{ queue.customersWaiting || 0 }} pessoas na fila</span>
+            <span>{{ queue.averageWaitingTime | slice:0:5 || '--' }} min</span>
+          </div>
+          <div
+            class="barra-progresso-wrapper"
+            [attr.title]="getQueueStatusText(queue.customersWaiting)"
+          >
+            <div
+              class="barra-progresso"
+              [style.width.%]="getQueueProgress(queue.customersWaiting)"
+              [ngStyle]="{
+                'background-color': getColorProgress(queue.customersWaiting)
+              }"
+            ></div>
+          </div>
+        </div>
+
+        <div class="additional-info">
+          <ion-chip *ngIf="queue.servicesProvided" class="service-chip">
+            <ion-icon name="construct-outline"></ion-icon>
+            <ion-label>{{ queue.servicesProvided }}</ion-label>
+          </ion-chip>
+
+          <ion-chip class="time-chip">
+            <ion-icon name="time-outline"></ion-icon>
+            <ion-label>
+              Tempo médio: {{ queue.averageWaitingTime | slice:0:5 || '--' }}
+              min
+            </ion-label>
+          </ion-chip>
+        </div>
+      </ion-card-content>
+    </ion-card>
   </div>
 
   <ng-template #semFilas>

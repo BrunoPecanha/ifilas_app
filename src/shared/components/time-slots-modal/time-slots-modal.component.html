@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Horários Disponíveis</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="modal-header">
+    <h2>{{ formatDate(date) }}</h2>
+    <p>Selecione um horário disponível</p>
+  </div>
+
+  <div class="time-slots-grid">
+    <div 
+      *ngFor="let slot of timeSlots" 
+      class="time-slot"
+      [class.available]="slot.available && slot.currentBookings < slot.maxCapacity"
+      [class.unavailable]="!slot.available || slot.currentBookings >= slot.maxCapacity"
+      (click)="selectTimeSlot(slot)"
+    >
+      <span class="time">{{ slot.time }}</span>
+      <span class="availability">
+        {{ slot.currentBookings }}/{{ slot.maxCapacity }}
+      </span>
+    </div>
+  </div>
+</ion-content>

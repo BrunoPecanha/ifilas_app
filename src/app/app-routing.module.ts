@@ -113,9 +113,11 @@ const routes: Routes = [
   {
     path: 'validate-code',
     loadChildren: () => import('../pages/validate-code/validate-code.module').then( m => m.ValidateCodePageModule)
+  },
+  {
+    path: 'schedule-appointment',
+    loadChildren: () => import('../pages/schedule-appointment/schedule-appointment.module').then( m => m.ScheduleAppointmentPageModule)
   }
-
-
 ];
 
 @NgModule({

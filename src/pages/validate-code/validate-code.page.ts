@@ -80,8 +80,7 @@ export class ValidateCodePage {
       this.toastService.show('As senhas não conferem', 'danger');
       return;
     }
-
-    debugger
+        
     const email = this.sessionService.getGenericKey('pendingUser')?.email;
 
     this.userService.setNewPassword(email, this.newPassword).subscribe({

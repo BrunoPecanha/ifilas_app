@@ -1,0 +1,66 @@
+ion-segment {
+  margin: 8px 0 12px;
+}
+
+.day-card,
+.exception-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 10px;
+  padding: 4px 0;
+}
+
+ion-card-header {
+  padding: 8px 12px;
+}
+
+ion-card-title {
+  font-size: 0.95rem;
+  color: var(--ion-color-primary);
+  font-weight: 600;
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 6px 12px;
+}
+
+.time-inputs .divider {
+  font-size: 1rem;
+  color: var(--ion-color-medium);
+}
+
+.day-off {
+  text-align: right;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+  padding: 4px 12px;
+}
+
+.exception-form {
+  display: grid;
+  gap: 8px;
+}
+
+.exception-list {
+  max-height: 250px;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+.no-exceptions {
+  text-align: center;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+  margin-top: 12px;
+}
+
+.full-day-closed {
+  background-color: rgba(255, 59, 48, 0.06); 
+  border-left: 3px solid var(--ion-color-danger);
+}
