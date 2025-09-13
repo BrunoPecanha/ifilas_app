@@ -117,7 +117,12 @@ const routes: Routes = [
   {
     path: 'schedule-appointment',
     loadChildren: () => import('../pages/schedule-appointment/schedule-appointment.module').then( m => m.ScheduleAppointmentPageModule)
+  },
+  {
+    path: 'schedule-config',
+    loadChildren: () => import('../pages/schedule-config/schedule-config.module').then( m => m.ScheduleConfigPageModule)
   }
+
 ];
 
 @NgModule({

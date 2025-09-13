@@ -64,3 +64,11 @@ ion-card-title {
   background-color: rgba(255, 59, 48, 0.06); 
   border-left: 3px solid var(--ion-color-danger);
 }
+
+.exception-reason {
+  font-style: italic;
+  color: #666;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+

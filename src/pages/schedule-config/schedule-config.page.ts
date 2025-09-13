@@ -1,18 +1,8 @@
 import { Component } from '@angular/core';
-
-interface WeekDayConfig {
-  label: string;
-  enabled: boolean;
-  startTime: string | null;
-  endTime: string | null;
-}
-
-interface ExceptionConfig {
-  date: string;
-  start: string | null;
-  end: string | null;
-  fullDayClosed: boolean;
-}
+import { ScheduleCreateRequest } from 'src/models/requests/schedule-create-request';
+import { ScheduleService } from 'src/services/schedule.service';
+import { WeekDayConfigRequest } from 'src/models/requests/weekday-config-request';
+import { ExceptionConfigRequest } from 'src/models/requests/exception-config-request';
 
 @Component({
   selector: 'app-schedule-config',
@@ -21,25 +11,44 @@ interface ExceptionConfig {
 })
 export class ScheduleConfigPage {
   activeTab: 'week' | 'exceptions' = 'week';
+  description: string = '';
 
-  weekDays: WeekDayConfig[] = [
-    { label: 'Segunda-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { label: 'Terça-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { label: 'Quarta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { label: 'Quinta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { label: 'Sexta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { label: 'Sábado', enabled: false, startTime: null, endTime: null },
-    { label: 'Domingo', enabled: false, startTime: null, endTime: null },
+  weekDays: WeekDayConfigRequest[] = [
+    { dayOfWeek: 1, label: 'Segunda-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
+    { dayOfWeek: 2, label: 'Terça-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
+    { dayOfWeek: 3, label: 'Quarta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
+    { dayOfWeek: 4, label: 'Quinta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
+    { dayOfWeek: 5, label: 'Sexta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
+    { dayOfWeek: 6, label: 'Sábado', enabled: false, startTime: null, endTime: null },
+    { dayOfWeek: 0, label: 'Domingo', enabled: false, startTime: null, endTime: null },
   ];
 
-  exceptions: ExceptionConfig[] = [];
-
+  exceptions: ExceptionConfigRequest[] = [];
   exceptionDate: string | null = null;
   exceptionStart: string | null = null;
   exceptionEnd: string | null = null;
+  exceptionReason: string = '';
   fullDayClosed: boolean = false;
 
-  constructor() {}
+  constructor(private scheduleService: ScheduleService) {
+  }
+
+  private normalizeTime(value: string | null): string | null {
+    if (!value)
+      return null;
+
+    const isoMatch = value.match(/T(\d{2}):(\d{2})/);
+
+    if (isoMatch)
+      return `${isoMatch[1]}:${isoMatch[2]}:00`;
+
+    const hhmmMatch = value.match(/^(\d{2}):(\d{2})/);
+
+    if (hhmmMatch)
+      return `${hhmmMatch[1]}:${hhmmMatch[2]}:00`;
+
+    return null;
+  }
 
   addException() {
     if (!this.exceptionDate) {
@@ -52,16 +61,21 @@ export class ScheduleConfigPage {
       return;
     }
 
+    const startTime = this.fullDayClosed ? null : this.normalizeTime(this.exceptionStart);
+    const endTime = this.fullDayClosed ? null : this.normalizeTime(this.exceptionEnd);
+
     this.exceptions.push({
+      reason: this.exceptionReason || '',
       date: this.exceptionDate,
-      start: this.fullDayClosed ? null : this.exceptionStart,
-      end: this.fullDayClosed ? null : this.exceptionEnd,
-      fullDayClosed: this.fullDayClosed
+      start: startTime,
+      end: endTime,
+      fullDayClosed: this.fullDayClosed,
     });
 
     this.exceptionDate = null;
     this.exceptionStart = null;
     this.exceptionEnd = null;
+    this.exceptionReason = '';
     this.fullDayClosed = false;
   }
 
@@ -70,19 +84,42 @@ export class ScheduleConfigPage {
   }
 
   save() {
-    const payload = {
+    const payload: ScheduleCreateRequest = {
+      storeId: 1,
+      employeeId: 1,
+      description: this.description || 'Agenda configurada',
+      date: new Date().toISOString().split('T')[0],
+      openingTime: '09:00',
+      closingTime: '18:00',
+      type: 'normal',
+      eligibleGroups: [],
+      maxServiceTime: 60,
+      isRecurring: true,
+      recurringDays: this.weekDays.filter(d => d.enabled).map(d => d.dayOfWeek),
+      recurringEndDate: null,
       weekDays: this.weekDays.map(d => ({
-        label: d.label,
+        dayOfWeek: d.dayOfWeek,
         enabled: d.enabled,
-        startTime: d.enabled ? d.startTime : null,
-        endTime: d.enabled ? d.endTime : null
+        label: d.label,
+        startTime: this.normalizeTime(d.startTime),
+        endTime: this.normalizeTime(d.endTime),
       })),
-      exceptions: this.exceptions
+      exceptions: this.exceptions.map(e => ({
+        reason: e.reason,
+        date: e.date,
+        start: this.normalizeTime(e.start),
+        end: this.normalizeTime(e.end),
+        fullDayClosed: e.fullDayClosed,
+      })),
     };
 
-    console.log('Configuração salva:', payload);
-    alert('Configuração salva com sucesso!');
-    
+    this.scheduleService.createSchedule(payload).subscribe({
+      next: () => alert('Configuração salva com sucesso!'),
+      error: (err) => {
+        alert('Erro ao salvar configuração.');
+        console.error(err);
+      },
+    });
   }
 
   formatDate(date: string): string {
