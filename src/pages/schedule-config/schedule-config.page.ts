@@ -3,6 +3,7 @@ import { ScheduleCreateRequest } from 'src/models/requests/schedule-create-reque
 import { ScheduleService } from 'src/services/schedule.service';
 import { WeekDayConfigRequest } from 'src/models/requests/weekday-config-request';
 import { ExceptionConfigRequest } from 'src/models/requests/exception-config-request';
+import { ToastService } from 'src/services/toast.service';
 
 @Component({
   selector: 'app-schedule-config',
@@ -30,7 +31,7 @@ export class ScheduleConfigPage {
   exceptionReason: string = '';
   fullDayClosed: boolean = false;
 
-  constructor(private scheduleService: ScheduleService) {
+  constructor(private scheduleService: ScheduleService, private toastService: ToastService) {
   }
 
   private normalizeTime(value: string | null): string | null {
@@ -52,12 +53,12 @@ export class ScheduleConfigPage {
 
   addException() {
     if (!this.exceptionDate) {
-      alert('Selecione uma data.');
+      this.toastService.show('Selecione uma data.', 'warning');
       return;
     }
 
     if (!this.fullDayClosed && (!this.exceptionStart || !this.exceptionEnd)) {
-      alert('Preencha o horário ou marque "Dia inteiro fechado".');
+      this.toastService.show('Preencha o horário ou marque "Dia inteiro fechado".', 'warning');
       return;
     }
 

@@ -1,74 +1,592 @@
-ion-segment {
-  margin: 8px 0 12px;
-}
-
-.day-card,
-.exception-card {
+.segment-container {
+  background: var(--ion-color-light);
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  margin-bottom: 10px;
-  padding: 4px 0;
+  padding: 8px;
+  margin-bottom: 16px;
 }
 
-ion-card-header {
-  padding: 8px 12px;
+ion-segment {
+  --background: transparent;
 }
 
-ion-card-title {
-  font-size: 0.95rem;
-  color: var(--ion-color-primary);
-  font-weight: 600;
+ion-segment-button {
+  --indicator-color: var(--ion-color-primary);
+  --indicator-height: 3px;
+  --border-radius: 8px;
+  min-height: 40px;
 }
 
-.time-inputs {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
+ion-segment-button ion-icon {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.day-card.compact,
+.exception-card.compact {
+  margin-bottom: 8px;
+  border-radius: 10px;
+  padding: 6px 0;
+}
+
+.compact-header {
   padding: 6px 12px;
 }
 
-.time-inputs .divider {
-  font-size: 1rem;
+.compact-header ion-card-title {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.day-header {
+  --min-height: 40px;
+}
+
+.time-inputs.compact {
+  padding: 4px 12px;
+  gap: 6px;
+}
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  padding: 0 8px;
+}
+
+.time-icon {
+  margin-right: 6px;
   color: var(--ion-color-medium);
+  font-size: 16px;
+}
+
+.compact-datetime {
+  --padding-top: 6px;
+  --padding-bottom: 6px;
+  --padding-start: 0;
+  --padding-end: 0;
+  font-size: 0.9rem;
 }
 
 .day-off {
-  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 4px 12px;
   font-style: italic;
   font-size: 0.85rem;
   color: var(--ion-color-medium);
-  padding: 4px 12px;
 }
 
-.exception-form {
-  display: grid;
+.day-off ion-icon {
+  font-size: 16px;
+}
+
+.exceptions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-.exception-list {
-  max-height: 250px;
-  overflow-y: auto;
+.date-input {
+  display: flex;
+  align-items: center;
+  background: var(--ion-color-light);
   border-radius: 8px;
+  padding: 0 12px;
 }
 
-.no-exceptions {
-  text-align: center;
-  font-style: italic;
-  font-size: 0.9rem;
+.date-input ion-icon {
+  margin-right: 8px;
   color: var(--ion-color-medium);
-  margin-top: 12px;
 }
 
-.full-day-closed {
-  background-color: rgba(255, 59, 48, 0.06); 
-  border-left: 3px solid var(--ion-color-danger);
+.toggle-item {
+  --min-height: 40px;
+}
+
+.compact-toggle {
+  --handle-width: 18px;
+  --handle-height: 18px;
+  --background-checked: var(--ion-color-primary);
+  transform: scale(0.8);
+}
+
+.add-button {
+  margin-top: 8px;
+  --border-radius: 8px;
+}
+
+.exceptions-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: var(--ion-color-dark);
+}
+
+.exception-list.compact {
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.exception-item {
+  --min-height: 60px;
+}
+
+.exception-label {
+  margin: 8px 0;
+}
+
+.exception-date {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.exception-type,
+.exception-time {
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
 }
 
 .exception-reason {
   font-style: italic;
   color: #666;
-  margin-top: 4px;
+  margin-top: 2px;
+  font-size: 0.8rem;
+}
+
+.no-exceptions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .week-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 992px) {
+  .week-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.time-inputs.compact {
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  gap: 10px; 
+  padding: 8px 12px;
+}
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  padding: 4px 8px;
+  min-width: 120px;
+}
+
+ion-accordion-group {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--ion-box-shadow, 0 2px 6px rgba(0, 0, 0, 0.1));
+}
+
+ion-accordion ion-item {
+  --border-radius: 0;
+  font-weight: 600;
+}
+
+ion-accordion .ion-padding {
+  background: var(--ion-color-light);
+  border-top: 1px solid var(--ion-color-medium);
+}
+
+.exception-card.compact {
+  margin-bottom: 10px;
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.exception-card ion-item {
+  --min-height: 50px;
+}
+
+.exception-card .time-inputs.compact {
+  padding: 8px;
+  justify-content: space-around;
+}
+
+.exception-card.wide {
+  width: 100%;
+  margin: 0 0 12px 0;
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.wide-datetime {
+  width: 100%;
+  text-align: center;
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.time-input-group {
+  flex: 1;
+  min-width: 120px;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.divider {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--ion-color-medium);
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.header-icon {
+  font-size: 20px;
+  color: var(--ion-color-primary);
+}
+
+.header-label {
+  font-size: 1rem;
+  color: var(--ion-color-dark);
+}
+
+.exception-card.wide {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  background: var(--ion-color-light);
+}
+
+.exception-input ion-icon {
+  margin-right: 8px;
+  color: var(--ion-color-medium);
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 120px;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+.divider {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--ion-color-medium);
+}
+
+.add-button {
+  display: flex;
+  justify-content: center;
+  margin: 8px auto 0 auto;
+  --icon-size: 28px;
+}
+
+.exceptions-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exceptions-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.exception-item {
+  --min-height: 60px;
+}
+
+.exception-date,
+.exception-type,
+.exception-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.9rem;
 }
 
+.full-day-closed .exception-type {
+  color: var(--ion-color-danger);
+}
+
+ion-item-option ion-icon {
+  font-size: 20px;
+}
+
+.no-exceptions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+  padding: 20px;
+}
+
+.exception-card.wide {
+  width: 100%;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 12px;
+}
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 120px;
+  background: #f8f8f8;
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+.divider {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--ion-color-medium);
+}
+
+.add-button {
+  margin-top: 12px;
+  --border-radius: 10px;
+  font-weight: 600;
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.header-icon {
+  font-size: 20px;
+  color: var(--ion-color-primary);
+}
+
+.header-label {
+  font-size: 1rem;
+  color: var(--ion-color-dark);
+}
+
+.exception-item {
+  --min-height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.exception-date,
+.exception-type,
+.exception-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.full-day-closed .exception-type {
+  color: var(--ion-color-danger);
+}
+
+ion-item-option ion-icon {
+  font-size: 20px;
+}
+
+.exceptions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.add-button {
+  margin-top: 12px;
+  --border-radius: 10px;
+  font-weight: 600;
+}
+
+.exceptions-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.exception-list {
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.exception-item {
+  --min-height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.exception-date {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+  color: var(--ion-color-dark);
+}
+
+.exception-type {
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.full-day-closed .exception-type {
+  color: var(--ion-color-danger);
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 120px;
+  background: #f8f8f8;
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+.divider {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--ion-color-medium);
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.header-icon {
+  font-size: 20px;
+  color: var(--ion-color-primary);
+}
+
+.header-label {
+  font-size: 1rem;
+  color: var(--ion-color-dark);
+}
+
+.no-exceptions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+  padding: 20px;
+}
+
+.exception-card.wide {
+  width: 100%;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
