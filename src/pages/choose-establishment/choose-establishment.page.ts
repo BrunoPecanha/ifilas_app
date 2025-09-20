@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { StoreListResponse } from 'src/models/responses/store-list-response';
 import { StoreModel } from 'src/models/store-model';
 import { UserModel } from 'src/models/user-model';
@@ -18,9 +19,12 @@ export class ChooseEstablishmentPage implements OnInit {
   user: UserModel | any;
   profileSelected: number = 1;
   establishments: StoreListResponse | any;
+  isLoading = false;
+  loadingCompanyId: number | null = null;
 
   constructor(private router: Router, private storeService: StoresService,
     private session: SessionService,
+    private navCtrl: NavController,
     private queueService: QueueService) {
   }
 
@@ -46,6 +50,11 @@ export class ChooseEstablishmentPage implements OnInit {
     }
   }
 
+
+  getBack() {
+    this.navCtrl.back();
+  }
+
   selectCompany(est: StoreModel) {
     this.selectedHeaderImage = est.logoPath ?? '';
     this.selectedLogo = est.logoPath ?? '';
@@ -65,5 +74,27 @@ export class ChooseEstablishmentPage implements OnInit {
         this.router.navigate(['/queue-admin']);
       }
     });
+  }
+
+  handleCompanyClick(est: StoreModel) {
+    this.selectedHeaderImage = est.logoPath ?? '';
+    this.selectedLogo = est.logoPath ?? '';
+    this.loadingCompanyId = est.id; // ativa spinner só no card clicado
+
+    setTimeout(() => {
+      this.session.setStore(est);
+
+      this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, null)
+        .subscribe((isQueueOpenToday: boolean) => {
+          this.loadingCompanyId = null; // tira o spinner antes de redirecionar
+          if (this.profileSelected === 2) {
+            this.router.navigate(['/queue-list-for-owner']);
+          } else if (isQueueOpenToday) {
+            this.router.navigate(['/customer-list-in-queue']);
+          } else {
+            this.router.navigate(['/queue-admin']);
+          }
+        });
+    }, 3000);
   }
 }

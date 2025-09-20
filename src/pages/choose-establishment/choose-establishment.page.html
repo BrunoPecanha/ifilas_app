@@ -1,25 +1,17 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button
-        defaultHref="/role-registration"
-        text=""
-        icon="arrow-back-outline"
-      ></ion-back-button>
-    </ion-buttons>
-    <ion-title>ESCOLHER EMPRESA</ion-title>
-    <ion-buttons slot="end">
-      <ion-button>
-        <ion-icon ></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<app-custom-header
+  [title]="'ESCOLHER EMPRESA'"
+  [showStartButton]="true"
+  [showEndButton]="false"
+  [startIconName]="'arrow-back-outline'"
+  [endIconName]="'refresh-outline'"
+  (onStartClick)="getBack()"
+>
+</app-custom-header>
 
 <ion-content class="establishment-content">
   <div class="header-background-modern">
     <ng-container *ngIf="selectedHeaderImage; else defaultHeader">
-      <ion-img [src]="selectedHeaderImage" class="header-img"></ion-img>
+      <ion-img [src]="selectedHeaderImage" class="header-img fade-in"></ion-img>
     </ng-container>
     <ng-template #defaultHeader>
       <div class="default-header">
@@ -30,10 +22,10 @@
     </ng-template>
     <div class="header-overlay"></div>
   </div>
-  
+
   <div class="logo-wrapper">
     <ng-container *ngIf="selectedLogo; else defaultLogo">
-      <ion-img [src]="selectedLogo"></ion-img>
+      <ion-img [src]="selectedLogo" class="fade-in"></ion-img>
     </ng-container>
     <ng-template #defaultLogo>
       <div class="default-logo">
@@ -42,31 +34,23 @@
     </ng-template>
   </div>
 
-  <ion-card class="card-retratil">
-    <div class="card-conteudo">
-      <ion-list lines="full">
-        <ion-item
-          detail="false"
-          class="custom-card"
-          *ngFor="let establishment of establishments"
-          lines="none"
-          button
-          (click)="selectCompany(establishment)"
+  <ion-card
+    class="service-card"
+    *ngFor="let est of establishments"
+    (click)="handleCompanyClick(est)"
+  >
+    <ion-card-content>
+      <div class="card-header">
+        <h2>{{ est.name }}</h2>
+        <!-- spinner aparece apenas no card clicado -->
+        <ion-spinner
+          *ngIf="loadingCompanyId === est.id"
+          name="crescent"
+          class="card-spinner"
         >
-          <ion-icon [name]="establishment.icon" class="icon-depois"></ion-icon>
-
-          <ion-label>
-            <h2>{{ establishment.name }}</h2>
-            <p>{{ establishment.storeSubtitle }}</p>
-          </ion-label>
-
-          <ion-icon
-            name="enter-outline"
-            (click)="$event.stopPropagation(); enterCompany($event, establishment)"
-            slot="end"
-          ></ion-icon>
-        </ion-item>
-      </ion-list>
-    </div>
+        </ion-spinner>
+      </div>
+      <p>{{ est.description }}</p>
+    </ion-card-content>
   </ion-card>
 </ion-content>
