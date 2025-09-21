@@ -1,5 +1,6 @@
 
 export enum PlatformEnum {
   android = 0,
-  iOS = 1
+  ios = 1,
+  web = 2
 }

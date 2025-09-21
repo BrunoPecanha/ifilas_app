@@ -139,6 +139,7 @@ export class QueueService {
   }
 
   hasOpenQueueForEmployeeToday(employeeId: number, storeId: number | null): Observable<boolean> {
+    debugger
     return this.getOpenedQueueListByEmployeeId(employeeId, storeId, false).pipe(
       map((response: QueueListResponse) => {
         return response.valid &&
