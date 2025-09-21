@@ -307,7 +307,7 @@ export class SelectServicesPage {
 
       this.navigateAfterQueue();
     } else {
-      this.addCustomerToQueueAndNavigate(); // Aguarda o insert antes de navegar
+      this.addCustomerToQueueAndNavigate(); 
     }
   }
 
@@ -328,11 +328,10 @@ export class SelectServicesPage {
 
     this.queueService.addCustomerToQueue(command).subscribe({
       next: () => {
-        this.navigateAfterQueue();    // Só navega depois do insert
+        this.navigateAfterQueue();  
       },
       error: (err) => {
         console.error('Erro ao adicionar cliente na fila:', err);
-        // Aqui você pode exibir um toast ou alert se quiser
       }
     });
   }

@@ -73,12 +73,10 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     this.cleanupSignalR();
   }
 
-  // NOVO MÉTODO ADICIONADO
   getClientsInServiceCount(): number {
     return this.clients.filter(client => client.inService).length;
   }
 
-  // MÉTODO AJUSTADO - agora retorna apenas o tempo formatado
   calculateWaitingTime(arrivalTime: string): string {
     const agora = new Date();
     const [h, m] = arrivalTime.split(':').map(Number);
@@ -496,7 +494,6 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
       });
   }
 
-  // MÉTODO MANTIDO PARA COMPATIBILIDADE (se usado em outro lugar)
   calculateWaitTime(entryTime: string): string {
     const now = new Date();
     const [hours, minutes] = entryTime.split(':').map(Number);

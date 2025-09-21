@@ -1,20 +1,43 @@
-import { StatusQueueEnum } from "./enums/status-queue.enum";
-
 export interface ScheduleModel {
-    id: number;                 
-    storeId: string;  
-    name: string;
-    description: string;
-    registeringDate?: Date;
-    lastUpDate?: Date;
-    status: StatusQueueEnum;
-    timeGotInQueue: string;
-    employeeId: string;
-    services: string[];
-    date: Date;
-    currentCount: number;
-    responsibleId: number;
-    responsibleName: string;
-    queueDescription: string;
-    totalCount: number;
+    id: number;
+    storeId: number;
+    professionalId: number;
+    professionalName?: string | null;
+    startDate: string;
+    endDate: string;
+    slotDurationInMinutes: number;
+    weeklySchedules: WeeklyScheduleModel[];
+    exceptions: ExceptionModel[];
+    slots: SlotModel[];
+}
+
+export interface WeeklyScheduleModel {
+    id: number;
+    dayOfWeek: number;
+    startTime: string;
+    endTime: string;
+    enabled: boolean;
+}
+
+export interface ExceptionModel {
+    id: number;
+    date: string;
+    startTime: string | null;
+    endTime: string | null;
+    fullDayClosed: boolean;
+    reason?: string;
+}
+
+export interface SlotModel {
+    id: number;
+    slotStart: string;
+    slotEnd: string;
+    customerName: string | null;
+    services: ServiceBookedModel[];
+    total: number;
+    isBooked: boolean;
+}
+
+export interface ServiceBookedModel {
+    [serviceName: string]: number;
 }

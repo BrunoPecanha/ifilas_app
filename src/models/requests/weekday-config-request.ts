@@ -1,5 +1,6 @@
 
 export interface WeekDayConfigRequest {
+  id: number;
   dayOfWeek: number;
   label: string;
   enabled: boolean;

@@ -112,7 +112,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  loadUserInformations() {
+  loadUserInformations() {    
     this.userFromSession = this.sessionService.getUser();
     this.companyFromSession = this.sessionService.getStore();
 

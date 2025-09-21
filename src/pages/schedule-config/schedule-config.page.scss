@@ -380,6 +380,11 @@ ion-item-option ion-icon {
   font-size: 20px;
 }
 
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 .no-exceptions {
   display: flex;
   align-items: center;
@@ -589,4 +594,10 @@ ion-item-option ion-icon {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.interval-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: var(--ion-box-shadow, 0 2px 6px rgba(0,0,0,0.1));
 }

@@ -9,11 +9,11 @@ export interface ScheduleCreateRequest {
   openingTime: string;
   closingTime: string;
   type: 'normal' | 'priority' | 'express';
-  eligibleGroups?: string[];  
-  maxServiceTime?: number;
+  eligibleGroups?: string[];
+  slotDurationMinutes?: number;
   isRecurring: boolean;
-  recurringDays?: number[];   
-  recurringEndDate?: string | null; 
+  recurringDays?: number[];
+  recurringEndDate?: string | null;
   weekDays?: WeekDayConfigRequest[];
   exceptions?: ExceptionConfigRequest[];
 }

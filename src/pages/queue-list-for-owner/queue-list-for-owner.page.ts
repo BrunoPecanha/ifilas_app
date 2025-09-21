@@ -63,7 +63,6 @@ export class QueueListForOwnerPage implements OnInit {
     });
   }
 
-  // 🎨 Cor do status
   getStatusColor(status: StatusQueueEnum): string {
     switch (status) {
       case StatusQueueEnum.open:

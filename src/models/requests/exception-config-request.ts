@@ -1,4 +1,5 @@
 export interface ExceptionConfigRequest {
+  id: number;
   reason?: string;
   date: string;
   start: string | null;

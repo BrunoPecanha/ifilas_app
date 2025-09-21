@@ -1,27 +1,35 @@
-import { Component } from '@angular/core';
-import { ScheduleCreateRequest } from 'src/models/requests/schedule-create-request';
+import { Component, OnInit } from '@angular/core';
 import { ScheduleService } from 'src/services/schedule.service';
 import { WeekDayConfigRequest } from 'src/models/requests/weekday-config-request';
 import { ExceptionConfigRequest } from 'src/models/requests/exception-config-request';
 import { ToastService } from 'src/services/toast.service';
+import { ScheduleCreateRequest } from 'src/models/requests/schedule-create-request';
+import { ExceptionModel, ScheduleModel, WeeklyScheduleModel } from 'src/models/schedule-model';
+import { SessionService } from 'src/services/session.service';
+import { StoreModel } from 'src/models/store-model';
+import { UserModel } from 'src/models/user-model';
 
 @Component({
   selector: 'app-schedule-config',
   templateUrl: './schedule-config.page.html',
   styleUrls: ['./schedule-config.page.scss'],
 })
-export class ScheduleConfigPage {
+export class ScheduleConfigPage implements OnInit {
   activeTab: 'week' | 'exceptions' = 'week';
   description: string = '';
+  schedule!: ScheduleModel;
+  user!: UserModel;
+  store!: StoreModel;
+  slotInterval: number = 30;
 
   weekDays: WeekDayConfigRequest[] = [
-    { dayOfWeek: 1, label: 'Segunda-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { dayOfWeek: 2, label: 'Terça-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { dayOfWeek: 3, label: 'Quarta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { dayOfWeek: 4, label: 'Quinta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { dayOfWeek: 5, label: 'Sexta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { dayOfWeek: 6, label: 'Sábado', enabled: false, startTime: null, endTime: null },
-    { dayOfWeek: 0, label: 'Domingo', enabled: false, startTime: null, endTime: null },
+    { id: 1, dayOfWeek: 1, label: 'Segunda-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
+    { id: 2, dayOfWeek: 2, label: 'Terça-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
+    { id: 3, dayOfWeek: 3, label: 'Quarta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
+    { id: 4, dayOfWeek: 4, label: 'Quinta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
+    { id: 5, dayOfWeek: 5, label: 'Sexta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
+    { id: 6, dayOfWeek: 6, label: 'Sábado', enabled: false, startTime: null, endTime: null },
+    { id: 7, dayOfWeek: 0, label: 'Domingo', enabled: false, startTime: null, endTime: null },
   ];
 
   exceptions: ExceptionConfigRequest[] = [];
@@ -31,7 +39,17 @@ export class ScheduleConfigPage {
   exceptionReason: string = '';
   fullDayClosed: boolean = false;
 
-  constructor(private scheduleService: ScheduleService, private toastService: ToastService) {
+  constructor(
+    private scheduleService: ScheduleService,
+    private sessionService: SessionService,
+    private toastService: ToastService
+  ) {
+  }
+
+  ngOnInit() {
+    this.store = this.sessionService.getStore();
+    this.user = this.sessionService.getUser()!;
+    this.loadSchedule();
   }
 
   private normalizeTime(value: string | null): string | null {
@@ -39,16 +57,56 @@ export class ScheduleConfigPage {
       return null;
 
     const isoMatch = value.match(/T(\d{2}):(\d{2})/);
-
     if (isoMatch)
       return `${isoMatch[1]}:${isoMatch[2]}:00`;
 
     const hhmmMatch = value.match(/^(\d{2}):(\d{2})/);
-
     if (hhmmMatch)
       return `${hhmmMatch[1]}:${hhmmMatch[2]}:00`;
 
     return null;
+  }
+
+  private loadSchedule() {
+    this.scheduleService.getSchedule(this.store.id, this.user.id).subscribe({
+      next: (res) => {
+        if (res.valid && res.data) {
+          this.schedule = res.data;
+          this.slotInterval = this.schedule.slotDurationInMinutes || 30;
+
+          this.weekDays = this.weekDays.map((wd) => {
+            const apiDay = this.schedule?.weeklySchedules.find(
+              (d: WeeklyScheduleModel) => d.dayOfWeek === wd.dayOfWeek
+            );
+            return apiDay
+              ? {
+                ...wd,
+                id: apiDay.id,
+                enabled: apiDay.enabled,
+                startTime: apiDay.startTime
+                  ? apiDay.startTime.substring(0, 5)
+                  : null,
+                endTime: apiDay.endTime
+                  ? apiDay.endTime.substring(0, 5)
+                  : null,
+              }
+              : wd;
+          });
+
+          this.exceptions = this.schedule?.exceptions.map((ex: ExceptionModel) => ({
+            id: ex.id,
+            date: ex.date,
+            start: ex.startTime,
+            end: ex.endTime,
+            fullDayClosed: ex.fullDayClosed,
+            reason: ex.reason || '',
+          }));
+        }
+      },
+      error: () => {
+        this.toastService.show('Erro ao carregar agenda', 'danger');
+      },
+    });
   }
 
   addException() {
@@ -66,6 +124,7 @@ export class ScheduleConfigPage {
     const endTime = this.fullDayClosed ? null : this.normalizeTime(this.exceptionEnd);
 
     this.exceptions.push({
+      id: 0,
       reason: this.exceptionReason || '',
       date: this.exceptionDate,
       start: startTime,
@@ -86,39 +145,54 @@ export class ScheduleConfigPage {
 
   save() {
     const payload: ScheduleCreateRequest = {
-      storeId: 1,
-      employeeId: 1,
+      storeId: this.store.id,
+      employeeId: this.user.id,
       description: this.description || 'Agenda configurada',
       date: new Date().toISOString().split('T')[0],
       openingTime: '09:00',
       closingTime: '18:00',
       type: 'normal',
       eligibleGroups: [],
-      maxServiceTime: 60,
+      slotDurationMinutes: this.slotInterval,
       isRecurring: true,
       recurringDays: this.weekDays.filter(d => d.enabled).map(d => d.dayOfWeek),
       recurringEndDate: null,
+
       weekDays: this.weekDays.map(d => ({
+        id: d.id || 0,
         dayOfWeek: d.dayOfWeek,
         enabled: d.enabled,
         label: d.label,
         startTime: this.normalizeTime(d.startTime),
         endTime: this.normalizeTime(d.endTime),
       })),
-      exceptions: this.exceptions.map(e => ({
-        reason: e.reason,
-        date: e.date,
-        start: this.normalizeTime(e.start),
-        end: this.normalizeTime(e.end),
-        fullDayClosed: e.fullDayClosed,
-      })),
-    };
 
-    this.scheduleService.createSchedule(payload).subscribe({
-      next: () => alert('Configuração salva com sucesso!'),
+      exceptions: this.exceptions
+        .filter(e => new Date(e.date) >= new Date(new Date().setHours(0, 0, 0, 0)))
+        .map(e => ({
+          id: e.id || 0,
+          reason: e.reason,
+          date: e.date,
+          start: this.normalizeTime(e.start),
+          end: this.normalizeTime(e.end),
+          fullDayClosed: e.fullDayClosed,
+        }))
+    };
+    
+    debugger
+    const request$ = this.schedule?.id
+      ? this.scheduleService.updateSchedule(this.schedule?.id, payload)
+      : this.scheduleService.createSchedule(payload);
+
+    request$.subscribe({
+      next: () => {
+        const action = this.schedule?.id ? 'atualizada' : 'criada';
+        this.toastService.show(`Configuração ${action} com sucesso!`, 'success');
+      },
       error: (err) => {
-        alert('Erro ao salvar configuração.');
-        console.error(err);
+        console.error('Erro ao salvar configuração:', err);
+        const msg = err?.error?.message || 'Erro ao salvar configuração.';
+        this.toastService.show(msg, 'danger');
       },
     });
   }
