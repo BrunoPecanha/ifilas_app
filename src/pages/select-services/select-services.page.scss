@@ -19,12 +19,11 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-/* GRID DE SERVIÇOS DISPONÍVEIS */
 .services-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 12px;
-  max-height: 50vh; /* limita altura e habilita scroll */
+  max-height: 50vh;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -74,7 +73,6 @@
   font-weight: bold;
 }
 
-/* Lista selecionada com scroll interno */
 .selected-list {
   max-height: 150px;
   overflow-y: auto;
