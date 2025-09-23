@@ -1,15 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { AvailableDateModel } from 'src/models/available-date-model';
+import { TimeSlotModel } from 'src/models/time-slot-model';
 
-interface AvailableDate {
-  date: Date;
-  available: boolean;
-  timeSlots: TimeSlot[];
-}
-
-interface TimeSlot {
-  time: string;
-  available: boolean;
-}
 
 @Component({
   selector: 'app-schedule-appointment',
@@ -25,11 +17,10 @@ export class ScheduleAppointmentPage implements OnInit {
     image: 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/5721731e-0301-45df-9799-aed397233717.jpeg',
   };
 
-  availableDates: AvailableDate[] = [];
+  availableDates: AvailableDateModel[] = [];
   selectedDate: Date | null = null;
-  selectedTimeSlots: TimeSlot[] = [];
+  selectedTimeSlots: TimeSlotModel[] = [];
 
-  // Parametrização da janela (7, 15 ou 30)
   daysWindow = 15;
 
   ngOnInit() {
@@ -43,7 +34,7 @@ export class ScheduleAppointmentPage implements OnInit {
       const date = new Date();
       date.setDate(today.getDate() + i);
 
-      const available = Math.random() > 0.2; // simulação
+      const available = Math.random() > 0.2; 
       this.availableDates.push({
         date,
         available,
@@ -52,8 +43,8 @@ export class ScheduleAppointmentPage implements OnInit {
     }
   }
 
-  private generateTimeSlots(date: Date): TimeSlot[] {
-    const slots: TimeSlot[] = [];
+  private generateTimeSlots(date: Date): TimeSlotModel[] {
+    const slots: TimeSlotModel[] = [];
     const startHour = 8;
     const endHour = 18;
 
@@ -63,20 +54,20 @@ export class ScheduleAppointmentPage implements OnInit {
           time: `${hour.toString().padStart(2, '0')}:${minute
             .toString()
             .padStart(2, '0')}`,
-          available: Math.random() > 0.3, // simulação
+          available: Math.random() > 0.3, 
         });
       }
     }
     return slots;
   }
 
-  selectDate(day: AvailableDate) {
+  selectDate(day: AvailableDateModel) {
     if (!day.available) return;
     this.selectedDate = day.date;
     this.selectedTimeSlots = day.timeSlots;
   }
 
-  selectTimeSlot(slot: TimeSlot) {
+  selectTimeSlot(slot: TimeSlotModel) {
     console.log('Horário escolhido:', slot.time, 'em', this.selectedDate);
   }
 
