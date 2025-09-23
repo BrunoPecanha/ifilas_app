@@ -1,36 +1,44 @@
 <app-custom-header
   title="AGENDAR HORÁRIO"
-  subtitle="Selecioone uma data e horário"
+  subtitle="Selecione uma data e horário"
   [showStartButton]="true"
   startIconName="arrow-back"
   routerLink="/stores"
-
-  [showEndButton]="false"
-></app-custom-header>
+  [showEndButton]="false">
+</app-custom-header>
 
 <ion-content class="ion-padding">
+
   <section class="store-header" *ngIf="selectedStore">
-    <ion-avatar class="store-avatar">
-      <img [src]="selectedStore.image" [alt]="selectedStore.name" />
-    </ion-avatar>
-    <div class="store-info">
-      <h2>{{ selectedStore.name }}</h2>
-      <p>{{ selectedStore.address }}</p>
+    <div class="store-card">
+      <ion-avatar class="store-avatar">
+        <img 
+          [src]="selectedStore.image || 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/5721731e-0301-45df-9799-aed397233717.jpeg'" 
+          [alt]="selectedStore.name" 
+        />
+      </ion-avatar>
+
+      <div class="store-info">
+        <h2 class="store-title">Horários disponíveis em <span>{{ selectedStore.name }}</span></h2>
+        <p class="store-address">{{ selectedStore.address }}</p>
+      </div>
     </div>
   </section>
 
-  <section class="calendar-section">
-    <div class="calendar-wrapper">
-      <ion-datetime
-        presentation="date"
-        [min]="minDate"
-        [max]="maxDate"
-        [isDateEnabled]="isDateAvailable.bind(this)"
-        (ionChange)="onDateSelected($event)"
-        class="custom-calendar"
-      >
-        <div slot="title">Datas Disponíveis</div>
-      </ion-datetime>
+  <section class="days-section">
+    <h3>Selecione a data</h3>
+    <div class="days-grid">
+      <ion-button
+        *ngFor="let day of availableDates"
+        [disabled]="!day.available"
+        [fill]="day.date.toDateString() === selectedDate?.toDateString() ? 'solid' : 'outline'"
+        color="primary"
+        (click)="selectDate(day)">
+        <div class="day-label">
+          <span class="weekday">{{ day.date | date:'EEE' }}</span>
+          <span class="daynum">{{ day.date | date:'dd/MM' }}</span>
+        </div>
+      </ion-button>
     </div>
   </section>
 
@@ -41,8 +49,7 @@
       <ion-chip
         *ngFor="let slot of selectedTimeSlots"
         [color]="slot.available ? 'primary' : 'medium'"
-        (click)="slot.available && selectTimeSlot(slot)"
-      >
+        (click)="slot.available && selectTimeSlot(slot)">
         {{ slot.time }}
       </ion-chip>
     </div>
@@ -51,6 +58,7 @@
       Nenhum horário disponível neste dia.
     </p>
   </section>
+
 </ion-content>
 
 <app-footer-menu></app-footer-menu>

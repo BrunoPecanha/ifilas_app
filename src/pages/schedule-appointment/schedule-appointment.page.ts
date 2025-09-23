@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { StatusQueueEnum } from 'src/models/enums/status-queue.enum';
 
 interface AvailableDate {
   date: Date;
@@ -11,8 +9,6 @@ interface AvailableDate {
 interface TimeSlot {
   time: string;
   available: boolean;
-  maxCapacity: number;
-  currentBookings: number;
 }
 
 @Component({
@@ -21,113 +17,67 @@ interface TimeSlot {
   styleUrls: ['./schedule-appointment.page.scss'],
 })
 export class ScheduleAppointmentPage implements OnInit {
-  selectedStore: any;
+   defaultLogo = 'assets/images/store.png';
+
+ selectedStore: any = {
+    name: 'Loja Exemplo',
+    address: 'Rua Central, 123',
+    image: 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/5721731e-0301-45df-9799-aed397233717.jpeg',
+  };
+
   availableDates: AvailableDate[] = [];
   selectedDate: Date | null = null;
   selectedTimeSlots: TimeSlot[] = [];
-  storeId: number = 0;
 
-  minDate!: string;
-  maxDate!: string;
-
-  constructor(private router: Router, private route: ActivatedRoute) { }
+  // Parametrização da janela (7, 15 ou 30)
+  daysWindow = 15;
 
   ngOnInit() {
-    this.initDates();
-    this.loadAvailableDates();
+    this.generateAvailableDates();
   }
 
-  private initDates() {
+  private generateAvailableDates() {
     const today = new Date();
-    this.minDate = today.toISOString();
 
-    const max = new Date();
-    max.setDate(today.getDate() + 30);
-    this.maxDate = max.toISOString();
-  }
-
-  private loadAvailableDates() {
-    const today = new Date();
-    this.availableDates = [];
-
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < this.daysWindow; i++) {
       const date = new Date();
       date.setDate(today.getDate() + i);
 
+      const available = Math.random() > 0.2; // simulação
       this.availableDates.push({
         date,
-        available: Math.random() > 0.3,
-        timeSlots: this.generateTimeSlots(date),
+        available,
+        timeSlots: available ? this.generateTimeSlots(date) : [],
       });
-    }
-  }
-
-  getSelectedStoreId() {
-    this.route.queryParams.subscribe(params => {
-      this.storeId = params['storeId'];
-    });
-  }
-
-  getStatusClass(status: StatusQueueEnum): string {
-    switch (status) {
-      case StatusQueueEnum.open:
-        return 'open';
-      case StatusQueueEnum.paused:
-        return 'paused';
-      case StatusQueueEnum.closed:
-        return 'closed';
-      default:
-        return '';
     }
   }
 
   private generateTimeSlots(date: Date): TimeSlot[] {
     const slots: TimeSlot[] = [];
-    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-
-    const startHour = isWeekend ? 9 : 8;
-    const endHour = isWeekend ? 17 : 18;
+    const startHour = 8;
+    const endHour = 18;
 
     for (let hour = startHour; hour < endHour; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
-        const available = Math.random() > 0.4;
         slots.push({
           time: `${hour.toString().padStart(2, '0')}:${minute
             .toString()
             .padStart(2, '0')}`,
-          available,
-          maxCapacity: 5,
-          currentBookings: available ? Math.floor(Math.random() * 4) : 5,
+          available: Math.random() > 0.3, // simulação
         });
       }
     }
-
     return slots;
   }
 
-  isDateAvailable(date: Date): boolean {
-    const foundDate = this.availableDates.find(
-      (d) => d.date.toDateString() === date.toDateString()
-    );
-    return foundDate ? foundDate.available : false;
-  }
-
-  onDateSelected(event: any) {
-    const selectedDate = new Date(event.detail.value);
-    this.selectedDate = selectedDate;
-
-    const selectedDateData = this.availableDates.find(
-      (d) => d.date.toDateString() === selectedDate.toDateString()
-    );
-
-    this.selectedTimeSlots = selectedDateData?.timeSlots || [];
+  selectDate(day: AvailableDate) {
+    if (!day.available) return;
+    this.selectedDate = day.date;
+    this.selectedTimeSlots = day.timeSlots;
   }
 
   selectTimeSlot(slot: TimeSlot) {
-    if (slot.available) {
-      console.log('Horário escolhido:', slot.time);
-
-    }
+    console.log('Horário escolhido:', slot.time, 'em', this.selectedDate);
   }
 
   formatDate(date: Date): string {
