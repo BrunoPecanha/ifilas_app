@@ -4,22 +4,22 @@
   [showStartButton]="true"
   startIconName="arrow-back"
   routerLink="/stores"
-  [showEndButton]="false">
+  [showEndButton]="false"
+>
 </app-custom-header>
 
 <ion-content class="ion-padding">
-
   <section class="store-header" *ngIf="selectedStore">
     <div class="store-card">
       <ion-avatar class="store-avatar">
-        <img 
-          [src]="selectedStore.image || 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/5721731e-0301-45df-9799-aed397233717.jpeg'" 
-          [alt]="selectedStore.name" 
+        <img
+          [src]="selectedStore.image || 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/5721731e-0301-45df-9799-aed397233717.jpeg'"
+          [alt]="selectedStore.name"
         />
       </ion-avatar>
 
       <div class="store-info">
-        <h2 class="store-title">Horários disponíveis em <span>{{ selectedStore.name }}</span></h2>
+        <h2 class="store-title"><span>{{ selectedStore.name }}</span></h2>
         <p class="store-address">{{ selectedStore.address }}</p>
       </div>
     </div>
@@ -33,7 +33,8 @@
         [disabled]="!day.available"
         [fill]="day.date.toDateString() === selectedDate?.toDateString() ? 'solid' : 'outline'"
         color="primary"
-        (click)="selectDate(day)">
+        (click)="selectDate(day)"
+      >
         <div class="day-label">
           <span class="weekday">{{ day.date | date:'EEE' }}</span>
           <span class="daynum">{{ day.date | date:'dd/MM' }}</span>
@@ -49,7 +50,8 @@
       <ion-chip
         *ngFor="let slot of selectedTimeSlots"
         [color]="slot.available ? 'primary' : 'medium'"
-        (click)="slot.available && selectTimeSlot(slot)">
+        (click)="slot.available && selectTimeSlot(slot)"
+      >
         {{ slot.time }}
       </ion-chip>
     </div>
@@ -58,7 +60,6 @@
       Nenhum horário disponível neste dia.
     </p>
   </section>
-
 </ion-content>
 
 <app-footer-menu></app-footer-menu>

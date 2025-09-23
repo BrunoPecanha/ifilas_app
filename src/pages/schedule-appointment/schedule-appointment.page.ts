@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { AvailableDateModel } from 'src/models/available-date-model';
 import { TimeSlotModel } from 'src/models/time-slot-model';
-
+import { ScheduleDateModel } from 'src/models/schedule-date-model';
 
 @Component({
   selector: 'app-schedule-appointment',
@@ -9,56 +10,29 @@ import { TimeSlotModel } from 'src/models/time-slot-model';
   styleUrls: ['./schedule-appointment.page.scss'],
 })
 export class ScheduleAppointmentPage implements OnInit {
-   defaultLogo = 'assets/images/store.png';
+  defaultLogo = 'assets/images/store.png';
 
- selectedStore: any = {
-    name: 'Loja Exemplo',
-    address: 'Rua Central, 123',
-    image: 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/5721731e-0301-45df-9799-aed397233717.jpeg',
-  };
-
+  selectedStore: any;
   availableDates: AvailableDateModel[] = [];
   selectedDate: Date | null = null;
   selectedTimeSlots: TimeSlotModel[] = [];
+  daysWindow = 7;
 
-  daysWindow = 15;
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.generateAvailableDates();
+    this.loadStoreAgenda();
   }
 
-  private generateAvailableDates() {
-    const today = new Date();
-
-    for (let i = 0; i < this.daysWindow; i++) {
-      const date = new Date();
-      date.setDate(today.getDate() + i);
-
-      const available = Math.random() > 0.2; 
-      this.availableDates.push({
-        date,
-        available,
-        timeSlots: available ? this.generateTimeSlots(date) : [],
-      });
-    }
-  }
-
-  private generateTimeSlots(date: Date): TimeSlotModel[] {
-    const slots: TimeSlotModel[] = [];
-    const startHour = 8;
-    const endHour = 18;
-
-    for (let hour = startHour; hour < endHour; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
-        slots.push({
-          time: `${hour.toString().padStart(2, '0')}:${minute
-            .toString()
-            .padStart(2, '0')}`,
-          available: Math.random() > 0.3, 
-        });
-      }
-    }
-    return slots;
+  loadStoreAgenda() {
+    this.http.get<ScheduleDateModel>('api/store/1/agenda').subscribe(res => {
+      this.selectedStore = res.store;
+      this.daysWindow = res.daysWindow;
+      this.availableDates = res.availableDates.map(d => ({
+        ...d,
+        date: new Date(d.date)
+      }));
+    });
   }
 
   selectDate(day: AvailableDateModel) {
