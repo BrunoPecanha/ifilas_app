@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { AvailableDateModel } from 'src/models/available-date-model';
+import { StoreModel } from 'src/models/store-model';
 import { TimeSlotModel } from 'src/models/time-slot-model';
+import { UserModel } from 'src/models/user-model';
 import { ScheduleService } from 'src/services/schedule.service';
+import { SessionService } from 'src/services/session.service';
 
 @Component({
   selector: 'app-schedule-appointment',
@@ -17,16 +19,20 @@ export class ScheduleAppointmentPage implements OnInit {
   selectedDate: Date | null = null;
   selectedTimeSlots: TimeSlotModel[] = [];
   daysWindow = 7;
+  user!: UserModel;
+  store!: StoreModel;
 
-  constructor(private service: ScheduleService) { 
+  constructor(private service: ScheduleService, private sessionService: SessionService) { 
   }
 
   ngOnInit() {
+    this.store = this.sessionService.getStore();
+    this.user = this.sessionService.getUser();
     this.loadStoreAgenda();
   }
 
   loadStoreAgenda() {
-    this.service.getEmployeeAgendaForCostumers(1, 1, new Date()).subscribe(res => {      
+    this.service.getEmployeeAgendaForCostumers(this.store.id, this.user.id, new Date()).subscribe(res => {      
       this.selectedStore = res.data.store;
       this.daysWindow = res.data.daysWindow;
       this.availableDates = res.data.availableDates.map(d => ({

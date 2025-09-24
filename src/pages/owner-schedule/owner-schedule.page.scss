@@ -1,0 +1,774 @@
+/* ESTILOS PRINCIPAIS (Mantendo a essência visual original) */
+
+.agenda-section {
+  padding-bottom: 100px;
+}
+
+.agenda-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.agenda-slot {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  min-height: 200px;
+  border-left: 4px solid #3880ff;
+  transition: all 0.3s ease;
+}
+
+.agenda-slot.has-appointments {
+  border-left-color: #3880ff;
+  background: #f8f9ff;
+}
+
+.agenda-slot.cdk-drop-list-dragging {
+  background: rgba(56, 128, 255, 0.05);
+  border: 2px dashed #3880ff;
+}
+
+.slot-time {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #3880ff;
+}
+
+.slot-time ion-icon {
+  margin-right: 8px;
+  font-size: 1.2rem;
+}
+
+.appointment-count {
+  background: #3880ff;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  margin-left: 8px;
+}
+
+/* CARDS DE CLIENTE (Estilo original melhorado) */
+.customer-card {
+  margin-top: 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+  border-left: 4px solid #3880ff;
+  position: relative;
+  overflow: visible;
+}
+
+.customer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+}
+
+.customer-card:active {
+  cursor: grabbing;
+}
+
+/* Cores de status na borda lateral */
+.customer-card.confirmed {
+  border-left-color: #2dd36f;
+}
+
+.customer-card.pending {
+  border-left-color: #ffc409;
+}
+
+.customer-card.completed {
+  border-left-color: #3dc2ff;
+}
+
+.customer-card.cancelled {
+  border-left-color: #eb445a;
+  opacity: 0.7;
+}
+
+.customer-header {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.customer-avatar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.status-indicator.confirmed { background: #2dd36f; }
+.status-indicator.pending { background: #ffc409; }
+.status-indicator.completed { background: #3dc2ff; }
+.status-indicator.cancelled { background: #eb445a; }
+
+.customer-info h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.customer-info p {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+.status-badge-mini {
+  font-size: 0.7rem;
+  margin-top: 4px;
+}
+
+.services-content {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.service-chip {
+  font-size: 0.8rem;
+  margin: 2px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 0 0;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 8px;
+}
+
+.quick-action-btn {
+  --padding-start: 4px;
+  --padding-end: 4px;
+}
+
+/* SLOT VAZIO */
+.empty {
+  text-align: center;
+  padding: 20px 0;
+  color: #666;
+}
+
+.empty-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.empty p {
+  margin: 0 0 12px;
+  font-style: italic;
+}
+
+/* BARRA DE FERRAMENTAS COMPACTA */
+.toolbar-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.left-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.small-segment {
+  --min-height: 32px;
+}
+
+.small-segment ion-segment-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  min-height: 32px;
+}
+
+.compact-searchbar {
+  --background: white;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  flex: 1;
+  max-width: 300px;
+}
+
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* CABEÇALHO DA DATA (estilo original) */
+.date-header-original {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.date-title {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.date-title ion-icon {
+  margin-right: 8px;
+  color: #3880ff;
+  font-size: 1.4rem;
+}
+
+.today-badge {
+  color: #3880ff;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.date-nav {
+  display: flex;
+  gap: 4px;
+}
+
+/* STATUS RÁPIDO */
+.quick-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  padding: 0 16px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.busy { background: #3880ff; }
+.status-dot.available { background: #2dd36f; }
+
+/* FILTROS ATIVOS COMPACTOS */
+.active-filters-mini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 0 16px;
+  flex-wrap: wrap;
+}
+
+/* LIXEIRA FLUTUANTE (estilo original) */
+.trash-fab {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: var(--ion-color-light);
+  border-radius: 50%;
+  border: 2px dashed var(--ion-color-danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ion-color-danger);
+  transition: 0.3s ease;
+  z-index: 1000;
+}
+
+.trash-fab.trash-active {
+  background: var(--ion-color-danger);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.6);
+  border: none;
+}
+
+/* VISUALIZAÇÃO EM LISTA */
+.list-section {
+  padding-bottom: 100px;
+}
+
+.list-item {
+  --padding-start: 12px;
+  --padding-end: 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border-left: 4px solid #3880ff;
+}
+
+.list-item.confirmed { border-left-color: #2dd36f; }
+.list-item.pending { border-left-color: #ffc409; }
+.list-item.completed { border-left-color: #3dc2ff; }
+.list-item.cancelled { border-left-color: #eb445a; }
+
+.service-tags {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.service-badge {
+  font-size: 0.7rem;
+}
+
+.status-badge-list {
+  font-size: 0.75rem;
+}
+
+/* DRAG & DROP */
+.cdk-drag-preview {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  opacity: 0.9;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+  .agenda-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .toolbar-compact {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .left-controls {
+    width: 100%;
+  }
+  
+  .compact-searchbar {
+    max-width: none;
+  }
+  
+  .date-header-original {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .quick-stats {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .agenda-slot {
+    padding: 12px;
+  }
+  
+  .card-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .card-actions ion-button {
+    margin: 0;
+  }
+}
+
+/* STATUS CONSOLIDADO */
+.consolidated-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-left: 4px solid #3880ff;
+}
+
+.stat-card.total {
+  border-left-color: #2dd36f;
+  background: #f8fff9;
+  grid-column: span 2;
+}
+
+.stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #3880ff;
+  margin-bottom: 4px;
+}
+
+.stat-card.total .stat-number {
+  color: #2dd36f;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Ajuste para o quick-stats existente */
+.quick-stats {
+  margin-top: 8px;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .consolidated-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .stat-card.total {
+    grid-column: span 1;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+}
+
+/* ESTILOS EXISTENTES (mantenha os que você já tem) */
+.agenda-section {
+  padding-bottom: 100px;
+}
+
+.agenda-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+
+/* STATUS CONSOLIDADO COMPACTO (2x2) */
+.consolidated-stats-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.stats-row {
+  display: flex;
+  gap: 8px;
+}
+
+.stat-card-compact {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  border-left: 3px solid #3880ff;
+  flex: 1;
+  min-height: auto;
+}
+
+.stat-card-compact.total {
+  border-left-color: #2dd36f;
+  background: #f8fff9;
+}
+
+.stat-card-compact .stat-number {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #3880ff;
+  margin-bottom: 2px;
+}
+
+.stat-card-compact.total .stat-number {
+  color: #2dd36f;
+}
+
+.stat-card-compact .stat-label {
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* CARDS DE CLIENTE MODIFICADOS */
+.customer-card {
+  margin-top: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+  border-left: 4px solid #3880ff;
+  position: relative;
+  overflow: visible;
+  padding-top: 8px; /* Espaço para o botão de excluir */
+}
+
+/* Cores de status na borda lateral - MODIFICADO */
+.customer-card.confirmed {
+  border-left-color: #2dd36f; /* Verde para confirmados */
+}
+
+.customer-card.pending {
+  border-left-color: #ffc409; /* Amarelo para pendentes */
+}
+
+.customer-card.completed {
+  border-left-color: #3dc2ff; /* Azul para realizados */
+}
+
+.customer-card.cancelled {
+  border-left-color: #eb445a; /* Vermelho para cancelados */
+  opacity: 0.7;
+}
+
+/* Botão de excluir no canto superior direito */
+.card-header {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 10;
+}
+
+.delete-btn {
+  --padding-start: 4px;
+  --padding-end: 4px;
+  --padding-top: 4px;
+  --padding-bottom: 4px;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+}
+
+.delete-btn ion-icon {
+  font-size: 16px;
+}
+
+/* SLOTS VAZIOS COM LATERAL VERDE */
+.agenda-slot:not(.has-appointments) {
+  border-left-color: #2dd36f; /* Verde para slots disponíveis */
+}
+
+.available-slot {
+  border-left-color: #2dd36f;
+}
+
+.available-slot .empty-icon {
+  color: #2dd36f;
+}
+
+/* Ajuste no conteúdo do customer-header para acomodar o botão de excluir */
+.customer-header {
+  margin-top: -8px; /* Compensa o padding adicional */
+}
+
+/* Ações do card simplificadas */
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 0 0;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 8px;
+}
+
+.card-actions ion-button {
+  margin: 0;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 480px) {
+  .consolidated-stats-compact {
+    gap: 6px;
+  }
+  
+  .stats-row {
+    gap: 6px;
+  }
+  
+  .stat-card-compact {
+    padding: 10px 8px;
+  }
+  
+  .stat-card-compact .stat-number {
+    font-size: 1.1rem;
+  }
+  
+  .stat-card-compact .stat-label {
+    font-size: 0.7rem;
+  }
+  
+  .customer-card {
+    margin-top: 10px;
+  }
+}
+
+/* Remove o consolidated-stats original se ainda existir */
+.consolidated-stats {
+  display: none;
+}
+
+/* FILTROS RETRÁTEIS */
+.filters-container {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.filters-container.expanded {
+  max-height: 400px; /* Ajuste conforme necessário */
+}
+
+.filters-content {
+  padding: 16px;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.filter-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --min-height: 40px;
+}
+
+.filter-item ion-label {
+  margin-left: 8px;
+}
+
+.service-filter-chip {
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Ajuste no botão de filtros */
+.right-controls ion-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+}
+
+.right-controls ion-button ion-icon {
+  margin-right: 4px;
+  transition: transform 0.3s ease;
+}
+
+.filters-container.expanded + .date-header-original {
+  margin-top: 16px;
+}
+
+/* Status badge nos filtros */
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-badge.confirmed {
+  background: #2dd36f;
+  color: white;
+}
+
+.status-badge.pending {
+  background: #ffc409;
+  color: black;
+}
+
+.status-badge.completed {
+  background: #3dc2ff;
+  color: white;
+}
+
+.status-badge.cancelled {
+  background: #eb445a;
+  color: white;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .filters-container.expanded {
+    max-height: 500px;
+    overflow-y: auto;
+  }
+  
+  .filter-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .filter-actions ion-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters-content {
+    padding: 12px;
+  }
+  
+  .filters-container.expanded {
+    max-height: 450px;
+  }
+}
+
+/* Ajuste para quando os filtros estão expandidos */
+.filters-container.expanded + .consolidated-stats-compact {
+  margin-top: 8px;
+}

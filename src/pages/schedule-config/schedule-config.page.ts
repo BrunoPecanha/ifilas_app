@@ -49,7 +49,7 @@ export class ScheduleConfigPage implements OnInit {
 
   ngOnInit() {
     this.store = this.sessionService.getStore();
-    this.user = this.sessionService.getUser()!;
+    this.user = this.sessionService.getUser();
     this.loadSchedule();
   }
 

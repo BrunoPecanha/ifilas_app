@@ -22,7 +22,7 @@ export class SelectCompanyPage implements OnInit {
   ) { }
 
   isLoading = false;
-  filtersExpanded: boolean = false; // Mantido para compatibilidade, mas não será mais usado
+  filtersExpanded: boolean = false; 
   isEmptyResult = false;
   searching = false;
   categories: CategoryModel[] = [];
@@ -30,7 +30,7 @@ export class SelectCompanyPage implements OnInit {
   searchQuery = '';
   selectedCategoryId: number | null = null;
   selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
-  
+
   // Nova propriedade para controle das categorias
   categoriesExpanded: boolean = false;
 
@@ -227,8 +227,8 @@ export class SelectCompanyPage implements OnInit {
     console.error(message);
   }
 
-  selectCard(card: StoreModel): void {    
-    let storeSelected = this.companies.filter(card => card.id === card.id)[0];    
+  selectCard(card: StoreModel): void {
+    let storeSelected = this.companies.filter(card => card.id === card.id)[0];
 
     if (!storeSelected.useAgenda) {
       this.router.navigate(['/select-professional'], {
@@ -291,12 +291,10 @@ export class SelectCompanyPage implements OnInit {
     this.loadFilteredStores(categoryId, quickFilter);
   }
 
-  // Nova função para alternar as categorias
   toggleCategories() {
     this.categoriesExpanded = !this.categoriesExpanded;
   }
 
-  // Mantida para compatibilidade, mas não será mais usada no novo design
   toggleFilters() {
     this.filtersExpanded = !this.filtersExpanded;
   }
@@ -309,7 +307,7 @@ export class SelectCompanyPage implements OnInit {
     this.selectedFilter = null;
     this.selectedCategoryId = null;
     this.searchQuery = '';
-    this.categoriesExpanded = false; // Fecha as categorias ao limpar filtros
+    this.categoriesExpanded = false;
     this.applyFilter('nearby');
   }
 }
