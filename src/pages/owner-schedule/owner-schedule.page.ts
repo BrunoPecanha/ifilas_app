@@ -19,8 +19,8 @@ export class OwnerSchedulePage implements OnInit {
   searchQuery = '';
   searching = false;
   showFilters: boolean = false;
-  viewMode: 'grid' | 'list' = 'grid'; // substitui currentView
-  filteredAppointments: any[] = [];    // substitui filteredTimeSlots para o grid/list
+  viewMode: 'grid' | 'list' = 'grid';
+  filteredAppointments: any[] = [];
 
   statusFilters = [
     { value: 'confirmed', label: 'Confirmado', selected: true, count: 0, color: 'success' },
@@ -91,7 +91,6 @@ export class OwnerSchedulePage implements OnInit {
       { id: 5, time: '13:00', customers: [] },
     ];
 
-    // Extrair serviços únicos para filtros
     const allServices = this.selectedTimeSlots.flatMap(slot =>
       slot.customers.flatMap((customer: any) => customer.services)
     );
@@ -101,36 +100,30 @@ export class OwnerSchedulePage implements OnInit {
     )).values()];
   }
 
-  // BUSCA
   filterAppointments(event: any) {
     this.searchTerm = event.detail.value.toLowerCase();
     this.applyFilters();
   }
 
-  // FILTROS
   toggleFilters() {
     this.showFilters = !this.showFilters;
   }
 
   toggleStatusFilter(status: any) {
     status.selected = !status.selected;
-    // Remover a aplicação automática - agora precisa clicar em "Aplicar"
   }
 
   toggleServiceFilter(service: any) {
     service.selected = !service.selected;
-    // Remover a aplicação automática - agora precisa clicar em "Aplicar"
   }
 
   updateFilterCounts() {
-    // Contar agendamentos por status
     this.statusFilters.forEach(filter => {
       filter.count = this.selectedTimeSlots.reduce((total, slot) =>
         total + slot.customers.filter((c: any) => c.status === filter.value).length, 0
       );
     });
 
-    // Contar agendamentos por serviço
     this.serviceFilters.forEach(serviceFilter => {
       serviceFilter.count = this.selectedTimeSlots.reduce((total, slot) =>
         total + slot.customers.filter((c: any) =>

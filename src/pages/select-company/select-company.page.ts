@@ -22,7 +22,7 @@ export class SelectCompanyPage implements OnInit {
   ) { }
 
   isLoading = false;
-  filtersExpanded: boolean = false; 
+  filtersExpanded: boolean = false;
   isEmptyResult = false;
   searching = false;
   categories: CategoryModel[] = [];
@@ -31,7 +31,6 @@ export class SelectCompanyPage implements OnInit {
   selectedCategoryId: number | null = null;
   selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
 
-  // Nova propriedade para controle das categorias
   categoriesExpanded: boolean = false;
 
   ngOnInit() {
