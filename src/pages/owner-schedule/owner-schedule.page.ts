@@ -18,7 +18,9 @@ export class OwnerSchedulePage implements OnInit {
   isDragging = false;
   searchQuery = '';
   searching = false;
-  showFilters: boolean = false; 
+  showFilters: boolean = false;
+  viewMode: 'grid' | 'list' = 'grid'; // substitui currentView
+  filteredAppointments: any[] = [];    // substitui filteredTimeSlots para o grid/list
 
   statusFilters = [
     { value: 'confirmed', label: 'Confirmado', selected: true, count: 0, color: 'success' },
@@ -136,6 +138,22 @@ export class OwnerSchedulePage implements OnInit {
         ).length, 0
       );
     });
+  }
+
+  getWeekdayName(date: Date): string {
+    return date.toLocaleDateString("pt-BR", { weekday: "long" });
+  }
+
+  getServiceColor(colorName: string): string {
+    const colorMap: { [key: string]: string } = {
+      'primary': '#3880ff',
+      'secondary': '#3dc2ff',
+      'tertiary': '#5260ff',
+      'success': '#2dd36f',
+      'warning': '#ffc409',
+      'danger': '#eb445a'
+    };
+    return colorMap[colorName] || '#666';
   }
 
   applyFilters() {
@@ -392,6 +410,8 @@ export class OwnerSchedulePage implements OnInit {
     this.loadAgenda();
   }
 
+
+
   getConsolidatedStats() {
     // Implemente a lógica real de contagem baseada nos seus dados
     const appointments = this.getAllCustomers(); // Ou sua fonte de dados real
@@ -421,6 +441,11 @@ export class OwnerSchedulePage implements OnInit {
     return this.selectedTimeSlots.filter(slot => slot.customers.length === 0).length;
   }
 
+  getActiveFiltersCount(): number {
+    const statusCount = this.statusFilters.filter(s => s.selected).length;
+    const serviceCount = this.serviceFilters.filter(s => s.selected).length;
+    return statusCount + serviceCount;
+  }
 
   formatDate(date: Date): string {
     return date.toLocaleDateString("pt-BR", {
@@ -430,7 +455,6 @@ export class OwnerSchedulePage implements OnInit {
     });
   }
 
-  // CONTROLE DE DRAG
   onDragStarted() {
     this.isDragging = true;
   }
