@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AvailableDateModel } from 'src/models/available-date-model';
-import { StoreModel } from 'src/models/store-model';
 import { TimeSlotModel } from 'src/models/time-slot-model';
-import { UserModel } from 'src/models/user-model';
 import { ScheduleService } from 'src/services/schedule.service';
 import { SessionService } from 'src/services/session.service';
 
@@ -23,12 +21,18 @@ export class ScheduleAppointmentPage implements OnInit {
   storeId: number = 0;
   professionalId: number = 0;
 
-  constructor(private service: ScheduleService, private sessionService: SessionService, private route: ActivatedRoute) {
+  constructor(private service: ScheduleService,
+    private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.getSelectedStoreIdAndProfessional();
-    this.loadStoreAgenda();
+    this.route.queryParams.subscribe(params => {
+      this.storeId = params['storeId'];
+      this.professionalId = params['professionalId'];
+
+      this.getSelectedStoreIdAndProfessional();
+      this.loadStoreAgenda();
+    });
   }
 
   loadStoreAgenda() {

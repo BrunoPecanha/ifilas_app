@@ -57,13 +57,13 @@
 
   <div class="go-fila-central" (click)="goToHome()">
     <div class="fila-button fila-notification-wrapper">
-      <ion-icon *ngIf="!store?.useAgenda" name="people-outline" aria-label="Filas"></ion-icon>
-      <ion-icon *ngIf="store?.useAgenda" name="calendar-outline" aria-label="Filas"></ion-icon>
+      <ion-icon *ngIf="this.profile === 0 || !store?.useAgenda" name="people-outline" aria-label="Filas"></ion-icon>
+      <ion-icon *ngIf="this.profile > 0 && store?.useAgenda" name="calendar-outline" aria-label="Filas"></ion-icon>
       <span class="notification-badge" *ngIf="total > 0">
         {{ total }}
       </span>
     </div>
-    <span *ngIf="!store?.useAgenda" class="footer-label">Fila</span>
-    <span *ngIf="store?.useAgenda" class="footer-label">Agenda</span>
+    <span *ngIf="this.profile === 0 || !store?.useAgenda" class="footer-label">Fila</span>
+    <span *ngIf="this.profile > 0 && store?.useAgenda" class="footer-label">Agenda</span>
   </div>
 </ion-footer>

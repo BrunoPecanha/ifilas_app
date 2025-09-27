@@ -68,7 +68,7 @@ export class ScheduleConfigPage implements OnInit {
     return null;
   }
 
-  private loadSchedule() {
+  private loadSchedule() {    
     this.scheduleService.getSchedule(this.store.id, this.user.id).subscribe({
       next: (res) => {
         if (res.valid && res.data) {
@@ -146,7 +146,6 @@ export class ScheduleConfigPage implements OnInit {
   }
 
   save() {
-
     const payload: ScheduleCreateRequest = {
       storeId: this.store.id,
       employeeId: this.user.id,

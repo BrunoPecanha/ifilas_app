@@ -121,10 +121,10 @@ export class SelectProfessionalPage implements OnInit {
     }
   }
 
-  async getInTheQueue(professional: ProfessionalModel) {    
+  async getInTheQueue(professional: ProfessionalModel) {
     if (this.store?.useAgenda) {
-      this.router.navigate(['/schedule-appointment'], {
-        queryParams: { storeId: this.storeId, professionalId: professional.id }
+      this.router.navigate(['/select-services'], {
+        queryParams: { queueId: professional.queueId, storeId: this.storeId, professionalId: professional.id, useAgenda: this.store?.useAgenda }
       });
     }
     else {

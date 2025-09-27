@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { AlertController, MenuController } from '@ionic/angular';
 import { SessionService } from 'src/services/session.service';
 import { Router, NavigationEnd } from '@angular/router';
@@ -24,7 +24,8 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     private menuCtrl: MenuController,
     private sessionService: SessionService,
     private userService: UserService,
-    private customerService: CustomerService
+    private customerService: CustomerService,
+    private cdr: ChangeDetectorRef
   ) {
     this.loadUserInformations();
   }
@@ -40,7 +41,6 @@ export class SideMenuComponent implements OnInit, OnDestroy {
   releaseOrdersBeforeGetsQueued: boolean = false;
   pendingOrdersCount: number = 0;
   interval: any;
-
 
   ngOnInit(): void {
     this.menuOpenedListener = () => this.loadUserQueInfo();
@@ -58,7 +58,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     });
 
     this.loadUserQueInfo();
-    
+
     if (this.companyFromSession?.releaseOrdersBeforeGetsQueued) {
       this.loadPendingOrdersCount();
 
@@ -112,14 +112,14 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  loadUserInformations() {    
+  loadUserInformations() {
     this.userFromSession = this.sessionService.getUser();
-    this.companyFromSession = this.sessionService.getStore();
+    this.companyFromSession = this.sessionService.getStore();    
 
     if (this.userFromSession) {
       this.userName = `${this.userFromSession.name} ${this.userFromSession.lastName}`;
-
     }
+
     if (this.companyFromSession) {
       this.companyName = this.companyFromSession?.name || 'Empresa não identificada';
       this.companyLogoPath = this.companyFromSession?.logoPath || '';

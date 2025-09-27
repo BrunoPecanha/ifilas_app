@@ -66,11 +66,15 @@ export class ChooseEstablishmentPage implements OnInit {
     this.session.setStore(selectedStore);
 
     this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, null).subscribe((isQueueOpenToday: boolean) => {
+      debugger
       if (this.profileSelected === 2)
         this.router.navigate(['/queue-list-for-owner']);
       else if (isQueueOpenToday) {
         this.router.navigate(['/customer-list-in-queue']);
-      } else {
+      } else if (selectedStore.useAgenda) {
+        this.router.navigate(['/schedule-config']);
+      }
+      else {
         this.router.navigate(['/queue-admin']);
       }
     });
@@ -82,7 +86,7 @@ export class ChooseEstablishmentPage implements OnInit {
     this.loadingCompanyId = est.id;
 
     setTimeout(() => {
-      this.session.setStore(est);      
+      this.session.setStore(est);
 
       this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, null)
         .subscribe((isQueueOpenToday: boolean) => {
@@ -91,6 +95,9 @@ export class ChooseEstablishmentPage implements OnInit {
             this.router.navigate(['/queue-list-for-owner']);
           } else if (isQueueOpenToday) {
             this.router.navigate(['/customer-list-in-queue']);
+          } else if (est.useAgenda) {
+            this.router.navigate(['/schedule-config']);
+
           } else {
             this.router.navigate(['/queue-admin']);
           }
