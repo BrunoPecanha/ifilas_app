@@ -121,16 +121,23 @@ export class SelectProfessionalPage implements OnInit {
     }
   }
 
-  async getInTheQueue(professional: ProfessionalModel) {
-    var isCostumerInQueue = await this.service.isCostumerInQueue(professional.queueId, this.user.id).toPromise();
-
-    if (isCostumerInQueue?.data) {
-      this.router.navigate(['/queue']);
-    }
-    else
-      this.router.navigate(['/select-services'], {
-        queryParams: { queueId: professional.queueId, storeId: this.storeId },
+  async getInTheQueue(professional: ProfessionalModel) {    
+    if (this.store?.useAgenda) {
+      this.router.navigate(['/schedule-appointment'], {
+        queryParams: { storeId: this.storeId, professionalId: professional.id }
       });
+    }
+    else {
+      var isCostumerInQueue = await this.service.isCostumerInQueue(professional.queueId, this.user.id).toPromise();
+
+      if (isCostumerInQueue?.data) {
+        this.router.navigate(['/queue']);
+      }
+      else
+        this.router.navigate(['/select-services'], {
+          queryParams: { queueId: professional.queueId, storeId: this.storeId },
+        });
+    }
   }
 
   toggleLike(queue: ProfessionalModel, event: Event) {

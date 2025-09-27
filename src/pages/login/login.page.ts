@@ -49,7 +49,6 @@ export class LoginPage {
         }));
 
         if (response && response.valid && response?.data.token && response.data?.user) {
-
           this.sessionService.setToken(response?.data.token);
           this.sessionService.setUser(response?.data.user);
 

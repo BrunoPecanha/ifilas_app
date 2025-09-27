@@ -24,7 +24,7 @@ export class RoleRegistrationPage implements OnInit {
     this.checkUser();
   }
 
-  private checkUser(): void {
+  private checkUser(): void {    
     this.user = this.sessionService.getUser();
 
     if (this.user?.profile === UserProfileEnum.customer) {

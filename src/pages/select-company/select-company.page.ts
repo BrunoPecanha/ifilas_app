@@ -228,16 +228,11 @@ export class SelectCompanyPage implements OnInit {
 
   selectCard(card: StoreModel): void {
     let storeSelected = this.companies.filter(card => card.id === card.id)[0];
+    
+    this.router.navigate(['/select-professional'], {
+      queryParams: { storeId: storeSelected.id }
+    });
 
-    if (!storeSelected.useAgenda) {
-      this.router.navigate(['/select-professional'], {
-        queryParams: { storeId: card.id }
-      });
-    } else {
-      this.router.navigate(['/schedule-appointment'], {
-        queryParams: { storeId: card.id }
-      });
-    }
   }
 
   onSearch(event: any) {

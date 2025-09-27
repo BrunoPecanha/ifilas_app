@@ -11,7 +11,6 @@
 ></app-custom-header>
 
 <ion-content class="services-content">
-  <!-- Barra de progresso/resumo -->
   <div class="summary-bar" [class.active]="selectedServices.length > 0">
     <div class="summary-content">
       <div class="summary-item">
@@ -28,7 +27,6 @@
     </div>
   </div>
 
-  <!-- Serviços -->
   <section class="card-section">
     <div class="section-header">
       <h2 class="section-title">Serviços Disponíveis</h2>
@@ -72,7 +70,6 @@
     </div>
   </section>
 
-  <!-- Serviços Selecionados -->
   <section class="card-section selected-section" *ngIf="selectedServices.length > 0">
     <div class="section-header">
       <h2 class="section-title">Seus Serviços</h2>
@@ -109,7 +106,6 @@
     </div>
   </section>
 
-  <!-- Observações e pagamento -->
   <section class="card-section">
     <div class="section-header">
       <h2 class="section-title">Finalizar Agendamento</h2>
@@ -119,7 +115,7 @@
       <div class="notes-header">
         <ion-icon name="create-outline"></ion-icon>
         <span>Observações</span>
-        <span class="char-counter">{{ notes?.length || 0 }}/33</span>
+        <span class="char-counter">{{ notes.length || 0 }}/33</span>
       </div>
       <ion-item lines="none" class="notes-input">
         <ion-textarea
@@ -165,7 +161,6 @@
     </div>
   </section>
 
-  <!-- Espaço para o footer -->
   <div class="footer-spacer"></div>
 </ion-content>
 

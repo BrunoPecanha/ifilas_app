@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AvailableDateModel } from 'src/models/available-date-model';
 import { StoreModel } from 'src/models/store-model';
 import { TimeSlotModel } from 'src/models/time-slot-model';
@@ -19,20 +20,19 @@ export class ScheduleAppointmentPage implements OnInit {
   selectedDate: Date | null = null;
   selectedTimeSlots: TimeSlotModel[] = [];
   daysWindow = 7;
-  user!: UserModel;
-  store!: StoreModel;
+  storeId: number = 0;
+  professionalId: number = 0;
 
-  constructor(private service: ScheduleService, private sessionService: SessionService) { 
+  constructor(private service: ScheduleService, private sessionService: SessionService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.store = this.sessionService.getStore();
-    this.user = this.sessionService.getUser();
+    this.getSelectedStoreIdAndProfessional();
     this.loadStoreAgenda();
   }
 
   loadStoreAgenda() {
-    this.service.getEmployeeAgendaForCostumers(this.store.id, this.user.id, new Date()).subscribe(res => {      
+    this.service.getEmployeeAgendaForCostumers(this.storeId, this.professionalId, new Date()).subscribe(res => {
       this.selectedStore = res.data.store;
       this.daysWindow = res.data.daysWindow;
       this.availableDates = res.data.availableDates.map(d => ({
@@ -42,12 +42,19 @@ export class ScheduleAppointmentPage implements OnInit {
     });
   }
 
-  selectDate(day: AvailableDateModel) {    
+  selectDate(day: AvailableDateModel) {
     if (!day.available)
       return;
 
     this.selectedDate = day.date;
     this.selectedTimeSlots = day.timeSlots;
+  }
+
+  getSelectedStoreIdAndProfessional() {
+    this.route.queryParams.subscribe(params => {
+      this.storeId = params['storeId'];
+      this.professionalId = params['professionalId'];
+    });
   }
 
   selectTimeSlot(slot: TimeSlotModel) {

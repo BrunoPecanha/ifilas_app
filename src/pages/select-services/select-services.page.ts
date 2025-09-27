@@ -74,7 +74,6 @@ export class SelectServicesPage {
     this.navCtrl.back();
   }
 
-  // NOVO MÉTODO ADICIONADO PARA VERIFICAR SE SERVIÇO ESTÁ SELECIONADO
   isServiceSelected(service: ServiceModel): boolean {
     return this.selectedServices.some(selectedService => selectedService.id === service.id);
   }
@@ -281,7 +280,6 @@ export class SelectServicesPage {
       await this.signalRService.leaveQueueGroup(groupName);
 
       this.signalRService.onUpdateQueue((data) => {
-        // Handler para atualizações da fila
       });
 
     } catch (error) {

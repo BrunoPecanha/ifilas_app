@@ -13,4 +13,9 @@ export interface ProfessionalModel {
   averageServiceTime: string;
   pauseReason: string;
   status: StatusQueueEnum;
+  photoUrl: string;
+  isNew: boolean;
+  distance: number;
+  rating: number;
+  numberOfRatings: number;
 }
