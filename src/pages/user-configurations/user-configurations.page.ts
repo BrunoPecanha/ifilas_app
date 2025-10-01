@@ -53,7 +53,8 @@ export class UserConfigurationsPage {
       servicesProvided: [''],
       aceptMesageFromOtherUsers: [false],
       acceptAwaysMinorQueue: [false],
-      deleteAccount: [false]
+      deleteAccount: [false],
+      useAgenda: [false]
     });
 
     this.user = this.sessionService.getUser();

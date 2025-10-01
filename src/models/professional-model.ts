@@ -12,6 +12,7 @@ export interface ProfessionalModel {
   averageWaitingTime: string;
   averageServiceTime: string;
   pauseReason: string;
+  useAgenda: boolean;
   status: StatusQueueEnum;
   photoUrl: string;
   isNew: boolean;
