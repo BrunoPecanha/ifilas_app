@@ -24,4 +24,5 @@ export interface UserModel extends To {
   password?: string;
   storeId: number | null;
   stores: StoreModel[];
+  useAgenda: boolean;
 }

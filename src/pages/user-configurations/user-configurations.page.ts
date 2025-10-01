@@ -107,7 +107,8 @@ export class UserConfigurationsPage {
       email: this.user.email,
       subtitle: this.user.subtitle,
       servicesProvided: this.user.servicesProvided,
-      acceptAwaysMinorQueue: this.user.acceptAwaysMinorQueue
+      acceptAwaysMinorQueue: this.user.acceptAwaysMinorQueue,
+      useAgenda: this.user.useAgenda || false
     });
 
     if (this.user.imageUrl) {
@@ -302,6 +303,7 @@ export class UserConfigurationsPage {
       subtitle: formValue.subtitle,
       servicesProvided: formValue.servicesProvided,
       acceptAwaysMinorQueue: formValue.acceptAwaysMinorQueue,
+      useAgenda: formValue.useAgenda || false,
       deleteAccount: formValue.deleteAccount || false,
       password: formValue.password
     };

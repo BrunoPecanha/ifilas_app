@@ -63,10 +63,9 @@ export class ChooseEstablishmentPage implements OnInit {
   enterCompany(event: Event, selectedStore: StoreModel) {
     event.stopPropagation();
 
-    this.session.setStore(selectedStore);
+    this.session.setStore(selectedStore);   
 
-    this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, null).subscribe((isQueueOpenToday: boolean) => {
-      debugger
+    this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, null).subscribe((isQueueOpenToday: boolean) => {      
       if (this.profileSelected === 2)
         this.router.navigate(['/queue-list-for-owner']);
       else if (isQueueOpenToday) {
@@ -83,12 +82,12 @@ export class ChooseEstablishmentPage implements OnInit {
   handleCompanyClick(est: StoreModel) {
     this.selectedHeaderImage = est.logoPath ?? '';
     this.selectedLogo = est.logoPath ?? '';
-    this.loadingCompanyId = est.id;
+    this.loadingCompanyId = est.id;    
 
     setTimeout(() => {
-      this.session.setStore(est);
+      this.session.setStore(est);    
 
-      this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, null)
+      this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, est.id)
         .subscribe((isQueueOpenToday: boolean) => {
           this.loadingCompanyId = null;
           if (this.profileSelected === 2) {

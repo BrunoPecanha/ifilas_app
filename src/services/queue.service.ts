@@ -115,7 +115,7 @@ export class QueueService {
     return this.http.put(`${this.apiUrl}/queue/remove`, command);
   }
 
-  getOpenedQueueListByEmployeeId(employeeId: number, storeId: number | null, sharedQueue: boolean): Observable<QueueListResponse> {
+  getOpenedQueueListByEmployeeId(employeeId: number, storeId: number | null, sharedQueue: boolean): Observable<QueueListResponse> {    
     return this.http.get<QueueListResponse>(`${this.apiUrl}/queue/${employeeId}/${storeId}/${sharedQueue}/employee`);
   }
 
