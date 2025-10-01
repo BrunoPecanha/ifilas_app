@@ -6,6 +6,7 @@ import { StatusQueueEnum } from 'src/models/enums/status-queue.enum';
 import { QueueModel } from 'src/models/queue-model';
 import { QueuePauseRequest } from 'src/models/requests/queue-pause-request';
 import { StoreModel } from 'src/models/store-model';
+import { UserModel } from 'src/models/user-model';
 import { CustomerService } from 'src/services/customer.service';
 import { QrScannerService } from 'src/services/qr-scanner.service';
 import { QueueService } from 'src/services/queue.service';
@@ -21,13 +22,13 @@ import { isToday } from 'src/utils/date-utils';
   styleUrls: ['./customer-list-in-queue.page.scss'],
 })
 export class CustomerListInQueuePage implements OnInit, OnDestroy {
-  clients: CustomerInQueueForEmployeeModel[] =  [];
+  clients: CustomerInQueueForEmployeeModel[] = [];
   currentDate = new Date();
   isLoading: boolean = false;
   isPaused: boolean = false;
   queue: QueueModel | null = null;
   store: StoreModel = {} as StoreModel;
-  employee!: StoreModel;
+  employee!: UserModel;
 
   editingNameMap: { [clientId: number]: boolean } = {};
   editedNames: { [clientId: number]: string } = {};
@@ -85,7 +86,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
 
     const diffMs = agora.getTime() - entrada.getTime();
     const diffMin = Math.floor(diffMs / 60000);
-    
+
     return this.formatMinutesToHHMM(diffMin);
   }
 
@@ -162,7 +163,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
 
   private loadInitialData() {
     this.loadQueueData();
-    this.getQueueForEmployee();
+    this.getQueueOrAgendaForEmployee();
   }
 
   enableEditName(client: CustomerInQueueForEmployeeModel) {
@@ -336,7 +337,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     return this.clients?.some(client => client.inService) && !this.store.attendSimultaneously;
   }
 
-  private getQueueForEmployee() {
+  private getQueueOrAgendaForEmployee() {
     if (!this.employee.id)
       return;
 
@@ -525,13 +526,13 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
   }
 
   getPaymentColor(paymentIcon: string): string {
-    const colorMap: {[key: string]: string} = {
+    const colorMap: { [key: string]: string } = {
       'cash-outline': 'success',
       'card-outline': 'primary',
       'wallet-outline': 'warning',
       'pricetags-outline': 'secondary'
     };
-    
+
     return colorMap[paymentIcon] || 'medium';
   }
 }

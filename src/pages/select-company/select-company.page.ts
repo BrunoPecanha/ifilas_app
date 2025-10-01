@@ -77,7 +77,6 @@ export class SelectCompanyPage implements OnInit {
             ...store,
             isNew: this.checkIfNew(store.createdAt),
             liked: store.liked || false,
-            useAgenda: store.useAgenda || false,
             minorQueue: store.minorQueue || false,
             distance: store.distance || this.calculateRandomDistance()
           } as StoreModel));

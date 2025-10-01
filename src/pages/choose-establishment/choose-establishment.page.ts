@@ -70,7 +70,7 @@ export class ChooseEstablishmentPage implements OnInit {
         this.router.navigate(['/queue-list-for-owner']);
       else if (isQueueOpenToday) {
         this.router.navigate(['/customer-list-in-queue']);
-      } else if (selectedStore.useAgenda) {
+      } else if (this.user.useAgenda) {
         this.router.navigate(['/schedule-config']);
       }
       else {
@@ -94,7 +94,7 @@ export class ChooseEstablishmentPage implements OnInit {
             this.router.navigate(['/queue-list-for-owner']);
           } else if (isQueueOpenToday) {
             this.router.navigate(['/customer-list-in-queue']);
-          } else if (est.useAgenda) {
+          } else if (this.user.useAgenda) {
             this.router.navigate(['/schedule-config']);
 
           } else {

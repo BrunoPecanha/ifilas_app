@@ -347,7 +347,6 @@ export class CompanyConfigurationsPage implements OnDestroy {
       answerOutOfOrder: storeData.answerOutOfOrder,
       answerScheduledTime: storeData.answerScheduledTime,
       whatsAppNotice: storeData.whatsAppNotice,
-      useAgenda: storeData.useAgenda,
       timeRemoval: storeData.timeRemoval,
       storeSubtitle: storeData.storeSubtitle,
       releaseOrdersBeforeGetsQueued: storeData.releaseOrdersBeforeGetsQueued,

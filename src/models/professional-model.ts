@@ -16,6 +16,7 @@ export interface ProfessionalModel {
   status: StatusQueueEnum;
   photoUrl: string;
   isNew: boolean;
+  profileImage: string;
   distance: number;
   rating: number;
   numberOfRatings: number;

@@ -24,8 +24,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     private menuCtrl: MenuController,
     private sessionService: SessionService,
     private userService: UserService,
-    private customerService: CustomerService,
-    private cdr: ChangeDetectorRef
+    private customerService: CustomerService
   ) {
     this.loadUserInformations();
   }
