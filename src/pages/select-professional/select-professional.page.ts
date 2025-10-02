@@ -201,6 +201,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   }
 
   async getInTheQueue(professional: ProfessionalModel) {
+    debugger
     try {
       if (professional.status !== StatusQueueEnum.open) {
         await this.presentAlert(
@@ -236,6 +237,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   }
 
   async openAgenda(professional: ProfessionalModel) {
+    debugger
     try {
       if (professional.status !== StatusQueueEnum.open) {
         await this.presentAlert(

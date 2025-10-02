@@ -41,6 +41,7 @@ export class SelectCompanyPage implements OnInit {
   }
 
   private loadData() {
+    debugger
     this.loadCategories();
     this.loadStores();
   }
@@ -69,7 +70,7 @@ export class SelectCompanyPage implements OnInit {
 
     if (!this.selectedFilter && !this.selectedCategoryId && !this.searchQuery) {
       this.isLoading = true;
-      this.isEmptyResult = false;
+      this.isEmptyResult = false;     
 
       this.service.loadNearbyStoresById(userId).subscribe({
         next: (response) => {
@@ -231,7 +232,6 @@ export class SelectCompanyPage implements OnInit {
     this.router.navigate(['/select-professional'], {
       queryParams: { storeId: storeSelected.id }
     });
-
   }
 
   onSearch(event: any) {

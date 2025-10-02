@@ -13,7 +13,7 @@ export interface StoreModel extends To {
   name: string;
   address: AddressModel;
   number: string;
-  rating: number;
+  rating: string;
   votes: number;
   minorQueue: number;
   city: string;
@@ -43,6 +43,8 @@ export interface StoreModel extends To {
   facebook: string;
   youtube: string;
   webSite: string;
+  useAgenda: boolean;
+  useQueue: boolean;
   whatsapp: string;
   attendSimultaneously: boolean;
   releaseOrdersBeforeGetsQueued: boolean;

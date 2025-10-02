@@ -20,59 +20,86 @@
 ></ion-searchbar>
 
 <div class="content-container">
-  <div class="filters-toolbar">
-    <div class="filters-scroll">
-      <div class="filter-item" 
-           [class.active]="selectedFilter === 'nearby'"
-           (click)="applyFilter('nearby')">
-        <ion-icon name="navigate-outline"></ion-icon>
-        <span>Próximos</span>
+  <!-- Filtros recolhíveis -->
+  <div class="collapsible-filters">
+    <div class="filters-header" (click)="toggleFilters()">
+      <div class="filters-title">
+        <ion-icon name="filter-outline"></ion-icon>
+        <span>Filtros</span>
       </div>
-      
-      <div class="filter-item" 
-           [class.active]="selectedFilter === 'minorQueue'"
-           (click)="applyFilter('minorQueue')">
-        <ion-icon name="time-outline"></ion-icon>
-        <span>Menor fila</span>
-      </div>
-      
-      <div class="filter-item" 
-           [class.active]="selectedFilter === 'favorites'"
-           (click)="applyFilter('favorites')">
-        <ion-icon name="heart-outline"></ion-icon>
-        <span>Favoritos</span>
-      </div>
-      
-      <div class="filter-item" 
-           [class.active]="selectedFilter === 'recent'"
-           (click)="applyFilter('recent')">
-        <ion-icon name="flash-outline"></ion-icon>
-        <span>Recentes</span>
-      </div>
-      
-      <div class="filter-item categories-toggle" (click)="toggleCategories()">
-        <ion-icon name="grid-outline"></ion-icon>
-        <span>Categorias</span>
-        <ion-icon 
-          [name]="categoriesExpanded ? 'chevron-up-outline' : 'chevron-down-outline'" 
-          class="toggle-icon">
-        </ion-icon>
-      </div>
+      <ion-icon 
+        [name]="filtersExpanded ? 'chevron-up-outline' : 'chevron-down-outline'" 
+        class="toggle-icon"
+      ></ion-icon>
     </div>
-  </div>
 
-  <div class="categories-section" [class.expanded]="categoriesExpanded" *ngIf="categories?.length">
-    <div class="categories-scroll">
-      <div
-        *ngFor="let category of categories"
-        (click)="selectCategory(category.id)"
-        [class.selected]="selectedCategoryId === category.id"
-        class="category-item"
-      >
-        <div class="category-icon-wrapper">
-          <img [src]="category.imgPath" alt="{{ category.name }}" />
+    <div class="filters-content" [class.expanded]="filtersExpanded">
+      <!-- Categorias -->
+      <div class="filter-group">
+        <h3 class="filter-group-title">Categorias</h3>
+        <div class="categories-scroll">
+          <div
+            *ngFor="let category of categories"
+            (click)="selectCategory(category.id)"
+            [class.selected]="selectedCategoryId === category.id"
+            class="category-item"
+          >
+            <div class="category-icon-wrapper">
+              <img [src]="category.imgPath" alt="{{ category.name }}" />
+            </div>
+            <span class="category-label">{{ category.name }}</span>
+          </div>
         </div>
-        <span class="category-label">{{ category.name }}</span>
+      </div>
+
+      <!-- Filtros principais -->
+      <div class="filter-group">
+        <h3 class="filter-group-title">Ordenar por</h3>
+        <div class="filters-grid">
+          <div
+            class="filter-card"
+            [class.active]="selectedFilter === 'nearby'"
+            (click)="applyFilter('nearby')"
+          >
+            <div class="filter-icon">
+              <ion-icon name="navigate-outline"></ion-icon>
+            </div>
+            <span class="filter-label">Próximos</span>
+          </div>
+
+          <div
+            class="filter-card"
+            [class.active]="selectedFilter === 'minorQueue'"
+            (click)="applyFilter('minorQueue')"
+          >
+            <div class="filter-icon">
+              <ion-icon name="time-outline"></ion-icon>
+            </div>
+            <span class="filter-label">Menor fila</span>
+          </div>
+
+          <div
+            class="filter-card"
+            [class.active]="selectedFilter === 'favorites'"
+            (click)="applyFilter('favorites')"
+          >
+            <div class="filter-icon">
+              <ion-icon name="heart-outline"></ion-icon>
+            </div>
+            <span class="filter-label">Favoritos</span>
+          </div>
+
+          <div
+            class="filter-card"
+            [class.active]="selectedFilter === 'recent'"
+            (click)="applyFilter('recent')"
+          >
+            <div class="filter-icon">
+              <ion-icon name="flash-outline"></ion-icon>
+            </div>
+            <span class="filter-label">Recentes</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -87,6 +114,7 @@
       ></ion-refresher-content>
     </ion-refresher>
 
+    <!-- Estados de loading e vazio -->
     <div *ngIf="isLoading" class="state-container">
       <div class="loading-content">
         <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
@@ -105,17 +133,35 @@
       </div>
     </div>
 
+    <!-- Lista de estabelecimentos -->
     <div *ngIf="!isLoading && !isEmptyResult" class="companies-container">
-      <div class="results-info">
-        <p>{{ filteredCards.length }} estabelecimento(s) encontrado(s)</p>
+      <div class="results-header">
+        <p class="results-count">{{ filteredCards.length }} estabelecimento(s) encontrado(s)</p>
+        <button class="clear-filters-btn" (click)="clearFilters()" *ngIf="hasActiveFilters">
+          <ion-icon name="close-circle-outline"></ion-icon>
+          Limpar filtros
+        </button>
       </div>
 
-      <div class="companies-list">
+      <div class="companies-grid">
         <div
+          class="company-card"
           *ngFor="let card of filteredCards"
-          class="company-card-horizontal"
           (click)="selectCard(card)"
         >
+          <div class="card-header">
+            <!-- Badge "Novo" no canto superior esquerdo -->
+            <div class="company-badge" *ngIf="card.isNew">Novo</div>
+            
+            <!-- Coração movido para o canto superior direito -->
+            <div class="like-button" (click)="toggleLike(card, $event)">
+              <ion-icon
+                [name]="card.liked ? 'heart' : 'heart-outline'"
+                [class.liked]="card.liked"
+              ></ion-icon>
+            </div>
+          </div>
+
           <div class="card-content">
             <div class="logo-container">
               <div class="logo-wrapper">
@@ -131,12 +177,10 @@
                   </div>
                 </ng-template>
               </div>
-              
-              <div class="company-badge" *ngIf="card.isNew">Novo</div>
             </div>
 
             <div class="company-info">
-              <div class="info-header">
+              <div class="info-main">
                 <h3 class="company-name">
                   {{ card.name }}
                   <ion-icon
@@ -146,36 +190,46 @@
                   ></ion-icon>
                 </h3>
                 
-                <div class="like-button" (click)="toggleLike(card, $event)">
-                  <ion-icon
-                    [name]="card.liked ? 'heart' : 'heart-outline'"
-                    [class.liked]="card.liked"
-                  ></ion-icon>
+                <div class="company-category">
+                  <ion-icon name="pricetag-outline"></ion-icon>
+                  {{ card.category }}
+                </div>
+
+                <div class="company-distance">
+                  <ion-icon name="navigate-outline"></ion-icon>
+                  {{ card.distance }}
                 </div>
               </div>
 
-              <div class="company-category">{{ card.category }}</div>
-
-              <div class="company-stats">
-                <div class="stat-group">
-                  <div class="stat">
-                    <ion-icon name="star"></ion-icon>
-                    <span>{{ card.rating || '0' }}</span>
+              <div class="service-types" *ngIf="card.useAgenda || card.useQueue">
+                <div class="service-badges">
+                  <div class="service-badge agenda" *ngIf="card.useAgenda">
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    <span>Agendamento</span>
                   </div>
-                  
-                  <div class="stat">
+                  <div class="service-badge walkin" *ngIf="card.useQueue">
                     <ion-icon name="people-outline"></ion-icon>
-                    <span>
-                      {{ card.minorQueue === -1 ? 'Sem fila' : 
-                         card.minorQueue == 0 ? 'Sem espera' : 
-                         card.minorQueue + ' na fila' }}
-                    </span>
+                    <span>Ordem de Chegada</span>
                   </div>
                 </div>
-                
-                <div class="delivery-info">
-                  <ion-icon name="time-outline"></ion-icon>
-                  <span>15-25 min</span>
+              </div>
+
+              <div class="company-stats">
+                <div class="stat-item rating">
+                  <ion-icon name="star"></ion-icon>
+                  <span>{{ card.rating || '0' }}</span>
+                </div>
+
+                <div class="stat-item queue" [class.no-queue]="card.minorQueue === -1">
+                  <ion-icon name="people-outline"></ion-icon>
+                  <span>
+                    {{ card.minorQueue === -1 ? 'Sem fila' : card.minorQueue === 0 ? 'Sem espera' : card.minorQueue + ' na fila' }}
+                  </span>
+                </div>
+
+                <div class="status-indicator" [class.open]="card.minorQueue >= 0">
+                  <div class="status-dot"></div>
+                  <span>{{ card.minorQueue >= 0 ? 'Aberto' : 'Fechado' }}</span>
                 </div>
               </div>
             </div>
