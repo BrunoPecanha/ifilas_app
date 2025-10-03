@@ -124,7 +124,7 @@
 
           <div class="card-header">
             <div class="status-chip" [class.open]="card.isOpen">
-              {{ card.isOpen  ? 'Aberto' : 'Fechado' }}
+              {{ card.isOpen ? 'Aberto' : 'Fechado' }}
             </div>
             <div class="like-button" (click)="toggleLike(card, $event)">
               <ion-icon
@@ -155,7 +155,7 @@
                   <ion-icon name="checkmark-circle"></ion-icon>
                 </span>
               </div>
-               <div class="company-name">
+              <div class="company-name">
                 <span class="rating">
                   <ion-icon name="star"></ion-icon>
                   <span>{{ card.rating || '0' }}</span>
@@ -164,32 +164,28 @@
               <p class="company-category">{{ card.category }}</p>
               <p class="company-category">{{ card.distance }}</p>
 
-              <div class="service-badges">
-                <div class="service-badge agenda" *ngIf="card.useAgenda">
-                  <ion-icon name="calendar-outline"></ion-icon> Agendamento
-                </div>
-                <div class="service-badge walkin" *ngIf="card.useQueue">
-                  <ion-icon name="people-outline"></ion-icon> Ordem de Chegada
-                </div>
-              </div>
-
-              <div class="company-stats">
-                <div class="stat-item queue">
-                  <ion-icon name="people-outline"></ion-icon>
-                  <span>
+              <div class="service-badges-stats">
+                <div class="badge-block" *ngIf="card.useQueue">
+                  <div class="service-badge walkin">
+                    <ion-icon name="people-outline"></ion-icon> Ordem de Chegada
+                  </div>
+                  <div class="stat-text">
                     {{ card.minorQueue === -1 ? 'Não abriu a fila hoje' :
                     card.minorQueue == 0 ? 'Ninguém na fila' : card.minorQueue +
                     ' pessoa(s) na fila' }}
-                  </span>
+                  </div>
                 </div>
-                <div class="stat-item agenda" *ngIf="card.useAgenda">
-                  <ion-icon name="calendar-outline"></ion-icon>
-                  <span>
+
+                <div class="badge-block" *ngIf="card.useAgenda">
+                  <div class="service-badge agenda">
+                    <ion-icon name="calendar-outline"></ion-icon> Agendamento
+                  </div>
+                  <div class="stat-text">
                     {{ card.nextHourOnAgenda ? 'Próx horário: ' +
                     card.nextHourOnAgenda : 'Sem horários na agenda' }}
-                  </span>
+                  </div>
                 </div>
-              </div>             
+              </div>
             </div>
           </div>
         </div>

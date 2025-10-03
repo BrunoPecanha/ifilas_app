@@ -1,11 +1,11 @@
 .header-loja-dinamico {
   position: relative;
-  margin-bottom: 12px; 
+  margin-bottom: 12px;
 }
 
 .banner-loja {
   position: relative;
-  height: 140px; 
+  height: 140px;
   overflow: hidden;
 }
 
@@ -27,18 +27,18 @@
 .info-loja {
   position: relative;
   text-align: center;
-  margin-top: -40px; 
+  margin-top: -40px;
   z-index: 2;
 }
 
 .logo-loja {
-  width: 80px; 
-  height: 80px; 
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #fff; 
+  border: 3px solid #fff;
   background: #fff;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12); 
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
 .logo-loja:hover {
@@ -46,28 +46,28 @@
 }
 
 .nome-loja {
-  font-size: 1.3rem; 
+  font-size: 1.3rem;
   font-weight: bold;
-  margin: 10px 0 4px; 
+  margin: 10px 0 4px;
   color: #2c3e50;
 }
 
 .descricao-loja {
-  font-size: 0.85rem; 
+  font-size: 0.85rem;
   color: #777;
-  margin-bottom: 12px; 
+  margin-bottom: 12px;
 }
 
 .verified-icon {
-  font-size: 14px; 
+  font-size: 14px;
   margin-left: 4px;
   color: var(--ion-color-primary);
 }
 
 .filter-section {
-  padding: 12px 16px 6px; 
+  padding: 12px 16px 6px;
   background: #fff;
-  margin-bottom: 6px; 
+  margin-bottom: 6px;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -81,11 +81,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px; 
+  padding: 8px 14px;
   border: none;
   background: transparent;
   color: #666;
-  font-size: 0.85rem; 
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -96,7 +96,7 @@
 }
 
 .filter-btn ion-icon {
-  font-size: 1rem; 
+  font-size: 1rem;
   transition: color 0.3s ease;
 }
 
@@ -117,23 +117,22 @@
   bottom: -2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 18px; 
+  width: 18px;
   height: 2px;
   background: var(--ion-color-primary);
   border-radius: 1px;
 }
 
-
 .filter-buttons.clean {
   background: transparent;
   border-radius: 0;
   padding: 0;
-  gap: 20px; 
+  gap: 20px;
 }
 
 .filter-buttons.clean .filter-btn {
   background: transparent;
-  padding: 6px 3px; 
+  padding: 6px 3px;
   border-radius: 0;
   position: relative;
 }
@@ -166,53 +165,39 @@
   color: var(--ion-color-primary);
 }
 
-
 .professionals-counter {
   text-align: center;
-  font-size: 0.75rem; 
+  font-size: 0.75rem;
   color: #888;
-  margin-top: 6px; 
+  margin-top: 6px;
   font-weight: 400;
 }
 
 ion-content.scroll-area {
-  padding-bottom: 80px; 
+  padding-bottom: 80px;
   overflow-y: auto;
   --background: #f8f9fa;
 }
 
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 6px; 
-  padding: 12px 16px 6px; 
-  font-size: 1rem; 
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.section-title ion-icon {
-  font-size: 1.1rem; 
-}
-
 .atendentes-wrapper {
-  padding: 0 8px 12px; 
+  padding: 0 8px 12px;
 }
 
 .atendente-card {
   border-radius: 12px;
-  margin: 0 2px 12px; 
+  margin: 0 2px 12px;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); 
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   cursor: pointer;
   overflow: hidden;
-  border-left: 3px solid transparent; 
+  border-left: 3px solid transparent;
+  height: 140px;
 }
 
 .atendente-card:hover {
-  transform: translateY(-1px); 
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12); 
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
 }
 
 .queue-card {
@@ -223,25 +208,35 @@ ion-content.scroll-area {
   border-left-color: var(--ion-color-secondary);
 }
 
-.card-header {
+.card-content-wrapper {
   display: flex;
-  gap: 10px; 
-  padding: 12px; 
-  position: relative;
-  align-items: flex-start;
+  height: 100%;
+  padding: 16px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.photo-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 80px;
+  flex-shrink: 0;
 }
 
 .professional-photo {
   position: relative;
-  width: 50px; 
-  height: 50px; 
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #f1f1f1;
   flex-shrink: 0;
-  margin-top: 2px; 
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .photo-image {
@@ -252,26 +247,16 @@ ion-content.scroll-area {
 }
 
 .photo-icon {
-  font-size: 32px; 
+  font-size: 45px;
   color: #888;
-}
-
-.photo-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.1), transparent);
-  border-radius: 50%;
 }
 
 .status-indicator {
   position: absolute;
-  top: 0px; 
-  right: 2px; 
-  width: 14px; 
-  height: 14px;
+  top: 30px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   border: 2px solid #fff;
   z-index: 3;
@@ -290,73 +275,72 @@ ion-content.scroll-area {
   background-color: #f44336;
 }
 
-.professional-main-info {
+.info-column {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   min-width: 0;
+  gap: 8px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.top-row {
+  align-items: flex-start;
 }
 
 .name-section {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 3px; 
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
 .nome-profissional {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: #2c3e50;
   margin: 0;
-  flex: 1;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .professional-badges {
   display: flex;
-  gap: 3px; 
-  margin-left: 6px; 
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .type-badge {
-  font-size: 0.65rem; 
-  padding: 3px 6px; 
+  font-size: 0.65rem;
+  padding: 3px 6px;
 }
 
 .new-badge {
-  font-size: 0.65rem; 
-  padding: 3px 5px; 
-}
-
-.nome-fila {
-  font-size: 0.85rem; 
-  color: var(--ion-color-primary);
-  font-weight: 500;
-  margin: 0 0 3px; 
-}
-
-.subtitulo {
-  font-size: 0.8rem; 
-  color: #666;
-  margin: 0;
-  line-height: 1.2; 
+  font-size: 0.65rem;
+  padding: 3px 5px;
 }
 
 .status-section {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px; 
   flex-shrink: 0;
-  margin-top: 2px;
 }
 
 .status-badge {
   display: flex;
   align-items: center;
-  gap: 3px; 
-  padding: 4px 8px; 
-  border-radius: 10px; 
-  font-size: 0.7rem; 
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
   font-weight: 600;
   background-color: #f8f9fa;
   white-space: nowrap;
@@ -372,10 +356,41 @@ ion-content.scroll-area {
   color: #e65100;
 }
 
+.middle-row {
+  align-items: center;
+}
+
+.professional-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.nome-fila {
+  font-size: 0.85rem;
+  color: var(--ion-color-primary);
+  font-weight: 500;
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtitulo {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .rating-section {
   display: flex;
   align-items: center;
-  gap: 3px; 
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .stars {
@@ -384,83 +399,84 @@ ion-content.scroll-area {
 }
 
 .stars ion-icon {
-  font-size: 0.8rem; 
+  font-size: 0.75rem;
 }
 
 .rating-text {
-  font-size: 0.65rem; 
+  font-size: 0.65rem;
   color: #666;
 }
 
-ion-card-content {
-  padding: 8px 12px 12px; 
+.bottom-row {
+  align-items: flex-end;
+}
+
+.queue-info-section,
+.agenda-info-section {
+  flex: 1;
+  min-width: 0;
 }
 
 .queue-progress-container {
-  margin: 8px 0; 
+  margin: 0;
 }
 
 .progress-info {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem; 
+  font-size: 0.75rem;
   color: #555;
-  margin-bottom: 4px; 
+  margin-bottom: 4px;
 }
 
 .barra-progresso-wrapper {
-  height: 5px; 
-  border-radius: 2.5px; 
+  height: 5px;
+  border-radius: 3px;
   background-color: #ecf0f1;
   overflow: hidden;
 }
 
 .barra-progresso {
   height: 100%;
-  border-radius: 2.5px; 
+  border-radius: 3px;
   transition: width 0.4s ease-in-out, background-color 0.3s;
-}
-
-.agenda-info-section {
-  margin: 8px 0; 
 }
 
 .agenda-features {
   display: flex;
   flex-direction: column;
-  gap: 6px; 
+  gap: 5px;
 }
 
 .feature-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.75rem; 
+  gap: 5px;
+  font-size: 0.75rem;
   color: #666;
 }
 
 .feature-item ion-icon {
-  font-size: 0.8rem; 
+  font-size: 0.8rem;
   flex-shrink: 0;
 }
 
 .additional-info {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px; 
-  margin-top: 8px; 
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 ion-chip {
   --background: #f8f9fa;
   --color: #34495e;
-  font-size: 0.7rem; 
-  height: 22px; 
-  border-radius: 11px; 
+  font-size: 0.7rem;
+  height: 22px;
+  border-radius: 11px;
 }
 
 ion-chip ion-icon {
-  font-size: 0.75rem; 
+  font-size: 0.75rem;
 }
 
 .schedule-chip {
@@ -471,19 +487,19 @@ ion-chip ion-icon {
 .mensagem-vazia {
   text-align: center;
   color: #888;
-  padding: 40px 16px; 
+  padding: 40px 16px;
   font-style: italic;
 }
 
 .empty-icon {
-  font-size: 2.5rem; 
-  margin-bottom: 12px; 
+  font-size: 2.5rem;
+  margin-bottom: 12px;
   color: #ccc;
 }
 
 .empty-subtitle {
-  font-size: 0.85rem; 
-  margin-top: 6px; 
+  font-size: 0.85rem;
+  margin-top: 6px;
   color: #aaa;
 }
 
@@ -494,7 +510,7 @@ ion-chip ion-icon {
 
 .atendente-card.disabled:hover {
   transform: none;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); 
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .atendente-card:not(.disabled):hover .professional-photo {
@@ -506,47 +522,65 @@ ion-chip ion-icon {
   color: var(--ion-color-primary);
 }
 
+@media (max-width: 768px) {
+  .atendente-card {
+    height: 130px;
+  }
+  
+  .card-content-wrapper {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .photo-column {
+    width: 70px;
+  }
+  
+  .professional-photo {
+    width: 60px;
+    height: 60px;
+  }
+}
 
 @media (max-width: 600px) {
   ion-content.scroll-area {
-    padding-bottom: 70px; 
+    padding-bottom: 70px;
   }
 
   .banner-loja {
-    height: 100px; 
+    height: 100px;
   }
 
   .logo-loja {
-    width: 70px; 
-    height: 70px; 
+    width: 70px;
+    height: 70px;
   }
 
   .nome-loja {
-    font-size: 1.1rem; 
+    font-size: 1.1rem;
   }
 
-  .card-header {
+  .atendente-card {
+    height: auto;
+    min-height: 120px;
+  }
+  
+  .info-column {
+    gap: 6px;
+  }
+  
+  .info-row {
     flex-direction: column;
-    gap: 10px; 
+    align-items: flex-start;
+    gap: 4px;
   }
-
-  .status-section {
+  
+  .top-row {
     flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
   }
-
-  .professional-photo {
-    width: 45px; 
-    height: 45px; 
-    align-self: center;
-  }
-
-  .status-indicator {
-    width: 12px; 
-    height: 12px;
-    top: 1px;
-    right: 1px;
+  
+  .status-section {
+    align-self: flex-end;
   }
 }
 
@@ -556,53 +590,54 @@ ion-chip ion-icon {
   }
   
   .filter-btn {
-    padding: 8px 10px; 
-    font-size: 0.8rem; 
+    padding: 8px 10px;
+    font-size: 0.8rem;
   }
   
   .filter-btn ion-icon {
-    font-size: 0.9rem; 
+    font-size: 0.9rem;
   }
   
   .filter-buttons.clean {
-    gap: 12px; 
+    gap: 12px;
   }
   
   .filter-buttons.clean .filter-btn {
-    padding: 6px 1px; 
-    font-size: 0.8rem; 
+    padding: 6px 1px;
+    font-size: 0.8rem;
   }
 
-  .card-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px; 
+  .photo-column {
+    width: 60px;
   }
-
-  .status-section {
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 6px; 
-  }
-
+  
   .professional-photo {
-    align-self: center;
+    width: 50px;
+    height: 50px;
+  }
+  
+  .photo-icon {
+    font-size: 35px;
+  }
+  
+  .status-indicator {
+    width: 14px;
+    height: 14px;
   }
 }
 
 @media (max-width: 400px) {
   .filter-buttons {
     flex-direction: column;
-    gap: 3px; 
+    gap: 3px;
   }
-
+  
   .name-section {
     flex-direction: column;
     align-items: flex-start;
-    gap: 3px; 
+    gap: 4px;
   }
-
+  
   .professional-badges {
     margin-left: 0;
   }
@@ -610,7 +645,7 @@ ion-chip ion-icon {
 
 @media (max-width: 360px) {
   .filter-section {
-    padding: 10px 12px 4px; 
+    padding: 10px 12px 4px;
   }
   
   .filter-btn {
@@ -619,15 +654,69 @@ ion-chip ion-icon {
   }
   
   .filter-btn ion-icon {
-    font-size: 0.85rem; 
+    font-size: 0.85rem;
   }
 
   .atendentes-wrapper {
-    padding: 0 6px 10px; 
+    padding: 0 6px 10px;
+  }
+  
+  .card-content-wrapper {
+    padding: 10px;
+    gap: 8px;
   }
 }
 
 ion-content::part(scroll) {
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+/* Garante que a coluna de informações ocupe todo o espaço disponível */
+.info-column {
+  flex: 1 1 auto; /* permite crescer e encolher */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 8px;
+}
+
+/* Expande a seção da fila horizontalmente */
+.queue-info-section {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Faz a barra de progresso ocupar toda a largura da seção */
+.barra-progresso-wrapper {
+  width: 100%;
+}
+
+/* Permite que os detalhes da fila quebrem linha se necessário */
+.progress-info {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/* Ajusta os chips na parte inferior para ocupar espaço e quebrar linha se necessário */
+.additional-info {
+  display: flex;
+  flex-wrap: wrap; /* permite quebra de linha */
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Ajuste responsivo para telas menores */
+@media (max-width: 600px) {
+  .bottom-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .queue-info-section,
+  .additional-info {
+    width: 100%;
+  }
 }

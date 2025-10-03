@@ -361,7 +361,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   }
 
   formatWaitingTime(timeString: string): string {
-    if (!timeString || timeString === '00:00:00') return '--';
+    if (!timeString || timeString === '00:00:00') return 'Sua vez';
 
     try {
       const [hours, minutes] = timeString.split(':');
