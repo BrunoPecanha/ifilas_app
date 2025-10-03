@@ -4,6 +4,7 @@ import { NavController } from '@ionic/angular';
 import { StoreListResponse } from 'src/models/responses/store-list-response';
 import { StoreModel } from 'src/models/store-model';
 import { UserModel } from 'src/models/user-model';
+import { EmployeeStoreService } from 'src/services/employee.store.service';
 import { QueueService } from 'src/services/queue.service';
 import { SessionService } from 'src/services/session.service';
 import { StoresService } from 'src/services/stores.service';
@@ -22,7 +23,9 @@ export class ChooseEstablishmentPage implements OnInit {
   isLoading = false;
   loadingCompanyId: number | null = null;
 
-  constructor(private router: Router, private storeService: StoresService,
+  constructor(private router: Router,
+    private storeService: StoresService,
+    private employeeStoreService: EmployeeStoreService,
     private session: SessionService,
     private navCtrl: NavController,
     private queueService: QueueService) {
@@ -50,7 +53,6 @@ export class ChooseEstablishmentPage implements OnInit {
     }
   }
 
-
   getBack() {
     this.navCtrl.back();
   }
@@ -62,10 +64,9 @@ export class ChooseEstablishmentPage implements OnInit {
 
   enterCompany(event: Event, selectedStore: StoreModel) {
     event.stopPropagation();
+    this.session.setStore(selectedStore);
 
-    this.session.setStore(selectedStore);   
-
-    this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, null).subscribe((isQueueOpenToday: boolean) => {      
+    this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, null).subscribe((isQueueOpenToday: boolean) => {
       if (this.profileSelected === 2)
         this.router.navigate(['/queue-list-for-owner']);
       else if (isQueueOpenToday) {
@@ -79,13 +80,24 @@ export class ChooseEstablishmentPage implements OnInit {
     });
   }
 
+  updateEmployeeConfig(id: number) {
+    this.employeeStoreService.useAgenda(id).subscribe({
+      next: (response) => {
+        this.user.useAgenda = response.data;        
+        this.session.setUser(this.user);
+      }
+    });
+  }
+
   handleCompanyClick(est: StoreModel) {
     this.selectedHeaderImage = est.logoPath ?? '';
     this.selectedLogo = est.logoPath ?? '';
     this.loadingCompanyId = est.id;    
 
+    this.updateEmployeeConfig(this.user.id);
+
     setTimeout(() => {
-      this.session.setStore(est);    
+      this.session.setStore(est);
 
       this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, est.id)
         .subscribe((isQueueOpenToday: boolean) => {

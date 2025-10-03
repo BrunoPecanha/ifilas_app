@@ -30,4 +30,8 @@ export class EmployeeStoreService {
   loadPendingAndAcceptedInvitesByStore(id: number): Observable<EmployeeStoreResponse> {
     return this.http.get<EmployeeStoreResponse>(`${this.apiUrl}/employee/store-invites/${id}`);
   }
+
+  useAgenda(userId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/employee/useAgenda/${userId}`);
+  }
 }

@@ -51,7 +51,6 @@ export class SideMenuComponent implements OnInit, OnDestroy {
       this.loadUserInformations();
     });
 
-
     this.userService.profileUpdated$.subscribe(() => {
       this.loadUserInformations();
     });
@@ -113,7 +112,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
 
   loadUserInformations() {
     this.userFromSession = this.sessionService.getUser();
-    this.companyFromSession = this.sessionService.getStore();    
+    this.companyFromSession = this.sessionService.getStore();
 
     if (this.userFromSession) {
       this.userName = `${this.userFromSession.name} ${this.userFromSession.lastName}`;
@@ -133,7 +132,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     this.router.navigate([route]);
   }
 
-  loadUserQueInfo() {
+  loadUserQueInfo() {    
     this.userFromSession = this.sessionService.getUser();
 
     if (this.userFromSession) {

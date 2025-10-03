@@ -54,4 +54,5 @@ export interface StoreModel extends To {
   isVerified: boolean;
   inCaseFailureAcceptFinishWithoutQRCode: boolean;
   distance?: number; 
+  nextHourOnAgenda: string;
 }

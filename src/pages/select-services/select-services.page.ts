@@ -11,7 +11,6 @@ import { QueueService } from 'src/services/queue.service';
 import { ServiceService } from 'src/services/services.service';
 import { SessionService } from 'src/services/session.service';
 import { SignalRService } from 'src/services/seignalr.service';
-import { StoreModel } from 'src/models/store-model';
 
 @Component({
   selector: 'app-select-services',
@@ -65,9 +64,9 @@ export class SelectServicesPage {
       this.queueId = params['queueId'];
       this.storeId = params['storeId'];
       this.professionalId = params['professionalId'];
-      this.useAgenda = params['useAgenda'] ? Boolean(params['useAgenda']) : false;
+      this.useAgenda = params['useAgenda'] === 'true';
       this.customerId = params['customerId'] ? Number(params['customerId']) : null;
-      this.looseCustomer = params['looseCustomer'] ? Boolean(params['looseCustomer']) : false;
+      this.looseCustomer = params['looseCustomer'] === 'true';
 
       if (this.customerId) {
         this.loadSelectedServicesByCustomer(this.customerId);

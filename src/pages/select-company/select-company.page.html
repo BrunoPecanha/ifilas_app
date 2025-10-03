@@ -20,21 +20,19 @@
 ></ion-searchbar>
 
 <div class="content-container">
-  <!-- Filtros recolhíveis -->
   <div class="collapsible-filters">
     <div class="filters-header" (click)="toggleFilters()">
       <div class="filters-title">
         <ion-icon name="filter-outline"></ion-icon>
         <span>Filtros</span>
       </div>
-      <ion-icon 
-        [name]="filtersExpanded ? 'chevron-up-outline' : 'chevron-down-outline'" 
+      <ion-icon
+        [name]="filtersExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"
         class="toggle-icon"
       ></ion-icon>
     </div>
 
     <div class="filters-content" [class.expanded]="filtersExpanded">
-      <!-- Categorias -->
       <div class="filter-group">
         <h3 class="filter-group-title">Categorias</h3>
         <div class="categories-scroll">
@@ -52,54 +50,32 @@
         </div>
       </div>
 
-      <!-- Filtros principais -->
       <div class="filter-group">
         <h3 class="filter-group-title">Ordenar por</h3>
-        <div class="filters-grid">
-          <div
-            class="filter-card"
-            [class.active]="selectedFilter === 'nearby'"
-            (click)="applyFilter('nearby')"
-          >
-            <div class="filter-icon">
-              <ion-icon name="navigate-outline"></ion-icon>
-            </div>
-            <span class="filter-label">Próximos</span>
-          </div>
-
-          <div
-            class="filter-card"
-            [class.active]="selectedFilter === 'minorQueue'"
+        <ion-segment value="{{selectedFilter}}" scrollable>
+          <ion-segment-button value="nearby" (click)="applyFilter('nearby')">
+            <ion-icon name="navigate-outline"></ion-icon>
+            <ion-label>Próximos</ion-label>
+          </ion-segment-button>
+          <ion-segment-button
+            value="minorQueue"
             (click)="applyFilter('minorQueue')"
           >
-            <div class="filter-icon">
-              <ion-icon name="time-outline"></ion-icon>
-            </div>
-            <span class="filter-label">Menor fila</span>
-          </div>
-
-          <div
-            class="filter-card"
-            [class.active]="selectedFilter === 'favorites'"
+            <ion-icon name="time-outline"></ion-icon>
+            <ion-label>Menor fila</ion-label>
+          </ion-segment-button>
+          <ion-segment-button
+            value="favorites"
             (click)="applyFilter('favorites')"
           >
-            <div class="filter-icon">
-              <ion-icon name="heart-outline"></ion-icon>
-            </div>
-            <span class="filter-label">Favoritos</span>
-          </div>
-
-          <div
-            class="filter-card"
-            [class.active]="selectedFilter === 'recent'"
-            (click)="applyFilter('recent')"
-          >
-            <div class="filter-icon">
-              <ion-icon name="flash-outline"></ion-icon>
-            </div>
-            <span class="filter-label">Recentes</span>
-          </div>
-        </div>
+            <ion-icon name="heart-outline"></ion-icon>
+            <ion-label>Favoritos</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="recent" (click)="applyFilter('recent')">
+            <ion-icon name="flash-outline"></ion-icon>
+            <ion-label>Recentes</ion-label>
+          </ion-segment-button>
+        </ion-segment>
       </div>
     </div>
   </div>
@@ -114,30 +90,25 @@
       ></ion-refresher-content>
     </ion-refresher>
 
-    <!-- Estados de loading e vazio -->
     <div *ngIf="isLoading" class="state-container">
-      <div class="loading-content">
-        <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
-        <p class="loading-text">Carregando estabelecimentos...</p>
-      </div>
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Carregando estabelecimentos...</p>
     </div>
 
     <div *ngIf="!isLoading && isEmptyResult" class="state-container">
-      <div class="empty-state">
-        <ion-icon name="storefront-outline" class="empty-icon"></ion-icon>
-        <h3>Nenhum estabelecimento encontrado</h3>
-        <p>Tente ajustar os filtros ou termos de busca</p>
-        <ion-button fill="outline" color="primary" (click)="clearFilters()">
-          Limpar filtros
-        </ion-button>
-      </div>
+      <ion-icon name="storefront-outline"></ion-icon>
+      <h3>Nenhum estabelecimento encontrado</h3>
+      <ion-button (click)="clearFilters()"> Limpar filtros </ion-button>
     </div>
 
-    <!-- Lista de estabelecimentos -->
     <div *ngIf="!isLoading && !isEmptyResult" class="companies-container">
       <div class="results-header">
-        <p class="results-count">{{ filteredCards.length }} estabelecimento(s) encontrado(s)</p>
-        <button class="clear-filters-btn" (click)="clearFilters()" *ngIf="hasActiveFilters">
+        <p>{{ filteredCards.length }} estabelecimento(s) encontrado(s)</p>
+        <button
+          class="clear-filters-btn"
+          (click)="clearFilters()"
+          *ngIf="hasActiveFilters"
+        >
           <ion-icon name="close-circle-outline"></ion-icon>
           Limpar filtros
         </button>
@@ -149,88 +120,75 @@
           *ngFor="let card of filteredCards"
           (click)="selectCard(card)"
         >
+          <div class="category-bar"></div>
+
           <div class="card-header">
-            <!-- Badge "Novo" no canto superior esquerdo -->
-            <div class="company-badge" *ngIf="card.isNew">Novo</div>
-            
-            <!-- Coração movido para o canto superior direito -->
+            <div class="status-chip" [class.open]="card.minorQueue >= 0">
+              {{ card.minorQueue >= 0 ? 'Aberto' : 'Fechado' }}
+            </div>
             <div class="like-button" (click)="toggleLike(card, $event)">
               <ion-icon
                 [name]="card.liked ? 'heart' : 'heart-outline'"
-                [class.liked]="card.liked"
               ></ion-icon>
             </div>
           </div>
 
           <div class="card-content">
-            <div class="logo-container">
-              <div class="logo-wrapper">
-                <img
-                  *ngIf="card.logoPath; else defaultLogo"
-                  [src]="card.logoPath"
-                  alt="{{ card.name }}"
-                  class="company-logo"
-                />
-                <ng-template #defaultLogo>
-                  <div class="default-logo">
-                    <ion-icon name="business"></ion-icon>
-                  </div>
-                </ng-template>
-              </div>
+            <div class="logo-wrapper">
+              <img
+                *ngIf="card.logoPath; else defaultLogo"
+                [src]="card.logoPath"
+                alt="{{ card.name }}"
+              />
+              <ng-template #defaultLogo>
+                <div class="default-logo">
+                  <ion-icon name="business"></ion-icon>
+                </div>
+              </ng-template>
             </div>
 
             <div class="company-info">
-              <div class="info-main">
-                <h3 class="company-name">
-                  {{ card.name }}
-                  <ion-icon
-                    *ngIf="card.isVerified"
-                    name="checkmark-circle"
-                    class="verified-icon"
-                  ></ion-icon>
-                </h3>
-                
-                <div class="company-category">
-                  <ion-icon name="pricetag-outline"></ion-icon>
-                  {{ card.category }}
-                </div>
+              <div class="company-name">
+                <span class="name-text">{{ card.name }}</span>
 
-                <div class="company-distance">
-                  <ion-icon name="navigate-outline"></ion-icon>
-                  {{ card.distance }}
-                </div>
+                <span *ngIf="card.isVerified" class="verified">
+                  <ion-icon name="checkmark-circle"></ion-icon>
+                </span>
               </div>
+              <p class="company-category">{{ card.category }}</p>
+              <p class="company-category">{{ card.distance }}</p>
 
-              <div class="service-types" *ngIf="card.useAgenda || card.useQueue">
-                <div class="service-badges">
-                  <div class="service-badge agenda" *ngIf="card.useAgenda">
-                    <ion-icon name="calendar-outline"></ion-icon>
-                    <span>Agendamento</span>
-                  </div>
-                  <div class="service-badge walkin" *ngIf="card.useQueue">
-                    <ion-icon name="people-outline"></ion-icon>
-                    <span>Ordem de Chegada</span>
-                  </div>
+              <div class="service-badges">
+                <div class="service-badge agenda" *ngIf="card.useAgenda">
+                  <ion-icon name="calendar-outline"></ion-icon> Agendamento
+                </div>
+                <div class="service-badge walkin" *ngIf="card.useQueue">
+                  <ion-icon name="people-outline"></ion-icon> Ordem de Chegada
                 </div>
               </div>
 
               <div class="company-stats">
-                <div class="stat-item rating">
-                  <ion-icon name="star"></ion-icon>
-                  <span>{{ card.rating || '0' }}</span>
-                </div>
-
-                <div class="stat-item queue" [class.no-queue]="card.minorQueue === -1">
+                <div class="stat-item queue">
                   <ion-icon name="people-outline"></ion-icon>
                   <span>
-                    {{ card.minorQueue === -1 ? 'Sem fila' : card.minorQueue === 0 ? 'Sem espera' : card.minorQueue + ' na fila' }}
+                    {{ card.minorQueue === -1 ? 'Não abriu a fila hoje' :
+                    card.minorQueue == 0 ? 'Ninguém na fila' : card.minorQueue +
+                    ' pessoa(s) na fila' }}
                   </span>
                 </div>
-
-                <div class="status-indicator" [class.open]="card.minorQueue >= 0">
-                  <div class="status-dot"></div>
-                  <span>{{ card.minorQueue >= 0 ? 'Aberto' : 'Fechado' }}</span>
+                <div class="stat-item agenda" *ngIf="card.useAgenda">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span>
+                    {{ card.nextHourOnAgenda ? 'Próx horário: ' +
+                    card.nextHourOnAgenda : 'Sem horários na agenda' }}
+                  </span>
                 </div>
+              </div>
+              <div class="company-name">
+                <span class="rating">
+                  <ion-icon name="star"></ion-icon>
+                  <span>{{ card.rating || '0' }}</span>
+                </span>
               </div>
             </div>
           </div>

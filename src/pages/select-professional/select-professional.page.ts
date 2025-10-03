@@ -32,7 +32,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private signalRService: SignalRService,
     private sessionService: SessionService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.getSelectedStoreId();
@@ -51,11 +51,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
 
   get queueProfessionals(): ProfessionalModel[] {
     const professionals = this.store?.professionals || [];
-    var teste = professionals.filter(p => !p.useAgenda);
-
-    debugger
-
-    return teste;
+    return professionals.filter(p => !p.useAgenda);
   }
 
   get agendaProfessionals(): ProfessionalModel[] {
@@ -200,12 +196,11 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     }
   }
 
-  async getInTheQueue(professional: ProfessionalModel) {
-    debugger
+  async getInTheQueue(professional: ProfessionalModel) {    
     try {
       if (professional.status !== StatusQueueEnum.open) {
         await this.presentAlert(
-          'Atendimento Indisponível', 
+          'Atendimento Indisponível',
           'Este profissional não está disponível no momento.'
         );
         return;
@@ -230,23 +225,14 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Erro ao entrar na fila:', error);
       await this.presentAlert(
-        'Erro', 
+        'Erro',
         'Não foi possível acessar a fila. Tente novamente.'
       );
     }
   }
 
-  async openAgenda(professional: ProfessionalModel) {
-    debugger
+  async openAgenda(professional: ProfessionalModel) {    
     try {
-      if (professional.status !== StatusQueueEnum.open) {
-        await this.presentAlert(
-          'Agenda Indisponível', 
-          'Este profissional não está disponível para agendamento no momento.'
-        );
-        return;
-      }
-
       this.router.navigate(['/select-services'], {
         queryParams: {
           professionalId: professional.id,
@@ -257,7 +243,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Erro ao abrir agenda:', error);
       await this.presentAlert(
-        'Erro', 
+        'Erro',
         'Não foi possível acessar a agenda. Tente novamente.'
       );
     }
@@ -267,7 +253,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     event.stopPropagation();
     event.preventDefault();
     prof.liked = !prof.liked;
-    
+
     // implementar a chamada API para salvar o like
     // this.service.toggleProfessionalLike(prof.id, prof.liked).subscribe();
   }
@@ -279,9 +265,9 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   async openPauseReason(professional: ProfessionalModel, event: Event) {
     event.stopPropagation();
 
-    const motivo = professional.pauseReason || 
-      (professional.useAgenda 
-        ? 'O atendimento por agenda está temporariamente indisponível.' 
+    const motivo = professional.pauseReason ||
+      (professional.useAgenda
+        ? 'O atendimento por agenda está temporariamente indisponível.'
         : 'A fila está temporariamente pausada.');
 
     const alert = await this.alertController.create({
@@ -296,27 +282,27 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   getQueueProgress(qtdPessoas: number): number {
     const maxPessoas = 10;
     const progresso = (qtdPessoas / maxPessoas) * 100;
-    
+
     return Math.min(progresso, 100);
   }
 
   getColorProgress(qtdPessoas: number): string {
-    if (qtdPessoas <= 3) 
+    if (qtdPessoas <= 3)
       return '#4caf50';
-    if (qtdPessoas <= 7) 
+    if (qtdPessoas <= 7)
       return '#ff9800';
-    
+
     return '#f44336';
   }
 
   getQueueStatusText(qtdPessoas: number): string {
-    if (qtdPessoas === 0) 
+    if (qtdPessoas === 0)
       return 'Fila vazia';
-    if (qtdPessoas <= 3) 
+    if (qtdPessoas <= 3)
       return 'Fila leve';
-    if (qtdPessoas <= 7) 
+    if (qtdPessoas <= 7)
       return 'Fila moderada';
-    
+
     return 'Fila cheia';
   }
 
@@ -343,7 +329,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
 
   getProfessionalsCountText(): string {
     const total = this.filteredProfessionals.length;
-    
+
     switch (this.filterType) {
       case 'queue':
         return `${total} atendente${total !== 1 ? 's' : ''} com fila`;
@@ -370,7 +356,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
 
   formatWaitingTime(timeString: string): string {
     if (!timeString || timeString === '00:00:00') return '--';
-    
+
     try {
       const [hours, minutes] = timeString.split(':');
       const totalMinutes = parseInt(hours) * 60 + parseInt(minutes);

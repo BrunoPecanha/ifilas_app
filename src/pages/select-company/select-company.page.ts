@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { CategoryModel } from 'src/models/category-model';
@@ -21,6 +21,9 @@ export class SelectCompanyPage implements OnInit {
     private favoriteService: FavoriteService
   ) { }
 
+  @ViewChild('filtersScroll') filtersScroll: any;
+
+  canScrollRight = true;
   isLoading = false;
   filtersExpanded: boolean = false;
   isEmptyResult = false;
@@ -41,7 +44,6 @@ export class SelectCompanyPage implements OnInit {
   }
 
   private loadData() {
-    debugger
     this.loadCategories();
     this.loadStores();
   }
@@ -70,7 +72,7 @@ export class SelectCompanyPage implements OnInit {
 
     if (!this.selectedFilter && !this.selectedCategoryId && !this.searchQuery) {
       this.isLoading = true;
-      this.isEmptyResult = false;     
+      this.isEmptyResult = false;
 
       this.service.loadNearbyStoresById(userId).subscribe({
         next: (response) => {
@@ -228,7 +230,7 @@ export class SelectCompanyPage implements OnInit {
 
   selectCard(card: StoreModel): void {
     let storeSelected = this.companies.filter(card => card.id === card.id)[0];
-    
+
     this.router.navigate(['/select-professional'], {
       queryParams: { storeId: storeSelected.id }
     });
@@ -302,5 +304,10 @@ export class SelectCompanyPage implements OnInit {
     this.searchQuery = '';
     this.categoriesExpanded = false;
     this.applyFilter('nearby');
+  }
+
+  checkScrollPosition() {
+    const element = this.filtersScroll.nativeElement;
+    this.canScrollRight = element.scrollWidth > element.clientWidth + element.scrollLeft;
   }
 }

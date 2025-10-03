@@ -89,7 +89,7 @@
   <div
     class="atendentes-wrapper"
     *ngIf="hasAnyProfessionals; else semAtendentes"
-  >  
+  >
     <ion-card
       *ngFor="let professional of filteredProfessionals"
       class="atendente-card"
@@ -109,7 +109,10 @@
           </ng-container>
 
           <ng-template #defaultAvatar>
-            <ion-icon name="person-circle-outline" class="photo-icon"></ion-icon>
+            <ion-icon
+              name="person-circle-outline"
+              class="photo-icon"
+            ></ion-icon>
           </ng-template>
 
           <div
@@ -183,7 +186,10 @@
             <div class="queue-progress-container">
               <div class="progress-info">
                 <span>{{ professional.customersWaiting }} pessoas na fila</span>
-                <span>{{ formatWaitingTime(professional.averageWaitingTime) }}</span>
+                <span
+                  >{{ formatWaitingTime(professional.averageWaitingTime)
+                  }}</span
+                >
               </div>
               <div
                 class="barra-progresso-wrapper"
@@ -201,7 +207,10 @@
           </div>
 
           <div class="additional-info">
-            <ion-chip *ngIf="professional.servicesProvided" class="service-chip">
+            <ion-chip
+              *ngIf="professional.servicesProvided"
+              class="service-chip"
+            >
               <ion-icon name="construct-outline"></ion-icon>
               <ion-label>{{ professional.servicesProvided }}</ion-label>
             </ion-chip>
@@ -209,7 +218,8 @@
             <ion-chip class="time-chip">
               <ion-icon name="time-outline"></ion-icon>
               <ion-label>
-                Tempo médio: {{ formatWaitingTime(professional.averageWaitingTime) }}
+                Tempo médio: {{
+                formatWaitingTime(professional.averageWaitingTime) }}
               </ion-label>
             </ion-chip>
           </div>
@@ -225,14 +235,18 @@
               >
                 <ion-icon name="hourglass-outline" color="medium"></ion-icon>
                 <span>
-                  {{ formatWaitingTime(professional.averageServiceTime) }} por serviço
+                  {{ formatWaitingTime(professional.averageServiceTime) }} por
+                  serviço
                 </span>
               </div>
             </div>
           </div>
 
           <div class="additional-info">
-            <ion-chip *ngIf="professional.servicesProvided" class="service-chip">
+            <ion-chip
+              *ngIf="professional.servicesProvided"
+              class="service-chip"
+            >
               <ion-icon name="construct-outline"></ion-icon>
               <ion-label>{{ professional.servicesProvided }}</ion-label>
             </ion-chip>
