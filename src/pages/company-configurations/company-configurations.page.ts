@@ -48,7 +48,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
   serverErrors: { [key: string]: string } = {};
   private subscriptions: Subscription[] = [];
 
-  weekDays = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+  weekDays = ['Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado', 'Domingo'];
 
   constructor(
     private fb: FormBuilder,
@@ -118,7 +118,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
       startServiceWithQRCode: [false],
       shareQueue: [false],
       wallPaper: [null],
-      finishWithoutQrCodeInCaseFailure: [false],
+      inCaseFailureAcceptFinishWithoutQRCode: [false],
       storeSubtitle: [''],
       highLights: this.fb.array([])
     });
@@ -245,7 +245,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
 
   private resetFormAndPreviews() {
     this.cadastroForm.reset({
-      ownerId: 1,
+      ownerId: 0,
       openAutomatic: false,
       attendSimultaneously: false,
       acceptOtherQueues: false,
@@ -353,7 +353,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
       endServiceWithQRCode: storeData.endServiceWithQRCode,
       startServiceWithQRCode: storeData.startServiceWithQRCode,
       shareQueue: storeData.shareQueue,
-      finishWithoutQrCodeInCaseFailure: storeData.inCaseFailureAcceptFinishWithoutQRCode
+      inCaseFailureAcceptFinishWithoutQRCode: storeData.inCaseFailureAcceptFinishWithoutQRCode
     });
 
     this.setupQRCodeToggleListeners();

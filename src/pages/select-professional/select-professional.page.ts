@@ -138,15 +138,21 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   }
 
   getStatusText(status: StatusQueueEnum, useAgenda: boolean): string {
+    if (useAgenda) {
+      if (status === StatusQueueEnum.open) 
+        return 'Disponível';
+      return 'Indisponível';
+    }
+
     switch (status) {
       case StatusQueueEnum.open:
-        return useAgenda ? 'Disponível' : 'Aberta';
+        return  'Aberta';
       case StatusQueueEnum.paused:
-        return useAgenda ? 'Indisponível' : 'Pausada';
+        return 'Pausada';
       case StatusQueueEnum.closed:
-        return useAgenda ? 'Indisponível' : 'Fechada';
+        return 'Fechada';
       default:
-        return useAgenda ? 'Disponível' : 'Aberta';
+        return 'Aberta';
     }
   }
 
@@ -196,7 +202,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     }
   }
 
-  async getInTheQueue(professional: ProfessionalModel) {    
+  async getInTheQueue(professional: ProfessionalModel) {
     try {
       if (professional.status !== StatusQueueEnum.open) {
         await this.presentAlert(
@@ -231,7 +237,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     }
   }
 
-  async openAgenda(professional: ProfessionalModel) {    
+  async openAgenda(professional: ProfessionalModel) {
     try {
       this.router.navigate(['/select-services'], {
         queryParams: {

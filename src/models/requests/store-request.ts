@@ -24,6 +24,14 @@ export interface StoreRequest {
   attendSimultaneously: boolean;
   phoneNumber: string;
   instagram: string;
+  inCaseFailureAcceptFinishWithoutQRCode: boolean;
+  releaseOrdersBeforeGetsQueued: boolean;
+  endServiceWithQRCode: boolean;
+  startServiceWithQRCode: boolean;
+  shareQueue: boolean;
+  useAgenda: boolean;
+  useQueue: boolean;
+  whatsapp: string;
   facebook: string;
   youtube: string;
   website: string;

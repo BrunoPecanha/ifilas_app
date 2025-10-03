@@ -123,8 +123,8 @@
           <div class="category-bar"></div>
 
           <div class="card-header">
-            <div class="status-chip" [class.open]="card.minorQueue >= 0">
-              {{ card.minorQueue >= 0 ? 'Aberto' : 'Fechado' }}
+            <div class="status-chip" [class.open]="card.isOpen">
+              {{ card.isOpen  ? 'Aberto' : 'Fechado' }}
             </div>
             <div class="like-button" (click)="toggleLike(card, $event)">
               <ion-icon
@@ -155,6 +155,12 @@
                   <ion-icon name="checkmark-circle"></ion-icon>
                 </span>
               </div>
+               <div class="company-name">
+                <span class="rating">
+                  <ion-icon name="star"></ion-icon>
+                  <span>{{ card.rating || '0' }}</span>
+                </span>
+              </div>
               <p class="company-category">{{ card.category }}</p>
               <p class="company-category">{{ card.distance }}</p>
 
@@ -183,13 +189,7 @@
                     card.nextHourOnAgenda : 'Sem horários na agenda' }}
                   </span>
                 </div>
-              </div>
-              <div class="company-name">
-                <span class="rating">
-                  <ion-icon name="star"></ion-icon>
-                  <span>{{ card.rating || '0' }}</span>
-                </span>
-              </div>
+              </div>             
             </div>
           </div>
         </div>

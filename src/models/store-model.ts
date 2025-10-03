@@ -55,4 +55,5 @@ export interface StoreModel extends To {
   inCaseFailureAcceptFinishWithoutQRCode: boolean;
   distance?: number; 
   nextHourOnAgenda: string;
+  isOpen: boolean;
 }
