@@ -481,7 +481,13 @@ ion-content::part(scroll) {
   vertical-align: middle;
 }
 
-.company-name .rating span {
+.rating-section span {
+   margin-left: 2px;
+  font-size: 12px;
+  color: #fbbf24;
+}
+
+.company-name  {
   margin-left: 2px;
   font-size: 14px;
   color: #fbbf24;

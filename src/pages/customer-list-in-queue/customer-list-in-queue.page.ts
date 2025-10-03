@@ -530,7 +530,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
       'cash-outline': 'success',
       'card-outline': 'primary',
       'wallet-outline': 'warning',
-      'pricetags-outline': 'secondary'
+      'qr-code-outline': 'secondary'
     };
 
     return colorMap[paymentIcon] || 'medium';

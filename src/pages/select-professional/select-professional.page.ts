@@ -137,20 +137,18 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     }
   }
 
-  getStatusText(status: StatusQueueEnum, useAgenda: boolean): string {
-    if (useAgenda) {
-      if (status === StatusQueueEnum.open) 
+  getStatusText(profissional: any ): string {
+    if (profissional.useAgenda && profissional.status === StatusQueueEnum.open) {      
         return 'Disponível';
-      return 'Indisponível';
     }
 
-    switch (status) {
+    switch (profissional.status) {
       case StatusQueueEnum.open:
-        return  'Aberta';
+        return  'Atendendo';
       case StatusQueueEnum.paused:
-        return 'Pausada';
+        return 'Ausente';
       case StatusQueueEnum.closed:
-        return 'Fechada';
+        return 'Indisponível';
       default:
         return 'Aberta';
     }
@@ -361,12 +359,13 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   }
 
   formatWaitingTime(timeString: string): string {
-    if (!timeString || timeString === '00:00:00') return 'Sua vez';
+    if (!timeString || timeString === '00:00:00') 
+      return 'Sua vez';
 
     try {
       const [hours, minutes] = timeString.split(':');
       const totalMinutes = parseInt(hours) * 60 + parseInt(minutes);
-      return totalMinutes > 0 ? `${totalMinutes} min` : '--';
+      return totalMinutes > 0 ? `Você em ${totalMinutes} min` : '--';
     } catch {
       return '--';
     }

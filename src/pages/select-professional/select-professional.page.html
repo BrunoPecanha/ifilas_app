@@ -154,7 +154,7 @@
               >
                 <ion-icon [name]="getStatusIcon(professional.status)"></ion-icon>
                 <span>
-                  {{ getStatusText(professional.status, professional.useAgenda) }}
+                  {{ getStatusText(professional) }}
                 </span>
                 <ion-icon
                   *ngIf="professional.status === StatusQueueEnum.paused"
@@ -189,7 +189,7 @@
             <div *ngIf="!professional.useAgenda" class="queue-info-section">
               <div class="queue-progress-container">
                 <div class="progress-info">
-                  <span>{{ professional.customersWaiting }} pessoas na fila</span>
+                  <span>{{ professional.customersWaiting }} pessoa(s) </span>
                 </div>
                 <div
                   class="barra-progresso-wrapper"

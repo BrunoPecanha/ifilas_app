@@ -376,7 +376,7 @@ ion-content.scroll-area {
 }
 
 .subtitulo {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: #666;
   margin: 0;
   line-height: 1.3;
@@ -672,9 +672,9 @@ ion-content::part(scroll) {
   -ms-overflow-style: none;
 }
 
-/* Garante que a coluna de informações ocupe todo o espaço disponível */
+
 .info-column {
-  flex: 1 1 auto; /* permite crescer e encolher */
+  flex: 1 1 auto; 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -682,32 +682,27 @@ ion-content::part(scroll) {
   gap: 8px;
 }
 
-/* Expande a seção da fila horizontalmente */
 .queue-info-section {
   flex: 1 1 auto;
   min-width: 0;
 }
 
-/* Faz a barra de progresso ocupar toda a largura da seção */
 .barra-progresso-wrapper {
   width: 100%;
 }
 
-/* Permite que os detalhes da fila quebrem linha se necessário */
 .progress-info {
   justify-content: space-between;
   flex-wrap: wrap;
 }
 
-/* Ajusta os chips na parte inferior para ocupar espaço e quebrar linha se necessário */
 .additional-info {
   display: flex;
-  flex-wrap: wrap; /* permite quebra de linha */
+  flex-wrap: wrap; 
   gap: 6px;
   flex-shrink: 0;
 }
 
-/* Ajuste responsivo para telas menores */
 @media (max-width: 600px) {
   .bottom-row {
     flex-direction: column;
