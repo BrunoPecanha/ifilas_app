@@ -40,7 +40,7 @@ export class QueueService {
   updateCustomerName(customerId: number, newName: string) {
     return this.http.patch(`${this.apiUrl}/queue/${customerId}/name`, { name: newName });
   }
- 
+
   createQueue(command: QueueCreateRequest): Observable<QueueResponse> {
     return this.http.post<QueueResponse>(`${this.apiUrl}/queue`, command).pipe(
       catchError(error => {
@@ -127,9 +127,9 @@ export class QueueService {
     return this.http.get<CustomerInQueueForEmployeeResponse>(`${this.apiUrl}/queue/${storeId}/${employeeId}/customers-in-queue`);
   }
 
-  loadAllQueuesOfStoreForOwner(storeId: number): Observable<any> {    
+  loadAllQueuesOfStoreForOwner(storeId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/queue/store/owners-queue/${storeId}`);
-  }
+  } 
 
   loadAllTodayQueue(storeId: number, filter: QueueFilterRequest): Observable<QueueListResponse> {
     return this.http.post<QueueListResponse>(
@@ -139,7 +139,6 @@ export class QueueService {
   }
 
   hasOpenQueueForEmployeeToday(employeeId: number, storeId: number | null): Observable<boolean> {
-    debugger
     return this.getOpenedQueueListByEmployeeId(employeeId, storeId, false).pipe(
       map((response: QueueListResponse) => {
         return response.valid &&

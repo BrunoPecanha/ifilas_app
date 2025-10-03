@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, LoadingController, NavController, ToastController } from '@ionic/angular';
 import { addressResponse } from 'src/models/responses/address-response';
+import { StoreModel } from 'src/models/store-model';
 import { UserModel } from 'src/models/user-model';
 import { GeoLocateService } from 'src/services/geo-locate.service';
 import { SessionService } from 'src/services/session.service';
@@ -23,6 +24,7 @@ export class UserConfigurationsPage {
   enviado = false;
   selectedImageFile: File | null = null;
   user: UserModel = {} as UserModel;
+  store: StoreModel = {} as StoreModel;
   searchingCep = false;
   serverErrors: { [key: string]: string } = {};
 
@@ -35,6 +37,10 @@ export class UserConfigurationsPage {
     private sessionService: SessionService,
     private geoLocateService: GeoLocateService,
     private loadingController: LoadingController) {
+
+    this.store = this.sessionService.getStore();  
+    this.user = this.sessionService.getUser();
+
     this.cadastroForm = this.fb.group({
       cpf: ['', [Validators.required, Validators.minLength(11)]],
       name: ['', [Validators.required]],
@@ -53,10 +59,12 @@ export class UserConfigurationsPage {
       servicesProvided: [''],
       aceptMesageFromOtherUsers: [false],
       acceptAwaysMinorQueue: [false],
-      deleteAccount: [false]
+      deleteAccount: [false],
+      useAgenda: [false],
+      employeeId: 0,
+      storeId: 0
     });
 
-    this.user = this.sessionService.getUser();
     this.fillForm();
   }
 
@@ -106,7 +114,10 @@ export class UserConfigurationsPage {
       email: this.user.email,
       subtitle: this.user.subtitle,
       servicesProvided: this.user.servicesProvided,
-      acceptAwaysMinorQueue: this.user.acceptAwaysMinorQueue
+      acceptAwaysMinorQueue: this.user.acceptAwaysMinorQueue,
+      useAgenda: this.user.useAgenda || false,
+      employeeId: this.user.id || 0,
+      storeId:  this.store?.id || 0
     });
 
     if (this.user.imageUrl) {
@@ -301,8 +312,11 @@ export class UserConfigurationsPage {
       subtitle: formValue.subtitle,
       servicesProvided: formValue.servicesProvided,
       acceptAwaysMinorQueue: formValue.acceptAwaysMinorQueue,
+      useAgenda: formValue.useAgenda || false,
       deleteAccount: formValue.deleteAccount || false,
-      password: formValue.password
+      password: formValue.password,
+      employeeId: formValue.employeeId || 0,
+      storeId: formValue.storeId || 0
     };
 
     this.enviando = true;

@@ -40,6 +40,22 @@
       </ion-item>
     </ion-card>
 
+       <ion-card class="interval-card">
+      <ion-item lines="none">
+        <ion-icon name="calendar-outline" slot="start"></ion-icon>
+        <ion-label>Agenda para os próximos</ion-label>
+        <ion-select
+          interface="popover"
+          placeholder="Selecionar"
+          [(ngModel)]="agendaInterval"
+        >
+          <ion-select-option value="7">7 dias</ion-select-option>
+          <ion-select-option value="15">15 dias</ion-select-option>
+          <ion-select-option value="30">30 dias</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-card>
+
     <div class="week-grid">
       <ion-card *ngFor="let day of weekDays" class="day-card compact">
         <ion-item lines="none" class="day-header">

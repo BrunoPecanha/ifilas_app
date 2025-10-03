@@ -1,22 +1,22 @@
 <ion-header class="header-content">
   <ion-toolbar class="toolbar">
+
     <ion-buttons slot="start">
       <ion-button 
         *ngIf="showStartButton"
         fill="clear"
+        class="circle-btn start-button"
         (click)="handleStartButtonClick()"
-        [class]="startButtonClass"
         [disabled]="startDisabled || startLoading"
       >
         <ng-container *ngIf="!startLoading; else startSpinner">
           <ion-icon 
             [name]="startIconName"
             slot="icon-only"
-            [class.disabled-icon]="startDisabled"
           ></ion-icon>
         </ng-container>
         <ng-template #startSpinner>
-          <ion-spinner name="dots" slot="icon-only"></ion-spinner>
+          <ion-spinner name="crescent" slot="icon-only"></ion-spinner>
         </ng-template>
       </ion-button>
 
@@ -32,35 +32,37 @@
       <ion-button
         *ngIf="showPausePlayButton"
         fill="clear"
+        class="circle-btn"
         (click)="onPausePlayClick.emit()"
-        [class]="isPaused ? 'play-button' : 'pause-button'"
       >
         <ion-icon 
           [name]="isPaused ? 'play' : 'pause'"
           slot="icon-only"
+          [class.play-icon]="isPaused"
+          [class.pause-icon]="!isPaused"
         ></ion-icon>
       </ion-button>
 
       <ion-button
         *ngIf="showEndButton"
         fill="clear"
+        class="circle-btn end-button"
         (click)="!endDisabled && !endLoading && onEndClick.emit()"
-        [class]="endButtonClass"
         [disabled]="endDisabled || endLoading"
       >
         <ng-container *ngIf="!endLoading; else endSpinner">
           <ion-icon 
             [name]="endIconName"
             slot="icon-only"
-            [class.disabled-icon]="endDisabled"
           ></ion-icon>
         </ng-container>
         <ng-template #endSpinner>
-          <ion-spinner name="dots" slot="icon-only"></ion-spinner>
+          <ion-spinner name="crescent" slot="icon-only"></ion-spinner>
         </ng-template>
       </ion-button>
 
       <ng-content select="[right-buttons]"></ng-content>
     </ion-buttons>
+
   </ion-toolbar>
 </ion-header>

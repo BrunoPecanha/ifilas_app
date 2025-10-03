@@ -21,6 +21,7 @@ export class ScheduleConfigPage implements OnInit {
   user!: UserModel;
   store!: StoreModel;
   slotInterval: number = 30;
+  agendaInterval: number = 7;
 
   weekDays: WeekDayConfigRequest[] = [
     { id: 1, dayOfWeek: 1, label: 'Segunda-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
@@ -48,7 +49,7 @@ export class ScheduleConfigPage implements OnInit {
 
   ngOnInit() {
     this.store = this.sessionService.getStore();
-    this.user = this.sessionService.getUser()!;
+    this.user = this.sessionService.getUser();
     this.loadSchedule();
   }
 
@@ -67,12 +68,13 @@ export class ScheduleConfigPage implements OnInit {
     return null;
   }
 
-  private loadSchedule() {
+  private loadSchedule() {    
     this.scheduleService.getSchedule(this.store.id, this.user.id).subscribe({
       next: (res) => {
         if (res.valid && res.data) {
           this.schedule = res.data;
           this.slotInterval = this.schedule.slotDurationInMinutes || 30;
+          this.agendaInterval = this.schedule.agendaInterval || 7;
 
           this.weekDays = this.weekDays.map((wd) => {
             const apiDay = this.schedule?.weeklySchedules.find(
@@ -154,6 +156,7 @@ export class ScheduleConfigPage implements OnInit {
       type: 'normal',
       eligibleGroups: [],
       slotDurationMinutes: this.slotInterval,
+      agendaInterval: this.agendaInterval,
       isRecurring: true,
       recurringDays: this.weekDays.filter(d => d.enabled).map(d => d.dayOfWeek),
       recurringEndDate: null,
@@ -177,9 +180,8 @@ export class ScheduleConfigPage implements OnInit {
           end: this.normalizeTime(e.end),
           fullDayClosed: e.fullDayClosed,
         }))
-    };
+    };   
     
-    debugger
     const request$ = this.schedule?.id
       ? this.scheduleService.updateSchedule(this.schedule?.id, payload)
       : this.scheduleService.createSchedule(payload);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { CategoryModel } from 'src/models/category-model';
@@ -21,6 +21,9 @@ export class SelectCompanyPage implements OnInit {
     private favoriteService: FavoriteService
   ) { }
 
+  @ViewChild('filtersScroll') filtersScroll: any;
+
+  canScrollRight = true;
   isLoading = false;
   filtersExpanded: boolean = false;
   isEmptyResult = false;
@@ -30,6 +33,8 @@ export class SelectCompanyPage implements OnInit {
   searchQuery = '';
   selectedCategoryId: number | null = null;
   selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
+
+  categoriesExpanded: boolean = false;
 
   ngOnInit() {
   }
@@ -75,7 +80,6 @@ export class SelectCompanyPage implements OnInit {
             ...store,
             isNew: this.checkIfNew(store.createdAt),
             liked: store.liked || false,
-            useAgenda: store.useAgenda || false,
             minorQueue: store.minorQueue || false,
             distance: store.distance || this.calculateRandomDistance()
           } as StoreModel));
@@ -96,7 +100,6 @@ export class SelectCompanyPage implements OnInit {
       this.loadFilteredStores(categoryId, quickFilter);
     }
   }
-
 
   private loadFilteredStores(categoryId?: number, quickFilter?: string) {
     const user = this.session.getUser();
@@ -225,18 +228,12 @@ export class SelectCompanyPage implements OnInit {
     console.error(message);
   }
 
-  selectCard(card: StoreModel): void {    
-    let storeSelected = this.companies.filter(card => card.id === card.id)[0];    
+  selectCard(card: StoreModel): void {
+    let storeSelected = this.companies.filter(card => card.id === card.id)[0];
 
-    if (!storeSelected.useAgenda) {
-      this.router.navigate(['/select-professional'], {
-        queryParams: { storeId: card.id }
-      });
-    } else {
-      this.router.navigate(['/schedule-appointment'], {
-        queryParams: { storeId: card.id }
-      });
-    }
+    this.router.navigate(['/select-professional'], {
+      queryParams: { storeId: storeSelected.id }
+    });
   }
 
   onSearch(event: any) {
@@ -289,6 +286,10 @@ export class SelectCompanyPage implements OnInit {
     this.loadFilteredStores(categoryId, quickFilter);
   }
 
+  toggleCategories() {
+    this.categoriesExpanded = !this.categoriesExpanded;
+  }
+
   toggleFilters() {
     this.filtersExpanded = !this.filtersExpanded;
   }
@@ -301,6 +302,12 @@ export class SelectCompanyPage implements OnInit {
     this.selectedFilter = null;
     this.selectedCategoryId = null;
     this.searchQuery = '';
+    this.categoriesExpanded = false;
     this.applyFilter('nearby');
+  }
+
+  checkScrollPosition() {
+    const element = this.filtersScroll.nativeElement;
+    this.canScrollRight = element.scrollWidth > element.clientWidth + element.scrollLeft;
   }
 }

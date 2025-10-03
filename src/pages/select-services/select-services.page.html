@@ -11,110 +11,157 @@
 ></app-custom-header>
 
 <ion-content class="services-content">
+  <div class="summary-bar" [class.active]="selectedServices.length > 0">
+    <div class="summary-content">
+      <div class="summary-item">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>{{ totalTimeString }}</span>
+      </div>
+      <div class="summary-item">
+        <ion-icon name="cash-outline"></ion-icon>
+        <span>{{ totalPriceString }}</span>
+      </div>
+      <div class="selected-count">
+        {{ selectedServices.length }} {{ selectedServices.length === 1 ? 'serviço' : 'serviços' }}
+      </div>
+    </div>
+  </div>
 
-  <!-- Serviços -->
   <section class="card-section">
-    <h2 class="section-title">Serviços Disponíveis</h2>
+    <div class="section-header">
+      <h2 class="section-title">Serviços Disponíveis</h2>
+      <span class="section-subtitle">Toque para adicionar</span>
+    </div>
+    
     <div class="services-grid">
       <div
         class="service-card"
         *ngFor="let service of serviceOptions"
         (click)="addService(service)"
+        [class.selected]="isServiceSelected(service)"
       >
         <div class="service-thumb">
           <img
             *ngIf="service.category.imgPath"
             [src]="service.category.imgPath"
-            alt=""
+            alt="{{ service.name }}"
           />
-          <ion-icon
-            *ngIf="!service.category.imgPath"
-            name="cut-outline"
-          ></ion-icon>
+          <div class="service-icon" *ngIf="!service.category.imgPath">
+            <ion-icon name="cut-outline"></ion-icon>
+          </div>
+          <div class="selected-indicator" *ngIf="isServiceSelected(service)">
+            <ion-icon name="checkmark-circle"></ion-icon>
+          </div>
         </div>
         <div class="service-info">
           <h3>{{ service.name }}</h3>
-          <p>
-            <ion-icon name="time-outline"></ion-icon>
-            {{ service.variableTime ? 'A definir' : service.duration + ' min' }}
-          </p>
-          <p class="price">
-            <ion-icon name="cash-outline"></ion-icon>
-            {{ service.variablePrice ? 'A combinar' : ('R$ ' + (service.price | number:'1.2-2')) }}
-          </p>
+          <div class="service-details">
+            <span class="detail-item">
+              <ion-icon name="time-outline"></ion-icon>
+              {{ service.variableTime ? 'A definir' : service.duration + ' min' }}
+            </span>
+            <span class="detail-item price">
+              <ion-icon name="cash-outline"></ion-icon>
+              {{ service.variablePrice ? 'A combinar' : ('R$ ' + (service.price | number:'1.2-2')) }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Selecionados -->
-  <section class="card-section" *ngIf="selectedServices.length > 0">
-    <h2 class="section-title">Seus Serviços</h2>
+  <section class="card-section selected-section" *ngIf="selectedServices.length > 0">
+    <div class="section-header">
+      <h2 class="section-title">Seus Serviços</h2>
+      <span class="section-subtitle">Toque para remover</span>
+    </div>
+    
     <div class="selected-list">
       <div
         class="selected-card"
         *ngFor="let selected of selectedServices; let i = index"
+        (click)="removeService(i)"
       >
-        <div class="thumb">
-          <img *ngIf="selected.imgPath" [src]="selected.imgPath" />
-          <ion-icon *ngIf="!selected.imgPath" name="cut-outline"></ion-icon>
+        <div class="selected-content">
+          <div class="thumb">
+            <img *ngIf="selected.imgPath" [src]="selected.imgPath" alt="{{ selected.name }}" />
+            <div class="service-icon" *ngIf="!selected.imgPath">
+              <ion-icon name="cut-outline"></ion-icon>
+            </div>
+          </div>
+          <div class="selected-info">
+            <span class="name">
+              {{ selected.name }}
+              <span *ngIf="selected.quantity > 1" class="quantity">({{ selected.quantity }}x)</span>
+            </span>
+            <span class="selected-price">
+              {{ selected.variablePrice ? 'A combinar' : ('R$ ' + (selected.price | number:'1.2-2')) }}
+            </span>
+          </div>
         </div>
-        <span class="name">
-          {{ selected.name }}
-          <span *ngIf="selected.quantity > 1">({{ selected.quantity }}x)</span>
-        </span>
-        <ion-button fill="clear" (click)="removeService(i)">
-          <ion-icon name="trash-outline" color="danger"></ion-icon>
-        </ion-button>
+        <div class="remove-action">
+          <ion-icon name="close-circle" color="danger"></ion-icon>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Notas e pagamento -->
   <section class="card-section">
-    <ion-item lines="none" class="notes-input">
-      <ion-label position="stacked">Observações</ion-label>
-      <ion-textarea
-        [(ngModel)]="notes"
-        rows="2"
-        maxlength="33"
-        placeholder="Alguma observação?"
-      ></ion-textarea>
-    </ion-item>
+    <div class="section-header">
+      <h2 class="section-title">Finalizar Agendamento</h2>
+    </div>
+    
+    <div class="notes-section">
+      <div class="notes-header">
+        <ion-icon name="create-outline"></ion-icon>
+        <span>Observações</span>
+        <span class="char-counter">{{ notes.length || 0 }}/33</span>
+      </div>
+      <ion-item lines="none" class="notes-input">
+        <ion-textarea
+          [(ngModel)]="notes"
+          rows="2"
+          maxlength="33"
+          placeholder="Alguma observação sobre os serviços?"
+        ></ion-textarea>
+      </ion-item>
+    </div>
 
-    <div class="payment-options">
-      <ion-button
-        fill="solid"
-        [color]="paymentMethod === '1' ? 'primary' : 'medium'"
-        (click)="paymentMethod = '1'"
-      >
-        <ion-icon name="cash-outline" slot="start"></ion-icon> Dinheiro
-      </ion-button>
-      <ion-button
-        fill="solid"
-        [color]="paymentMethod === '3' ? 'primary' : 'medium'"
-        (click)="paymentMethod = '3'"
-      >
-        <ion-icon name="qr-code-outline" slot="start"></ion-icon> Pix
-      </ion-button>
-      <ion-button
-        fill="solid"
-        [color]="paymentMethod === '2' ? 'primary' : 'medium'"
-        (click)="paymentMethod = '2'"
-      >
-        <ion-icon name="card-outline" slot="start"></ion-icon> Cartão
-      </ion-button>
+    <div class="payment-section">
+      <div class="payment-header">
+        <ion-icon name="wallet-outline"></ion-icon>
+        <span>Forma de Pagamento</span>
+      </div>
+      <div class="payment-options">
+        <div
+          class="payment-option"
+          [class.selected]="paymentMethod === '1'"
+          (click)="paymentMethod = '1'"
+        >
+          <ion-icon name="cash-outline"></ion-icon>
+          <span>Dinheiro</span>
+        </div>
+        <div
+          class="payment-option"
+          [class.selected]="paymentMethod === '3'"
+          (click)="paymentMethod = '3'"
+        >
+          <ion-icon name="qr-code-outline"></ion-icon>
+          <span>Pix</span>
+        </div>
+        <div
+          class="payment-option"
+          [class.selected]="paymentMethod === '2'"
+          (click)="paymentMethod = '2'"
+        >
+          <ion-icon name="card-outline"></ion-icon>
+          <span>Cartão</span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Resumo -->
-  <section class="summary-bar">
-    <div>
-      <strong>Tempo:</strong> {{ totalTimeString }}<br />
-      <strong>Total:</strong> {{ totalPriceString }}
-    </div>
-  </section>
-
+  <div class="footer-spacer"></div>
 </ion-content>
 
 <app-footer-menu></app-footer-menu>

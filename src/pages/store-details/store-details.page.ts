@@ -64,7 +64,7 @@ export class StoreDetailsPage implements OnInit {
   loadServices(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.serviceService.loadServicesByStore(this.storeId!, true).subscribe({
-        next: (response) => {
+        next: (response) => {          
           this.services = response.data;
           resolve();
         },

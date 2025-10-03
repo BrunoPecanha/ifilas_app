@@ -1,41 +1,50 @@
 <app-custom-header
   title="AGENDAR HORÁRIO"
-  subtitle="Selecioone uma data e horário"
+  subtitle="Selecione uma data e horário"
   [showStartButton]="true"
   startIconName="arrow-back"
   routerLink="/stores"
-
   [showEndButton]="false"
-></app-custom-header>
+>
+</app-custom-header>
 
 <ion-content class="ion-padding">
   <section class="store-header" *ngIf="selectedStore">
-    <ion-avatar class="store-avatar">
-      <img [src]="selectedStore.image" [alt]="selectedStore.name" />
-    </ion-avatar>
-    <div class="store-info">
-      <h2>{{ selectedStore.name }}</h2>
-      <p>{{ selectedStore.address }}</p>
+    <div class="store-card">
+      <ion-avatar class="store-avatar">
+        <img
+          [src]="selectedStore.logoPath"
+          [alt]="selectedStore.name"
+        />
+      </ion-avatar>
+
+      <div class="store-info">
+        <h2 class="store-title"><span>{{ selectedStore.name }}</span></h2>
+        <p class="store-address">{{ selectedStore.address }}</p>
+      </div>
     </div>
   </section>
 
-  <section class="calendar-section">
-    <div class="calendar-wrapper">
-      <ion-datetime
-        presentation="date"
-        [min]="minDate"
-        [max]="maxDate"
-        [isDateEnabled]="isDateAvailable.bind(this)"
-        (ionChange)="onDateSelected($event)"
-        class="custom-calendar"
+  <section class="days-section">
+    <h3>Selecione a data</h3>
+    <div class="days-grid">
+      <ion-button
+        *ngFor="let day of availableDates"
+        [disabled]="!day.available"
+        [fill]="day.date.toDateString() === selectedDate?.toDateString() ? 'solid' : 'outline'"
+        color="primary"
+        (click)="selectDate(day)"
       >
-        <div slot="title">Datas Disponíveis</div>
-      </ion-datetime>
+        <div class="day-label">
+          <span class="weekday">{{ day.date | date:'EEE' }}</span>
+          <span class="daynum">{{ day.date | date:'dd/MM' }}</span>
+        </div>
+      </ion-button>
     </div>
   </section>
 
   <section *ngIf="selectedDate" class="times-section">
-    <h3>Horários em {{ formatDate(selectedDate) }}</h3>
+    <h3>{{ formatDate(selectedDate) }}</h3>
 
     <div class="times-grid">
       <ion-chip

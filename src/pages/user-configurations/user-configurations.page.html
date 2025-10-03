@@ -47,7 +47,11 @@
       ></ion-input>
     </ion-item>
 
-    <ion-item fill="solid" class="form-item" [class.invalid]="isFieldInvalid('name')">
+    <ion-item
+      fill="solid"
+      class="form-item"
+      [class.invalid]="isFieldInvalid('name')"
+    >
       <ion-label position="floating">Nome *</ion-label>
       <ion-input formControlName="name"></ion-input>
       <div class="error-message" *ngIf="isFieldInvalid('name')">
@@ -55,7 +59,11 @@
       </div>
     </ion-item>
 
-    <ion-item fill="solid" class="form-item" [class.invalid]="isFieldInvalid('lastName')">
+    <ion-item
+      fill="solid"
+      class="form-item"
+      [class.invalid]="isFieldInvalid('lastName')"
+    >
       <ion-label position="floating">Sobrenome</ion-label>
       <ion-input formControlName="lastName"></ion-input>
       <div class="error-message" *ngIf="isFieldInvalid('lastName')">
@@ -63,7 +71,11 @@
       </div>
     </ion-item>
 
-    <ion-item fill="solid" class="form-item" [class.invalid]="isFieldInvalid('cep')">
+    <ion-item
+      fill="solid"
+      class="form-item"
+      [class.invalid]="isFieldInvalid('cep')"
+    >
       <ion-label position="floating">CEP *</ion-label>
       <ion-input
         type="text"
@@ -80,7 +92,11 @@
       </div>
     </ion-item>
 
-    <ion-item fill="solid" class="form-item" [class.invalid]="isFieldInvalid('address')">
+    <ion-item
+      fill="solid"
+      class="form-item"
+      [class.invalid]="isFieldInvalid('address')"
+    >
       <ion-label position="floating">Endereço *</ion-label>
       <ion-input formControlName="address" [readonly]="true"></ion-input>
       <div class="error-message" *ngIf="isFieldInvalid('address')">
@@ -89,14 +105,24 @@
     </ion-item>
 
     <div class="row">
-      <ion-item fill="solid" class="form-item number" lines="none" [class.invalid]="isFieldInvalid('number')">
+      <ion-item
+        fill="solid"
+        class="form-item number"
+        lines="none"
+        [class.invalid]="isFieldInvalid('number')"
+      >
         <ion-label position="floating">Número *</ion-label>
         <ion-input formControlName="number"></ion-input>
         <div class="error-message" *ngIf="isFieldInvalid('number')">
           {{ getErrorMessage('number') }}
         </div>
       </ion-item>
-      <ion-item fill="solid" class="form-item address" lines="none" [class.invalid]="isFieldInvalid('neighborhood')">
+      <ion-item
+        fill="solid"
+        class="form-item address"
+        lines="none"
+        [class.invalid]="isFieldInvalid('neighborhood')"
+      >
         <ion-label position="floating">Bairro *</ion-label>
         <ion-input formControlName="neighborhood" [readonly]="true"></ion-input>
         <div class="error-message" *ngIf="isFieldInvalid('neighborhood')">
@@ -106,14 +132,24 @@
     </div>
 
     <div class="row">
-      <ion-item fill="solid" class="form-item address" lines="none" [class.invalid]="isFieldInvalid('city')">
+      <ion-item
+        fill="solid"
+        class="form-item address"
+        lines="none"
+        [class.invalid]="isFieldInvalid('city')"
+      >
         <ion-label position="floating">Cidade *</ion-label>
         <ion-input formControlName="city" [readonly]="true"></ion-input>
         <div class="error-message" *ngIf="isFieldInvalid('city')">
           {{ getErrorMessage('city') }}
         </div>
       </ion-item>
-      <ion-item fill="solid" class="form-item number" lines="none" [class.invalid]="isFieldInvalid('stateId')">
+      <ion-item
+        fill="solid"
+        class="form-item number"
+        lines="none"
+        [class.invalid]="isFieldInvalid('stateId')"
+      >
         <ion-label position="floating">Estado *</ion-label>
         <ion-input formControlName="stateId" [readonly]="true"></ion-input>
         <div class="error-message" *ngIf="isFieldInvalid('stateId')">
@@ -123,14 +159,24 @@
     </div>
 
     <div class="row">
-      <ion-item fill="solid" class="form-item number" lines="none" [class.invalid]="isFieldInvalid('ddd')">
+      <ion-item
+        fill="solid"
+        class="form-item number"
+        lines="none"
+        [class.invalid]="isFieldInvalid('ddd')"
+      >
         <ion-label position="floating">DDD *</ion-label>
         <ion-input formControlName="ddd" maxlength="2"></ion-input>
         <div class="error-message" *ngIf="isFieldInvalid('ddd')">
           {{ getErrorMessage('ddd') }}
         </div>
       </ion-item>
-      <ion-item fill="solid" class="form-item address" lines="none" [class.invalid]="isFieldInvalid('phone')">
+      <ion-item
+        fill="solid"
+        class="form-item address"
+        lines="none"
+        [class.invalid]="isFieldInvalid('phone')"
+      >
         <ion-label position="floating">Celular *</ion-label>
         <ion-input formControlName="phone"></ion-input>
         <div class="error-message" *ngIf="isFieldInvalid('phone')">
@@ -139,7 +185,11 @@
       </ion-item>
     </div>
 
-    <ion-item fill="solid" class="form-item" [class.invalid]="isFieldInvalid('email')">
+    <ion-item
+      fill="solid"
+      class="form-item"
+      [class.invalid]="isFieldInvalid('email')"
+    >
       <ion-label position="floating">E-mail *</ion-label>
       <ion-input formControlName="email" [clearOnEdit]="false"></ion-input>
       <div class="error-message" *ngIf="isFieldInvalid('email')">
@@ -147,7 +197,11 @@
       </div>
     </ion-item>
 
-    <ion-item fill="solid" class="form-item" [class.invalid]="isFieldInvalid('password')">
+    <ion-item
+      fill="solid"
+      class="form-item"
+      [class.invalid]="isFieldInvalid('password')"
+    >
       <ion-label position="floating">Senha</ion-label>
       <ion-input
         type="password"
@@ -159,22 +213,29 @@
       </div>
     </ion-item>
 
-    <ion-item fill="solid" class="form-item">
+    <ion-item fill="solid" class="form-item" *ngIf="user.profile > 0">
       <ion-label position="floating">Subtítulo</ion-label>
       <ion-input formControlName="subtitle"></ion-input>
     </ion-item>
 
-    <ion-item fill="solid" class="form-item">
+    <ion-item fill="solid" class="form-item"  *ngIf="user.profile > 0">
       <ion-label position="floating">Serviços prestados</ion-label>
       <ion-input formControlName="servicesProvided"></ion-input>
     </ion-item>
 
-    <ion-item fill="solid" class="toggle-item">
+    <ion-item fill="solid" class="toggle-item" [disabled]="true">
+      <ion-icon name="trending-down-outline" slot="start"></ion-icon>
       <ion-toggle
         formControlName="acceptAwaysMinorQueue"
         slot="end"
       ></ion-toggle>
-      <ion-label>Aceitar sempre a menor fila ao entrar no estabelecimento</ion-label>
+      <ion-label>Aceitar sempre a menor fila</ion-label>
+    </ion-item>
+
+    <ion-item fill="solid" class="toggle-item" *ngIf="user.profile > 0">
+      <ion-icon name="calendar-outline" slot="start"></ion-icon>
+      <ion-toggle formControlName="useAgenda" slot="end"></ion-toggle>
+      <ion-label>Usar Agenda </ion-label>
     </ion-item>
   </ion-list>
 
@@ -213,6 +274,7 @@
   </div>
 
   <ion-item fill="solid" class="toggle-item delete-account-item">
+     <ion-icon name="trash-outline" slot="start"></ion-icon>
     <ion-toggle
       formControlName="deleteAccount"
       (ionChange)="onDeleteAccountToggle($event)"

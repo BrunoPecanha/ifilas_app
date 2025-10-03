@@ -33,8 +33,6 @@ export class FooterMenuComponent implements OnInit {
 
   ionViewWillEnter() {
     this.notificationsCount$ = this.notificationService.notificacoesNaoLidas$;
-    this.loadUserQueInfo();
-
 
     this.notificationsCount$.subscribe(() => {
       this.cdr.detectChanges();
@@ -44,6 +42,7 @@ export class FooterMenuComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadUserQueInfo();
   }
 
   async goToHome(main: boolean = false) {
@@ -55,7 +54,7 @@ export class FooterMenuComponent implements OnInit {
         });
       } else if (this.profile === 1) {
         this.router.navigate(
-          [main && this.store?.releaseOrdersBeforeGetsQueued ? '/order-approval' : '/customer-list-in-queue'],
+          [main && this.store?.releaseOrdersBeforeGetsQueued ? '/order-approval' :  !this.userFromSession.useAgenda ? '/customer-list-in-queue' : '/owner-schedule' ],
           { replaceUrl: true, state: { redirectedFromBack: true } }
         );
       } else if (this.profile === 2) {

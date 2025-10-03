@@ -11,6 +11,7 @@ export interface ScheduleCreateRequest {
   type: 'normal' | 'priority' | 'express';
   eligibleGroups?: string[];
   slotDurationMinutes?: number;
+  agendaInterval?: number;
   isRecurring: boolean;
   recurringDays?: number[];
   recurringEndDate?: string | null;

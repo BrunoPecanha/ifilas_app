@@ -32,6 +32,8 @@ export class SelectServicesPage {
   user: UserModel = {} as UserModel;
   customerId: number | null = null;
   looseCustomer: boolean = false;
+  useAgenda: boolean = false;
+  professionalId = 0;
 
   hasVariableTime: boolean = false;
   hasVariablePrice: boolean = false;
@@ -55,15 +57,16 @@ export class SelectServicesPage {
   ngOnInit() {
     this.getProfessionalAndStore();
     this.loadAvailablesServices();
-
   }
 
   getProfessionalAndStore() {
     this.route.queryParams.subscribe(params => {
       this.queueId = params['queueId'];
       this.storeId = params['storeId'];
+      this.professionalId = params['professionalId'];
+      this.useAgenda = params['useAgenda'] === 'true';
       this.customerId = params['customerId'] ? Number(params['customerId']) : null;
-      this.looseCustomer = params['looseCustomer'] ? Boolean(params['looseCustomer']) : false;
+      this.looseCustomer = params['looseCustomer'] === 'true';
 
       if (this.customerId) {
         this.loadSelectedServicesByCustomer(this.customerId);
@@ -73,6 +76,10 @@ export class SelectServicesPage {
 
   getBack() {
     this.navCtrl.back();
+  }
+
+  isServiceSelected(service: ServiceModel): boolean {
+    return this.selectedServices.some(selectedService => selectedService.id === service.id);
   }
 
   loadSelectedServicesByCustomer(customerId: number) {
@@ -186,7 +193,8 @@ export class SelectServicesPage {
   }
 
   private convertTimeStringToMinutes(timeString: string): number {
-    if (!timeString) return 0;
+    if (!timeString)
+      return 0;
 
     const [hoursStr, minutesStr, secondsStr] = timeString.split(':');
     const hours = parseInt(hoursStr, 10) || 0;
@@ -236,8 +244,11 @@ export class SelectServicesPage {
         },
         {
           text: 'Confirmar',
-          handler: () => {
-            this.proceedToQueue();
+          handler: () => {            
+            if (this.useAgenda) {
+              this.proceedToSchedule();
+            } else
+              this.proceedToQueue();
           }
         }
       ]
@@ -307,8 +318,14 @@ export class SelectServicesPage {
 
       this.navigateAfterQueue();
     } else {
-      this.addCustomerToQueueAndNavigate(); 
+      this.addCustomerToQueueAndNavigate();
     }
+  }
+
+  proceedToSchedule() {
+    this.router.navigate(['/schedule-appointment'], {
+      queryParams: { professionalId: this.professionalId, storeId: this.storeId }
+    });
   }
 
   addCustomerToQueueAndNavigate() {
@@ -328,7 +345,7 @@ export class SelectServicesPage {
 
     this.queueService.addCustomerToQueue(command).subscribe({
       next: () => {
-        this.navigateAfterQueue();  
+        this.navigateAfterQueue();
       },
       error: (err) => {
         console.error('Erro ao adicionar cliente na fila:', err);

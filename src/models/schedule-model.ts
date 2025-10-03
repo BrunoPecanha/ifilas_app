@@ -6,6 +6,7 @@ export interface ScheduleModel {
     startDate: string;
     endDate: string;
     slotDurationInMinutes: number;
+    agendaInterval: number;
     weeklySchedules: WeeklyScheduleModel[];
     exceptions: ExceptionModel[];
     slots: SlotModel[];

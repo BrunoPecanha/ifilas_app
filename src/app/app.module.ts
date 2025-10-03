@@ -13,6 +13,7 @@ import { registerLocaleData } from '@angular/common';
 import { ServiceConfigModalComponent } from 'src/shared/components/service-config-modal-component/service-config-modal.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { HttpClientModule } from '@angular/common/http';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 registerLocaleData(localePt);
 
@@ -23,7 +24,8 @@ registerLocaleData(localePt);
     IonicModule.forRoot({ mode: 'ios' }),
     AppRoutingModule,
     SharedModule,
-    HttpClientModule
+    HttpClientModule,
+    DragDropModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

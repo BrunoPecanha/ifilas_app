@@ -6,6 +6,7 @@ import { AddCustomerToQueueRequest } from 'src/models/requests/add-customer-to-q
 import { QueueCloseRequest } from 'src/models/requests/queue-close-request';
 import { ScheduleCreateRequest } from 'src/models/requests/schedule-create-request';
 import { ScheduleResponse } from 'src/models/responses/schedule-response';
+import { ScheduleDateResponse } from 'src/models/responses/schedule-date-response';
 
 @Injectable({ providedIn: 'root' })
 export class ScheduleService {
@@ -55,5 +56,9 @@ export class ScheduleService {
 
   getSchedule(storeId: number, employeeId: number): Observable<ScheduleResponse> {
     return this.http.get<ScheduleResponse>(`${this.apiUrl}/${storeId}/${employeeId}`);
+  }
+
+   getEmployeeAgendaForCostumers(storeId: number, employeeId: number, date: Date): Observable<ScheduleDateResponse> {
+    return this.http.get<ScheduleDateResponse>(`${this.apiUrl}/agenda/${employeeId}/${storeId}/${date.toISOString()}`);
   }
 }

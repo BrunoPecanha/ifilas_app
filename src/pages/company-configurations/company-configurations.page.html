@@ -87,7 +87,11 @@
         </ion-card-header>
         <ion-card-content>
           <div class="compact-form-grid">
-            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('cnpj')">
+            <ion-item
+              class="compact-input"
+              lines="none"
+              [class.invalid]="isFieldInvalid('cnpj')"
+            >
               <ion-label position="stacked">CNPJ *</ion-label>
               <ion-input
                 type="text"
@@ -100,7 +104,11 @@
               </div>
             </ion-item>
 
-            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('name')">
+            <ion-item
+              class="compact-input"
+              lines="none"
+              [class.invalid]="isFieldInvalid('name')"
+            >
               <ion-label position="stacked">Nome *</ion-label>
               <ion-input maxlength="30" formControlName="name"></ion-input>
               <div class="error-message" *ngIf="isFieldInvalid('name')">
@@ -116,7 +124,11 @@
               ></ion-input>
             </ion-item>
 
-            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('categoryId')">
+            <ion-item
+              class="compact-input"
+              lines="none"
+              [class.invalid]="isFieldInvalid('categoryId')"
+            >
               <ion-label position="stacked">Categoria *</ion-label>
               <ion-select formControlName="categoryId" interface="action-sheet">
                 <ion-select-option
@@ -148,7 +160,11 @@
         </ion-card-header>
         <ion-card-content>
           <div class="compact-form-grid">
-            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('phoneNumber')">
+            <ion-item
+              class="compact-input"
+              lines="none"
+              [class.invalid]="isFieldInvalid('phoneNumber')"
+            >
               <ion-label position="stacked">Telefone *</ion-label>
               <ion-input
                 type="tel"
@@ -206,8 +222,12 @@
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <div class="compact-form-grid">          
-            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('cep')">
+          <div class="compact-form-grid">
+            <ion-item
+              class="compact-input"
+              lines="none"
+              [class.invalid]="isFieldInvalid('cep')"
+            >
               <ion-label position="stacked">CEP *</ion-label>
               <ion-input
                 type="text"
@@ -225,7 +245,11 @@
               </div>
             </ion-item>
 
-            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('address')">
+            <ion-item
+              class="compact-input"
+              lines="none"
+              [class.invalid]="isFieldInvalid('address')"
+            >
               <ion-label position="stacked">Endereço *</ion-label>
               <ion-input
                 formControlName="address"
@@ -237,7 +261,11 @@
               </div>
             </ion-item>
 
-            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('number')">
+            <ion-item
+              class="compact-input"
+              lines="none"
+              [class.invalid]="isFieldInvalid('number')"
+            >
               <ion-label position="stacked">Número *</ion-label>
               <ion-input
                 formControlName="number"
@@ -249,10 +277,14 @@
               </div>
             </ion-item>
 
-            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('neighborhood')">
+            <ion-item
+              class="compact-input"
+              lines="none"
+              [class.invalid]="isFieldInvalid('neighborhood')"
+            >
               <ion-label position="stacked">Bairro *</ion-label>
-              <ion-input 
-                formControlName="neighborhood" 
+              <ion-input
+                formControlName="neighborhood"
                 [readonly]="true"
               ></ion-input>
               <div class="error-message" *ngIf="isFieldInvalid('neighborhood')">
@@ -260,23 +292,25 @@
               </div>
             </ion-item>
 
-            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('city')">
+            <ion-item
+              class="compact-input"
+              lines="none"
+              [class.invalid]="isFieldInvalid('city')"
+            >
               <ion-label position="stacked">Cidade *</ion-label>
-              <ion-input 
-                formControlName="city" 
-                [readonly]="true"
-              ></ion-input>
+              <ion-input formControlName="city" [readonly]="true"></ion-input>
               <div class="error-message" *ngIf="isFieldInvalid('city')">
                 {{ getErrorMessage('city') }}
               </div>
             </ion-item>
 
-            <ion-item class="compact-input" lines="none" [class.invalid]="isFieldInvalid('state')">
+            <ion-item
+              class="compact-input"
+              lines="none"
+              [class.invalid]="isFieldInvalid('state')"
+            >
               <ion-label position="stacked">Estado *</ion-label>
-              <ion-input 
-                formControlName="state" 
-                [readonly]="true"
-              ></ion-input>
+              <ion-input formControlName="state" [readonly]="true"></ion-input>
               <div class="error-message" *ngIf="isFieldInvalid('state')">
                 {{ getErrorMessage('state') }}
               </div>
@@ -286,7 +320,7 @@
       </ion-card>
     </div>
 
-   <div class="form-row">
+    <div class="form-row">
       <ion-card class="compact-card">
         <ion-card-header class="compact-header">
           <ion-card-title class="section-title">
@@ -415,7 +449,7 @@
                 >Permite iniciar/finalizar atendimento sem QRCode</ion-label
               >
               <ion-toggle
-                formControlName="finishWithoutQrCodeInCaseFailure"
+                formControlName="inCaseFailureAcceptFinishWithoutQRCode"
               ></ion-toggle>
             </ion-item>
 
@@ -423,12 +457,6 @@
               <ion-icon name="share-social-outline" slot="start"></ion-icon>
               <ion-label>Compartilhar Fila </ion-label>
               <ion-toggle formControlName="shareQueue"></ion-toggle>
-            </ion-item>
-
-             <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="calendar-outline" slot="start"></ion-icon>
-              <ion-label>Usar Agenda </ion-label>
-              <ion-toggle formControlName="useAgenda"></ion-toggle>
             </ion-item>
 
             <ion-item class="compact-setting-item" lines="none">

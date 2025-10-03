@@ -121,8 +121,11 @@ const routes: Routes = [
   {
     path: 'schedule-config',
     loadChildren: () => import('../pages/schedule-config/schedule-config.module').then( m => m.ScheduleConfigPageModule)
+  },
+  {
+    path: 'owner-schedule',
+    loadChildren: () => import('../pages/owner-schedule/owner-schedule.module').then( m => m.OwnerSchedulePageModule)
   }
-
 ];
 
 @NgModule({

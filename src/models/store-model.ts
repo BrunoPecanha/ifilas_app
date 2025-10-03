@@ -13,7 +13,7 @@ export interface StoreModel extends To {
   name: string;
   address: AddressModel;
   number: string;
-  rating: number;
+  rating: string;
   votes: number;
   minorQueue: number;
   city: string;
@@ -25,7 +25,6 @@ export interface StoreModel extends To {
   neighborhood: string;
   cep: string;
   acceptOtherQueues: boolean;
-  useAgenda: boolean;
   answerOutOfOrder: boolean;
   answerScheduledTime: boolean;
   timeRemoval?: number;
@@ -44,6 +43,8 @@ export interface StoreModel extends To {
   facebook: string;
   youtube: string;
   webSite: string;
+  useAgenda: boolean;
+  useQueue: boolean;
   whatsapp: string;
   attendSimultaneously: boolean;
   releaseOrdersBeforeGetsQueued: boolean;
@@ -53,4 +54,6 @@ export interface StoreModel extends To {
   isVerified: boolean;
   inCaseFailureAcceptFinishWithoutQRCode: boolean;
   distance?: number; 
+  nextHourOnAgenda: string;
+  isOpen: boolean;
 }

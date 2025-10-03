@@ -5,6 +5,8 @@ export interface StoreProfessionalModel {
   storeLogoPath: string;
   name: string;
   subtitle: string;
+  useAgenda: boolean;
   professionals: ProfessionalModel[]
   isVerified: boolean;
+  rating: number;
 }
