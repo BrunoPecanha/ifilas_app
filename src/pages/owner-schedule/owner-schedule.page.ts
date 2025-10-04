@@ -244,12 +244,10 @@ export class OwnerSchedulePage implements OnInit {
     this.applyFilters();
   }
 
-  // VISUALIZAÇÃO
   changeView(event: any) {
     this.currentView = event.detail.value;
   }
 
-  // ESTATÍSTICAS
   getStats() {
     const allCustomers = this.getAllCustomers();
     return {
@@ -264,7 +262,6 @@ export class OwnerSchedulePage implements OnInit {
     return this.selectedTimeSlots.flatMap(slot => slot.customers);
   }
 
-  // STATUS E CORES
   getStatusColor(status: string): string {
     const colorMap: { [key: string]: string } = {
       confirmed: 'success',
@@ -295,7 +292,6 @@ export class OwnerSchedulePage implements OnInit {
     return iconMap[status] || 'ellipsis-horizontal';
   }
 
-  // AÇÕES RÁPIDAS
   quickAction(customer: any, slot?: any) {
     switch (customer.status) {
       case 'pending':
@@ -341,7 +337,6 @@ export class OwnerSchedulePage implements OnInit {
     }
   }
 
-  // DRAG & DROP (atualizado)
   onDrop(event: CdkDragDrop<any[]>, targetSlot: any) {
     this.isDragging = false;
 
@@ -357,7 +352,6 @@ export class OwnerSchedulePage implements OnInit {
 
       const movedCustomer = targetSlot.customers[event.currentIndex];
       movedCustomer.time = targetSlot.time;
-      // Atualizar horário no backend
     }
     this.applyFilters();
   }
@@ -374,7 +368,6 @@ export class OwnerSchedulePage implements OnInit {
     if (slot) {
       slot.customers = slot.customers.filter((c: any) => c.id !== customer.id);
     } else {
-      // Remover da lista
       this.selectedTimeSlots.forEach(s => {
         s.customers = s.customers.filter((c: any) => c.id !== customer.id);
       });
@@ -382,7 +375,6 @@ export class OwnerSchedulePage implements OnInit {
     this.applyFilters();
   }
 
-  // DATA E NAVEGAÇÃO
   isToday(): boolean {
     const today = new Date();
     return this.selectedDate.toDateString() === today.toDateString();
@@ -406,8 +398,7 @@ export class OwnerSchedulePage implements OnInit {
 
 
   getConsolidatedStats() {
-    // Implemente a lógica real de contagem baseada nos seus dados
-    const appointments = this.getAllCustomers(); // Ou sua fonte de dados real
+    const appointments = this.getAllCustomers(); 
 
     return {
       confirmed: appointments.filter(a => a.status === 'confirmed').length,

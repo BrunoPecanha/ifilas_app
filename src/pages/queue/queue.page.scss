@@ -1,5 +1,5 @@
 :root {
-  --card-border-radius: 16px;
+  --card-border-radius: 50px;
   --card-padding: 16px;
   --color-primary: #3880ff;
   --color-success: #2dd36f;
@@ -1108,4 +1108,28 @@ ion-item {
   .fila-content {
     padding-bottom: 130px;
   }
+}
+
+.queue-card-sliding {
+  margin-bottom: 16px;
+}
+
+ion-item-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  font-size: 20px;
+}
+
+ion-item-option[color="danger"] {
+  --ion-color-base: var(--color-danger);
+}
+
+ion-item-option[color="primary"] {
+  --ion-color-base: var(--color-primary);
+}
+
+.queue-card {
+  width: 100%;
 }
