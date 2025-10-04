@@ -321,10 +321,6 @@ export class QueuePage {
   }
 
   public editarServicos(card: CustomerInQueueCardModel): void {
-    const details = this.getCardDetails(card);
-    if (!details)
-      return;
-
     this.router.navigate(['/select-services'], {
       queryParams: {
         queueId: card.queueId,
