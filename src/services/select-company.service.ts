@@ -40,7 +40,7 @@ export class SelectCompanyService {
     return this.http.get<StoreListResponse>(`${this.apiUrl}/store/nearby`, { params });
   }
 
-  loadFilteredStores(userId: number, categoryId?: number, quickFilter?: string): Observable<StoreListResponse> {
+  loadFilteredStores(userId: number, categoryId?: number | null, quickFilter?: string): Observable<StoreListResponse> {
     const params = new HttpParams()
       .set('categoryId', categoryId ? categoryId.toString() : '')
       .set('quickFilter', quickFilter || '')

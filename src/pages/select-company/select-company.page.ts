@@ -31,8 +31,13 @@ export class SelectCompanyPage implements OnInit {
   categories: CategoryModel[] = [];
   companies: StoreModel[] = [];
   searchQuery = '';
-  selectedCategoryId: number | null = null;
+  selectedCategoryId: number | null =  null;
   selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
+
+  // Adicione estas propriedades à classe
+  loadingMore = false;
+  currentPage = 1;
+  totalPages = 1;
 
   categoriesExpanded: boolean = false;
 
@@ -101,7 +106,7 @@ export class SelectCompanyPage implements OnInit {
     }
   }
 
-  private loadFilteredStores(categoryId?: number, quickFilter?: string) {
+  private loadFilteredStores(categoryId?: number |  null, quickFilter?: string) {
     const user = this.session.getUser();
     const userId = user?.id;
 
@@ -240,51 +245,51 @@ export class SelectCompanyPage implements OnInit {
     this.searchQuery = event.detail.value;
   }
 
-  selectCategory(idCategory: number): void {
-    if (this.selectedCategoryId === idCategory) {
-      this.selectedCategoryId = null;
-      this.loadFilteredStores();
-      return;
-    }
+  // selectCategory(idCategory: number): void {
+  //   if (this.selectedCategoryId === idCategory) {
+  //     this.selectedCategoryId = null;
+  //     this.loadFilteredStores();
+  //     return;
+  //   }
 
-    this.selectedCategoryId = idCategory;
-    this.loadFilteredStores(idCategory);
-  }
+  //   this.selectedCategoryId = idCategory;
+  //   this.loadFilteredStores(idCategory);
+  // }
 
   getBack() {
     this.navCtrl.back();
   }
 
-  applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
-    if (this.selectedFilter === filter) {
-      this.selectedFilter = null;
-      this.loadFilteredStores();
-      return;
-    }
+  // applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
+  //   if (this.selectedFilter === filter) {
+  //     this.selectedFilter = null;
+  //     this.loadFilteredStores();
+  //     return;
+  //   }
 
-    this.selectedFilter = filter;
-    let quickFilter: string;
+  //   this.selectedFilter = filter;
+  //   let quickFilter: string;
 
-    switch (filter) {
-      case 'minorQueue':
-        quickFilter = 'minorQueue';
-        break;
-      case 'favorites':
-        quickFilter = 'favorites';
-        break;
-      case 'recent':
-        quickFilter = 'recent';
-        break;
-      case 'nearby':
-        quickFilter = 'nearby';
-        break;
-      default:
-        quickFilter = '';
-    }
+  //   switch (filter) {
+  //     case 'minorQueue':
+  //       quickFilter = 'minorQueue';
+  //       break;
+  //     case 'favorites':
+  //       quickFilter = 'favorites';
+  //       break;
+  //     case 'recent':
+  //       quickFilter = 'recent';
+  //       break;
+  //     case 'nearby':
+  //       quickFilter = 'nearby';
+  //       break;
+  //     default:
+  //       quickFilter = '';
+  //   }
 
-    const categoryId = this.selectedCategoryId !== null ? this.selectedCategoryId : undefined;
-    this.loadFilteredStores(categoryId, quickFilter);
-  }
+  //   const categoryId = this.selectedCategoryId !== null ? this.selectedCategoryId : undefined;
+  //   this.loadFilteredStores(categoryId, quickFilter);
+  // }
 
   toggleCategories() {
     this.categoriesExpanded = !this.categoriesExpanded;
@@ -309,5 +314,72 @@ export class SelectCompanyPage implements OnInit {
   checkScrollPosition() {
     const element = this.filtersScroll.nativeElement;
     this.canScrollRight = element.scrollWidth > element.clientWidth + element.scrollLeft;
+  }
+
+  // Método para scroll infinito
+  async onContentScroll(event: any) {
+    const scrollElement = await event.target.getScrollElement();
+    const scrollHeight = scrollElement.scrollHeight;
+    const scrollTop = scrollElement.scrollTop;
+    const clientHeight = scrollElement.clientHeight;
+
+    // Quando chegar perto do final (80%)
+    if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
+      !this.loadingMore &&
+      this.currentPage < this.totalPages) {
+      this.loadMoreData();
+    }
+  }
+
+  // Método para carregar mais dados
+  private loadMoreData() {
+    this.loadingMore = true;
+    this.currentPage++;
+
+    // Implemente a lógica de paginação aqui
+    // baseado na sua API
+    setTimeout(() => {
+      this.loadingMore = false;
+    }, 1000);
+  }
+
+  // Método auxiliar para contar filtros ativos
+  getActiveFiltersCount(): number {
+    let count = 0;
+    if (this.selectedFilter) count++;
+    if (this.selectedCategoryId) count++;
+    if (this.searchQuery) count++;
+    return count;
+  }
+
+  // Auto-colapso dos filtros após aplicação
+  applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
+    if (this.selectedFilter === filter) {
+      this.selectedFilter = null;
+    } else {
+      this.selectedFilter = filter;
+    }
+
+    this.loadFilteredStores(this.selectedCategoryId, this.selectedFilter || undefined);
+
+    // Colapsa os filtros após aplicação
+    setTimeout(() => {
+      this.filtersExpanded = false;
+    }, 300);
+  }
+
+  selectCategory(idCategory: number): void {
+    if (this.selectedCategoryId === idCategory) {
+      this.selectedCategoryId = null;
+    } else {
+      this.selectedCategoryId = idCategory;
+    }
+
+    this.loadFilteredStores(this.selectedCategoryId || undefined, this.selectedFilter || undefined);
+
+    // Colapsa os filtros após aplicação
+    setTimeout(() => {
+      this.filtersExpanded = false;
+    }, 300);
   }
 }

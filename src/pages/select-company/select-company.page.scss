@@ -2,300 +2,59 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: #f8f9fa;
 }
 
 .collapsible-filters {
   background: #fff;
-  border-bottom: 1px solid #e5e5e5;
-
-  .filters-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px;
-    cursor: pointer;
-    font-weight: 500;
+  border-bottom: 1px solid #e8ecef;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  z-index: 10;
+  
+  &.expanded {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   }
-
-  .filters-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-
-    &.expanded {
-      max-height: 300px;
-    }
-  }
-
-  .categories-scroll {
-    display: flex;
-    overflow-x: auto;
-    gap: 12px;
-    padding: 8px 12px;
-  }
-
-  .category-item {
-    flex: 0 0 auto;
-    text-align: center;
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 12px;
-    transition: all 0.2s;
-
-    &.selected {
-      background: var(--ion-color-primary);
-      color: #fff;
-    }
-
-    img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-    }
-  }
-}
-
-
-.companies-grid {
-  display: grid;
-  gap: 16px;
-  padding: 16px;
-}
-
-
-.company-card {
-  position: relative;
-  background: #fff;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  display: flex;
-  flex-direction: column;
-
-  .category-bar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: var(--ion-color-primary);
-  }
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px;
-  }
-
-  .status-chip {
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 12px;
-    background: #ff6b6b;
-    color: #fff;
-    &.open {
-      background: #20c997;
-    }
-  }
-
-  .like-button {
-    ion-icon {
-      font-size: 22px;
-      color: #999;
-      &.liked {
-        color: #ff5e7d;
-      }
-    }
-  }
-
-  .card-content {
-    display: grid;
-    grid-template-columns: 64px 1fr;
-    gap: 12px;
-    padding: 0 12px 12px;
-
-    .logo-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      img {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        object-fit: cover;
-      }
-
-      .default-logo {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background: #f0f0f0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    }
-
-    .company-info {
-      h3 {
-        font-size: 16px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .company-category {
-        font-size: 14px;
-        color: #666;
-        margin: 2px 0;
-      }
-
-      .service-badges {
-        display: flex;
-        gap: 8px;
-        margin: 6px 0;
-
-        .service-badge {
-          font-size: 12px;
-          padding: 2px 8px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-
-          &.agenda {
-            background: #ede7f6;
-            color: #673ab7;
-          }
-
-          &.walkin {
-            background: #e3f2fd;
-            color: #1976d2;
-          }
-        }
-      }
-
-      .company-stats {
-        margin-top: 4px;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-
-        .stat-item {
-          font-size: 13px;
-          color: #555;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-      }
-    }
-  }
-}
-
-.filters-container {
-  background: #fff;
-  border-radius: 12px;
-  margin: 12px;
-  padding: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.filters-header {
-  display: flex;
-  align-items: center;
-  font-weight: 600;
-  color: #333;
-  font-size: 15px;
-  margin-bottom: 10px;
-}
-
-.filters-header ion-icon {
-  margin-right: 6px;
-  color: #6366f1;
-}
-
-.filters-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #444;
-  margin: 12px 0 6px;
-}
-
-.categories-chips {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.chip {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #fff;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-.chip:hover { transform: scale(1.05); }
-
-.cat-blue { background: #3b82f6; }
-.cat-orange { background: #f97316; }
-.cat-red { background: #ef4444; }
-.cat-brown { background: #a16207; }
-.cat-cyan { background: #06b6d4; }
-
-.order-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-}
-
-.order-card {
-  background: #f9fafb;
-  border-radius: 12px;
-  padding: 12px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 500;
-  color: #444;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.order-card:hover {
-  background: #eef2ff;
-  color: #4338ca;
-  transform: translateY(-2px);
-}
-
-.order-card ion-icon {
-  display: block;
-  font-size: 18px;
-  margin-bottom: 4px;
-  color: #6366f1;
-}
-
-.collapsible-filters {
-  background: #fff;
-  border-radius: 12px;
-  margin: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  overflow: hidden;
 }
 
 .filters-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  font-weight: 600;
-  color: var(--ion-color-primary);
+  padding: 12px 16px;
   cursor: pointer;
-  background: #f9f9f9;
-  border-bottom: 1px solid #eee;
+  background: #fff;
+  
+  .filters-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 14px;
+    
+    .filter-icon {
+      font-size: 18px;
+      color: #667eea;
+    }
+    
+    .active-filters-badge {
+      background: #e53e3e;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  
+  .toggle-icon {
+    font-size: 18px;
+    color: #718096;
+    transition: transform 0.2s ease;
+  }
 }
 
 .filters-content {
@@ -303,86 +62,137 @@
   overflow: hidden;
   transition: max-height 0.3s ease;
   background: #fff;
+  
+  .collapsible-filters.expanded & {
+    max-height: 400px;
+    border-top: 1px solid #e8ecef;
+  }
 }
-.filters-content.expanded {
-  max-height: 500px; 
-  padding: 12px;
+
+.filter-section {
+  padding: 16px;
+  border-bottom: 1px solid #f1f3f4;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a5568;
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 }
 
 .categories-scroll {
   display: flex;
   overflow-x: auto;
-  gap: 10px;
-  padding: 10px 0;
+  gap: 12px;
+  padding: 4px 0;
+  scrollbar-width: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .category-item {
   flex: 0 0 auto;
-  text-align: center;
-  cursor: pointer;
-  border-radius: 12px;
-  background: #f1f5f9;
-  padding: 8px 12px;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-}
-.category-item.selected {
-  background: var(--ion-color-primary);
-  color: #fff;
-  border-color: var(--ion-color-primary);
-  font-weight: 600;
-}
-.category-item img {
-  width: 32px;
-  height: 32px;
-  margin-bottom: 6px;
-}
-
-ion-segment {
-  --background: #f9fafb;
-  border-radius: 10px;
-  margin-top: 10px;
-  padding: 4px;
-}
-ion-segment-button {
-  --color: #444;
-  --color-checked: #fff;
-  --indicator-color: transparent;
-  --background-checked: var(--ion-color-primary);
-  border-radius: 8px;
-  margin: 0 2px;
-  font-weight: 500;
-  min-width: 90px;
-}
-
-.company-card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 12px;
-  margin: 10px 0;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-  transition: transform 0.2s ease;
-}
-.company-card:hover {
-  transform: translateY(-3px);
-}
-.card-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 70px;
+  
+  &:hover {
+    background: #edf2f7;
+  }
+  
+  &.selected {
+    background: #667eea;
+    border-color: #667eea;
+    
+    .category-name {
+      color: white;
+      font-weight: 600;
+    }
+  }
+  
+  .category-icon {
+    width: 32px;
+    height: 32px;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+  
+  .category-name {
+    font-size: 11px;
+    color: #4a5568;
+    text-align: center;
+    line-height: 1.2;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
-.status-chip {
-  font-size: 12px;
-  padding: 3px 8px;
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  font-weight: 600;
-  color: #fff;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  color: #4a5568;
+  
+  ion-icon {
+    font-size: 16px;
+    color: #718096;
+  }
+  
+  &:hover {
+    border-color: #cbd5e0;
+    background: #f7fafc;
+  }
+  
+  &.active {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+    
+    ion-icon {
+      color: white;
+    }
+  }
 }
-.status-chip.open {
-  background: #22c55e; 
-}
-.status-chip:not(.open) {
-  background: #ef4444; 
+
+.modern-content {
+  --background: #f8f9fa;
 }
 
 .results-header {
@@ -390,140 +200,292 @@ ion-segment-button {
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: #f9fafb;
+  background: #fff;
+  border-bottom: 1px solid #e8ecef;
+  
+  .results-count {
+    font-size: 13px;
+    color: #718096;
+    font-weight: 500;
+  }
+  
+  .clear-filters-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #fed7d7;
+    color: #c53030;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    ion-icon {
+      font-size: 14px;
+    }
+    
+    &:hover {
+      background: #feb2b2;
+    }
+  }
+}
+
+.companies-list {
+  padding: 8px;
+}
+
+.company-card {
+  background: #fff;
   border-radius: 12px;
-  margin: 12px 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+  overflow: hidden;
+  
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
-.results-header p {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #1f2937; 
+.card-content {
+  padding: 16px;
 }
 
-.clear-filters-btn {
+.card-main {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+}
+
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  
+  .logo-wrapper {
+    width: 56px;
+    height: 56px;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+    
+    .default-logo {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      ion-icon {
+        font-size: 24px;
+        color: #718096;
+      }
+    }
+  }
+  
+  .status-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: white;
+    background: #e53e3e;
+    
+    &.open {
+      background: #38a169;
+    }
+  }
+}
+
+.info-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.company-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+  
+  .company-name {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+    
+    .verified-badge {
+      font-size: 16px;
+      color: #667eea;
+    }
+  }
+  
+  .like-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    
+    ion-icon {
+      font-size: 18px;
+      color: #cbd5e0;
+      transition: all 0.2s ease;
+      
+      &.liked {
+        color: #e53e3e;
+      }
+    }
+  }
+}
+
+.company-meta {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: #fee2e2;
-  color: #b91c1c; 
-  font-size: 13px;
-  font-weight: 500;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #718096;
+  
+  .rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    color: #f6ad55;
+    font-weight: 500;
+    
+    ion-icon {
+      font-size: 12px;
+    }
+  }
+  
+  .category, .distance {
+    font-weight: 500;
+  }
 }
 
-.clear-filters-btn ion-icon {
-  font-size: 16px;
+.services-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.clear-filters-btn:hover {
-  background: #fecaca;
-  transform: translateY(-2px);
+.service-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  
+  .service-icon {
+    font-size: 14px;
+    color: #718096;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+  
+  .service-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  
+  .service-type {
+    font-size: 12px;
+    font-weight: 500;
+    color: #4a5568;
+  }
+  
+  .service-status {
+    font-size: 11px;
+    color: #718096;
+    line-height: 1.2;
+  }
 }
 
 .state-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  gap: 16px;
+  
+  ion-icon {
+    font-size: 48px;
+    color: #cbd5e0;
+  }
+  
+  h3 {
+    font-size: 16px;
+    color: #718096;
+    margin: 0;
+    font-weight: 500;
+  }
+}
+
+.loading-more {
+  display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 60px 20px;
-  gap: 16px;
+  gap: 8px;
+  padding: 20px;
+  color: #718096;
+  font-size: 14px;
 }
 
-.state-container ion-icon {
-  font-size: 64px;
-  color: #cbd5e1; 
-}
-
-.state-container h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #334155;
-  margin: 0;
-}
-
-.state-container ion-button {
-  --border-radius: 12px;
-  --padding-start: 20px;
-  --padding-end: 20px;
-  --background: #3b82f6; 
-  --color: #fff;
-  font-weight: 600;
-}
 
 ion-content::part(scroll) {
   scrollbar-width: none;
-  -ms-overflow-style: none;
 }
 
-.company-name {
-  display: flex;
-  align-items: center;
-  gap: 6px; 
-  font-weight: 600;
-  font-size: 16px;
+ion-content::part(scroll)::-webkit-scrollbar {
+  display: none;
 }
 
-.company-name .name-text {
-  color: #111; 
-}
-
-.company-name .rating ion-icon {
-  color: #fbbf24;
-  font-size: 16px;
-  vertical-align: middle;
-}
-
-.rating-section span {
-   margin-left: 2px;
-  font-size: 12px;
-  color: #fbbf24;
-}
-
-.company-name  {
-  margin-left: 2px;
-  font-size: 14px;
-  color: #fbbf24;
-}
-
-.company-name .verified ion-icon {
-  color: #3b82f6; 
-  font-size: 16px;
-}
-
-.service-badges-stats {
-  display: flex;
-  gap: 16px;
-  margin-top: 6px;
-}
-
-.badge-block {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.service-badge {
-  font-size: 13px;
-  padding: 2px 6px; 
+.company-card {
+  background: #fff;
   border-radius: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  margin-left: -5px;
-  white-space: nowrap;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+  overflow: hidden;
+  position: relative; 
+  
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
-.stat-text {
-  font-size: 12px;
-  color: #555;
-  margin-top: 2px;
-  line-height: 1.2;
+
+.status-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #e53e3e; 
+  transition: background-color 0.3s ease;
+  
+  &.open {
+    background: #38a169; 
+  }
 }
+
+
+.card-content {
+  padding: 16px;
+  margin-left: 4px;
+}
+
