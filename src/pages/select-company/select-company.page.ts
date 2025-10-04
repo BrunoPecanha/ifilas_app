@@ -245,51 +245,9 @@ export class SelectCompanyPage implements OnInit {
     this.searchQuery = event.detail.value;
   }
 
-  // selectCategory(idCategory: number): void {
-  //   if (this.selectedCategoryId === idCategory) {
-  //     this.selectedCategoryId = null;
-  //     this.loadFilteredStores();
-  //     return;
-  //   }
-
-  //   this.selectedCategoryId = idCategory;
-  //   this.loadFilteredStores(idCategory);
-  // }
-
   getBack() {
     this.navCtrl.back();
   }
-
-  // applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
-  //   if (this.selectedFilter === filter) {
-  //     this.selectedFilter = null;
-  //     this.loadFilteredStores();
-  //     return;
-  //   }
-
-  //   this.selectedFilter = filter;
-  //   let quickFilter: string;
-
-  //   switch (filter) {
-  //     case 'minorQueue':
-  //       quickFilter = 'minorQueue';
-  //       break;
-  //     case 'favorites':
-  //       quickFilter = 'favorites';
-  //       break;
-  //     case 'recent':
-  //       quickFilter = 'recent';
-  //       break;
-  //     case 'nearby':
-  //       quickFilter = 'nearby';
-  //       break;
-  //     default:
-  //       quickFilter = '';
-  //   }
-
-  //   const categoryId = this.selectedCategoryId !== null ? this.selectedCategoryId : undefined;
-  //   this.loadFilteredStores(categoryId, quickFilter);
-  // }
 
   toggleCategories() {
     this.categoriesExpanded = !this.categoriesExpanded;

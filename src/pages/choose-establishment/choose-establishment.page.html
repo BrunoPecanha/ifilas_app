@@ -1,55 +1,80 @@
 <app-custom-header
-  [title]="'ESCOLHER EMPRESA'"
+  [title]="'SELECIONE A LOJA'"
+  [subtitle]="'Escolha a loja que deseja acessar'"
   [showStartButton]="true"
   [showEndButton]="false"
   [startIconName]="'arrow-back-outline'"
   [endIconName]="'refresh-outline'"
-  (onStartClick)="getBack()"
->
+  (onStartClick)="getBack()">
 </app-custom-header>
 
-<ion-content class="establishment-content">
-  <div class="header-background-modern">
-    <ng-container *ngIf="selectedHeaderImage; else defaultHeader">
-      <ion-img [src]="selectedHeaderImage" class="header-img fade-in"></ion-img>
-    </ng-container>
-    <ng-template #defaultHeader>
-      <div class="default-header">
-        <div class="default-header-icon">
-          <ion-icon name="business"></ion-icon>
-        </div>
+<ion-content class="establishment-content" (ionScroll)="onContentScroll($event)"  [scrollEvents]="true">
+  <div class="content-wrapper">  
+
+    <div class="companies-section">
+      <div class="section-header">
+        <span class="companies-count">{{filteredEstablishments.length}} loja(s) disponível(s)</span>
       </div>
-    </ng-template>
-    <div class="header-overlay"></div>
+
+      <div class="companies-grid">
+        <ion-card
+          class="company-card"
+          *ngFor="let est of filteredEstablishments"
+          (click)="handleCompanyClick(est)"
+          [class.loading]="loadingCompanyId === est.id">
+          
+          <div class="category-indicator" [style.background]="getCategoryColor(est.category)"></div>
+          
+          <ion-card-content>
+            <div class="company-header">
+              <div class="company-logo">
+                <ng-container *ngIf="est.logoPath; else defaultCompanyLogo">
+                  <ion-img
+                    [src]="est.logoPath"
+                    class="company-logo-img"
+                    (ionError)="handleImageError($event)">
+                  </ion-img>
+                </ng-container>
+                <ng-template #defaultCompanyLogo>
+                  <div class="default-company-logo" [style.background]="getCategoryColor(est.category)">
+                    <ion-icon name="storefront"></ion-icon>
+                  </div>
+                </ng-template>
+              </div>
+
+              <div class="company-info">
+                <h3 class="company-name">{{ est.name }}</h3>
+                <div class="company-meta">
+                  <span class="company-category">{{ est.category }}</span>
+                  <span class="company-status" [class.open]="est.isOpen" [class.closed]="!est.isOpen">
+                    {{ est.isOpen ? 'Aberta' : 'Fechada' }}
+                  </span>
+                </div>
+                
+                <div class="company-location" *ngIf="est.city">
+                  <ion-icon name="location-outline"></ion-icon>
+                  <span>{{ est.city }}, {{ est.state }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="loading-overlay" *ngIf="loadingCompanyId === est.id">
+              <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
+              <span>Conectando...</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <div class="empty-state" *ngIf="filteredEstablishments.length === 0">
+        <ion-icon name="business-outline"></ion-icon>
+        <h3>Nenhuma loja encontrada</h3>
+        <p>Tente buscar por outro termo</p>
+      </div>
+    </div>
   </div>
 
-  <div class="logo-wrapper">
-    <ng-container *ngIf="selectedLogo; else defaultLogo">
-      <ion-img [src]="selectedLogo" class="fade-in"></ion-img>
-    </ng-container>
-    <ng-template #defaultLogo>
-      <div class="default-logo">
-        <ion-icon name="business"></ion-icon>
-      </div>
-    </ng-template>
+  <div class="scroll-indicator" [class.hidden]="!showScrollIndicator">
+    <ion-icon name="chevron-down-outline"></ion-icon>
   </div>
-
-  <ion-card
-    class="service-card"
-    *ngFor="let est of establishments"
-    (click)="handleCompanyClick(est)"
-  >
-    <ion-card-content>
-      <div class="card-header">
-        <h2>{{ est.name }}</h2>
-        <ion-spinner
-          *ngIf="loadingCompanyId === est.id"
-          name="crescent"
-          class="card-spinner"
-        >
-        </ion-spinner>
-      </div>
-      <p>{{ est.description }}</p>
-    </ion-card-content>
-  </ion-card>
 </ion-content>
