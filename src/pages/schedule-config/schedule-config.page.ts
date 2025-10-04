@@ -24,11 +24,11 @@ export class ScheduleConfigPage implements OnInit {
   agendaInterval: number = 7;
 
   weekDays: WeekDayConfigRequest[] = [
-    { id: 1, dayOfWeek: 1, label: 'Segunda-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { id: 2, dayOfWeek: 2, label: 'Terça-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { id: 3, dayOfWeek: 3, label: 'Quarta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { id: 4, dayOfWeek: 4, label: 'Quinta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
-    { id: 5, dayOfWeek: 5, label: 'Sexta-feira', enabled: true, startTime: '09:00', endTime: '18:00' },
+    { id: 1, dayOfWeek: 1, label: 'Segunda-feira', enabled: false, startTime: '09:00', endTime: '18:00' },
+    { id: 2, dayOfWeek: 2, label: 'Terça-feira', enabled: false, startTime: '09:00', endTime: '18:00' },
+    { id: 3, dayOfWeek: 3, label: 'Quarta-feira', enabled: false, startTime: '09:00', endTime: '18:00' },
+    { id: 4, dayOfWeek: 4, label: 'Quinta-feira', enabled: false, startTime: '09:00', endTime: '18:00' },
+    { id: 5, dayOfWeek: 5, label: 'Sexta-feira', enabled: false, startTime: '09:00', endTime: '18:00' },
     { id: 6, dayOfWeek: 6, label: 'Sábado', enabled: false, startTime: null, endTime: null },
     { id: 7, dayOfWeek: 0, label: 'Domingo', enabled: false, startTime: null, endTime: null },
   ];
