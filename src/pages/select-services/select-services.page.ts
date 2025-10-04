@@ -34,6 +34,7 @@ export class SelectServicesPage {
   looseCustomer: boolean = false;
   useAgenda: boolean = false;
   professionalId = 0;
+  professionalName = '';
 
   hasVariableTime: boolean = false;
   hasVariablePrice: boolean = false;
@@ -48,7 +49,6 @@ export class SelectServicesPage {
     private queueService: QueueService,
     private customerService: CustomerService,
     private sessionService: SessionService,
-    private navCtrl: NavController,
     private signalRService: SignalRService
   ) {
     this.user = this.sessionService.getUser();
@@ -63,6 +63,7 @@ export class SelectServicesPage {
       this.queueId = params['queueId'];
       this.storeId = params['storeId'];
       this.professionalId = params['professionalId'];
+      this.professionalName = params['professionalName'];
       this.useAgenda = params['useAgenda'] === 'true';
       this.customerId = params['customerId'] ? Number(params['customerId']) : null;
       this.looseCustomer = params['looseCustomer'] === 'true';

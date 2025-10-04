@@ -4,6 +4,7 @@ export interface ProfessionalModel {
   id: number;
   queueId: number;
   name: string;
+  lastName: string;
   subtitle: string;
   liked: boolean;
   queueName: string;

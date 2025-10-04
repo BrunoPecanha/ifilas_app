@@ -8,7 +8,6 @@
 </app-custom-header>
 
 <ion-content class="ion-padding">
-  <!-- Header Compacto com Data e Navegação -->
   <div class="page-header">
     <div class="date-navigation-card">
       <div class="date-display">
@@ -36,7 +35,6 @@
     </div>
   </div>
 
-  <!-- Barra de Ferramentas Compacta -->
   <div class="toolbar-section">
     <div class="toolbar-compact">
       <div class="left-controls">
@@ -71,7 +69,6 @@
       </div>
     </div>
 
-    <!-- Filtros Compactos -->
     <div class="filters-container" [class.expanded]="showFilters">
       <div class="filters-content">
         <div class="filter-section">
@@ -118,7 +115,6 @@
     </div>
   </div>
 
-  <!-- Estatísticas Consolidadas -->
   <div class="stats-section">
     <div class="stats-grid">
       <div class="stat-item confirmed">
@@ -140,7 +136,6 @@
     </div>
   </div>
 
-  <!-- Filtros Ativos -->
   <div class="active-filters-bar" *ngIf="hasActiveFilters() && !showFilters">
     <div class="active-filters-content">
       <span class="filters-label">Filtros ativos:</span>
@@ -156,7 +151,6 @@
     </div>
   </div>
 
-  <!-- Visualização em Grade -->
   <section *ngIf="selectedDate && currentView === 'grid'" class="agenda-section">
     <div class="agenda-grid" cdkDropListGroup>
       <div
@@ -232,7 +226,6 @@
     </div>
   </section>
 
-  <!-- Visualização em Lista -->
   <section *ngIf="selectedDate && currentView === 'list'" class="list-section">
     <ion-list class="compact-list">
       <ion-item-sliding *ngFor="let customer of getAllCustomers()">
