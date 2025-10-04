@@ -37,7 +37,6 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.getSelectedStoreId();
     this.resetImageStates();
-    this.loadStoreAndProfessionals(this.storeId);
     this.user = this.sessionService.getUser();
   }
 
@@ -45,9 +44,9 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     this.cleanupSignalR();
   }
 
-  ionViewWillEnter() {
-    this.initSignalRConnection();
-  }
+  // ionViewWillEnter() {
+  //   this.initSignalRConnection();
+  // }
 
   get queueProfessionals(): ProfessionalModel[] {
     const professionals = this.store?.professionals || [];
@@ -82,7 +81,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     return this.filteredProfessionals.length > 0;
   }
 
-  loadStoreAndProfessionals(storeId: number) {
+  loadStoreAndProfessionals(storeId: number) {    
     this.service.loadStoreAndProfessionals(storeId).subscribe({
       next: (response) => {
         this.store = response.data;
@@ -118,11 +117,16 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     });
   }
 
-  getSelectedStoreId() {
-    this.route.queryParams.subscribe((params) => {
-      this.storeId = params['storeId'];
-    });
-  }
+ getSelectedStoreId() {
+  this.route.queryParams.subscribe((params) => {
+    this.storeId = this.sessionService.getStore()?.id || params['storeId'] || 0;
+
+    if (this.storeId) {
+      this.loadStoreAndProfessionals(this.storeId);
+      this.initSignalRConnection();
+    }
+  });
+}
 
   getStatusClass(status: StatusQueueEnum): string {
     switch (status) {
@@ -184,6 +188,12 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     }
   }
 
+   goBack() {
+    this.router.navigate(['/select-service']), {
+      queryParams: { storeId: this.storeId }
+    };
+  }
+
   async handleRefresh(event: any) {
     try {
       this.getSelectedStoreId();
@@ -236,6 +246,9 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   }
 
   async openAgenda(professional: ProfessionalModel) {
+    if(!this.store && !this.storeId)      
+      this.storeId = this.sessionService.getStore()?.id || 0;
+
     try {
       this.router.navigate(['/select-services'], {
         queryParams: {
@@ -365,7 +378,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     try {
       const [hours, minutes] = timeString.split(':');
       const totalMinutes = parseInt(hours) * 60 + parseInt(minutes);
-      return totalMinutes > 0 ? `Você em ${totalMinutes} min` : '--';
+      return totalMinutes > 0 ? `Em ${totalMinutes} min` : '--';
     } catch {
       return '--';
     }

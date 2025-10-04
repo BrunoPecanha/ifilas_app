@@ -56,17 +56,20 @@ export class SelectServicesPage {
 
   ngOnInit() {
     this.getProfessionalAndStore();
-    this.loadAvailablesServices();
   }
 
   getProfessionalAndStore() {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe(params => {      
       this.queueId = params['queueId'];
       this.storeId = params['storeId'];
       this.professionalId = params['professionalId'];
       this.useAgenda = params['useAgenda'] === 'true';
       this.customerId = params['customerId'] ? Number(params['customerId']) : null;
       this.looseCustomer = params['looseCustomer'] === 'true';
+      
+      this.storeId = Number(this.storeId) || this.sessionService.getStore()?.id || 0;
+
+      this.loadAvailablesServices();
 
       if (this.customerId) {
         this.loadSelectedServicesByCustomer(this.customerId);
@@ -75,7 +78,9 @@ export class SelectServicesPage {
   }
 
   getBack() {
-    this.navCtrl.back();
+    this.router.navigate(['/select-professional']), {
+      queryParams: { storeId: this.storeId }
+    };
   }
 
   isServiceSelected(service: ServiceModel): boolean {
@@ -244,7 +249,7 @@ export class SelectServicesPage {
         },
         {
           text: 'Confirmar',
-          handler: () => {            
+          handler: () => {
             if (this.useAgenda) {
               this.proceedToSchedule();
             } else
