@@ -44,10 +44,6 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     this.cleanupSignalR();
   }
 
-  // ionViewWillEnter() {
-  //   this.initSignalRConnection();
-  // }
-
   get queueProfessionals(): ProfessionalModel[] {
     const professionals = this.store?.professionals || [];
     return professionals.filter(p => !p.useAgenda);
@@ -230,6 +226,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
         this.router.navigate(['/select-services'], {
           queryParams: {
             queueId: professional.queueId,
+            professionalName: professional.name + ' '+ professional.lastName,
             storeId: this.storeId,
             professionalId: professional.id,
             useAgenda: false,
@@ -253,8 +250,9 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
       this.router.navigate(['/select-services'], {
         queryParams: {
           professionalId: professional.id,
+          professionalName: professional.name + ' '+ professional.lastName,
           storeId: this.storeId,
-          useAgenda: true,
+          useAgenda: true
         },
       });
     } catch (error) {
