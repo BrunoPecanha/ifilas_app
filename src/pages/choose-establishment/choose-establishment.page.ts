@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
-import { StoreListResponse } from 'src/models/responses/store-list-response';
+import { IonContent, NavController } from '@ionic/angular';
 import { StoreModel } from 'src/models/store-model';
 import { UserModel } from 'src/models/user-model';
 import { EmployeeStoreService } from 'src/services/employee.store.service';
@@ -15,85 +14,129 @@ import { StoresService } from 'src/services/stores.service';
   styleUrls: ['./choose-establishment.page.scss'],
 })
 export class ChooseEstablishmentPage implements OnInit {
+  @ViewChild(IonContent) ionContent!: IonContent;
+
   selectedHeaderImage: any = '';
   selectedLogo: any = '';
   user: UserModel | any;
   profileSelected: number = 1;
-  establishments: StoreListResponse | any;
+  establishments: StoreModel[] = [];
+  filteredEstablishments: StoreModel[] = [];
   isLoading = false;
   loadingCompanyId: number | null = null;
 
-  constructor(private router: Router,
+  searchTerm: string = '';
+  categories: string[] = [];
+  selectedCategory: string = '';
+  showScrollIndicator: boolean = true;
+
+  private categoryColors: { [key: string]: string } = {
+    'Lanchonete': '#ef4444',
+    'Barbearia': '#3b82f6',
+    'Restaurante': '#f59e0b',
+    'Salão de Beleza': '#8b5cf6',
+    'Oficina': '#10b981',
+    'Consultório': '#06b6d4',
+    'Loja': '#f97316',
+    'Supermercado': '#84cc16',
+    'Farmácia': '#ec4899',
+    'Academia': '#6366f1'
+  };
+
+  constructor(
+    private router: Router,
     private storeService: StoresService,
     private employeeStoreService: EmployeeStoreService,
     private session: SessionService,
     private navCtrl: NavController,
-    private queueService: QueueService) {
-  }
+    private queueService: QueueService
+  ) { }
 
   ngOnInit(): void {
     this.loadEstablishments();
   }
 
   loadEstablishments() {
+    this.isLoading = true;
     this.user = this.session.getUser();
     this.profileSelected = this.session.getProfile();
 
     if (this.user && this.profileSelected) {
       this.storeService.loadEmployeeStores(this.user.id, this.profileSelected).subscribe({
         next: (response) => {
-          this.establishments = response.data;
+          this.establishments = response.data || [];
+          this.filteredEstablishments = [...this.establishments];
+          this.extractCategories();
+          this.isLoading = false;
         },
         error: (err) => {
           console.error('Erro ao carregar estabelecimentos:', err);
+          this.isLoading = false;
         }
       });
     } else {
       console.error('Usuário ou perfil não encontrado.');
+      this.isLoading = false;
     }
+  }
+
+  private extractCategories() {
+    const uniqueCategories = new Set<string>();
+    this.establishments.forEach(est => {
+      if (est.category) {
+        uniqueCategories.add(est.category);
+      }
+    });
+    this.categories = Array.from(uniqueCategories);
+  }
+
+  filterCompanies(event: any) {
+    const searchTerm = event.target?.value?.toLowerCase() || '';
+    this.searchTerm = searchTerm;
+    this.applyFilters();
+  }
+
+  private applyFilters() {
+    let filtered = [...this.establishments];
+
+    if (this.searchTerm) {
+      filtered = filtered.filter(est =>
+        est.name?.toLowerCase().includes(this.searchTerm) ||
+        est.storeSubtitle?.toLowerCase().includes(this.searchTerm) ||
+        est.category?.toLowerCase().includes(this.searchTerm)
+      );
+    }
+
+    this.filteredEstablishments = filtered;
+  }
+
+  getCategoryColor(category: string): string {
+    return this.categoryColors[category] || '#6b7280';
+  }
+
+  handleImageError(event: any) {
+    event.target.style.display = 'none';
+    event.target.parentElement.querySelector('.default-company-logo').style.display = 'flex';
+  }
+
+  onContentScroll(event: any) {
+    const scrollTop = event.detail.scrollTop;
+
+    this.ionContent.getScrollElement().then(scrollElement => {
+      const scrollHeight = scrollElement.scrollHeight;
+      const offsetHeight = scrollElement.offsetHeight;
+
+      const isAtBottom = scrollTop + offsetHeight >= scrollHeight - 10;
+      this.showScrollIndicator = !isAtBottom;
+    });
   }
 
   getBack() {
     this.navCtrl.back();
   }
 
-  selectCompany(est: StoreModel) {
-    this.selectedHeaderImage = est.logoPath ?? '';
-    this.selectedLogo = est.logoPath ?? '';
-  }
-
-  enterCompany(event: Event, selectedStore: StoreModel) {
-    event.stopPropagation();
-    this.session.setStore(selectedStore);
-
-    this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, null).subscribe((isQueueOpenToday: boolean) => {
-      if (this.profileSelected === 2)
-        this.router.navigate(['/queue-list-for-owner']);
-      else if (isQueueOpenToday) {
-        this.router.navigate(['/customer-list-in-queue']);
-      } else if (this.user.useAgenda) {
-        this.router.navigate(['/schedule-config']);
-      }
-      else {
-        this.router.navigate(['/queue-admin']);
-      }
-    });
-  }
-
-  updateEmployeeConfig(id: number) {
-    this.employeeStoreService.useAgenda(id).subscribe({
-      next: (response) => {
-        this.user.useAgenda = response.data;        
-        this.session.setUser(this.user);
-      }
-    });
-  }
-
   handleCompanyClick(est: StoreModel) {
-    this.selectedHeaderImage = est.logoPath ?? '';
-    this.selectedLogo = est.logoPath ?? '';
-    this.loadingCompanyId = est.id;    
-
+    this.loadingCompanyId = est.id;
     this.updateEmployeeConfig(this.user.id);
 
     setTimeout(() => {
@@ -102,17 +145,33 @@ export class ChooseEstablishmentPage implements OnInit {
       this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, est.id)
         .subscribe((isQueueOpenToday: boolean) => {
           this.loadingCompanyId = null;
-          if (this.profileSelected === 2) {
-            this.router.navigate(['/queue-list-for-owner']);
-          } else if (isQueueOpenToday) {
-            this.router.navigate(['/customer-list-in-queue']);
-          } else if (this.user.useAgenda) {
-            this.router.navigate(['/schedule-config']);
-
-          } else {
-            this.router.navigate(['/queue-admin']);
-          }
+          this.navigateToDestination(isQueueOpenToday);
         });
-    }, 3000);
+    }, 1000);
+  }
+
+  updateEmployeeConfig(id: number) {
+    this.employeeStoreService.useAgenda(id).subscribe({
+      next: (response) => {
+        this.user.useAgenda = response.data;
+        this.session.setUser(this.user);
+      }
+    });
+  }
+
+  private navigateToDestination(isQueueOpenToday: boolean) {
+    if (this.profileSelected === 2) {
+      this.router.navigate(['/queue-list-for-owner']);
+    } else if (isQueueOpenToday) {
+      this.router.navigate(['/customer-list-in-queue']);
+    } else if (this.user.useAgenda) {
+      this.router.navigate(['/schedule-config']);
+    } else {
+      this.router.navigate(['/queue-admin']);
+    }
+  }
+
+  isStoreOpen(est: StoreModel): boolean {
+    return est.isOpen !== undefined ? est.isOpen : true;
   }
 }

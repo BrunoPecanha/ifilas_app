@@ -489,3 +489,17 @@ ion-content::part(scroll)::-webkit-scrollbar {
   margin-left: 4px;
 }
 
+.company-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: linear-gradient(135deg, var(--ion-color-primary), #ff6b6b);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 14px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  box-shadow: var(--badge-shadow);
+  z-index: 4;
+  border: 2px solid white;
+}

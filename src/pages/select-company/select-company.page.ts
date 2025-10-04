@@ -29,15 +29,16 @@ export class SelectCompanyPage implements OnInit {
   isEmptyResult = false;
   searching = false;
   categories: CategoryModel[] = [];
-  companies: StoreModel[] = [];
   searchQuery = '';
-  selectedCategoryId: number | null =  null;
+  selectedCategoryId: number | null = null;
   selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
 
-  // Adicione estas propriedades à classe
   loadingMore = false;
   currentPage = 1;
-  totalPages = 1;
+  pageSize = 10;
+  hasMoreData = true;
+
+  displayedCompanies: StoreModel[] = [];
 
   categoriesExpanded: boolean = false;
 
@@ -45,7 +46,14 @@ export class SelectCompanyPage implements OnInit {
   }
 
   ionViewWillEnter() {
+    this.resetPagination();
     this.loadData();
+  }
+
+  private resetPagination() {
+    this.currentPage = 1;
+    this.hasMoreData = true;
+    this.displayedCompanies = [];
   }
 
   private loadData() {
@@ -70,76 +78,61 @@ export class SelectCompanyPage implements OnInit {
 
     if (!userId) {
       console.warn('Usuário não logado');
-      this.companies = [];
+      this.displayedCompanies = [];
       this.isEmptyResult = true;
       return;
     }
 
-    if (!this.selectedFilter && !this.selectedCategoryId && !this.searchQuery) {
-      this.isLoading = true;
-      this.isEmptyResult = false;
-
-      this.service.loadNearbyStoresById(userId).subscribe({
-        next: (response) => {
-          this.companies = response.data.map(store => ({
-            ...store,
-            isNew: this.checkIfNew(store.createdAt),
-            liked: store.liked || false,
-            minorQueue: store.minorQueue || false,
-            distance: store.distance || this.calculateRandomDistance()
-          } as StoreModel));
-
-          this.isEmptyResult = this.companies.length === 0;
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Erro ao carregar lojas por proximidade:', err);
-          this.companies = [];
-          this.isLoading = false;
-          this.isEmptyResult = true;
-        }
-      });
-    } else {
-      const categoryId = this.selectedCategoryId ?? undefined;
-      const quickFilter = this.selectedFilter ?? undefined;
-      this.loadFilteredStores(categoryId, quickFilter);
-    }
+    this.loadFilteredStores(userId);
   }
 
-  private loadFilteredStores(categoryId?: number |  null, quickFilter?: string) {
-    const user = this.session.getUser();
-    const userId = user?.id;
-
-    if (!userId) {
-      console.warn('Usuário não logado');
-      this.companies = [];
-      this.isEmptyResult = true;
-      return;
-    }
-
+  private loadFilteredStores(userId: number) {
     this.isLoading = true;
     this.isEmptyResult = false;
 
-    this.service.loadFilteredStores(userId, categoryId, quickFilter).subscribe({
-      next: (response) => {
-        this.companies = response.data.map(store => ({
-          ...store,
-          isNew: this.checkIfNew(store.createdAt),
-          liked: store.liked || false,
-          minorQueue: store.minorQueue || false,
-          distance: store.distance || this.calculateRandomDistance()
-        } as StoreModel));
+    const categoryId = this.selectedCategoryId ?? undefined;
+    const quickFilter = this.selectedFilter ?? undefined;
 
-        this.isEmptyResult = this.companies.length === 0;
-        this.isLoading = false;
+    this.service.loadFilteredStores(userId, categoryId, quickFilter, this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        this.handleStoresResponse(response);
       },
       error: (err) => {
         console.error('Erro ao carregar lojas filtradas:', err);
-        this.companies = [];
-        this.isLoading = false;
-        this.isEmptyResult = true;
+        this.handleLoadError();
       }
     });
+  }
+
+  private handleStoresResponse(response: any) {
+    const newStores = response.data.items.map((store: StoreModel) => ({
+      ...store,
+      isNew: this.checkIfNew(store.createdAt),
+      liked: store.liked || false,
+      minorQueue: store.minorQueue || false,
+      distance: store.distance || this.calculateRandomDistance()
+    } as StoreModel));
+
+    if (this.currentPage === 1) {
+      this.displayedCompanies = newStores;
+    } else {
+      this.displayedCompanies = [...this.displayedCompanies, ...newStores];
+    }
+
+    const totalCount = response.data.totalCount ?? (this.displayedCompanies.length);
+    this.hasMoreData = this.displayedCompanies.length < totalCount;
+
+    this.isEmptyResult = this.displayedCompanies.length === 0;
+    this.isLoading = false;
+    this.loadingMore = false;
+  }
+
+  private handleLoadError() {
+    this.displayedCompanies = [];
+    this.isLoading = false;
+    this.loadingMore = false;
+    this.isEmptyResult = true;
+    this.hasMoreData = false;
   }
 
   private calculateRandomDistance(): number {
@@ -147,6 +140,7 @@ export class SelectCompanyPage implements OnInit {
   }
 
   async handleRefresh(event: any) {
+    this.resetPagination();
     try {
       await this.loadStores();
     } finally {
@@ -168,18 +162,21 @@ export class SelectCompanyPage implements OnInit {
   }
 
   get filteredCards() {
-    const query = this.searchQuery.toLowerCase();
-    return this.companies.filter(card =>
-      card.name.toLowerCase().includes(query) ||
-      card.category?.toLowerCase().includes(query)
-    );
+    if (!this.searchQuery) {
+      return this.displayedCompanies;
+    } else {
+      const query = this.searchQuery.toLowerCase();
+      return this.displayedCompanies.filter(card =>
+        card.name.toLowerCase().includes(query) ||
+        card.category?.toLowerCase().includes(query)
+      );
+    }
   }
 
   toggleSearch() {
     this.searching = !this.searching;
     if (!this.searching) {
       this.searchQuery = '';
-      this.loadFilteredStores();
     }
   }
 
@@ -234,10 +231,8 @@ export class SelectCompanyPage implements OnInit {
   }
 
   selectCard(card: StoreModel): void {
-    let storeSelected = this.companies.filter(card => card.id === card.id)[0];
-
     this.router.navigate(['/select-professional'], {
-      queryParams: { storeId: storeSelected.id }
+      queryParams: { storeId: card.id }
     });
   }
 
@@ -245,51 +240,9 @@ export class SelectCompanyPage implements OnInit {
     this.searchQuery = event.detail.value;
   }
 
-  // selectCategory(idCategory: number): void {
-  //   if (this.selectedCategoryId === idCategory) {
-  //     this.selectedCategoryId = null;
-  //     this.loadFilteredStores();
-  //     return;
-  //   }
-
-  //   this.selectedCategoryId = idCategory;
-  //   this.loadFilteredStores(idCategory);
-  // }
-
   getBack() {
     this.navCtrl.back();
   }
-
-  // applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
-  //   if (this.selectedFilter === filter) {
-  //     this.selectedFilter = null;
-  //     this.loadFilteredStores();
-  //     return;
-  //   }
-
-  //   this.selectedFilter = filter;
-  //   let quickFilter: string;
-
-  //   switch (filter) {
-  //     case 'minorQueue':
-  //       quickFilter = 'minorQueue';
-  //       break;
-  //     case 'favorites':
-  //       quickFilter = 'favorites';
-  //       break;
-  //     case 'recent':
-  //       quickFilter = 'recent';
-  //       break;
-  //     case 'nearby':
-  //       quickFilter = 'nearby';
-  //       break;
-  //     default:
-  //       quickFilter = '';
-  //   }
-
-  //   const categoryId = this.selectedCategoryId !== null ? this.selectedCategoryId : undefined;
-  //   this.loadFilteredStores(categoryId, quickFilter);
-  // }
 
   toggleCategories() {
     this.categoriesExpanded = !this.categoriesExpanded;
@@ -308,7 +261,8 @@ export class SelectCompanyPage implements OnInit {
     this.selectedCategoryId = null;
     this.searchQuery = '';
     this.categoriesExpanded = false;
-    this.applyFilter('nearby');
+    this.resetPagination();
+    this.loadStores();
   }
 
   checkScrollPosition() {
@@ -316,34 +270,47 @@ export class SelectCompanyPage implements OnInit {
     this.canScrollRight = element.scrollWidth > element.clientWidth + element.scrollLeft;
   }
 
-  // Método para scroll infinito
   async onContentScroll(event: any) {
     const scrollElement = await event.target.getScrollElement();
     const scrollHeight = scrollElement.scrollHeight;
     const scrollTop = scrollElement.scrollTop;
     const clientHeight = scrollElement.clientHeight;
 
-    // Quando chegar perto do final (80%)
     if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
+      this.hasMoreData &&
       !this.loadingMore &&
-      this.currentPage < this.totalPages) {
+      !this.isLoading) {
       this.loadMoreData();
     }
   }
 
-  // Método para carregar mais dados
   private loadMoreData() {
     this.loadingMore = true;
     this.currentPage++;
 
-    // Implemente a lógica de paginação aqui
-    // baseado na sua API
-    setTimeout(() => {
+    const user = this.session.getUser();
+    const userId = user?.id;
+
+    if (!userId) {
       this.loadingMore = false;
-    }, 1000);
+      return;
+    }
+
+    const categoryId = this.selectedCategoryId ?? undefined;
+    const quickFilter = this.selectedFilter ?? undefined;
+
+    this.service.loadFilteredStores(userId, categoryId, quickFilter, this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        this.handleStoresResponse(response);
+      },
+      error: (err) => {
+        console.error('Erro ao carregar mais lojas filtradas:', err);
+        this.loadingMore = false;
+        this.currentPage--;
+      }
+    });
   }
 
-  // Método auxiliar para contar filtros ativos
   getActiveFiltersCount(): number {
     let count = 0;
     if (this.selectedFilter) count++;
@@ -352,7 +319,6 @@ export class SelectCompanyPage implements OnInit {
     return count;
   }
 
-  // Auto-colapso dos filtros após aplicação
   applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
     if (this.selectedFilter === filter) {
       this.selectedFilter = null;
@@ -360,9 +326,9 @@ export class SelectCompanyPage implements OnInit {
       this.selectedFilter = filter;
     }
 
-    this.loadFilteredStores(this.selectedCategoryId, this.selectedFilter || undefined);
+    this.resetPagination();
+    this.loadStores();
 
-    // Colapsa os filtros após aplicação
     setTimeout(() => {
       this.filtersExpanded = false;
     }, 300);
@@ -375,9 +341,9 @@ export class SelectCompanyPage implements OnInit {
       this.selectedCategoryId = idCategory;
     }
 
-    this.loadFilteredStores(this.selectedCategoryId || undefined, this.selectedFilter || undefined);
+    this.resetPagination();
+    this.loadStores();
 
-    // Colapsa os filtros após aplicação
     setTimeout(() => {
       this.filtersExpanded = false;
     }, 300);
