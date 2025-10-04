@@ -3,9 +3,8 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "src/environments/environment";
 import { CategoryResponse } from "src/models/responses/category-response";
+import { PagedResponse } from "src/models/responses/paged-response";
 import { StoreListResponse } from "src/models/responses/store-list-response";
-
-
 
 @Injectable({
   providedIn: 'root'
@@ -31,21 +30,25 @@ export class SelectCompanyService {
     return this.http.get<StoreListResponse>(`${this.apiUrl}/store/all`);
   }
 
-  loadNearbyStoresById(userId: number, page?: number, pageSize?: number): Observable<StoreListResponse> {
-    const params = new HttpParams()
+  loadFilteredStores(
+    userId: number,
+    categoryId?: number | null,
+    quickFilter?: string,
+    page: number = 1,
+    pageSize: number = 10
+  ): Observable<PagedResponse> {
+    let params = new HttpParams()
       .set('userId', userId.toString())
-      .set('page', page || 1)
-      .set('pageSize', pageSize || 10);   
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
 
-    return this.http.get<StoreListResponse>(`${this.apiUrl}/store/nearby`, { params });
-  }
+    if (categoryId) {
+      params = params.set('categoryId', categoryId.toString());
+    }
+    if (quickFilter) {
+      params = params.set('quickFilter', quickFilter);
+    }
 
-  loadFilteredStores(userId: number, categoryId?: number | null, quickFilter?: string): Observable<StoreListResponse> {
-    const params = new HttpParams()
-      .set('categoryId', categoryId ? categoryId.toString() : '')
-      .set('quickFilter', quickFilter || '')
-      .set('userId', userId.toString());
-
-    return this.http.get<StoreListResponse>(`${this.apiUrl}/store/filter`, { params });
+    return this.http.get<PagedResponse>(`${this.apiUrl}/store/filter`, { params });
   }
 }
