@@ -7,6 +7,5 @@ export enum CustomerStatusEnum {
   Absent = 4,
   Canceled = 5,
   Pending = 6,
-  Approved = 7,
-  Rejected = 8
+  Rejected = 7
 }

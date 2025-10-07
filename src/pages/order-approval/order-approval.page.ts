@@ -126,7 +126,7 @@ export class OrderApprovalPage implements OnInit {
     }
   }
 
-  async approveOrder(order: OrderModel) {
+  async approveOrder(order: OrderModel) {    
     const confirm = await this.alertController.create({
       header: 'Confirmar Aprovação',
       message: `Deseja aprovar o pedido #${order.orderNumber} de ${order.name}?`,
@@ -138,7 +138,7 @@ export class OrderApprovalPage implements OnInit {
         {
           text: 'Aprovar',
           handler: async () => {
-            await this.processOrder(order, CustomerStatusEnum.Approved, 'Pedido aprovado!');
+            await this.processOrder(order, CustomerStatusEnum.Waiting, 'Pedido aprovado!');
           }
         }
       ]
@@ -163,7 +163,7 @@ export class OrderApprovalPage implements OnInit {
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Rejeitar',
-          handler: async (data) => {
+          handler: async (data) => {            
             const reason = data.reason?.trim();
             if (!reason) {
               this.toastService.show('Informe o motivo da rejeição.', 'danger');
@@ -183,7 +183,7 @@ export class OrderApprovalPage implements OnInit {
     status: number,
     successMessage: string,
     rejectReason: string = ''
-  ) {
+  ) {    
     try {
       this.isLoading = true;
 
