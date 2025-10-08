@@ -764,3 +764,51 @@ ion-content::part(scroll) {
     }
   }
 }
+
+.store-likes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #000;
+  font-weight: 500;
+
+  ion-icon {
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+  }
+
+  ion-icon:hover {
+    transform: scale(1.2);
+  }
+}
+
+.store-likes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #000;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.store-likes:active {
+  transform: scale(0.95);
+}
+
+.store-likes ion-icon {
+  font-size: 1.1rem;
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.store-likes ion-icon.heart-liked {
+  color: #e74c3c;
+  transform: scale(1.3);
+}
+
