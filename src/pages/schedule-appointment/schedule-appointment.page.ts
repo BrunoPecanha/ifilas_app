@@ -70,7 +70,8 @@ export class ScheduleAppointmentPage implements OnInit {
       message: this.formatDate(this.selectedDate!) + ' às ' + slot.time + '?',
       buttons: [
         {
-          text: 'Cancelar', role: 'cancel'},        
+          text: 'Cancelar', role: 'cancel'
+        },
         {
           text: 'Confirmar',
           //   handler: async () => {

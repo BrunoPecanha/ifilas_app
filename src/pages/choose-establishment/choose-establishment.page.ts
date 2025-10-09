@@ -150,9 +150,9 @@ export class ChooseEstablishmentPage implements OnInit {
     }, 1000);
   }
 
-  updateEmployeeConfig(id: number) {
+  updateEmployeeConfig(id: number) {    
     this.employeeStoreService.useAgenda(id).subscribe({
-      next: (response) => {
+      next: (response) => {        
         this.user.useAgenda = response.data;
         this.session.setUser(this.user);
       }

@@ -113,16 +113,16 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     });
   }
 
- getSelectedStoreId() {
-  this.route.queryParams.subscribe((params) => {
-    this.storeId = this.sessionService.getStore()?.id || params['storeId'] || 0;
-
-    if (this.storeId) {
-      this.loadStoreAndProfessionals(this.storeId);
-      this.initSignalRConnection();
-    }
-  });
-}
+  getSelectedStoreId() {
+    this.route.queryParams.subscribe((params) => {
+      this.storeId =  params['storeId'] || 0;
+      
+      if (this.storeId) {
+        this.loadStoreAndProfessionals(this.storeId);
+        this.initSignalRConnection();
+      }
+    });
+  }
 
   getStatusClass(status: StatusQueueEnum): string {
     switch (status) {
@@ -137,14 +137,14 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     }
   }
 
-  getStatusText(profissional: any ): string {
-    if (profissional.useAgenda && profissional.status === StatusQueueEnum.open) {      
-        return 'Disponível';
+  getStatusText(profissional: any): string {
+    if (profissional.useAgenda && profissional.status === StatusQueueEnum.open) {
+      return 'Disponível';
     }
 
     switch (profissional.status) {
       case StatusQueueEnum.open:
-        return  'Atendendo';
+        return 'Atendendo';
       case StatusQueueEnum.paused:
         return 'Ausente';
       case StatusQueueEnum.closed:
@@ -184,7 +184,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     }
   }
 
-   goBack() {
+  goBack() {
     this.router.navigate(['/select-service']), {
       queryParams: { storeId: this.storeId }
     };
@@ -226,7 +226,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
         this.router.navigate(['/select-services'], {
           queryParams: {
             queueId: professional.queueId,
-            professionalName: professional.name + ' '+ professional.lastName,
+            professionalName: professional.name + ' ' + professional.lastName,
             storeId: this.storeId,
             professionalId: professional.id,
             useAgenda: false,
@@ -243,14 +243,14 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   }
 
   async openAgenda(professional: ProfessionalModel) {
-    if(!this.store && !this.storeId)      
+    if (!this.store && !this.storeId)
       this.storeId = this.sessionService.getStore()?.id || 0;
 
     try {
       this.router.navigate(['/select-services'], {
         queryParams: {
           professionalId: professional.id,
-          professionalName: professional.name + ' '+ professional.lastName,
+          professionalName: professional.name + ' ' + professional.lastName,
           storeId: this.storeId,
           useAgenda: true
         },
@@ -370,7 +370,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   }
 
   formatWaitingTime(timeString: string): string {
-    if (!timeString || timeString === '00:00:00') 
+    if (!timeString || timeString === '00:00:00')
       return 'Sua vez';
 
     try {
