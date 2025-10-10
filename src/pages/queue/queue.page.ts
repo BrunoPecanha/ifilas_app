@@ -8,6 +8,7 @@ import { QueueService } from 'src/services/queue.service';
 import { SignalRService } from 'src/services/seignalr.service';
 import { SessionService } from 'src/services/session.service';
 import { StoresService } from 'src/services/stores.service';
+import { ToastService } from 'src/services/toast.service';
 
 @Component({
   selector: 'app-queue',
@@ -32,7 +33,7 @@ export class QueuePage {
     private queueService: QueueService,
     private storeService: StoresService,
     private sessionService: SessionService,
-    private toastController: ToastController,
+    private toastService: ToastService,
     private signalRService: SignalRService
   ) {
   }
@@ -279,12 +280,12 @@ export class QueuePage {
           handler: async () => {
             this.queueService.exitQueue(card.id, card.queueId).subscribe({
               next: async () => {
-                await this.showToast('Você saiu da fila com sucesso!');
+                await this.toastService.show('Você saiu da fila com sucesso!', 'success');
                 this.loadCustomersInQueueCard();
               },
               error: async (err) => {
                 console.error('Erro ao sair da fila:', err);
-                await this.showToast('Ocorreu um erro ao sair da fila', 'danger');
+                await this.toastService.show('Ocorreu um erro ao sair da fila', 'danger');
               }
             });
           },
@@ -308,16 +309,6 @@ export class QueuePage {
       '\\u{1F4C6}': 'calendar-outline'
     };
     return iconMap[unicodeIcon] || 'construct-outline';
-  }
-
-  private async showToast(message: string, color: string = 'success'): Promise<void> {
-    const toast = await this.toastController.create({
-      message: message,
-      duration: 3000,
-      position: 'top',
-      color: color
-    });
-    await toast.present();
   }
 
   public editarServicos(card: CustomerInQueueCardModel): void {
@@ -350,14 +341,18 @@ export class QueuePage {
   }
 
   getStatusClass(card: any): string {
-    if (card.status === 2) return 'status-active';
-    if (card.isPaused) return 'status-paused';
+    if (card.status === 2) 
+      return 'status-active';
+    if (card.isPaused) 
+      return 'status-paused';
     return 'status-waiting';
   }
 
   getStatusIcon(card: any): string {
-    if (card.status === 2) return 'checkmark-circle';
-    if (card.isPaused) return 'pause-circle';
+    if (card.status === 2) 
+      return 'checkmark-circle';
+    if (card.isPaused) 
+      return 'pause-circle';
     return 'time';
   }
 
@@ -367,8 +362,10 @@ export class QueuePage {
   }
 
   getPositionText(card: any): string {
-    if (card.status === 2) return 'Em atendimento';
-    if (card.position === 0) return 'Sua vez!';
+    if (card.status === 2) 
+      return 'Em atendimento';
+    if (card.position === 0) 
+      return 'Sua vez!';
     return `${card.position}º na fila`;
   }
 

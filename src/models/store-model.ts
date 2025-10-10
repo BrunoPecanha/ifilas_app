@@ -56,4 +56,5 @@ export interface StoreModel extends To {
   distance?: number; 
   nextHourOnAgenda: string;
   isOpen: boolean;
+  likesCount?: number;
 }

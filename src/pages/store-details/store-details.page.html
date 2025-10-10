@@ -5,7 +5,7 @@
   RouterLink="/select-professional"
   startIconName="close-outline"
   [showEndButton]="true"
-  endIconName="information-circle-outline"  
+  endIconName="information-circle-outline"
   (onEndClick)="openInfoModal()"
 ></app-custom-header>
 
@@ -18,8 +18,8 @@
   <div *ngIf="!isLoading" class="store-content">
     <div class="store-hero">
       <div class="hero-banner" *ngIf="store?.wallPaperPath">
-        <img 
-          [src]="store.wallPaperPath" 
+        <img
+          [src]="store.wallPaperPath"
           alt="Banner da loja"
           class="banner-image"
         />
@@ -29,11 +29,7 @@
       <div class="store-identity">
         <div class="logo-container">
           <ng-container *ngIf="store.logoPath; else defaultLogo">
-            <img 
-              [src]="store.logoPath" 
-              alt="Logo da loja"
-              class="store-logo"
-            />
+            <img [src]="store.logoPath" alt="Logo da loja" class="store-logo" />
           </ng-container>
           <ng-template #defaultLogo>
             <div class="store-logo default-logo">
@@ -52,10 +48,24 @@
               color="primary"
             ></ion-icon>
           </h1>
+
           <p class="store-subtitle">{{ store.storeSubtitle }}</p>
-          
+
+          <div class="store-likes" (click)="toggleLike(store)">
+            <ion-icon
+              [name]="store.liked ? 'heart' : 'heart-outline'"
+              [color]="store.liked ? 'danger' : 'medium'"
+            ></ion-icon>
+            <span>{{ store.likesCount || 0 }}</span>
+          </div>
+
           <div class="highlights-container">
-            <ion-chip *ngFor="let chip of store.highLights" color="medium" class="highlight-chip" outline>
+            <ion-chip
+              *ngFor="let chip of store.highLights"
+              color="medium"
+              class="highlight-chip"
+              outline
+            >
               <ion-icon [name]="chip.icon"></ion-icon>
               <ion-label>{{ chip.phrase }}</ion-label>
             </ion-chip>
@@ -64,7 +74,6 @@
       </div>
     </div>
 
-    <!-- Navigation Tabs Refinadas -->
     <div class="navigation-section">
       <div class="filter-buttons clean">
         <button
@@ -95,14 +104,10 @@
         </button>
       </div>
 
-      <div class="items-counter">
-        {{ getItemsCountText() }}
-      </div>
+      <div class="items-counter">{{ getItemsCountText() }}</div>
     </div>
 
-    <!-- Tab Content -->
     <div class="tab-content">
-      <!-- Services Tab -->
       <div *ngIf="selectedTab === 'services'" class="tab-pane">
         <div class="items-wrapper" *ngIf="services.length; else emptyServices">
           <ion-card
@@ -117,7 +122,10 @@
                     <img [src]="service.imgPath" alt="{{ service.name }}" />
                   </ng-container>
                   <ng-template #serviceFallback>
-                    <ion-icon name="construct-outline" class="icon-fallback"></ion-icon>
+                    <ion-icon
+                      name="construct-outline"
+                      class="icon-fallback"
+                    ></ion-icon>
                   </ng-template>
                 </div>
               </div>
@@ -126,13 +134,19 @@
                 <div class="info-row top-row">
                   <div class="name-section">
                     <h2 class="service-name">{{ service.name }}</h2>
-                    <ion-badge *ngIf="false" color="success" class="popular-badge">
+                    <ion-badge
+                      *ngIf="false"
+                      color="success"
+                      class="popular-badge"
+                    >
                       Popular
                     </ion-badge>
                   </div>
-                  
+
                   <div class="price-section">
-                    <span class="price">R$ {{ service.price | number: '1.2-2' }}</span>
+                    <span class="price"
+                      >R$ {{ service.price | number: '1.2-2' }}</span
+                    >
                   </div>
                 </div>
 
@@ -163,18 +177,16 @@
           <div class="mensagem-vazia">
             <ion-icon name="construct-outline" class="empty-icon"></ion-icon>
             <p>Nenhum serviço disponível</p>
-            <p class="empty-subtitle">Volte mais tarde para ver os serviços disponíveis.</p>
+            <p class="empty-subtitle">
+              Volte mais tarde para ver os serviços disponíveis.
+            </p>
           </div>
         </ng-template>
       </div>
 
-      <!-- Products Tab -->
       <div *ngIf="selectedTab === 'products'" class="tab-pane">
         <div class="items-wrapper" *ngIf="products.length; else emptyProducts">
-          <ion-card
-            *ngFor="let product of products"
-            class="product-card"
-          >
+          <ion-card *ngFor="let product of products" class="product-card">
             <div class="card-content-wrapper">
               <div class="icon-column">
                 <div class="product-icon">
@@ -182,10 +194,17 @@
                     <img [src]="product.image" alt="{{ product.name }}" />
                   </ng-container>
                   <ng-template #productFallback>
-                    <ion-icon name="cube-outline" class="icon-fallback"></ion-icon>
+                    <ion-icon
+                      name="cube-outline"
+                      class="icon-fallback"
+                    ></ion-icon>
                   </ng-template>
-                  
-                  <ion-badge *ngIf="product.discount" color="danger" class="discount-badge">
+
+                  <ion-badge
+                    *ngIf="product.discount"
+                    color="danger"
+                    class="discount-badge"
+                  >
                     -{{ product.discount }}%
                   </ion-badge>
                 </div>
@@ -195,13 +214,19 @@
                 <div class="info-row top-row">
                   <div class="name-section">
                     <h2 class="product-name">{{ product.name }}</h2>
-                    <ion-badge *ngIf="product.isNew" color="success" class="new-badge">
+                    <ion-badge
+                      *ngIf="product.isNew"
+                      color="success"
+                      class="new-badge"
+                    >
                       Novo
                     </ion-badge>
                   </div>
-                  
+
                   <div class="price-section">
-                    <span class="current-price">R$ {{ product.price | number: '1.2-2' }}</span>
+                    <span class="current-price"
+                      >R$ {{ product.price | number: '1.2-2' }}</span
+                    >
                     <span *ngIf="product.originalPrice" class="original-price">
                       R$ {{ product.originalPrice | number: '1.2-2' }}
                     </span>
@@ -240,21 +265,28 @@
           <div class="mensagem-vazia">
             <ion-icon name="cube-outline" class="empty-icon"></ion-icon>
             <p>Nenhum produto disponível</p>
-            <p class="empty-subtitle">Volte mais tarde para ver os produtos disponíveis.</p>
+            <p class="empty-subtitle">
+              Volte mais tarde para ver os produtos disponíveis.
+            </p>
           </div>
         </ng-template>
       </div>
 
-      <!-- Gallery Tab -->
       <div *ngIf="selectedTab === 'gallery'" class="tab-pane">
-        <div class="gallery-wrapper" *ngIf="galleryImages.length; else emptyGallery">
+        <div
+          class="gallery-wrapper"
+          *ngIf="galleryImages.length; else emptyGallery"
+        >
           <div class="gallery-grid">
-            <div 
-              *ngFor="let image of galleryImages; let i = index" 
-              class="gallery-item" 
+            <div
+              *ngFor="let image of galleryImages; let i = index"
+              class="gallery-item"
               (click)="openGallery(i)"
             >
-              <img [src]="image.url" [alt]="image.caption || 'Imagem da galeria'" />
+              <img
+                [src]="image.url"
+                [alt]="image.caption || 'Imagem da galeria'"
+              />
               <div *ngIf="image.caption" class="image-caption">
                 {{ image.caption }}
               </div>
@@ -266,25 +298,33 @@
           <div class="mensagem-vazia">
             <ion-icon name="images-outline" class="empty-icon"></ion-icon>
             <p>Galeria vazia</p>
-            <p class="empty-subtitle">Esta loja ainda não adicionou fotos à galeria.</p>
+            <p class="empty-subtitle">
+              Esta loja ainda não adicionou fotos à galeria.
+            </p>
           </div>
         </ng-template>
       </div>
     </div>
   </div>
 
-  <!-- Info Modal Refinado -->
-  <div *ngIf="isInfoModalOpen" class="modal-overlay" (click)="isInfoModalOpen = false">
+  <div
+    *ngIf="isInfoModalOpen"
+    class="modal-overlay"
+    (click)="isInfoModalOpen = false"
+  >
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>Informações</h2>
-        <ion-button fill="clear" class="close-button" (click)="isInfoModalOpen = false">
+        <ion-button
+          fill="clear"
+          class="close-button"
+          (click)="isInfoModalOpen = false"
+        >
           <ion-icon name="close"></ion-icon>
         </ion-button>
       </div>
 
       <div class="modal-body">
-        <!-- Address -->
         <div class="info-section">
           <div class="info-item">
             <ion-icon name="location-outline" class="info-icon"></ion-icon>
@@ -295,7 +335,6 @@
           </div>
         </div>
 
-        <!-- Opening Hours -->
         <div class="info-section">
           <div class="info-item">
             <ion-icon name="time-outline" class="info-icon"></ion-icon>
@@ -314,7 +353,6 @@
           </div>
         </div>
 
-        <!-- Contact -->
         <div class="info-section">
           <div class="info-item">
             <ion-icon name="call-outline" class="info-icon"></ion-icon>
@@ -325,23 +363,42 @@
           </div>
         </div>
 
-        <!-- Social Media -->
         <div *ngIf="hasSocialMedia()" class="info-section">
           <div class="info-item">
             <ion-icon name="share-social-outline" class="info-icon"></ion-icon>
             <div class="info-text">
               <h3>Redes Sociais</h3>
               <div class="social-links">
-                <a *ngIf="store.instagram" [href]="store.instagram" target="_blank" class="social-link">
+                <a
+                  *ngIf="store.instagram"
+                  [href]="store.instagram"
+                  target="_blank"
+                  class="social-link"
+                >
                   <ion-icon name="logo-instagram"></ion-icon>
                 </a>
-                <a *ngIf="store.facebook" [href]="store.facebook" target="_blank" class="social-link">
+                <a
+                  *ngIf="store.facebook"
+                  [href]="store.facebook"
+                  target="_blank"
+                  class="social-link"
+                >
                   <ion-icon name="logo-facebook"></ion-icon>
                 </a>
-                <a *ngIf="store.youtube" [href]="store.youtube" target="_blank" class="social-link">
+                <a
+                  *ngIf="store.youtube"
+                  [href]="store.youtube"
+                  target="_blank"
+                  class="social-link"
+                >
                   <ion-icon name="logo-youtube"></ion-icon>
                 </a>
-                <a *ngIf="store.whatsapp" [href]="'https://wa.me/' + store.whatsapp" target="_blank" class="social-link">
+                <a
+                  *ngIf="store.whatsapp"
+                  [href]="'https://wa.me/' + store.whatsapp"
+                  target="_blank"
+                  class="social-link"
+                >
                   <ion-icon name="logo-whatsapp"></ion-icon>
                 </a>
               </div>

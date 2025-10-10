@@ -29,6 +29,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
   queue: QueueModel | null = null;
   store: StoreModel = {} as StoreModel;
   employee!: UserModel;
+  showScrollIndicator: boolean = true;
 
   editingNameMap: { [clientId: number]: boolean } = {};
   editedNames: { [clientId: number]: string } = {};
@@ -343,7 +344,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
 
     this.queueService.getOpenedQueueListByEmployeeId(this.employee.id, this.store.id, this.store.shareQueue)
       .subscribe({
-        next: (response) => {          
+        next: (response) => {
           if (response.valid && response.data?.length > 0) {
             const openQueue = response.data.find(q =>
               (q.status === StatusQueueEnum.open || q.status === StatusQueueEnum.paused) &&
@@ -493,6 +494,52 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
           this.toast.show('Erro ao notificar cliente', 'danger');
         }
       });
+  }
+
+  onContentScroll(event: any) {
+    const scrollTop = event.detail.scrollTop;
+    const scrollHeight = event.detail.scrollHeight;
+    const contentHeight = event.detail.contentHeight || document.documentElement.clientHeight;
+
+    const scrollPercentage = (scrollTop + contentHeight) / scrollHeight;
+    this.showScrollIndicator = scrollPercentage < 0.95;
+  }
+
+  // Métodos auxiliares para a interface
+  getWaitingClientsCount(): number {
+    return this.clients?.filter(client => !client.inService).length || 0;
+  }
+
+  isToday(): boolean {
+    const today = new Date();
+    return this.currentDate.toDateString() === today.toDateString();
+  }
+
+  getWeekdayName(date: Date): string {
+    const weekdays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    return weekdays[date.getDay()];
+  }
+
+  // Filtros (para implementação futura)
+  hasActiveFilters(): boolean {
+    return false; // Implementar conforme necessidade
+  }
+
+  getActiveFilters(): any[] {
+    return []; // Implementar conforme necessidade
+  }
+
+  goToToday() {
+    this.currentDate = new Date();
+    // this.applyFilters(); // Implementar conforme necessidade
+  }
+
+  removeFilter(key: string): void {
+    // Implementar conforme necessidade
+  }
+
+  clearFilters(): void {
+    // Implementar conforme necessidade
   }
 
   calculateWaitTime(entryTime: string): string {

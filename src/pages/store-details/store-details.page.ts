@@ -170,6 +170,19 @@ export class StoreDetailsPage implements OnInit {
     }
   }
 
+  toggleLike(store: any) {
+    if (!store.likesCount) store.likesCount = 0;
+    store.liked = !store.liked;
+
+    if (store.liked) {
+      store.likesCount++;
+    } else {
+      store.likesCount--;
+    }
+
+    // this.apiService.toggleLike(store.id, store.liked).subscribe(...)
+  }
+
   getServiceDuration(service: ServiceModel): string {
     return '30 min';
   }
