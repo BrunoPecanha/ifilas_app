@@ -137,7 +137,7 @@ export class ChooseEstablishmentPage implements OnInit {
 
   handleCompanyClick(est: StoreModel) {
     this.loadingCompanyId = est.id;
-    this.updateEmployeeConfig(this.user.id);
+    this.updateEmployeeConfig(this.user.id, this.loadingCompanyId);
 
     setTimeout(() => {
       this.session.setStore(est);
@@ -150,8 +150,8 @@ export class ChooseEstablishmentPage implements OnInit {
     }, 1000);
   }
 
-  updateEmployeeConfig(id: number) {    
-    this.employeeStoreService.useAgenda(id).subscribe({
+  updateEmployeeConfig(id: number, storeId: number) {    
+    this.employeeStoreService.useAgenda(id, storeId).subscribe({
       next: (response) => {        
         this.user.useAgenda = response.data;
         this.session.setUser(this.user);
