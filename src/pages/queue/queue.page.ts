@@ -68,7 +68,7 @@ export class QueuePage implements OnInit {
       {
         id: 1,
         storeName: 'Barbearia Estilo Premium',
-        storeLogo: 'assets/imgs/barber-logo.png',
+        storeLogo: 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/5721731e-0301-45df-9799-aed397233717.jpeg',
         serviceName: 'Corte e Barba',
         position: 1,
         status: 'Próximo',
@@ -81,7 +81,7 @@ export class QueuePage implements OnInit {
       {
         id: 2,
         storeName: 'Salão da Ana Beauty',
-        storeLogo: 'assets/imgs/salon-logo.png',
+        storeLogo: 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/5721731e-0301-45df-9799-aed397233717.jpeg',
         serviceName: 'Coloração e Escova',
         position: 3,
         status: 'Aguardando',
@@ -97,7 +97,7 @@ export class QueuePage implements OnInit {
       {
         id: 1,
         storeName: 'Studio Beleza & Estética',
-        storeLogo: 'assets/imgs/studio-logo.png',
+        storeLogo: 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/9dae895d-9f27-42a1-81e6-1fb6c06f05aa.jpeg',
         serviceName: 'Corte Feminino + Hidratação',
         date: new Date(),
         time: '16:00',

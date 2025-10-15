@@ -1,5 +1,5 @@
 <app-custom-header
-  [title]="'MINHAS FILAS E AGENDAMENTOS'"
+  [title]="activeSegment === 'filas' ? 'MINHAS FILAS' : 'MINHA AGENDA'"
   [subtitle]="(currentDate | date:'dd/MM/yyyy') || ''"
   [showStartButton]="true"
   [startIconName]="'arrow-back-outline'"
@@ -96,7 +96,6 @@
         class="sliding-item"
         [class.expanded]="expandedQueueId === queue.id"
       >
-        <!-- BOTÕES EDITAR E EXCLUIR JUNTOS E MENORES -->
         <ion-item-options side="end" *ngIf="expandedQueueId !== queue.id">
           <ion-item-option
             color="warning"
@@ -169,7 +168,6 @@
               >
                 <div class="card-body">
                   <div class="info-grid">
-                    <!-- TEMPO ESTIMADO E ENTRADA NA MESMA LINHA -->
                     <div class="info-row">
                       <div class="info-item">
                         <ion-icon
@@ -191,7 +189,9 @@
                         ></ion-icon>
                         <div class="info-content">
                           <span class="info-label">Entrada</span>
-                          <span class="info-value">{{ queue.arrivalTime }}</span>
+                          <span class="info-value"
+                            >{{ queue.arrivalTime }}</span
+                          >
                         </div>
                       </div>
                     </div>
@@ -317,7 +317,6 @@
         class="sliding-item"
         [class.expanded]="expandedAppointmentId === appt.id"
       >
-        <!-- BOTÕES EDITAR E EXCLUIR JUNTOS E MENORES -->
         <ion-item-options side="end" *ngIf="expandedAppointmentId !== appt.id">
           <ion-item-option
             color="warning"
@@ -369,9 +368,10 @@
                     {{ appt.status }}
                   </ion-badge>
                 </div>
-                <!-- DATA E HORA NA MESMA LINHA -->
                 <div class="datetime-row">
-                  <span class="appointment-date">{{ appt.date | date:'dd/MM' }}</span>
+                  <span class="appointment-date"
+                    >{{ appt.date | date:'dd/MM' }}</span
+                  >
                   <span class="appointment-time">{{ appt.time }}</span>
                 </div>
               </div>
@@ -389,7 +389,6 @@
             >
               <div class="card-body">
                 <div class="info-grid">
-                  <!-- DATA E HORA NA MESMA LINHA NO EXPANDED -->
                   <div class="info-row">
                     <div class="info-item">
                       <ion-icon
@@ -405,10 +404,15 @@
                     </div>
 
                     <div class="info-item">
-                      <ion-icon name="time-outline" class="info-icon"></ion-icon>
+                      <ion-icon
+                        name="time-outline"
+                        class="info-icon"
+                      ></ion-icon>
                       <div class="info-content">
                         <span class="info-label">Horário</span>
-                        <span class="info-value highlight">{{ appt.time }}</span>
+                        <span class="info-value highlight"
+                          >{{ appt.time }}</span
+                        >
                       </div>
                     </div>
                   </div>

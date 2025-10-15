@@ -41,7 +41,7 @@
   font-size: 0.7rem;
   padding: 4px 6px;
   min-width: 20px;
-  border-radius: 10px;;
+  border-radius: 10px;
   height: 18px;
 }
 
@@ -53,7 +53,6 @@
   border-radius: 8px;
   padding: 12px 16px;
   border: 1px solid #e0e7ff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .next-queue-banner {
@@ -127,7 +126,6 @@
   background: white;
   border-radius: 12px;
   padding: 12px 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .date-nav-button {
@@ -164,12 +162,10 @@
   border-radius: 12px;
   margin-bottom: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .sliding-item.expanded {
   margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .queue-card,
@@ -183,16 +179,13 @@
   transition: all 0.3s ease;
   border: 1px solid #f1f3f4;
   cursor: pointer;
+  --inner-padding-end: 0;
+  --padding-start: 0;
 }
 
 .queue-card.expanded,
 .appointment-card.expanded {
   border-color: #e0e7ff;
-}
-
-.queue-card:active,
-.appointment-card:active {
-  transform: scale(0.995);
 }
 
 .card-indicator {
@@ -207,7 +200,6 @@
 
 .queue-card.is-your-turn .card-indicator {
   background: var(--ion-color-success);
-
 }
 
 .appointment-card.upcoming .card-indicator {
@@ -217,31 +209,32 @@
 .card-content-wrapper {
   padding: 0;
   margin-left: 4px;
+  width: calc(100% - 4px);
 }
 
 .collapsed-content {
-  padding: 12px 16px 12px 12px;
+  padding: 16px;
   display: flex;
-  align-items: center;
+  align-items: flex-start; 
   justify-content: space-between;
   gap: 12px;
-  min-height: 72px;
+  min-height: 80px;
 }
 
 .store-info-compact {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   flex: 1;
   min-width: 0;
+  margin-right: 8px;
 }
 
 .store-logo-compact {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
   object-fit: cover;
-  border: 2px solid #f8f9fa;
   background: #f8f9fa;
   flex-shrink: 0;
 }
@@ -249,17 +242,23 @@
 .store-details-compact {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .store-name-compact {
   font-size: 0.95rem;
   font-weight: 600;
   color: #2c3e50;
-  margin: 0 0 2px 0;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin: 0;
+  line-height: 1.3;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .service-name-compact {
@@ -277,21 +276,26 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 8px;
   flex-shrink: 0;
+  min-width: 100px; 
 }
+
 
 .position-time,
 .time-status {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column; 
+  align-items: flex-end;
+  gap: 4px;
+  width: 100%;
 }
 
 .status-badge-compact {
   font-size: 0.7rem;
-  padding: 2px 6px;
+  padding: 3px 8px;
   font-weight: 600;
+  width: fit-content;
 }
 
 .wait-time,
@@ -303,17 +307,26 @@
 
 .position-number,
 .appointment-date {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #6c757d;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: right;
+}
+
+.datetime-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
 }
 
 .expand-icon {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: #6c757d;
   transition: transform 0.3s ease;
   flex-shrink: 0;
-  margin-left: 8px;
+  margin-left: 12px;
+  align-self: center;
 }
 
 .expand-icon.rotated {
@@ -321,76 +334,33 @@
 }
 
 .expanded-content {
-  padding: 0 16px 16px 12px;
+  padding: 0 16px 16px 16px;
   border-top: 1px solid #f1f3f4;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin: 16px 0 12px;
-  gap: 12px;
-}
-
-.store-info {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  flex: 1;
-}
-
-.store-logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  object-fit: cover;
-  border: 2px solid #f8f9fa;
-  background: #f8f9fa;
-  flex-shrink: 0;
-}
-
-.store-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.store-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0 0 6px 0;
-  line-height: 1.2;
-}
-
-.service-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.service-badge {
-  font-size: 0.7rem;
-  padding: 3px 6px;
-  font-weight: 500;
 }
 
 .card-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  padding-top: 16px;
 }
 
 .info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 12px;
+}
+
+.info-row {
+  display: flex;
+  gap: 16px;
 }
 
 .info-item {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1;
 }
 
 .info-icon {
@@ -423,7 +393,7 @@
 .queue-progress {
   background: #f8f9fa;
   border-radius: 6px;
-  padding: 8px;
+  padding: 12px;
 }
 
 .progress-label {
@@ -431,21 +401,21 @@
   justify-content: space-between;
   font-size: 0.75rem;
   color: #6c757d;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   font-weight: 500;
 }
 
 .progress-bar {
-  height: 4px;
+  height: 6px;
   background: #e9ecef;
-  border-radius: 2px;
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
   background: var(--ion-color-primary);
-  border-radius: 2px;
+  border-radius: 3px;
   transition: width 0.5s ease;
 }
 
@@ -454,7 +424,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 12px;
   border-radius: 6px;
   font-size: 0.8rem;
   font-weight: 600;
@@ -474,11 +444,11 @@
 
 .additional-info {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
   font-size: 0.75rem;
   color: #6c757d;
-  padding: 6px 0;
+  padding: 8px 0;
   border-top: 1px solid #f1f3f4;
 }
 
@@ -486,7 +456,7 @@
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-  padding-top: 12px;
+  padding-top: 16px;
   border-top: 1px solid #f1f3f4;
 }
 
@@ -501,14 +471,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  padding: 0 0px;
+  padding: 0px 0px;
   font-weight: 600;
+  height: 100%;
 }
 
-.action-label {
-  font-size: 0.7rem;
-  font-weight: 600;
+.action-option.compact {
+  min-width: 60px;
+}
+
+.action-option ion-icon {
+  font-size: 1.1rem;
 }
 
 .empty-state {
@@ -553,34 +528,38 @@
     margin: 16px 0 12px 0;
   }
   
-  .section-subtitle {
-    align-self: flex-start;
-  }
-  
   .collapsed-content {
-    padding: 10px 12px 10px 8px;
-    min-height: 64px;
+    padding: 12px;
+    min-height: 72px;
+    gap: 8px;
   }
   
   .expanded-content {
-    padding: 0 12px 12px 8px;
+    padding: 0 12px 12px 12px;
   }
   
   .store-logo-compact {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
   
   .store-name-compact {
     font-size: 0.9rem;
+    -webkit-line-clamp: 2;
   }
   
   .service-name-compact {
     font-size: 0.75rem;
   }
   
-  .info-grid {
-    grid-template-columns: 1fr;
+  .queue-info-compact,
+  .appointment-info-compact {
+    min-width: 80px;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    gap: 8px;
   }
   
   .expanded-actions {
@@ -599,372 +578,17 @@
   }
 }
 
-/* Linha horizontal para data e horário */
-.horizontal-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-}
-
-/* Garante que os dois blocos fiquem lado a lado com boa proporção */
-.horizontal-info .info-item {
-  flex: 1;
-}
-
-/* Pagamento abaixo */
-.payment-row {
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-}
-
-/* Melhor alinhamento dos ícones */
-.info-icon {
-  font-size: 1.1rem;
-  color: #6c757d;
-}
-
-/* Texto mais limpo e consistente */
-.info-label {
-  font-size: 0.75rem;
-  color: #6c757d;
-  font-weight: 500;
-}
-
-.info-value {
-  font-size: 0.85rem;
-  color: #2c3e50;
-  font-weight: 600;
-}
-
-.info-value.highlight {
-  color: var(--ion-color-primary);
-}
-
-.page-container {
-  padding: 0 16px;
-}
-
-/* Segmento */
-.segment-bar {
-  margin: 16px 0;
-}
-
-.segment-with-badge {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  .segment-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .segment-badge {
-    font-size: 0.8rem;
-    padding: 2px 6px;
-  }
-}
-
-/* Banners de próximo agendamento/fila */
-.next-appointment-banner,
-.next-queue-banner {
-  background: var(--ion-color-light);
+ion-item-options {
   border-radius: 12px;
-  padding: 12px 16px;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-
-  .banner-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-
-    .banner-icon {
-      font-size: 1.5rem;
-      color: var(--ion-color-primary);
-    }
-
-    .banner-text {
-      flex: 1;
-      font-size: 0.9rem;
-    }
-  }
+  overflow: hidden;
 }
 
-/* Headers de seção */
-.section-header {
-  margin: 16px 0 8px;
-  .section-title {
-    font-weight: bold;
-    margin-bottom: 2px;
-  }
-  .section-subtitle {
-    font-size: 0.8rem;
-    color: var(--ion-color-medium);
-  }
+ion-item-option {
+  margin: 0;
 }
 
-/* Listas e cards */
-.custom-list {
-  ion-item-sliding.sliding-item {
-    margin-bottom: 12px;
 
-    .queue-card,
-    .appointment-card {
-      --border-radius: 12px;
-      --padding-start: 0;
-      --inner-padding-end: 0;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      background: var(--ion-color-light);
-      cursor: pointer;
-      overflow: hidden;
-      position: relative;
-
-      .card-indicator {
-        width: 6px;
-        height: 100%;
-        border-radius: 4px 0 0 4px;
-        margin-right: 12px;
-      }
-
-      .card-content-wrapper,
-      .card-content {
-        flex: 1;
-      }
-
-      .collapsed-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 0;
-
-        .store-info-compact {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-
-          .store-logo-compact {
-            width: 40px;
-            height: 40px;
-            border-radius: 6px;
-            object-fit: cover;
-          }
-
-          .store-details-compact {
-            display: flex;
-            flex-direction: column;
-
-            .store-name-compact {
-              font-weight: bold;
-              font-size: 0.9rem;
-            }
-
-            .service-name-compact {
-              font-size: 0.8rem;
-              color: var(--ion-color-medium);
-            }
-          }
-        }
-
-        .queue-info-compact,
-        .appointment-info-compact {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 4px;
-
-          .position-time {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-
-            .wait-time {
-              font-size: 0.8rem;
-              color: var(--ion-color-medium);
-            }
-          }
-
-          .position-number {
-            font-weight: bold;
-            font-size: 0.9rem;
-          }
-
-          .datetime-row {
-            display: flex;
-            gap: 6px;
-            font-size: 0.8rem;
-            color: var(--ion-color-medium);
-          }
-        }
-
-        .expand-icon {
-          font-size: 1.2rem;
-          transition: transform 0.3s ease;
-
-          &.rotated {
-            transform: rotate(180deg);
-          }
-        }
-      }
-
-      .expanded-content {
-        padding: 12px;
-        border-top: 1px solid var(--ion-color-medium-tint);
-
-        .card-body {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-
-          .info-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-
-            .info-row {
-              display: flex;
-              gap: 12px;
-            }
-
-            .info-item {
-              display: flex;
-              align-items: center;
-              gap: 6px;
-
-              .info-icon {
-                font-size: 1.2rem;
-                color: var(--ion-color-primary);
-              }
-
-              .info-content {
-                display: flex;
-                flex-direction: column;
-
-                .info-label {
-                  font-size: 0.75rem;
-                  color: var(--ion-color-medium);
-                }
-
-                .info-value {
-                  font-size: 0.85rem;
-                  font-weight: 600;
-                }
-
-                .highlight {
-                  color: var(--ion-color-primary);
-                }
-              }
-            }
-          }
-
-          .queue-progress {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-
-            .progress-label {
-              display: flex;
-              justify-content: space-between;
-              font-size: 0.75rem;
-            }
-
-            .progress-bar {
-              background: var(--ion-color-medium-tint);
-              border-radius: 6px;
-              height: 6px;
-              overflow: hidden;
-
-              .progress-fill {
-                height: 100%;
-                background: var(--ion-color-primary);
-                border-radius: 6px;
-                transition: width 0.3s ease;
-              }
-            }
-          }
-
-          .your-turn-banner,
-          .countdown-banner,
-          .additional-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            color: var(--ion-color-dark);
-          }
-
-          .expanded-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-          }
-        }
-      }
-    }
-  }
-}
-
-/* Empty states */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 16px;
-  text-align: center;
-
-  .empty-icon {
-    font-size: 3rem;
-    color: var(--ion-color-medium);
-    margin-bottom: 12px;
-  }
-
-  h3 {
-    font-weight: bold;
-    margin-bottom: 6px;
-  }
-
-  p {
-    font-size: 0.85rem;
-    color: var(--ion-color-medium);
-    margin-bottom: 12px;
-  }
-}
-
-/* Date navigation */
-.date-navigation {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 16px;
-
-  .current-date-display {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    .current-date {
-      font-weight: bold;
-    }
-
-    .date-subtitle {
-      font-size: 0.75rem;
-      color: var(--ion-color-medium);
-    }
-  }
-
-  .date-nav-button {
-    --padding-start: 6px;
-    --padding-end: 6px;
-  }
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
