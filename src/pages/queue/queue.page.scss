@@ -641,3 +641,331 @@
 .info-value.highlight {
   color: var(--ion-color-primary);
 }
+
+.page-container {
+  padding: 0 16px;
+}
+
+/* Segmento */
+.segment-bar {
+  margin: 16px 0;
+}
+
+.segment-with-badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .segment-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .segment-badge {
+    font-size: 0.8rem;
+    padding: 0 6px;
+  }
+}
+
+/* Banners de próximo agendamento/fila */
+.next-appointment-banner,
+.next-queue-banner {
+  background: var(--ion-color-light);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+
+  .banner-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+
+    .banner-icon {
+      font-size: 1.5rem;
+      color: var(--ion-color-primary);
+    }
+
+    .banner-text {
+      flex: 1;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+/* Headers de seção */
+.section-header {
+  margin: 16px 0 8px;
+  .section-title {
+    font-weight: bold;
+    margin-bottom: 2px;
+  }
+  .section-subtitle {
+    font-size: 0.8rem;
+    color: var(--ion-color-medium);
+  }
+}
+
+/* Listas e cards */
+.custom-list {
+  ion-item-sliding.sliding-item {
+    margin-bottom: 12px;
+
+    .queue-card,
+    .appointment-card {
+      --border-radius: 12px;
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      background: var(--ion-color-light);
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+
+      .card-indicator {
+        width: 6px;
+        height: 100%;
+        border-radius: 4px 0 0 4px;
+        margin-right: 12px;
+      }
+
+      .card-content-wrapper,
+      .card-content {
+        flex: 1;
+      }
+
+      .collapsed-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+
+        .store-info-compact {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .store-logo-compact {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+          }
+
+          .store-details-compact {
+            display: flex;
+            flex-direction: column;
+
+            .store-name-compact {
+              font-weight: bold;
+              font-size: 0.9rem;
+            }
+
+            .service-name-compact {
+              font-size: 0.8rem;
+              color: var(--ion-color-medium);
+            }
+          }
+        }
+
+        .queue-info-compact,
+        .appointment-info-compact {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 4px;
+
+          .position-time {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+
+            .wait-time {
+              font-size: 0.8rem;
+              color: var(--ion-color-medium);
+            }
+          }
+
+          .position-number {
+            font-weight: bold;
+            font-size: 0.9rem;
+          }
+
+          .datetime-row {
+            display: flex;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--ion-color-medium);
+          }
+        }
+
+        .expand-icon {
+          font-size: 1.2rem;
+          transition: transform 0.3s ease;
+
+          &.rotated {
+            transform: rotate(180deg);
+          }
+        }
+      }
+
+      .expanded-content {
+        background: var(--ion-color-light-shade);
+        padding: 12px;
+        border-top: 1px solid var(--ion-color-medium-tint);
+
+        .card-body {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+
+          .info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            .info-row {
+              display: flex;
+              gap: 12px;
+            }
+
+            .info-item {
+              display: flex;
+              align-items: center;
+              gap: 6px;
+
+              .info-icon {
+                font-size: 1.2rem;
+                color: var(--ion-color-primary);
+              }
+
+              .info-content {
+                display: flex;
+                flex-direction: column;
+
+                .info-label {
+                  font-size: 0.75rem;
+                  color: var(--ion-color-medium);
+                }
+
+                .info-value {
+                  font-size: 0.85rem;
+                  font-weight: 600;
+                }
+
+                .highlight {
+                  color: var(--ion-color-primary);
+                }
+              }
+            }
+          }
+
+          .queue-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+            .progress-label {
+              display: flex;
+              justify-content: space-between;
+              font-size: 0.75rem;
+            }
+
+            .progress-bar {
+              background: var(--ion-color-medium-tint);
+              border-radius: 6px;
+              height: 6px;
+              overflow: hidden;
+
+              .progress-fill {
+                height: 100%;
+                background: var(--ion-color-primary);
+                border-radius: 6px;
+                transition: width 0.3s ease;
+              }
+            }
+          }
+
+          .your-turn-banner,
+          .countdown-banner,
+          .additional-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--ion-color-dark);
+          }
+
+          .expanded-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Empty states */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 3rem;
+    color: var(--ion-color-medium);
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 0.85rem;
+    color: var(--ion-color-medium);
+    margin-bottom: 12px;
+  }
+}
+
+/* Date navigation */
+.date-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  .current-date-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .current-date {
+      font-weight: bold;
+    }
+
+    .date-subtitle {
+      font-size: 0.75rem;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .date-nav-button {
+    --padding-start: 6px;
+    --padding-end: 6px;
+  }
+}
