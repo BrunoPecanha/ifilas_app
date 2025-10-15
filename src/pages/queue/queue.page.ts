@@ -109,7 +109,7 @@ export class QueuePage implements OnInit {
       {
         id: 2,
         storeName: 'Spa Relax Total',
-        storeLogo: 'assets/imgs/spa-logo.png',
+        storeLogo: 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/9dae895d-9f27-42a1-81e6-1fb6c06f05aa.jpeg',
         serviceName: 'Massagem Relaxante Completa',
         date: new Date(new Date().setDate(new Date().getDate() + 1)),
         time: '15:30',

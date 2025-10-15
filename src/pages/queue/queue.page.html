@@ -98,6 +98,13 @@
       >
         <ion-item-options side="end" *ngIf="expandedQueueId !== queue.id">
           <ion-item-option
+            color="primary"
+            (click)="editQueueServices(queue)"
+            class="action-option compact"
+          >
+            <ion-icon name="qr-code-outline" slot="icon-only"></ion-icon>
+          </ion-item-option>
+          <ion-item-option
             color="warning"
             (click)="editQueueServices(queue)"
             class="action-option compact"
@@ -318,6 +325,13 @@
         [class.expanded]="expandedAppointmentId === appt.id"
       >
         <ion-item-options side="end" *ngIf="expandedAppointmentId !== appt.id">
+          <ion-item-option
+            color="primary"
+            (click)="editAppointmentServices(appt)"
+            class="action-option compact"
+          >
+            <ion-icon name="qr-code-outline" slot="icon-only"></ion-icon>
+          </ion-item-option>
           <ion-item-option
             color="warning"
             (click)="editAppointmentServices(appt)"
