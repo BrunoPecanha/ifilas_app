@@ -502,7 +502,7 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 0 16px;
+  padding: 0 0px;
   font-weight: 600;
 }
 
@@ -817,7 +817,6 @@
       }
 
       .expanded-content {
-        background: var(--ion-color-light-shade);
         padding: 12px;
         border-top: 1px solid var(--ion-color-medium-tint);
 
