@@ -154,13 +154,21 @@
                     >
                       {{ getQueueStatusText(queue.status) }}
                     </ion-badge>
-                    <span class="wait-time" *ngIf="queue.waitTime"
-                      ><ion-icon name="time-outline"></ion-icon> {{ queue.waitTime }} min</span
-                    >
-                    <span class="position-number" *ngIf="queue.position > 0"
-                      >#{{ queue.position }}</span
-                    >
+                    <span class="wait-time" *ngIf="queue.waitTime">
+                      <ion-icon name="time-outline"></ion-icon> {{
+                      queue.waitTime }} min
+                    </span>
+                    <span class="position-number" *ngIf="queue.position > 0">
+                      #{{ queue.position }}
+                    </span>
                   </div>
+
+                  <ion-icon
+                    [name]="queue.isPaused ? 'pause-circle-outline' : 'play-circle-outline'"
+                    [color]="queue.isPaused ? 'medium' : 'success'"
+                    class="queue-status-icon"
+                    (click)="pauseInfo(queue); $event.stopPropagation()"
+                  ></ion-icon>
                 </div>
 
                 <ion-icon
@@ -399,9 +407,13 @@
                 </div>
                 <div class="datetime-row">
                   <span class="appointment-date"
-                    ><ion-icon name="calendar-outline"></ion-icon>{{ appt.date | date:'dd/MM' }}</span
+                    ><ion-icon name="calendar-outline"></ion-icon>{{ appt.date |
+                    date:'dd/MM' }}</span
                   >
-                  <span class="appointment-time"><ion-icon name="time-outline"></ion-icon>{{ appt.time }}</span>
+                  <span class="appointment-time"
+                    ><ion-icon name="time-outline"></ion-icon>{{ appt.time
+                    }}</span
+                  >
                 </div>
               </div>
 

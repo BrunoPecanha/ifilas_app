@@ -13,6 +13,7 @@ interface QueueItem {
   services: string[];
   totalInQueue?: number;
   arrivalTime?: string;
+  isPaused?: boolean;
 }
 
 interface AppointmentItem {
@@ -49,7 +50,7 @@ export class QueuePage implements OnInit {
   nextAppointment: AppointmentItem | null = null;
   nextQueue: QueueItem | null = null;
 
-  filteredAppointments: AppointmentItem[] = []; 
+  filteredAppointments: AppointmentItem[] = [];
 
   constructor(
     private alertController: AlertController,
@@ -59,7 +60,7 @@ export class QueuePage implements OnInit {
   ngOnInit() {
     this.loadMockData();
     this.updateCrossInformation();
-    this.filterAppointmentsByDate(); 
+    this.filterAppointmentsByDate();
   }
 
 
@@ -89,7 +90,8 @@ export class QueuePage implements OnInit {
         paymentMethod: 'Pix',
         services: ['Coloração', 'Escova progressiva'],
         totalInQueue: 5,
-        arrivalTime: '15:15'
+        arrivalTime: '15:15',
+        isPaused: true
       },
     ];
 
@@ -144,7 +146,7 @@ export class QueuePage implements OnInit {
     this.filteredAppointments = this.myAppointments.filter(appt => {
       const apptDate = new Date(appt.date);
       const selectedDate = new Date(this.selectedDate);
-      
+
       return apptDate.toDateString() === selectedDate.toDateString();
     });
   }
@@ -178,12 +180,12 @@ export class QueuePage implements OnInit {
   }
 
 
-  updateCrossInformation() {  
+  updateCrossInformation() {
     this.nextAppointment = this.myAppointments
       .filter(appt => appt.status === 'Confirmado')
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0] || null;
 
-  
+
     this.nextQueue = this.myQueues
       .filter(queue => queue.position > 0)
       .sort((a, b) => a.position - b.position)[0] || null;
@@ -236,22 +238,22 @@ export class QueuePage implements OnInit {
   }
 
   getAppointmentColor(appt: AppointmentItem): string {
-    if (appt.status === 'Confirmado') 
+    if (appt.status === 'Confirmado')
       return 'var(--ion-color-success)';
 
-    if (appt.status === 'Pendente') 
+    if (appt.status === 'Pendente')
       return 'var(--ion-color-warning)';
-    
-    if (appt.status === 'Cancelado') 
+
+    if (appt.status === 'Cancelado')
       return 'var(--ion-color-danger)';
 
     return 'var(--ion-color-medium)';
   }
 
   getPriorityColor(position: number): string {
-    if (position === 1) 
+    if (position === 1)
       return 'var(--ion-color-success)';
-    if (position <= 3) 
+    if (position <= 3)
       return 'var(--ion-color-warning)';
 
     return 'var(--ion-color-medium)';
@@ -266,7 +268,7 @@ export class QueuePage implements OnInit {
     const now = new Date();
     const appointmentDate = new Date(appt.date);
     const timeDiff = appointmentDate.getTime() - now.getTime();
-    return timeDiff > 0 && timeDiff < 2 * 60 * 60 * 1000; 
+    return timeDiff > 0 && timeDiff < 2 * 60 * 60 * 1000;
   }
 
   getTimeUntilAppointment(appt: AppointmentItem): string {
@@ -283,7 +285,7 @@ export class QueuePage implements OnInit {
     return `${minutes} minutos`;
   }
 
-  
+
   goToAppointment(appt: AppointmentItem) {
     this.activeSegment = 'agendamentos';
     this.expandedAppointmentId = appt.id;
@@ -440,5 +442,9 @@ export class QueuePage implements OnInit {
       this.expandedAppointmentId = this.getFilteredAppointments()[0].id;
       this.expandedQueueId = null;
     }
+  }
+  
+  pauseInfo(queue: QueueItem) {
+    this.showToast(queue.isPaused ? 'Fila pausada - Motivo: Saí para almoçar' : 'Fila ativa', 'medium');
   }
 }
