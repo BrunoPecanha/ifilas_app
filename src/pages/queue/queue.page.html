@@ -147,17 +147,19 @@
                 </div>
 
                 <div class="queue-info-compact">
-                  <div class="position-time">
+                  <div class="time-status">
                     <ion-badge
                       [color]="getQueueStatusColor(queue.status)"
                       class="status-badge-compact"
                     >
                       {{ getQueueStatusText(queue.status) }}
                     </ion-badge>
-                    <span class="wait-time">{{ queue.waitTime }} min</span>
-                  </div>
-                  <div class="position-number" *ngIf="queue.position > 0">
-                    #{{ queue.position }}
+                    <span class="wait-time" *ngIf="queue.waitTime"
+                      >• {{ queue.waitTime }} min</span
+                    >
+                    <span class="position-number" *ngIf="queue.position > 0"
+                      >• #{{ queue.position }}</span
+                    >
                   </div>
                 </div>
 
@@ -453,17 +455,12 @@
                   </div>
 
                   <div class="info-item">
-                      <ion-icon
-                        name="build-outline"
-                        class="info-icon"
-                      ></ion-icon>
-                      <div class="info-content">
-                        <span class="info-label">Serviços</span>
-                        <span class="info-value"
-                          >{{ appt.serviceName }}</span
-                        >
-                      </div>
+                    <ion-icon name="build-outline" class="info-icon"></ion-icon>
+                    <div class="info-content">
+                      <span class="info-label">Serviços</span>
+                      <span class="info-value">{{ appt.serviceName }}</span>
                     </div>
+                  </div>
                 </div>
 
                 <div
