@@ -155,10 +155,10 @@
                       {{ getQueueStatusText(queue.status) }}
                     </ion-badge>
                     <span class="wait-time" *ngIf="queue.waitTime"
-                      >• {{ queue.waitTime }} min</span
+                      ><ion-icon name="time-outline"></ion-icon> {{ queue.waitTime }} min</span
                     >
                     <span class="position-number" *ngIf="queue.position > 0"
-                      >• #{{ queue.position }}</span
+                      >#{{ queue.position }}</span
                     >
                   </div>
                 </div>
@@ -217,16 +217,18 @@
                       </div>
                     </div>
 
-                    <div class="info-item">
+                    <div class="info-item services-list">
                       <ion-icon
                         name="build-outline"
                         class="info-icon"
                       ></ion-icon>
                       <div class="info-content">
-                        <span class="info-label">Serviços</span>
-                        <span class="info-value"
-                          >{{ queue.serviceName || 'A definir' }}</span
-                        >
+                        <span class="info-label">Serviços selecionados</span>
+                        <ul>
+                          <li *ngFor="let service of queue.services">
+                            {{ queue.serviceName }}
+                          </li>
+                        </ul>
                       </div>
                     </div>
                   </div>
@@ -397,9 +399,9 @@
                 </div>
                 <div class="datetime-row">
                   <span class="appointment-date"
-                    >{{ appt.date | date:'dd/MM' }}</span
+                    ><ion-icon name="calendar-outline"></ion-icon>{{ appt.date | date:'dd/MM' }}</span
                   >
-                  <span class="appointment-time">{{ appt.time }}</span>
+                  <span class="appointment-time"><ion-icon name="time-outline"></ion-icon>{{ appt.time }}</span>
                 </div>
               </div>
 
