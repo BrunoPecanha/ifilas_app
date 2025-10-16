@@ -345,7 +345,7 @@ export class QueuePage implements OnInit {
 
     const alert = await this.alertController.create({
       header: 'Sair da Fila',
-      message: `Tem certeza que deseja sair da fila de <b>${queue.storeName}</b>?`,
+      message: `Tem certeza que deseja sair da fila de ${queue.storeName}`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {

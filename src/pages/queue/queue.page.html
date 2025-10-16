@@ -143,20 +143,19 @@
                   />
                   <div class="store-details-compact">
                     <h3 class="store-name-compact">{{ queue.storeName }}</h3>
+                    <ion-badge
+                      [color]="getQueueStatusColor(queue.status)"
+                      class="status-badge-below-name"
+                    >
+                      {{ getQueueStatusText(queue.status) }}
+                    </ion-badge>
                   </div>
                 </div>
 
                 <div class="queue-info-compact">
                   <div class="time-status">
-                    <ion-badge
-                      [color]="getQueueStatusColor(queue.status)"
-                      class="status-badge-compact"
-                    >
-                      {{ getQueueStatusText(queue.status) }}
-                    </ion-badge>
                     <span class="wait-time" *ngIf="queue.waitTime">
-                      <ion-icon name="time-outline"></ion-icon> {{
-                      queue.waitTime }} min
+                      <ion-icon name="time-outline"></ion-icon> {{ queue.waitTime }} min
                     </span>
                     <span class="position-number" *ngIf="queue.position > 0">
                       #{{ queue.position }}
@@ -234,7 +233,7 @@
                         <span class="info-label">Serviços selecionados</span>
                         <ul>
                           <li *ngFor="let service of queue.services">
-                            {{ queue.serviceName }}
+                            {{ service }}
                           </li>
                         </ul>
                       </div>
@@ -394,16 +393,17 @@
                 />
                 <div class="store-details-compact">
                   <h3 class="store-name-compact">{{ appt.storeName }}</h3>
+                  <ion-badge
+                    [color]="getAppointmentStatusColor(appt.status)"
+                    class="status-badge-below-name"
+                  >
+                    {{ appt.status }}
+                  </ion-badge>
                 </div>
               </div>
               <div class="appointment-info-compact">
                 <div class="time-status">
-                  <ion-badge
-                    [color]="getAppointmentStatusColor(appt.status)"
-                    class="status-badge-compact"
-                  >
-                    {{ appt.status }}
-                  </ion-badge>
+                  <!-- Status badge foi movido para abaixo do nome da loja -->
                 </div>
                 <div class="datetime-row">
                   <span class="appointment-date"
@@ -468,11 +468,15 @@
                     </div>
                   </div>
 
-                  <div class="info-item">
+                  <div class="info-item services-list">
                     <ion-icon name="build-outline" class="info-icon"></ion-icon>
                     <div class="info-content">
-                      <span class="info-label">Serviços</span>
-                      <span class="info-value">{{ appt.serviceName }}</span>
+                      <span class="info-label">Serviços agendados</span>
+                      <ul>
+                        <li *ngFor="let service of appt.services">
+                          {{ service }}
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </div>

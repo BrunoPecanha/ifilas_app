@@ -5,50 +5,45 @@
   background: #f8f9fa;
   --padding-start: 16px;
   --padding-end: 16px;
-  /* Remover a restrição de largura máxima e centralizar o conteúdo de forma responsiva */
   max-width: none;
   margin: 0 auto;
 }
 
-/* Adicionar media queries para telas maiores */
 @media (min-width: 768px) {
   .page-container {
     --padding-start: 24px;
     --padding-end: 24px;
-    max-width: 1200px; /* Aumentar significativamente a largura máxima */
+    max-width: 1200px; 
   }
 
   .content-wrapper {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Layout em duas colunas para telas grandes */
+    grid-template-columns: 1fr 1fr;
     gap: 24px;
     align-items: flex-start;
   }
 
-  /* Quando há apenas um segmento ativo, ocupar toda a largura */
   .single-segment-content {
     grid-column: 1 / -1;
   }
 
   .segment-bar {
     margin: 20px 0;
-    grid-column: 1 / -1; /* Segmento ocupa toda a largura */
+    grid-column: 1 / -1;
   }
 
   .next-appointment-banner,
   .next-queue-banner {
-    grid-column: 1 / -1; /* Banners ocupam toda a largura */
+    grid-column: 1 / -1; 
     margin: 0 0 20px 0;
   }
 
-  /* Ajustar cards para layout em grid quando necessário */
   .custom-list {
     display: grid;
     grid-template-columns: 1fr;
     gap: 16px;
   }
 
-  /* Para telas muito grandes, mostrar cards lado a lado */
   @media (min-width: 1024px) {
     .custom-list.two-columns {
       grid-template-columns: 1fr 1fr;
@@ -116,7 +111,6 @@
   }
 }
 
-/* Ajustes para o segment bar em telas maiores */
 .segment-bar {
   margin: 16px 0;
   border-radius: 0;
@@ -144,7 +138,6 @@
   }
 }
 
-/* Manter os estilos existentes para mobile */
 @media (max-width: 480px) {
   .page-container {
     --padding-start: 12px;
@@ -206,7 +199,6 @@
   }
 }
 
-/* Resto do CSS permanece igual */
 .segment-with-badge {
   position: relative;
   font-weight: 600;
@@ -789,7 +781,6 @@ ion-content::part(scroll) {
   align-self: center;
 }
 
-/* Ícone de status no canto superior direito do card */
 .queue-card .queue-status-icon {
   position: absolute;
   top: 8px;
@@ -806,4 +797,103 @@ ion-content::part(scroll) {
 .queue-card .queue-status-icon:hover {
   transform: scale(1.1);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.services-list ul {
+  margin: 4px 0 0 0;
+  padding-left: 16px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.services-list li {
+  font-size: 0.85rem;
+  color: #2c3e50;
+  line-height: 1.4;
+  margin-bottom: 4px;
+  padding: 2px 0;
+  list-style-type: disc;
+}
+
+.services-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.service-tag {
+  font-size: 0.75rem;
+  color: #495057;
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.more-services {
+  font-size: 0.7rem;
+  color: #6c757d;
+  background: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-style: italic;
+}
+
+.services-preview .service-tag:not(:first-child) {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .service-tag {
+    max-width: 100px;
+    font-size: 0.7rem;
+  }
+  
+  .services-list ul {
+    max-height: 100px;
+  }
+}
+
+/* Estilo para o badge abaixo do nome da loja */
+.status-badge-below-name {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  font-weight: 600;
+  width: fit-content;
+  margin-top: 4px;
+}
+
+/* Ajuste no store-details-compact para acomodar o badge */
+.store-details-compact {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Ajuste no time-status para remover o espaço do badge removido */
+.time-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  width: 100%;
+}
+
+/* Ajuste responsivo para mobile */
+@media (max-width: 480px) {
+  .status-badge-below-name {
+    font-size: 0.6rem;
+    padding: 1px 4px;
+  }
+  
+  .store-details-compact {
+    gap: 2px;
+  }
 }
