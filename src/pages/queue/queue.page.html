@@ -143,7 +143,6 @@
                   />
                   <div class="store-details-compact">
                     <h3 class="store-name-compact">{{ queue.storeName }}</h3>
-                    <p class="service-name-compact">{{ queue.serviceName }}</p>
                   </div>
                 </div>
 
@@ -212,6 +211,19 @@
                         <span class="info-label">Pagamento</span>
                         <span class="info-value"
                           >{{ queue.paymentMethod || 'A definir' }}</span
+                        >
+                      </div>
+                    </div>
+
+                    <div class="info-item">
+                      <ion-icon
+                        name="build-outline"
+                        class="info-icon"
+                      ></ion-icon>
+                      <div class="info-content">
+                        <span class="info-label">Serviços</span>
+                        <span class="info-value"
+                          >{{ queue.serviceName || 'A definir' }}</span
                         >
                       </div>
                     </div>
@@ -370,7 +382,6 @@
                 />
                 <div class="store-details-compact">
                   <h3 class="store-name-compact">{{ appt.storeName }}</h3>
-                  <p class="service-name-compact">{{ appt.serviceName }}</p>
                 </div>
               </div>
               <div class="appointment-info-compact">
@@ -440,6 +451,19 @@
                       >
                     </div>
                   </div>
+
+                  <div class="info-item">
+                      <ion-icon
+                        name="build-outline"
+                        class="info-icon"
+                      ></ion-icon>
+                      <div class="info-content">
+                        <span class="info-label">Serviços</span>
+                        <span class="info-value"
+                          >{{ appt.serviceName }}</span
+                        >
+                      </div>
+                    </div>
                 </div>
 
                 <div

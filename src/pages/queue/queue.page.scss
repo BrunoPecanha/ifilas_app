@@ -5,8 +5,118 @@
   background: #f8f9fa;
   --padding-start: 16px;
   --padding-end: 16px;
+  /* Remover a restrição de largura máxima e centralizar o conteúdo de forma responsiva */
+  max-width: none;
+  margin: 0 auto;
 }
 
+/* Adicionar media queries para telas maiores */
+@media (min-width: 768px) {
+  .page-container {
+    --padding-start: 24px;
+    --padding-end: 24px;
+    max-width: 1200px; /* Aumentar significativamente a largura máxima */
+  }
+
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Layout em duas colunas para telas grandes */
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  /* Quando há apenas um segmento ativo, ocupar toda a largura */
+  .single-segment-content {
+    grid-column: 1 / -1;
+  }
+
+  .segment-bar {
+    margin: 20px 0;
+    grid-column: 1 / -1; /* Segmento ocupa toda a largura */
+  }
+
+  .next-appointment-banner,
+  .next-queue-banner {
+    grid-column: 1 / -1; /* Banners ocupam toda a largura */
+    margin: 0 0 20px 0;
+  }
+
+  /* Ajustar cards para layout em grid quando necessário */
+  .custom-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Para telas muito grandes, mostrar cards lado a lado */
+  @media (min-width: 1024px) {
+    .custom-list.two-columns {
+      grid-template-columns: 1fr 1fr;
+    }
+    
+    .queue-card,
+    .appointment-card {
+      min-height: 120px;
+    }
+  }
+
+  .section-header {
+    margin: 24px 0 20px 0;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+  }
+
+  .collapsed-content {
+    padding: 20px;
+    min-height: 100px;
+  }
+
+  .store-logo-compact {
+    width: 52px;
+    height: 52px;
+  }
+
+  .store-name-compact {
+    font-size: 1.1rem;
+  }
+
+  .service-name-compact {
+    font-size: 0.9rem;
+  }
+
+  .queue-info-compact,
+  .appointment-info-compact {
+    min-width: 120px;
+  }
+
+  .status-badge-compact {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+  }
+
+  .datetime-row {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .page-container {
+    --padding-start: 32px;
+    --padding-end: 32px;
+  }
+
+  .content-wrapper {
+    gap: 32px;
+  }
+
+  .custom-list.two-columns {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+}
+
+/* Ajustes para o segment bar em telas maiores */
 .segment-bar {
   margin: 16px 0;
   border-radius: 0;
@@ -19,6 +129,84 @@
   padding: 0;
 }
 
+@media (min-width: 768px) {
+  .segment-bar {
+    justify-self: center;
+    width: fit-content;
+    min-width: 300px;
+  }
+
+  .segment-with-badge {
+    font-size: 1rem;
+    min-height: 48px;
+    --padding-start: 24px;
+    --padding-end: 24px;
+  }
+}
+
+/* Manter os estilos existentes para mobile */
+@media (max-width: 480px) {
+  .page-container {
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 16px 0 12px 0;
+  }
+  
+  .collapsed-content {
+    padding: 12px;
+    min-height: 72px;
+    gap: 8px;
+  }
+  
+  .expanded-content {
+    padding: 0 12px 12px 12px;
+  }
+  
+  .store-logo-compact {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .store-name-compact {
+    font-size: 0.9rem;
+    -webkit-line-clamp: 2;
+  }
+  
+  .service-name-compact {
+    font-size: 0.75rem;
+  }
+  
+  .queue-info-compact,
+  .appointment-info-compact {
+    min-width: 80px;
+  }
+  
+  .expand-icon {
+    margin-left: 8px;
+    min-width: 16px;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .expanded-actions {
+    flex-direction: column;
+  }
+  
+  .expanded-actions ion-button {
+    width: 100%;
+  }
+}
+
+/* Resto do CSS permanece igual */
 .segment-with-badge {
   position: relative;
   font-weight: 600;
@@ -250,8 +438,7 @@
 }
 
 .store-name-compact {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 400;
   color: #2c3e50;
   margin: 0;
   line-height: 1.3;
@@ -535,74 +722,6 @@
   line-height: 1.4;
 }
 
-@media (max-width: 480px) {
-  .page-container {
-    --padding-start: 12px;
-    --padding-end: 12px;
-  }
-  
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    margin: 16px 0 12px 0;
-  }
-  
-  .collapsed-content {
-    padding: 12px;
-    min-height: 72px;
-    gap: 8px;
-  }
-  
-  .expanded-content {
-    padding: 0 12px 12px 12px;
-  }
-  
-  .store-logo-compact {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .store-name-compact {
-    font-size: 0.9rem;
-    -webkit-line-clamp: 2;
-  }
-  
-  .service-name-compact {
-    font-size: 0.75rem;
-  }
-  
-  .queue-info-compact,
-  .appointment-info-compact {
-    min-width: 80px;
-  }
-  
-  .expand-icon {
-    margin-left: 8px;
-    min-width: 16px;
-  }
-  
-  .info-row {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .expanded-actions {
-    flex-direction: column;
-  }
-  
-  .expanded-actions ion-button {
-    width: 100%;
-  }
-}
-
-@media (min-width: 768px) {
-  .page-container {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-}
-
 ion-item-options {
   border-radius: 12px;
   overflow: hidden;
@@ -623,4 +742,20 @@ ion-content::part(scroll) {
 
 .custom-list .sliding-item {
   display: block;
+}
+
+.services-list {
+  border-top: 1px solid #f1f3f4;
+  padding-top: 12px;
+}
+
+.services-list ul {
+  margin: 4px 0 0 0;
+  padding-left: 16px;
+}
+
+.services-list li {
+  font-size: 0.85rem;
+  color: #2c3e50;
+  line-height: 1.3;
 }
