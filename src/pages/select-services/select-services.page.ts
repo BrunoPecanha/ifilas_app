@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, NavController } from '@ionic/angular';
 import { AddCustomerToQueueRequest } from 'src/models/requests/add-customer-to-queue-request';
-import { AddQueueServiceRequest } from 'src/models/requests/add-queue-service-request';
+import { AddServiceRequest } from 'src/models/requests/add-service-request';
 import { UpdateCustomerToQueueRequest } from 'src/models/requests/update-customer-to-queue-request';
 import { ServiceModel } from 'src/models/service-model';
 import { UserModel } from 'src/models/user-model';
@@ -59,7 +59,7 @@ export class SelectServicesPage {
   }
 
   getProfessionalAndStore() {
-    this.route.queryParams.subscribe(params => {      
+    this.route.queryParams.subscribe(params => {
       this.queueId = params['queueId'];
       this.storeId = params['storeId'];
       this.professionalId = params['professionalId'];
@@ -67,7 +67,7 @@ export class SelectServicesPage {
       this.useAgenda = params['useAgenda'] === 'true';
       this.customerId = params['customerId'] ? Number(params['customerId']) : null;
       this.looseCustomer = params['looseCustomer'] === 'true';
-      
+
       this.storeId = Number(this.storeId) || this.sessionService.getStore()?.id || 0;
 
       this.loadAvailablesServices();
@@ -264,8 +264,8 @@ export class SelectServicesPage {
   }
 
   addCustomerToQueue() {
-    const servicesToSend: AddQueueServiceRequest[] = this.selectedServices.map(service => ({
-      serviceId: service.id,
+    const servicesToSend: AddServiceRequest[] = this.selectedServices.map(service => ({
+      id: service.id,
       quantity: service.quantity
     }));
 
@@ -302,8 +302,8 @@ export class SelectServicesPage {
   }
 
   updateCustomerToQueue() {
-    const servicesToSend: AddQueueServiceRequest[] = this.selectedServices.map(service => ({
-      serviceId: service.id,
+    const servicesToSend: AddServiceRequest[] = this.selectedServices.map(service => ({
+      id: service.id,
       quantity: service.quantity
     }));
 
@@ -329,14 +329,18 @@ export class SelectServicesPage {
   }
 
   proceedToSchedule() {
-    this.router.navigate(['/schedule-appointment'], {
-      queryParams: { professionalId: this.professionalId, storeId: this.storeId }
-    });
+    this.sessionService.setGenericKey(this.selectedServices, 'selectedServices');
+    this.sessionService.setGenericKey('notes', this.notes);
+    this.sessionService.setGenericKey(this.paymentMethod, 'paymentMethod');
+    this.sessionService.setGenericKey(this.storeId, 'storeId');
+    this.sessionService.setGenericKey( this.professionalId, 'professionalId');
+
+    this.router.navigate(['/schedule-appointment']);
   }
 
   addCustomerToQueueAndNavigate() {
-    const servicesToSend: AddQueueServiceRequest[] = this.selectedServices.map(service => ({
-      serviceId: service.id,
+    const servicesToSend: AddServiceRequest[] = this.selectedServices.map(service => ({
+      id: service.id,
       quantity: service.quantity
     }));
 

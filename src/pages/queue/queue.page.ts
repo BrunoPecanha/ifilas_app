@@ -1,409 +1,444 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
-import { CustomerInQueueCardDetailModel } from 'src/models/customer-in-queue-card-detail-model';
-import { CustomerInQueueCardModel } from 'src/models/customer-in-queue-card-model';
-import { StoreModel } from 'src/models/store-model';
-import { QueueService } from 'src/services/queue.service';
-import { SignalRService } from 'src/services/seignalr.service';
-import { SessionService } from 'src/services/session.service';
-import { StoresService } from 'src/services/stores.service';
-import { ToastService } from 'src/services/toast.service';
+
+interface QueueItem {
+  id: number;
+  storeName: string;
+  storeLogo?: string;
+  serviceName: string;
+  position: number;
+  waitTime: number;
+  paymentMethod: string;
+  status: string;
+  services: string[];
+  totalInQueue?: number;
+  arrivalTime?: string;
+}
+
+interface AppointmentItem {
+  id: number;
+  storeName: string;
+  storeLogo?: string;
+  serviceName: string;
+  date: Date;
+  time: string;
+  status: string;
+  services: string[];
+  paymentMethod: string;
+  notes?: string;
+}
 
 @Component({
   selector: 'app-queue',
   templateUrl: './queue.page.html',
   styleUrls: ['./queue.page.scss'],
 })
-export class QueuePage {
-  customerCards: CustomerInQueueCardModel[] | [] = [];
-  fallbackRoute = '/select-company';
-  stores: StoreModel[] = [];
+export class QueuePage implements OnInit {
+  fallbackRoute = '/home';
   currentDate = new Date();
-  qrCodeBase64: string | null = null;
-  tolerance = 5;
-  currentlyExpandedCardId: number | null = null;  
-  activeFilter: string = 'all';
 
-  private cardDetailsMap = new Map<number, CustomerInQueueCardDetailModel>();
+  activeSegment: 'filas' | 'agendamentos' = 'filas';
+  selectedDate: Date = new Date();
+
+  expandedQueueId: number | null = null;
+  expandedAppointmentId: number | null = null;
+
+  myQueues: QueueItem[] = [];
+  myAppointments: AppointmentItem[] = [];
+
+  nextAppointment: AppointmentItem | null = null;
+  nextQueue: QueueItem | null = null;
+
+  filteredAppointments: AppointmentItem[] = []; 
 
   constructor(
     private alertController: AlertController,
-    public router: Router,
-    private queueService: QueueService,
-    private storeService: StoresService,
-    private sessionService: SessionService,
-    private toastService: ToastService,
-    private signalRService: SignalRService
-  ) {
-  }
+    private toastController: ToastController
+  ) { }
 
-  ionViewDidEnter() {
-    this.forceReload();
-    this.startSignalRConnection();
-  }
-
-  async startSignalRConnection() {
-    try {
-
-      await this.signalRService.startQueueConnection();
-      const user = this.sessionService.getUser();
-
-      if (!user?.id)
-        throw new Error('Usuário inválido');
-
-      const response = await this.storeService.loadAllStoresUserIsInByUserId(user.id).toPromise();
-      const stores = response?.data || [];
-
-      const groupNames = stores
-        .filter(store => !!store?.id)
-        .map(store => store.id.toString());
-
-      if (groupNames.length > 0) {
-        await Promise.all(
-          groupNames.map(group => this.signalRService.joinQueueGroup(group))
-        );
-      }
-
-      this.signalRService.onUpdateQueue((data) => {
-        this.refreshQueues();
-      });
-
-    } catch (error) {
-      console.error('Erro SignalR (cliente):', error);
-      setTimeout(() => this.startSignalRConnection(), 5000);
-    }
-  }
-
-  private forceReload(): void {
-    const previouslyExpanded = this.currentlyExpandedCardId;
-
-    this.customerCards = [];
-    this.currentlyExpandedCardId = null;
-    this.cardDetailsMap.clear();
-    this.qrCodeBase64 = null;
-
-    this.loadCustomersInQueueCard();
-
-    setTimeout(() => {
-      if (previouslyExpanded !== null) {
-        const card = this.customerCards.find(c => c.queueId === previouslyExpanded);
-        if (card) {
-          this.currentlyExpandedCardId = card.queueId;
-          this.loadCustomerInQueueCardDetails(card.id, card.queueId);
-        }
-      }
-    }, 300);
-  }
-
-  async handleRefresh(event: any) {
-    try {
-      await this.loadCustomersInQueueCard();
-    } finally {
-      event.target.complete();
-    }
+  ngOnInit() {
+    this.loadMockData();
+    this.updateCrossInformation();
+    this.filterAppointmentsByDate(); 
   }
 
 
-  public toggleCardDetails(card: CustomerInQueueCardModel): void {
-    if (this.currentlyExpandedCardId === card.queueId) {
-      this.currentlyExpandedCardId = null;
-      this.cardDetailsMap.delete(card.queueId);
-      this.qrCodeBase64 = null;
+  loadMockData() {
+    this.myQueues = [
+      {
+        id: 1,
+        storeName: 'Barbearia Estilo Premium',
+        storeLogo: 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/5721731e-0301-45df-9799-aed397233717.jpeg',
+        serviceName: 'Corte e Barba',
+        position: 1,
+        status: 'Próximo',
+        waitTime: 5,
+        paymentMethod: 'Cartão',
+        services: ['Corte masculino', 'Barba', 'Hidratação'],
+        totalInQueue: 8,
+        arrivalTime: '14:30'
+      },
+      {
+        id: 2,
+        storeName: 'Salão da Ana Beauty',
+        storeLogo: 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/5721731e-0301-45df-9799-aed397233717.jpeg',
+        serviceName: 'Coloração e Escova',
+        position: 3,
+        status: 'Aguardando',
+        waitTime: 25,
+        paymentMethod: 'Pix',
+        services: ['Coloração', 'Escova progressiva'],
+        totalInQueue: 5,
+        arrivalTime: '15:15'
+      },
+    ];
+
+    this.myAppointments = [
+      {
+        id: 1,
+        storeName: 'Studio Beleza & Estética',
+        storeLogo: 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/9dae895d-9f27-42a1-81e6-1fb6c06f05aa.jpeg',
+        serviceName: 'Corte Feminino + Hidratação',
+        date: new Date(),
+        time: '16:00',
+        status: 'Confirmado',
+        services: ['Corte feminino', 'Hidratação', 'Selagem'],
+        paymentMethod: 'Dinheiro',
+        notes: 'Trazer fotos de referência'
+      },
+      {
+        id: 2,
+        storeName: 'Spa Relax Total',
+        storeLogo: 'https://yidudaduvasngangrydi.supabase.co/storage/v1/object/public/uploads/logo/9dae895d-9f27-42a1-81e6-1fb6c06f05aa.jpeg',
+        serviceName: 'Massagem Relaxante Completa',
+        date: new Date(new Date().setDate(new Date().getDate() + 1)),
+        time: '15:30',
+        status: 'Pendente',
+        services: ['Massagem relaxante', 'Aromaterapia'],
+        paymentMethod: 'Pix',
+      },
+    ];
+
+    this.updateCrossInformation();
+    this.filterAppointmentsByDate();
+  }
+
+
+  nextDay() {
+    const newDate = new Date(this.selectedDate);
+    newDate.setDate(newDate.getDate() + 1);
+    this.selectedDate = newDate;
+    this.filterAppointmentsByDate();
+    this.collapseAll();
+  }
+
+  previousDay() {
+    const newDate = new Date(this.selectedDate);
+    newDate.setDate(newDate.getDate() - 1);
+    this.selectedDate = newDate;
+    this.filterAppointmentsByDate();
+    this.collapseAll();
+  }
+
+  filterAppointmentsByDate() {
+    this.filteredAppointments = this.myAppointments.filter(appt => {
+      const apptDate = new Date(appt.date);
+      const selectedDate = new Date(this.selectedDate);
+      
+      return apptDate.toDateString() === selectedDate.toDateString();
+    });
+  }
+
+  getFilteredAppointments(): AppointmentItem[] {
+    return this.filteredAppointments;
+  }
+
+  getDayOfWeek(date: Date): string {
+    const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    return days[date.getDay()];
+  }
+
+
+  toggleQueueExpansion(queueId: number) {
+    if (this.expandedQueueId === queueId) {
+      this.expandedQueueId = null;
     } else {
-      this.currentlyExpandedCardId = null;
-      this.cardDetailsMap.clear();
-      this.qrCodeBase64 = null;
-
-      setTimeout(() => {
-        this.currentlyExpandedCardId = card.queueId;
-        this.loadCustomerInQueueCardDetails(card.id, card.queueId);
-      });
+      this.expandedQueueId = queueId;
+      this.expandedAppointmentId = null;
     }
   }
 
-  hasVariablePrice(queueId: number): boolean {
-    const detalhes = this.cardDetailsMap.get(queueId);
-    return detalhes?.services?.some(s => s.variablePrice && s.finalPrice === 0) ?? false;
-  }
-
-  public isCardExpanded(card: CustomerInQueueCardModel): boolean {
-    return this.currentlyExpandedCardId === card.queueId;
-  }
-
-  public getCardDetails(card: CustomerInQueueCardModel): CustomerInQueueCardDetailModel | undefined {
-    return this.cardDetailsMap.get(card.queueId);
-  }
-
-  private convertTimeStringToMinutes(timeString: string): number {
-    const parts = timeString.split(':');
-    if (parts.length < 3) return 0;
-
-    const hours = parseInt(parts[0], 10);
-    const minutes = parseInt(parts[1], 10);
-    const seconds = parseFloat(parts[2]);
-
-    return hours * 60 + minutes + seconds / 60;
-  }
-
-  public getTimeColor(timeToWait: number | string | undefined): string {
-    if (!timeToWait)
-      return '';
-
-    let minutes: number;
-    if (typeof timeToWait === 'string') {
-      minutes = this.convertTimeStringToMinutes(timeToWait);
+  toggleAppointmentExpansion(appointmentId: number) {
+    if (this.expandedAppointmentId === appointmentId) {
+      this.expandedAppointmentId = null;
     } else {
-      minutes = timeToWait;
+      this.expandedAppointmentId = appointmentId;
+      this.expandedQueueId = null;
     }
-
-    if (minutes > 45)
-      return 'vermelho';
-    if (minutes > 15)
-      return 'amarelo';
-    return 'verde';
   }
 
-  public formatEstimatedTime(timeToWait: number | string | undefined): string {
-    if (!timeToWait)
-      return 'Calculando...';
 
-    if (typeof timeToWait === 'string') {
-      const minutes = this.convertTimeStringToMinutes(timeToWait);
+  updateCrossInformation() {  
+    this.nextAppointment = this.myAppointments
+      .filter(appt => appt.status === 'Confirmado')
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0] || null;
 
-      if (minutes > 45) {
-        const hours = minutes / 60;
-        return `${Math.floor(hours)} hora(s) e ${Math.round(minutes % 60)} minuto(s)`;
-      }
-      return `${Math.round(minutes)} min`;
-    }
-
-    if (typeof timeToWait === 'number') {
-      if (timeToWait > 45) {
-        return `${Math.floor(timeToWait / 60)} hora(s) e ${Math.round(timeToWait % 60)} minuto(s)`;
-      }
-      return `${timeToWait} min`;
-    }
-
-    return 'Formato não reconhecido';
+  
+    this.nextQueue = this.myQueues
+      .filter(queue => queue.position > 0)
+      .sort((a, b) => a.position - b.position)[0] || null;
   }
 
-  public generateQueuePeople(total: number): any[] {
-    return Array.from({ length: total > 1 ? total : 1 }, (_, idx) => ({
-      id: idx + 1,
-      avatar: 'person-circle-outline'
-    }));
+
+  getServiceColor(service: string): string {
+    const colorMap: { [key: string]: string } = {
+      'Corte masculino': 'primary',
+      'Barba': 'secondary',
+      'Hidratação': 'success',
+      'Coloração': 'tertiary',
+      'Escova progressiva': 'warning',
+      'Corte feminino': 'danger',
+      'Selagem': 'medium',
+      'Massagem relaxante': 'success',
+      'Aromaterapia': 'tertiary'
+    };
+    return colorMap[service] || 'medium';
   }
 
-  public refreshQueues(): void {
-    if (this.customerCards.length === 0) {
-      this.loadCustomersInQueueCard();
-      return;
-    }
+  getQueueStatusColor(status: string): string {
+    const statusColors: { [key: string]: string } = {
+      'Próximo': 'success',
+      'Aguardando': 'warning',
+      'Em andamento': 'primary',
+      'Finalizado': 'medium'
+    };
+    return statusColors[status] || 'medium';
+  }
 
-    const previouslyExpanded = this.currentlyExpandedCardId;
-    this.currentlyExpandedCardId = null;
-    this.cardDetailsMap.clear();
-    this.qrCodeBase64 = null;
+  getQueueStatusText(status: string): string {
+    const statusTexts: { [key: string]: string } = {
+      'Próximo': 'Sua vez!',
+      'Aguardando': 'Aguardando',
+      'Em andamento': 'Em andamento',
+      'Finalizado': 'Finalizado'
+    };
+    return statusTexts[status] || status;
+  }
 
-    this.loadCustomersInQueueCard();
+  getAppointmentStatusColor(status: string): string {
+    const statusColors: { [key: string]: string } = {
+      'Confirmado': 'success',
+      'Pendente': 'warning',
+      'Cancelado': 'danger',
+      'Realizado': 'medium'
+    };
+    return statusColors[status] || 'medium';
+  }
 
+  getAppointmentColor(appt: AppointmentItem): string {
+    if (appt.status === 'Confirmado') 
+      return 'var(--ion-color-success)';
+
+    if (appt.status === 'Pendente') 
+      return 'var(--ion-color-warning)';
+    
+    if (appt.status === 'Cancelado') 
+      return 'var(--ion-color-danger)';
+
+    return 'var(--ion-color-medium)';
+  }
+
+  getPriorityColor(position: number): string {
+    if (position === 1) 
+      return 'var(--ion-color-success)';
+    if (position <= 3) 
+      return 'var(--ion-color-warning)';
+
+    return 'var(--ion-color-medium)';
+  }
+
+  getQueueProgress(queue: QueueItem): number {
+    if (!queue.totalInQueue) return 0;
+    return ((queue.totalInQueue - queue.position) / queue.totalInQueue) * 100;
+  }
+
+  isUpcomingAppointment(appt: AppointmentItem): boolean {
+    const now = new Date();
+    const appointmentDate = new Date(appt.date);
+    const timeDiff = appointmentDate.getTime() - now.getTime();
+    return timeDiff > 0 && timeDiff < 2 * 60 * 60 * 1000; 
+  }
+
+  getTimeUntilAppointment(appt: AppointmentItem): string {
+    const now = new Date();
+    const appointmentDate = new Date(appt.date);
+    const timeDiff = appointmentDate.getTime() - now.getTime();
+
+    if (timeDiff <= 0) return 'agora';
+
+    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${minutes} minutos`;
+  }
+
+  
+  goToAppointment(appt: AppointmentItem) {
+    this.activeSegment = 'agendamentos';
+    this.expandedAppointmentId = appt.id;
+    this.expandedQueueId = null;
+    this.showToast(`Indo para agendamento: ${appt.storeName}`, 'primary');
+  }
+
+  goToQueue(queue: QueueItem) {
+    this.activeSegment = 'filas';
+    this.expandedQueueId = queue.id;
+    this.expandedAppointmentId = null;
+    this.showToast(`Indo para fila: ${queue.storeName}`, 'primary');
+  }
+
+  findQueues() {
+    this.showToast('Buscando filas disponíveis...', 'primary');
+  }
+
+  scheduleAppointment() {
+    this.showToast('Abrindo agendamentos...', 'primary');
+  }
+
+
+  async refreshAll() {
+    this.showToast('Atualizando dados...', 'primary');
     setTimeout(() => {
-      if (previouslyExpanded !== null) {
-        const card = this.customerCards.find(c => c.queueId === previouslyExpanded);
-        if (card) {
-          this.currentlyExpandedCardId = card.queueId;
-          this.loadCustomerInQueueCardDetails(card.id, card.queueId);
-        }
-      }
-    }, 300);
+      this.loadMockData();
+      this.showToast('Dados atualizados!', 'success');
+    }, 800);
   }
 
-  public loadCustomersInQueueCard(): void {
-    this.customerCards = [];
+  async editQueueServices(queue: QueueItem) {
+    if (this.expandedQueueId === queue.id) {
+      this.expandedQueueId = null;
+    }
 
-    let userId = this.sessionService.getUser().id;
-
-    this.queueService.getCustomerInQueueCard(userId).subscribe({
-      next: (response) => {
-        this.customerCards = response.data || [];
-      },
-      error: (err) => {
-        console.error('Erro ao carregar filas:', err);
-        this.customerCards = [];
-      }
-    });
-  }
-
-  private loadCustomerInQueueCardDetails(id: number, queueId: number): void {
-    if (this.currentlyExpandedCardId !== queueId)
-      return;
-
-    this.queueService.getCustomerInQueueCardDetails(id, queueId).subscribe({
-      next: (response) => {
-        if (this.currentlyExpandedCardId === queueId) {
-          this.cardDetailsMap.set(queueId, response.data);
-
-          if (response.data.position === 0) {
-            this.generateQrCode(response.data.token);
-          }
-        }
-      },
-      error: (err) => {
-        console.error('Erro ao carregar detalhes:', err);
-        if (this.currentlyExpandedCardId === queueId) {
-          this.currentlyExpandedCardId = null;
-        }
-      }
-    });
-  }
-
-  private generateQrCode(token: string): void {
-    this.queueService.gerarQrCode(token).subscribe({
-      next: (res) => {
-        this.qrCodeBase64 = res.qrCode;
-      },
-      error: (err) => {
-        console.error('Erro ao gerar QR Code:', err);
-      }
-    });
-  }
-
-  public async exitQueue(card: CustomerInQueueCardModel): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Confirmar Saída',
-      message: 'Você tem certeza que deseja sair da fila?',
+      header: 'Editar Serviços',
+      message: `Deseja editar os serviços de <b>${queue.serviceName}</b>?`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
-          text: 'Confirmar',
-          handler: async () => {
-            this.queueService.exitQueue(card.id, card.queueId).subscribe({
-              next: async () => {
-                await this.toastService.show('Você saiu da fila com sucesso!', 'success');
-                this.loadCustomersInQueueCard();
-              },
-              error: async (err) => {
-                console.error('Erro ao sair da fila:', err);
-                await this.toastService.show('Ocorreu um erro ao sair da fila', 'danger');
-              }
-            });
-          },
-        },
+          text: 'Editar',
+          handler: () => {
+            this.showToast('Editando serviços...', 'warning');
+          }
+        }
       ],
     });
     await alert.present();
   }
 
-  isTimeZero(time: number | string | null | undefined): boolean {
-    if (!time) return false;
-    return time === '00:00:00';
-  }
-
-  getIonicIcon(unicodeIcon: string): string {
-    const iconMap: { [key: string]: string } = {
-      '\\u{2702}': 'cut-outline',
-      '\\u{2705}': 'checkmark-circle-outline',
-      '\\u{1F4C8}': 'stats-chart-outline',
-      '\\u{1F4C9}': 'stats-chart-outline',
-      '\\u{1F4C6}': 'calendar-outline'
-    };
-    return iconMap[unicodeIcon] || 'construct-outline';
-  }
-
-  public editarServicos(card: CustomerInQueueCardModel): void {
-    this.router.navigate(['/select-services'], {
-      queryParams: {
-        queueId: card.queueId,
-        storeId: card.storeId,
-        customerId: card.id
-      }
-    });
-  }
-
-  setFilter(filter: string) {
-    this.activeFilter = filter;
-  }
-
-  get filteredCards() {
-    if (!this.customerCards) return [];
-
-    switch (this.activeFilter) {
-      case 'active':
-        return this.customerCards.filter(card =>
-          card.status !== 6 && card.status !== 4
-        );
-      case 'waiting':
-        return this.customerCards.filter(card => card.status === 6);
-      default:
-        return this.customerCards;
+  async leaveQueue(queue: QueueItem) {
+    if (this.expandedQueueId === queue.id) {
+      this.expandedQueueId = null;
     }
-  }
 
-  getStatusClass(card: any): string {
-    if (card.status === 2) 
-      return 'status-active';
-    if (card.isPaused) 
-      return 'status-paused';
-    return 'status-waiting';
-  }
-
-  getStatusIcon(card: any): string {
-    if (card.status === 2) 
-      return 'checkmark-circle';
-    if (card.isPaused) 
-      return 'pause-circle';
-    return 'time';
-  }
-
-  getPositionClass(card: any): string {
-    if (card.position === 0 || card.status === 2) return 'position-high';
-    return 'position-normal';
-  }
-
-  getPositionText(card: any): string {
-    if (card.status === 2) 
-      return 'Em atendimento';
-    if (card.position === 0) 
-      return 'Sua vez!';
-    return `${card.position}º na fila`;
-  }
-
-  getProgressWidth(position: number, total: number): number {
-    if (position === 0) return 100;
-    return ((total - position) / total) * 100;
-  }
-
-  public async presentInfoPopup(): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Legenda',
-      message: '',
+      header: 'Sair da Fila',
+      message: `Tem certeza que deseja sair da fila de <b>${queue.storeName}</b>?`,
       buttons: [
+        { text: 'Cancelar', role: 'cancel' },
         {
-          text: 'x',
-          role: 'cancel'
+          text: 'Sair',
+          handler: () => {
+            this.myQueues = this.myQueues.filter(q => q.id !== queue.id);
+            this.updateCrossInformation();
+            this.showToast('Você saiu da fila!', 'warning');
+          }
         }
-      ]
+      ],
     });
-
     await alert.present();
+  }
 
-    const modalElement = document.querySelector('.alert-message') as HTMLElement;
-    if (modalElement) {
-      modalElement.innerHTML = `
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-          <div style="width: 14px; height: 14px; border-radius: 50%; background-color: red; margin-right: 8px;"></div>
-          <span><small>Ainda precisa esperar | > 60 min</small></span>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-          <div style="width: 14px; height: 14px; border-radius: 50%; background-color: yellow; margin-right: 8px;"></div>
-          <span><small>Sua vez está chegando | < 30 min</small></span>
-        </div>
-        <div style="display: flex; align-items: center;">
-          <div style="width: 14px; height: 14px; border-radius: 50%; background-color: green; margin-right: 8px;"></div>
-          <span><small>Você é o próximo | < 15 min</small></span>
-        </div>
-      `;
+  async editAppointmentServices(appt: AppointmentItem) {
+    if (this.expandedAppointmentId === appt.id) {
+      this.expandedAppointmentId = null;
+    }
+
+    const alert = await this.alertController.create({
+      header: 'Editar Agendamento',
+      message: `Editar agendamento para <b>${appt.storeName}</b>?`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Editar',
+          handler: () => {
+            this.showToast('Editando agendamento...', 'warning');
+          }
+        }
+      ],
+    });
+    await alert.present();
+  }
+
+  async cancelAppointment(appt: AppointmentItem) {
+    if (this.expandedAppointmentId === appt.id) {
+      this.expandedAppointmentId = null;
+    }
+
+    const alert = await this.alertController.create({
+      header: 'Cancelar Agendamento',
+      message: `Cancelar agendamento em <b>${appt.storeName}</b>?`,
+      buttons: [
+        { text: 'Manter', role: 'cancel' },
+        {
+          text: 'Cancelar',
+          handler: () => {
+            this.myAppointments = this.myAppointments.filter(a => a.id !== appt.id);
+            this.updateCrossInformation();
+            this.filterAppointmentsByDate();
+            this.showToast('Agendamento cancelado!', 'warning');
+          }
+        }
+      ],
+    });
+    await alert.present();
+  }
+
+  handleImageError(event: any) {
+    event.target.src = '';
+  }
+
+  trackById(index: number, item: any) {
+    return item.id;
+  }
+
+  private async showToast(message: string, color: string) {
+    const toast = await this.toastController.create({
+      message,
+      color,
+      duration: 2000,
+      position: 'bottom',
+    });
+    await toast.present();
+  }
+
+
+  collapseAll() {
+    this.expandedQueueId = null;
+    this.expandedAppointmentId = null;
+  }
+
+  hasExpandedCard(): boolean {
+    return this.expandedQueueId !== null || this.expandedAppointmentId !== null;
+  }
+
+  expandFirstCard() {
+    if (this.activeSegment === 'filas' && this.myQueues.length > 0) {
+      this.expandedQueueId = this.myQueues[0].id;
+      this.expandedAppointmentId = null;
+    } else if (this.activeSegment === 'agendamentos' && this.getFilteredAppointments().length > 0) {
+      this.expandedAppointmentId = this.getFilteredAppointments()[0].id;
+      this.expandedQueueId = null;
     }
   }
 }

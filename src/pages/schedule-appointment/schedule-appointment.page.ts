@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { AvailableDateModel } from 'src/models/available-date-model';
+import { AddCustomerToScheduleRequest } from 'src/models/requests/add-customer-to-schedule-request copy';
+import { AddServiceRequest } from 'src/models/requests/add-service-request';
 import { TimeSlotModel } from 'src/models/time-slot-model';
+import { UserModel } from 'src/models/user-model';
 import { ScheduleService } from 'src/services/schedule.service';
+import { SessionService } from 'src/services/session.service';
 import { ToastService } from 'src/services/toast.service';
 
 @Component({
@@ -16,26 +20,41 @@ export class ScheduleAppointmentPage implements OnInit {
 
   selectedStore: any;
   availableDates: AvailableDateModel[] = [];
-  selectedDate: Date | null = null;
   selectedTimeSlots: TimeSlotModel[] = [];
   daysWindow = 7;
+
+  selectedServices: AddServiceRequest[] = [];
+  notes: string = '';
+  paymentMethod: number = 1;
   storeId: number = 0;
   professionalId: number = 0;
+  selectedDate: Date | null = null;
+  looseCustomer: boolean = false;
+  customer!: UserModel;
 
   constructor(private service: ScheduleService,
     private alertController: AlertController,
     private toastService: ToastService,
-    private route: ActivatedRoute) {
+    private router: Router,
+    private sessionService: SessionService) {
   }
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.storeId = params['storeId'];
-      this.professionalId = params['professionalId'];
+    const msg = sessionStorage.getItem('toastMessage');
 
-      this.getSelectedStoreIdAndProfessional();
-      this.loadStoreAgenda();
-    });
+    if (msg) {
+      this.toastService.show(msg, 'danger');
+      sessionStorage.removeItem('toastMessage');
+    }
+
+    this.selectedServices = this.sessionService.getGenericKey('selectedServices') || [];
+    this.notes = this.sessionService.getGenericKey('notes') || '';
+    this.paymentMethod = this.sessionService.getGenericKey('paymentMethod') || '1';
+    this.storeId = this.sessionService.getGenericKey('storeId') || 0;
+    this.professionalId = this.sessionService.getGenericKey('professionalId') || 0;
+
+    this.customer = this.sessionService.getUser();
+    this.loadStoreAgenda();
   }
 
   loadStoreAgenda() {
@@ -57,39 +76,64 @@ export class ScheduleAppointmentPage implements OnInit {
     this.selectedTimeSlots = day.timeSlots;
   }
 
-  getSelectedStoreIdAndProfessional() {
-    this.route.queryParams.subscribe(params => {
-      this.storeId = params['storeId'];
-      this.professionalId = params['professionalId'];
-    });
-  }
-
   public async selectTimeSlot(slot: TimeSlotModel): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Confirmar Agendamento',
-      message: this.formatDate(this.selectedDate!) + ' às ' + slot.time + '?',
+      message: `${this.formatDate(this.selectedDate!)} às ${slot.time}?`,
       buttons: [
         {
-          text: 'Cancelar', role: 'cancel'
+          text: 'Cancelar',
+          role: 'cancel'
         },
         {
           text: 'Confirmar',
-          //   handler: async () => {
-          //     this.queueService.exitQueue(card.id, card.queueId).subscribe({
-          //       next: async () => {
-          //         await this.toastService.show('Você saiu da fila com sucesso!', 'success');
-          //         // this.loadCustomersInQueueCard();
-          //       },
-          //       error: async (err) => {
-          //         console.error('Erro ao sair da fila:', err);
-          //         await await this.toastService.show('Ocorreu um erro ao sair da fila', 'danger');
-          //       }
-          //     });
-          //   },
+          handler: async () => {
+            if (!this.selectedDate) {
+              await this.toastService.show('Data não selecionada', 'danger');
+              return;
+            }
+
+            const request: AddCustomerToScheduleRequest = {
+              selectedServices: this.selectedServices,
+              notes: this.notes ?? '',
+              paymentMethod: this.paymentMethod,
+              storeId: this.storeId,
+              professionalId: this.professionalId,
+              time: slot.time,
+              date: this.selectedDate,
+              customerId: this.customer.id,
+              looseCustomer: this.looseCustomer
+            };
+
+            this.service.addCustomerToSchedule(request).subscribe({
+              next: async (res) => {
+                if (res.valid) {
+                  await this.toastService.show('Agendamento realizado com sucesso!', 'success');
+                  this.clearSessionDate();
+                  this.router.navigate(['/queue']);
+                } else {
+                  await this.toastService.show(res.message || 'Erro ao agendar', 'danger');
+                }
+              },
+              error: async (err) => {
+                sessionStorage.setItem('toastMessage', err.error || 'Erro ao agendar');
+                window.location.reload();
+              }
+            });
+          }
         }
       ]
     });
+
     await alert.present();
+  }
+
+  clearSessionDate() {
+    this.sessionService.removeGenericKey('selectedServices');
+    this.sessionService.removeGenericKey('notes');
+    this.sessionService.removeGenericKey('paymentMethod');
+    this.sessionService.removeGenericKey('storeId');
+    this.sessionService.removeGenericKey('professionalId');
   }
 
   formatDate(date: Date): string {

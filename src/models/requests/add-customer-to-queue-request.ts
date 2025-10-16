@@ -1,7 +1,7 @@
-import { AddQueueServiceRequest } from "./add-queue-service-request";
+import { AddServiceRequest } from "./add-service-request";
 
 export interface AddCustomerToQueueRequest {
-  selectedServices: AddQueueServiceRequest[];
+  selectedServices: AddServiceRequest[];
   notes: string;
   paymentMethod: string;
   queueId: number;

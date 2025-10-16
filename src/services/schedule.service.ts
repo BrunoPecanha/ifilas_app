@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { catchError, Observable, throwError } from 'rxjs';
-import { AddCustomerToQueueRequest } from 'src/models/requests/add-customer-to-queue-request';
 import { QueueCloseRequest } from 'src/models/requests/queue-close-request';
 import { ScheduleCreateRequest } from 'src/models/requests/schedule-create-request';
 import { ScheduleResponse } from 'src/models/responses/schedule-response';
 import { ScheduleDateResponse } from 'src/models/responses/schedule-date-response';
+import { AddCustomerToScheduleRequest } from 'src/models/requests/add-customer-to-schedule-request copy';
 
 @Injectable({ providedIn: 'root' })
 export class ScheduleService {
@@ -14,7 +14,7 @@ export class ScheduleService {
 
   private apiUrl = environment.apiUrl + '/schedule';
 
-  addCustomerToSchedule(command: AddCustomerToQueueRequest): Observable<any> {
+  addCustomerToSchedule(command: AddCustomerToScheduleRequest): Observable<ScheduleResponse> {
     return this.http.post<any>(`${this.apiUrl}/addCustomer`, command).pipe(
       catchError(error => {
         console.error('Erro ao adicionar cliente à fila:', error);

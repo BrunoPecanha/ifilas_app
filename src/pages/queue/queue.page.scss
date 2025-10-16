@@ -1,1135 +1,782 @@
-:root {
-  --card-border-radius: 50px;
-  --card-padding: 16px;
-  --color-primary: #3880ff;
-  --color-success: #2dd36f;
-  --color-warning: #ffc409;
-  --color-danger: #eb445a;
-  --color-medium: #92949c;
-  --color-light: #f4f5f8;
-}
-
-.fila-content {
-  --background: #f8f9fa;
-  padding-bottom: 80px;
-}
-
-.status-indicator {
+.page-container {
   display: flex;
-  justify-content: center;
-  padding: 12px 16px;
+  flex-direction: column;
+  height: 100%;
+  background: #f8f9fa;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  /* Remover a restrição de largura máxima e centralizar o conteúdo de forma responsiva */
+  max-width: none;
+  margin: 0 auto;
+}
+
+/* Adicionar media queries para telas maiores */
+@media (min-width: 768px) {
+  .page-container {
+    --padding-start: 24px;
+    --padding-end: 24px;
+    max-width: 1200px; /* Aumentar significativamente a largura máxima */
+  }
+
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Layout em duas colunas para telas grandes */
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  /* Quando há apenas um segmento ativo, ocupar toda a largura */
+  .single-segment-content {
+    grid-column: 1 / -1;
+  }
+
+  .segment-bar {
+    margin: 20px 0;
+    grid-column: 1 / -1; /* Segmento ocupa toda a largura */
+  }
+
+  .next-appointment-banner,
+  .next-queue-banner {
+    grid-column: 1 / -1; /* Banners ocupam toda a largura */
+    margin: 0 0 20px 0;
+  }
+
+  /* Ajustar cards para layout em grid quando necessário */
+  .custom-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Para telas muito grandes, mostrar cards lado a lado */
+  @media (min-width: 1024px) {
+    .custom-list.two-columns {
+      grid-template-columns: 1fr 1fr;
+    }
+    
+    .queue-card,
+    .appointment-card {
+      min-height: 120px;
+    }
+  }
+
+  .section-header {
+    margin: 24px 0 20px 0;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+  }
+
+  .collapsed-content {
+    padding: 20px;
+    min-height: 100px;
+  }
+
+  .store-logo-compact {
+    width: 52px;
+    height: 52px;
+  }
+
+  .store-name-compact {
+    font-size: 1.1rem;
+  }
+
+  .service-name-compact {
+    font-size: 0.9rem;
+  }
+
+  .queue-info-compact,
+  .appointment-info-compact {
+    min-width: 120px;
+  }
+
+  .status-badge-compact {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+  }
+
+  .datetime-row {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .page-container {
+    --padding-start: 32px;
+    --padding-end: 32px;
+  }
+
+  .content-wrapper {
+    gap: 32px;
+  }
+
+  .custom-list.two-columns {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+}
+
+/* Ajustes para o segment bar em telas maiores */
+.segment-bar {
+  margin: 16px 0;
+  border-radius: 0;
+  --background: transparent;
+  --indicator-color: var(--ion-color-primary);
+  --color-checked: var(--ion-color-primary);
+  --color: #6c757d;
+  box-shadow: none;
+  border-bottom: 1px solid #e9ecef;
+  padding: 0;
+}
+
+@media (min-width: 768px) {
+  .segment-bar {
+    justify-self: center;
+    width: fit-content;
+    min-width: 300px;
+  }
+
+  .segment-with-badge {
+    font-size: 1rem;
+    min-height: 48px;
+    --padding-start: 24px;
+    --padding-end: 24px;
+  }
+}
+
+/* Manter os estilos existentes para mobile */
+@media (max-width: 480px) {
+  .page-container {
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 16px 0 12px 0;
+  }
+  
+  .collapsed-content {
+    padding: 12px;
+    min-height: 72px;
+    gap: 8px;
+  }
+  
+  .expanded-content {
+    padding: 0 12px 12px 12px;
+  }
+  
+  .store-logo-compact {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .store-name-compact {
+    font-size: 0.9rem;
+    -webkit-line-clamp: 2;
+  }
+  
+  .service-name-compact {
+    font-size: 0.75rem;
+  }
+  
+  .queue-info-compact,
+  .appointment-info-compact {
+    min-width: 80px;
+  }
+  
+  .expand-icon {
+    margin-left: 8px;
+    min-width: 16px;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .expanded-actions {
+    flex-direction: column;
+  }
+  
+  .expanded-actions ion-button {
+    width: 100%;
+  }
+}
+
+/* Resto do CSS permanece igual */
+.segment-with-badge {
+  position: relative;
+  font-weight: 600;
+  text-transform: none;
+  font-size: 0.9rem;
+  --color: #6c757d;
+  --color-checked: var(--ion-color-primary);
+  --background-checked: transparent;
+  --border-radius: 0;
+  min-height: 44px;
+}
+
+.segment-content {
+  display: flex;
+  align-items: center;
   gap: 8px;
-  background: white;
-  border-bottom: 1px solid var(--color-light);
-
-  .status-item {
-    ion-badge {
-      cursor: pointer;
-      opacity: 0.6;
-      transition: opacity 0.2s ease;
-    }
-
-    &.active ion-badge {
-      opacity: 1;
-    }
-  }
 }
 
-.queue-cards-container {
-  padding: 16px;
+.segment-badge {
+  font-size: 0.7rem;
+  padding: 4px 6px;
+  min-width: 20px;
+  border-radius: 10px;
+  height: 18px;
 }
 
-.queue-card {
-  border-radius: var(--card-border-radius);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  margin-bottom: 16px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  background: white;
-
-  &.high-priority {
-    border-left: 4px solid var(--color-warning);
-  }
-
-  &.expanded {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  }
+.next-appointment-banner,
+.next-queue-banner {
+  background: #f8f9ff;
+  color: #2c3e50;
+  margin: 0 0 16px 0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  border: 1px solid #e0e7ff;
 }
 
-.card-header {
+.next-queue-banner {
+  background: #fff8f8;
+  border: 1px solid #ffe0e0;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.banner-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  color: var(--ion-color-primary);
+}
+
+.next-queue-banner .banner-icon {
+  color: var(--ion-color-danger);
+}
+
+.banner-text {
+  flex: 1;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #495057;
+}
+
+.banner-text strong {
+  color: #2c3e50;
+}
+
+.banner-content ion-button {
+  --color: var(--ion-color-medium);
+  --background: transparent;
+  --border-radius: 6px;
+  width: 28px;
+  height: 28px;
+}
+
+.section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--card-padding);
+  margin: 20px 0 16px 0;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.section-subtitle {
+  font-size: 0.85rem;
+  color: #6c757d;
+  background: #f8f9fa;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.date-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 20px 0;
+  background: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.date-nav-button {
+  --background: #f8f9fa;
+  --border-radius: 8px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  height: 36px;
+  width: 36px;
+}
+
+.current-date-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  margin: 0 12px;
+}
+
+.current-date {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.date-subtitle {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin: 2px 0 0 0;
+}
+
+.sliding-item {
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.sliding-item.expanded {
+  margin-bottom: 12px;
+}
+
+.queue-card,
+.appointment-card {
+  position: relative;
+  background: #fff;
+  border-radius: 12px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #f1f3f4;
   cursor: pointer;
-
-  .company-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-
-    .logo-container {
-      position: relative;
-
-      .company-logo {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid var(--color-light);
-      }
-
-      .status-badge {
-        position: absolute;
-        bottom: -2px;
-        right: -2px;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid white;
-
-        ion-icon {
-          font-size: 10px;
-          color: white;
-        }
-
-        &.status-active {
-          background: var(--color-success);
-        }
-
-        &.status-waiting {
-          background: var(--color-warning);
-        }
-
-        &.status-paused {
-          background: var(--color-danger);
-        }
-      }
-    }
-
-    .main-info {
-      flex: 1;
-
-      .company-name {
-        margin: 0 0 4px 0;
-        font-size: 16px;
-        font-weight: 600;
-        color: #2c3e50;
-      }
-
-      .position-info {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-
-        .position {
-          font-size: 14px;
-          font-weight: 500;
-
-          &.position-high {
-            color: var(--color-warning);
-            font-weight: 600;
-          }
-
-          &.position-normal {
-            color: #7f8c8d;
-          }
-        }
-
-        .status-icon {
-          font-size: 16px;
-        }
-      }
-    }
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    .estimated-time {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 13px;
-
-      ion-icon {
-        font-size: 14px;
-        color: var(--color-medium);
-      }
-
-      .time-green {
-        color: var(--color-success);
-      }
-
-      .time-yellow {
-        color: var(--color-warning);
-      }
-
-      .time-red {
-        color: var(--color-danger);
-      }
-    }
-
-    .expand-toggle {
-      ion-icon {
-        font-size: 20px;
-        color: var(--color-medium);
-        transition: transform 0.3s ease;
-      }
-    }
-  }
+  --inner-padding-end: 0;
+  --padding-start: 0;
 }
 
+.queue-card.expanded,
+.appointment-card.expanded {
+  border-color: #e0e7ff;
+}
+
+.card-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: var(--ion-color-primary);
+  transition: all 0.3s ease;
+}
+
+.queue-card.is-your-turn .card-indicator {
+  background: var(--ion-color-success);
+}
+
+.appointment-card.upcoming .card-indicator {
+  background: var(--ion-color-warning);
+}
+
+.card-content-wrapper,
 .card-content {
-  border-top: 1px solid var(--color-light);
-  padding: 0 var(--card-padding) var(--card-padding);
-
-  .approval-notice {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #fff8e1;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    font-size: 14px;
-    color: #e65100;
-
-    ion-icon {
-      font-size: 20px;
-    }
-  }
-
-  .queue-visualization {
-    margin-bottom: 16px;
-
-    h4 {
-      margin: 0 0 12px 0;
-      font-size: 15px;
-      color: #34495e;
-    }
-
-    .queue-progress {
-      .progress-bar {
-        height: 6px;
-        background: var(--color-light);
-        border-radius: 3px;
-        overflow: hidden;
-        margin-bottom: 8px;
-
-        .progress-fill {
-          height: 100%;
-          background: var(--color-primary);
-          border-radius: 3px;
-          transition: width 0.5s ease;
-        }
-      }
-
-      .queue-stats {
-        display: flex;
-        justify-content: space-between;
-        font-size: 13px;
-        color: #7f8c8d;
-
-        .time-estimate,
-        .next-in-line {
-          font-weight: 500;
-        }
-      }
-    }
-  }
-
-  .attending-section {
-    background: rgba(45, 211, 111, 0.1);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-
-    .attending-content {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      ion-icon {
-        font-size: 32px;
-      }
-
-      .attending-text {
-        h4 {
-          margin: 0 0 4px 0;
-          color: #2e7d32;
-          font-size: 16px;
-        }
-
-        p {
-          margin: 0 0 4px 0;
-          font-size: 14px;
-          color: #388e3c;
-        }
-
-        small {
-          color: #4caf50;
-          font-size: 12px;
-        }
-      }
-    }
-  }
-
-  .qr-section {
-    text-align: center;
-    margin-bottom: 20px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--color-light);
-
-    h4 {
-      margin: 0 0 16px 0;
-      font-size: 16px;
-      color: #34495e;
-    }
-
-    .qr-container {
-      margin-bottom: 12px;
-
-      .qr-code {
-        width: 160px;
-        height: 160px;
-        margin: 0 auto;
-      }
-    }
-
-    .qr-notes {
-      p {
-        margin: 4px 0;
-        font-size: 13px;
-        color: #7f8c8d;
-      }
-    }
-  }
-
-  .services-payment-section {
-    margin-bottom: 20px;
-
-    ion-accordion {
-      margin-bottom: 8px;
-
-      ion-item {
-        --padding-start: 0;
-      }
-    }
-
-    .accordion-content {
-      padding: 0 16px 16px;
-
-      ion-item {
-        --padding-start: 0;
-        --inner-padding-end: 0;
-        --min-height: 40px;
-
-        ion-icon {
-          color: var(--color-primary);
-          font-size: 18px;
-        }
-      }
-
-      .total-item {
-        --background: #f9f9f9;
-        border-radius: 8px;
-        margin-top: 8px;
-
-        ion-note {
-          font-weight: 600;
-        }
-      }
-    }
-  }
-
-  .action-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    ion-button {
-      margin: 0;
-      --border-radius: 8px;
-    }
-  }
+  padding: 0;
+  margin-left: 4px;
+  width: calc(100% - 4px);
 }
 
-.loading-container {
+.collapsed-content {
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 80px;
+  width: 100%;
+}
+
+.store-info-compact {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  margin-right: 8px;
+}
+
+.store-logo-compact {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #f8f9fa;
+  flex-shrink: 0;
+}
+
+.store-details-compact {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.store-name-compact {
+  font-weight: 400;
+  color: #2c3e50;
+  margin: 0;
+  line-height: 1.3;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.service-name-compact {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.queue-info-compact,
+.appointment-info-compact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.appointment-info-compact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.time-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  width: 100%;
+}
+
+.status-badge-compact {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.datetime-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.appointment-date,
+.appointment-time {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-align: right;
+  line-height: 1.2;
+}
+
+.appointment-time {
+  color: var(--ion-color-primary);
+  font-weight: 700;
+}
+
+.wait-time {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}
+
+.position-number {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: right;
+}
+
+.expand-icon {
+  font-size: 1.1rem;
+  color: #6c757d;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+  align-self: center;
+  min-width: 20px; 
+}
+
+.expand-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.expanded-content {
+  padding: 0 16px 16px 16px;
+  border-top: 1px solid #f1f3f4;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-row {
+  display: flex;
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.info-icon {
+  font-size: 1rem;
+  color: #6c757d;
+  flex-shrink: 0;
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 0.85rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.info-value.highlight {
+  color: var(--ion-color-primary);
+}
+
+.queue-progress {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.progress-bar {
+  height: 6px;
+  background: #e9ecef;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--ion-color-primary);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.your-turn-banner,
+.countdown-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.your-turn-banner {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.countdown-banner {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.additional-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #6c757d;
+  padding: 8px 0;
+  border-top: 1px solid #f1f3f4;
+}
+
+.expanded-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #f1f3f4;
+}
+
+.expanded-actions ion-button {
+  margin: 0;
+  --border-radius: 6px;
+  font-size: 0.8rem;
+  height: 32px;
+}
+
+.action-option {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 50vh;
+  gap: 4px;
+  padding: 0 12px;
+  font-weight: 600;
+  height: 100%;
+}
 
-  ion-spinner {
-    width: 40px;
-    height: 40px;
-    color: var(--color-primary);
-    margin-bottom: 16px;
-  }
+.action-option.compact {
+  min-width: 60px;
+}
 
-  p {
-    color: var(--color-medium);
-    font-size: 14px;
-  }
+.action-option ion-icon {
+  font-size: 1.1rem;
 }
 
 .empty-state {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 60vh;
-  padding: 0 20px;
-
-  .empty-content {
-    text-align: center;
-
-    .empty-icon {
-      font-size: 64px;
-      color: #bdc3c7;
-      margin-bottom: 16px;
-    }
-
-    h3 {
-      margin: 0 0 8px 0;
-      color: #7f8c8d;
-      font-size: 18px;
-    }
-
-    p {
-      margin: 0 0 20px 0;
-      color: #95a5a6;
-      font-size: 14px;
-    }
-  }
+  padding: 60px 20px;
+  text-align: center;
 }
 
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
+.empty-icon {
+  font-size: 64px;
+  color: #dee2e6;
+  margin-bottom: 16px;
 }
 
-.high-priority {
-  animation: pulse 2s infinite;
+.empty-state h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #6c757d;
+  margin: 0 0 8px 0;
 }
 
-:root {
-  --improved-card-radius: 16px;
-  --improved-card-padding: 20px;
-  --improved-card-margin: 16px;
-  --improved-inner-spacing: 14px;
-  --improved-section-spacing: 18px;
-  --improved-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  --improved-border: 1px solid #eef2f6;
+.empty-state p {
+  font-size: 0.9rem;
+  color: #adb5bd;
+  margin: 0 0 20px 0;
+  line-height: 1.4;
 }
 
-.improved-card {
-  border-radius: var(--improved-card-radius) !important;
-  margin: var(--improved-card-margin) !important;
-  box-shadow: var(--improved-shadow) !important;
-  border: var(--improved-border) !important;
+ion-item-options {
+  border-radius: 12px;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-
-  &.high-priority {
-    border-left: 4px solid var(--ion-color-warning) !important;
-    background: linear-gradient(to right, rgba(255, 196, 9, 0.03), transparent);
-  }
-
-  &.expanded {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
-  }
 }
 
-.card-header {
-  padding: var(--improved-card-padding) !important;
-
-  .company-info {
-    gap: 16px !important;
-
-    .logo-container {
-      .company-logo {
-        width: 56px !important;
-        height: 56px !important;
-        border: 2.5px solid #f0f4f8 !important;
-      }
-
-      .status-badge {
-        width: 20px !important;
-        height: 20px !important;
-        bottom: -3px !important;
-        right: -3px !important;
-      }
-    }
-
-    .main-info {
-      .company-name {
-        font-size: 17px !important;
-        margin-bottom: 6px !important;
-        color: #2d3748 !important;
-        letter-spacing: -0.01em;
-      }
-
-      .position-info {
-        gap: 8px !important;
-
-        .position {
-          font-size: 15px !important;
-          font-weight: 600 !important;
-
-          &.position-high {
-            color: var(--ion-color-warning) !important;
-            background: rgba(255, 196, 9, 0.1);
-            padding: 4px 10px;
-            border-radius: 12px;
-          }
-        }
-
-        .status-icon {
-          font-size: 18px !important;
-        }
-      }
-    }
-  }
-
-  .header-actions {
-    gap: 16px !important;
-
-    .estimated-time {
-      font-size: 14px !important;
-
-      ion-icon {
-        font-size: 16px !important;
-      }
-    }
-
-    .expand-toggle {
-      ion-icon {
-        font-size: 22px !important;
-      }
-    }
-  }
+ion-item-option {
+  margin: 0;
 }
-
-.card-content {
-  padding: 0 var(--improved-card-padding) var(--improved-card-padding) !important;
-
-  > *:not(:last-child) {
-    margin-bottom: var(--improved-section-spacing) !important;
-  }
-
-  .approval-notice {
-    padding: 16px !important;
-    border-radius: 12px !important;
-    margin: 0 0 var(--improved-section-spacing) 0 !important;
-
-    ion-icon {
-      font-size: 22px !important;
-    }
-
-    span {
-      font-size: 15px !important;
-      font-weight: 500;
-    }
-  }
-
-  .queue-visualization {
-    h4 {
-      font-size: 16px !important;
-      margin-bottom: 14px !important;
-      color: #2d3748 !important;
-      font-weight: 600;
-    }
-
-    .queue-progress {
-      .progress-bar {
-        height: 8px !important;
-        border-radius: 4px !important;
-        margin-bottom: 12px !important;
-        background: #edf2f7 !important;
-
-        .progress-fill {
-          border-radius: 4px !important;
-        }
-      }
-
-      .queue-stats {
-        font-size: 14px !important;
-
-        .time-estimate,
-        .next-in-line {
-          font-weight: 600;
-        }
-
-        .next-in-line {
-          color: var(--ion-color-success) !important;
-          background: rgba(45, 211, 111, 0.1);
-          padding: 4px 10px;
-          border-radius: 12px;
-        }
-      }
-    }
-  }
-
-  .attending-section {
-    padding: 20px !important;
-    border-radius: 14px !important;
-
-    .attending-content {
-      gap: 16px !important;
-
-      ion-icon {
-        font-size: 36px !important;
-      }
-
-      .attending-text {
-        h4 {
-          font-size: 17px !important;
-          margin-bottom: 6px !important;
-        }
-
-        p {
-          font-size: 15px !important;
-          margin-bottom: 6px !important;
-        }
-
-        small {
-          font-size: 13px !important;
-        }
-      }
-    }
-  }
-
-  .qr-section {
-    padding: 20px 0 !important;
-
-    h4 {
-      font-size: 17px !important;
-      margin-bottom: 18px !important;
-      color: #2d3748 !important;
-      font-weight: 600;
-    }
-
-    .qr-container {
-      margin-bottom: 16px !important;
-
-      .qr-code {
-        width: 180px !important; 
-        height: 180px !important;
-        border: 1px solid #edf2f7;
-        border-radius: 8px;
-        padding: 12px;
-        background: white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      }
-    }
-
-    .qr-notes {
-      p {
-        font-size: 14px !important;
-        margin: 6px 0 !important;
-        color: #718096 !important;
-
-        &:first-child {
-          font-weight: 500;
-          color: #4a5568 !important;
-        }
-      }
-    }
-  }
-
-  .services-payment-section {
-    ion-accordion {
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 12px !important;
-      border: 1px solid #edf2f7;
-
-      ion-item[slot="header"] {
-        --padding-start: 16px;
-        --padding-end: 16px;
-        --inner-padding-end: 16px;
-        --min-height: 56px;
-
-        ion-icon {
-          color: var(--ion-color-primary) !important;
-          font-size: 20px !important;
-        }
-
-        ion-label {
-          font-size: 15px !important;
-          font-weight: 500;
-          color: #2d3748;
-        }
-
-        ion-note {
-          font-size: 15px !important;
-          font-weight: 600;
-          color: var(--ion-color-primary);
-        }
-      }
-    }
-
-    .accordion-content {
-      padding: 0 16px 16px !important;
-
-      ion-item {
-        --padding-start: 0;
-        --inner-padding-end: 0;
-        --min-height: 44px;
-        border-bottom: 1px solid #f7fafc;
-
-        &:last-child {
-          border-bottom: none;
-        }
-
-        ion-icon {
-          font-size: 18px !important;
-          color: #a0aec0 !important;
-        }
-
-        ion-label {
-          font-size: 14px !important;
-          color: #4a5568;
-
-          span {
-            font-size: 13px;
-            color: #a0aec0;
-          }
-        }
-
-        ion-note,
-        small {
-          font-size: 14px !important;
-          font-weight: 500;
-        }
-      }
-
-      .total-item {
-        --background: #f8fafc !important;
-        border-radius: 8px;
-        margin-top: 12px !important;
-        border: none !important;
-
-        ion-icon {
-          color: var(--ion-color-success) !important;
-        }
-
-        ion-label {
-          font-weight: 600;
-          color: #2d3748;
-        }
-
-        ion-note {
-          font-size: 16px !important;
-          font-weight: 700;
-          color: var(--ion-color-success) !important;
-
-          small {
-            font-size: 12px;
-            color: #a0aec0;
-            font-weight: normal;
-          }
-        }
-      }
-    }
-  }
-
-  .action-buttons {
-    gap: 14px !important;
-    margin-top: 24px !important;
-
-    ion-button {
-      --border-radius: 10px !important;
-      --padding-top: 18px;
-      --padding-bottom: 18px;
-      margin: 0;
-      font-weight: 500;
-
-      &:first-child {
-        --background: var(--ion-color-danger);
-        --background-hover: var(--ion-color-danger-shade);
-        --background-activated: var(--ion-color-danger-shade);
-      }
-
-      &:last-child {
-        --border-width: 1.5px;
-        --border-color: var(--ion-color-medium);
-        --color: var(--ion-color-medium);
-
-        &:hover {
-          --background: rgba(146, 148, 156, 0.06);
-        }
-      }
-
-      ion-icon {
-        font-size: 18px;
-        margin-right: 8px;
-      }
-    }
-  }
-}
-
-.empty-state {
-  padding: 0 24px !important;
-
-  .empty-content {
-    .empty-icon {
-      font-size: 72px !important;
-      margin-bottom: 20px !important;
-      color: #cbd5e0 !important;
-    }
-
-    h3 {
-      font-size: 20px !important;
-      margin-bottom: 10px !important;
-      color: #4a5568 !important;
-    }
-
-    p {
-      font-size: 15px !important;
-      margin-bottom: 24px !important;
-      color: #718096 !important;
-      line-height: 1.5;
-    }
-
-    ion-button {
-      --border-radius: 10px;
-      --padding-top: 18px;
-      --padding-bottom: 18px;
-      font-weight: 500;
-    }
-  }
-}
-
-.status-indicator {
-  padding: 16px !important;
-
-  .status-item {
-    ion-badge {
-      padding: 10px 16px;
-      font-size: 14px;
-      font-weight: 500;
-
-      &.ion-color-medium {
-        --ion-color-base: #e9ecef !important;
-        --ion-color-contrast: #6c757d !important;
-      }
-
-      &.ion-color-success {
-        --ion-color-base: #e8f5e9 !important;
-        --ion-color-contrast: #2e7d32 !important;
-      }
-
-      &.ion-color-warning {
-        --ion-color-base: #fff8e1 !important;
-        --ion-color-contrast: #f57c00 !important;
-      }
-    }
-
-    &.active ion-badge {
-      box-shadow: 0 0 0 2px var(--ion-color-primary);
-    }
-  }
-}
-
-@keyframes subtle-pulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
-  50% {
-    transform: scale(1.01);
-    box-shadow: 0 6px 20px rgba(255, 196, 9, 0.2);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
-}
-
-.high-priority {
-  animation: subtle-pulse 2s infinite ease-in-out;
-}
-
-@media (max-width: 360px) {
-  :root {
-    --improved-card-padding: 16px;
-    --improved-card-margin: 12px;
-  }
-
-  .card-header {
-    .company-info {
-      gap: 12px !important;
-
-      .logo-container {
-        .company-logo {
-          width: 48px !important;
-          height: 48px !important;
-        }
-      }
-    }
-  }
-}
-
-.spacing-fix {
-  --inner-padding: 24px;
-
-  .card-header {
-    padding: var(--inner-padding) !important;
-
-    .header-actions {
-      margin-left: 12px; 
-    }
-  }
-
-  .card-content {
-    padding: 0 var(--inner-padding) var(--inner-padding) !important;
-
-    .approval-notice {
-      margin: 0 calc(var(--inner-padding) * -0.5) 20px !important;
-      padding: 16px var(--inner-padding) !important;
-      border-radius: 0 !important;
-      width: calc(100% + var(--inner-padding)) !important;
-    }
-
-    .queue-visualization,
-    .attending-section,
-    .qr-section,
-    .services-payment-section {
-      padding: 0 4px !important;
-    }
-
-    .action-buttons {
-      padding: 0 4px !important;
-
-      ion-button {
-        --padding-start: 20px;
-        --padding-end: 20px;
-      }
-    }
-  }
-}
-
-.improved-card {
-  .action-buttons {
-    margin-top: 24px !important;
-
-    ion-button {
-      --border-radius: 12px !important;
-      --padding-top: 18px;
-      --padding-bottom: 18px;
-      margin: 0;
-      height: 52px;
-
-      &:first-child {
-        margin-bottom: 12px;
-      }
-    }
-  }
-
-  .services-payment-section {
-    ion-accordion {
-      margin: 0 -4px !important;
-
-      ion-item[slot="header"] {
-        --padding-start: 16px;
-        --padding-end: 16px;
-        --inner-padding-end: 16px;
-      }
-    }
-
-    .accordion-content {
-      padding: 0 12px 16px !important;
-
-      ion-item {
-        --padding-start: 8px;
-        --padding-end: 8px;
-      }
-
-      .total-item {
-        margin: 12px -4px 0 !important;
-        padding: 0 12px;
-        width: calc(100% + 8px);
-      }
-    }
-  }
-
-  .queue-visualization {
-    padding: 0 8px !important;
-
-    h4 {
-      padding: 0 4px;
-    }
-
-    .queue-progress {
-      padding: 0 4px;
-    }
-  }
-
-  .attending-section {
-    margin: 0 -4px !important;
-    padding: 20px !important;
-    width: calc(100% + 8px);
-  }
-
-  .qr-section {
-    padding: 20px 8px !important;
-
-    .qr-notes {
-      padding: 0 8px;
-    }
-  }
-}
-
-.company-name,
-.position,
-.estimated-time span {
-  padding-right: 4px; 
-}
-
-.card-header {
-  .company-info {
-    min-width: 0; 
-
-    .main-info {
-      padding-right: 8px; 
-    }
-  }
-
-  .header-actions {
-    flex-shrink: 0;
-  }
-}
-
-ion-button {
-  margin-top: 8px;
-  margin-bottom: 8px;
-}
-
-.status-indicator {
-  .status-item {
-    margin: 0 6px;
-
-    ion-badge {
-      padding: 10px 16px;
-    }
-  }
-}
-
-@media (max-width: 380px) {
-  .spacing-fix {
-    --inner-padding: 20px;
-
-    .card-header {
-      .company-info {
-        gap: 14px !important;
-
-        .logo-container .company-logo {
-          width: 50px !important;
-          height: 50px !important;
-        }
-      }
-    }
-
-    .action-buttons ion-button {
-      --padding-start: 16px;
-      --padding-end: 16px;
-    }
-  }
-}
-
 
 ion-content::part(scroll) {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-ion-item {
-  --padding-start: 12px;
-  --padding-end: 12px;
-
-  ion-label,
-  ion-note {
-    padding: 0 4px;
-  }
+.custom-list ion-item-sliding {
+  display: block;
 }
 
-.qr-section {
-  .qr-container {
-    padding: 0 12px;
-  }
-
-  .qr-notes {
-    p {
-      padding: 0 8px;
-    }
-  }
+.custom-list .sliding-item {
+  display: block;
 }
 
-.help-fab {
-  bottom: 80px;
-  right: 16px;
-
-  ion-fab-button {
-    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease;
-
-    &:active {
-      transform: scale(0.95);
-    }
-  }
+.services-list {
+  border-top: 1px solid #f1f3f4;
+  padding-top: 12px;
 }
 
-.fila-content {
-  padding-bottom: 140px;
+.services-list ul {
+  margin: 4px 0 0 0;
+  padding-left: 16px;
 }
 
-@media (max-width: 768px) {
-  .help-fab {
-    bottom: 80px;
-    right: 12px;
-  }
-
-  .fila-content {
-    padding-bottom: 130px;
-  }
+.services-list li {
+  font-size: 0.85rem;
+  color: #2c3e50;
+  line-height: 1.3;
 }
 
-.queue-card-sliding {
-  margin-bottom: 16px;
-}
-
-ion-item-option {
+.time-status {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 64px;
-  font-size: 20px;
+  align-items: end;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #495057;
 }
 
-ion-item-option[color="danger"] {
-  --ion-color-base: var(--color-danger);
+.services-list ul {
+  margin: 4px 0 0 0;
+  padding-left: 16px;
 }
 
-ion-item-option[color="primary"] {
-  --ion-color-base: var(--color-primary);
-}
-
-.queue-card {
-  width: 100%;
+.services-list li {
+  font-size: 0.85rem;
+  color: #2c3e50;
+  line-height: 1.3;
+  list-style-type: disc;
 }
