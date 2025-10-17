@@ -6,7 +6,7 @@ export interface CustomerModel {
   name: string;
   total: number;
   paymentIcon: string;
-  paymentMethodId: string;
+  paymentMethodId: number;
   paymentMethod: string;
   notes: string;
   employeeAttedandtId: number;

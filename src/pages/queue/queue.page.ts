@@ -5,6 +5,7 @@ import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response
 import { UserModel } from 'src/models/user-model';
 import { DashBoardService } from 'src/services/dashboard.service';
 import { QueueService } from 'src/services/queue.service';
+import { ScheduleService } from 'src/services/schedule.service';
 import { SessionService } from 'src/services/session.service';
 
 
@@ -39,6 +40,7 @@ export class QueuePage implements OnInit {
     private dashBoardService: DashBoardService,
     private sessionService: SessionService,
     private queueService: QueueService,
+     private scheduleService: ScheduleService,
     public router: Router
   ) {
     this.user = this.sessionService.getUser();
@@ -56,7 +58,7 @@ export class QueuePage implements OnInit {
     this.isLoading = true;
     this.dashBoardService.loadCustomerInfo(id).subscribe({
       next: (response) => {
-        if (response.valid) {
+        if (response.valid) {          
           this.myQueues = response.data.queues || [];
           this.myAppointments = response.data.schedules || [];
           this.updateCrossInformation();
@@ -295,46 +297,46 @@ export class QueuePage implements OnInit {
     await alert.present();
   }
 
-  async editAppointmentServices(appt: ScheduleItem) {
-    if (this.expandedAppointmentId === appt.id) {
-      this.expandedAppointmentId = null;
-    }
-
-    const alert = await this.alertController.create({
-      header: 'Editar Agendamento',
-      message: `Editar agendamento para <b>${appt.store.name}</b>?`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Editar',
-          handler: () => {
-            this.showToast('Editando agendamento...', 'warning');
-          }
-        }
-      ],
+  public editAppointmentServices(card: ScheduleItem): void {
+    this.router.navigate(['/select-services'], {
+      queryParams: {
+        scheduleId: card.id,
+        storeId: card.store.id,
+        customerId: card.customerId
+      }
     });
-    await alert.present();
   }
 
-  async cancelAppointment(appt: ScheduleItem) {
-    if (this.expandedAppointmentId === appt.id) {
+
+  public async cancelAppointment(card: ScheduleItem): Promise<void> {
+    if (this.expandedAppointmentId === card.id) {
       this.expandedAppointmentId = null;
     }
 
     const alert = await this.alertController.create({
-      header: 'Cancelar Agendamento',
-      message: `Cancelar agendamento em <b>${appt.store.name}</b>?`,
+      header: 'Confirmar Agendamento',
+      message: `Cancelar agendamento em ${card.store.name}?`,
       buttons: [
         { text: 'Manter', role: 'cancel' },
         {
-          text: 'Cancelar',
-          handler: () => {
-            this.myAppointments = this.myAppointments.filter(a => a.id !== appt.id);
-            this.updateCrossInformation();
-            this.filterAppointmentsByDate();
-            this.showToast('Agendamento cancelado!', 'warning');
-          }
-        }
+          text: 'Confirmar',
+          handler: async () => {
+            this.scheduleService.leavaSchedule(card.customerId, card.id).subscribe({
+              next: async () => {
+                this.myAppointments = this.myAppointments.filter(a => a.id !== card.id);
+                this.updateCrossInformation();
+                this.filterAppointmentsByDate();
+                this.showToast('Agendamento cancelado!', 'warning');
+                await this.showToast('Você saiu da fila com sucesso!', 'success');
+                this.loadDashboardData(this.user.id);
+              },
+              error: async (err) => {
+                console.error('Erro ao sair da fila:', err);
+                await this.showToast('Ocorreu um erro ao sair da fila', 'danger');
+              }
+            });
+          },
+        },
       ],
     });
     await alert.present();

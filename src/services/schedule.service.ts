@@ -35,6 +35,10 @@ export class ScheduleService {
       })
     );
   }
+  
+  leavaSchedule(custeomerId: number, scheduleId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${custeomerId}/${scheduleId}/leave`);
+  }
 
   createSchedule(command: ScheduleCreateRequest): Observable<ScheduleResponse> {
     return this.http.post<ScheduleResponse>(`${this.apiUrl}`, command).pipe(
