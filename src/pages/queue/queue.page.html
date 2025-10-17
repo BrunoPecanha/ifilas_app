@@ -101,9 +101,11 @@
             color="primary"
             (click)="editQueueServices(queue)"
             class="action-option compact"
+            *ngIf="queue.store.endServiceWithQRCode || queue.store.startServiceWithQRCode"
           >
             <ion-icon name="qr-code-outline" slot="icon-only"></ion-icon>
           </ion-item-option>
+
           <ion-item-option
             color="warning"
             (click)="editQueueServices(queue)"
@@ -111,6 +113,7 @@
           >
             <ion-icon name="create-outline" slot="icon-only"></ion-icon>
           </ion-item-option>
+
           <ion-item-option
             color="danger"
             (click)="leaveQueue(queue)"
@@ -142,7 +145,14 @@
                     (error)="handleImageError($event)"
                   />
                   <div class="store-details-compact">
-                    <h3 class="store-name-compact">{{ queue.store.name }}</h3>
+                    <h3 class="store-name-compact">
+                      {{ queue.store.name }}
+                      <ion-icon
+                        *ngIf="queue.store.isVerified"
+                        name="checkmark-circle"
+                        class="verified-badge"
+                      ></ion-icon>
+                    </h3>
                     <ion-badge
                       [color]="getQueueStatusColor(queue.status)"
                       class="status-badge-below-name"
@@ -369,6 +379,7 @@
             color="primary"
             (click)="editAppointmentServices(appt)"
             class="action-option compact"
+            *ngIf="appt.store.endServiceWithQRCode || appt.store.startServiceWithQRCode"
           >
             <ion-icon name="qr-code-outline" slot="icon-only"></ion-icon>
           </ion-item-option>
@@ -409,7 +420,14 @@
                   (error)="handleImageError($event)"
                 />
                 <div class="store-details-compact">
-                  <h3 class="store-name-compact">{{ appt.store.name }}</h3>
+                  <h3 class="store-name-compact">
+                    {{ appt.store.name }}
+                    <ion-icon
+                      *ngIf="appt.store.isVerified"
+                      name="checkmark-circle"
+                      class="verified-badge"
+                    ></ion-icon>
+                  </h3>
                   <ion-badge
                     [color]="getAppointmentStatusColor(appt.status)"
                     class="status-badge-below-name"
