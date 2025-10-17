@@ -51,7 +51,7 @@
       <ion-icon name="calendar-outline" class="banner-icon"></ion-icon>
       <div class="banner-text">
         <strong>Próximo agendamento:</strong> {{ nextAppointment.storeName }} às
-        {{ nextAppointment.time }}
+        {{ nextAppointment.time.slice(0,5)  }}
       </div>
       <ion-button
         fill="clear"
@@ -143,24 +143,32 @@
                   />
                   <div class="store-details-compact">
                     <h3 class="store-name-compact">{{ queue.storeName }}</h3>
+                    <ion-badge
+                      [color]="getQueueStatusColor(queue.status)"
+                      class="status-badge-below-name"
+                    >
+                      {{ getQueueStatusText(queue.status) }}
+                    </ion-badge>
                   </div>
                 </div>
 
                 <div class="queue-info-compact">
                   <div class="time-status">
-                    <ion-badge
-                      [color]="getQueueStatusColor(queue.status)"
-                      class="status-badge-compact"
-                    >
-                      {{ getQueueStatusText(queue.status) }}
-                    </ion-badge>
-                    <span class="wait-time" *ngIf="queue.waitTime"
-                      ><ion-icon name="time-outline"></ion-icon> {{ queue.waitTime }} min</span
-                    >
-                    <span class="position-number" *ngIf="queue.position > 0"
-                      >#{{ queue.position }}</span
-                    >
+                    <span class="wait-time" *ngIf="queue.waitingTime">
+                      <ion-icon name="time-outline"></ion-icon> {{
+                      queue.waitingTime.slice(0,5) }} min
+                    </span>
+                    <span class="position-number" *ngIf="queue.position > 0">
+                      #{{ queue.position }}
+                    </span>
                   </div>
+
+                  <ion-icon
+                    [name]="queue.isPaused ? 'pause-circle-outline' : 'play-circle-outline'"
+                    [color]="queue.isPaused ? 'medium' : 'success'"
+                    class="queue-status-icon"
+                    (click)="pauseInfo(queue); $event.stopPropagation()"
+                  ></ion-icon>
                 </div>
 
                 <ion-icon
@@ -185,7 +193,7 @@
                         <div class="info-content">
                           <span class="info-label">Tempo estimado</span>
                           <span class="info-value highlight"
-                            >{{ queue.waitTime }} min</span
+                            >{{ queue.waitingTime.slice(0,5)}} min</span
                           >
                         </div>
                       </div>
@@ -197,9 +205,9 @@
                         ></ion-icon>
                         <div class="info-content">
                           <span class="info-label">Entrada</span>
-                          <span class="info-value"
-                            >{{ queue.arrivalTime }}</span
-                          >
+                          <span class="info-value">
+                            {{ queue.arrivalTime | date:'HH:mm':'UTC' }}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -212,21 +220,22 @@
                       <div class="info-content">
                         <span class="info-label">Pagamento</span>
                         <span class="info-value"
-                          >{{ queue.paymentMethod || 'A definir' }}</span
+                          >{{ queue.paymentMethod.name || 'A definir' }}</span
                         >
                       </div>
                     </div>
 
                     <div class="info-item services-list">
                       <ion-icon
-                        name="build-outline"
+                        [name]="queue.categoryIcon || 'storefront-outline'"
+                        slot="start"
                         class="info-icon"
                       ></ion-icon>
                       <div class="info-content">
                         <span class="info-label">Serviços selecionados</span>
                         <ul>
                           <li *ngFor="let service of queue.services">
-                            {{ queue.serviceName }}
+                            {{ service }}
                           </li>
                         </ul>
                       </div>
@@ -386,22 +395,25 @@
                 />
                 <div class="store-details-compact">
                   <h3 class="store-name-compact">{{ appt.storeName }}</h3>
+                  <ion-badge
+                    [color]="getAppointmentStatusColor(appt.status)"
+                    class="status-badge-below-name"
+                  >
+                    {{ getAppointmentStatusText(appt.status) }}
+                  </ion-badge>
                 </div>
               </div>
               <div class="appointment-info-compact">
-                <div class="time-status">
-                  <ion-badge
-                    [color]="getAppointmentStatusColor(appt.status)"
-                    class="status-badge-compact"
-                  >
-                    {{ appt.status }}
-                  </ion-badge>
-                </div>
+                <div class="time-status"></div>
                 <div class="datetime-row">
                   <span class="appointment-date"
-                    ><ion-icon name="calendar-outline"></ion-icon>{{ appt.date | date:'dd/MM' }}</span
+                    ><ion-icon name="calendar-outline"></ion-icon>{{ appt.date |
+                    date:'dd/MM' }}</span
                   >
-                  <span class="appointment-time"><ion-icon name="time-outline"></ion-icon>{{ appt.time }}</span>
+                  <span class="appointment-time">
+                    <ion-icon name="time-outline"></ion-icon>
+                    {{ appt.time.slice(0,5) }}
+                  </span>
                 </div>
               </div>
 
@@ -439,28 +451,39 @@
                       ></ion-icon>
                       <div class="info-content">
                         <span class="info-label">Horário</span>
-                        <span class="info-value highlight"
-                          >{{ appt.time }}</span
+                        <span class="info-value highlight">
+                          {{ appt.time.slice(0,5) }}</span
                         >
                       </div>
                     </div>
                   </div>
 
                   <div class="info-item">
-                    <ion-icon name="cash-outline" class="info-icon"></ion-icon>
+                    <ion-icon
+                      [name]="appt.paymentMethod.icon"
+                      class="info-icon"
+                    ></ion-icon>
                     <div class="info-content">
                       <span class="info-label">Pagamento</span>
                       <span class="info-value"
-                        >{{ appt.paymentMethod || 'A definir' }}</span
+                        >{{ appt.paymentMethod.name || 'A definir' }}</span
                       >
                     </div>
                   </div>
 
-                  <div class="info-item">
-                    <ion-icon name="build-outline" class="info-icon"></ion-icon>
+                  <div class="info-item services-list">
+                    <ion-icon
+                      [name]="appt.categoryIcon || 'storefront-outline'"
+                      slot="start"
+                      class="info-icon"
+                    ></ion-icon>
                     <div class="info-content">
-                      <span class="info-label">Serviços</span>
-                      <span class="info-value">{{ appt.serviceName }}</span>
+                      <span class="info-label">Serviços agendados</span>
+                      <ul>
+                        <li *ngFor="let service of appt.services">
+                          {{ service }}
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </div>

@@ -5,55 +5,50 @@
   background: #f8f9fa;
   --padding-start: 16px;
   --padding-end: 16px;
-  /* Remover a restrição de largura máxima e centralizar o conteúdo de forma responsiva */
   max-width: none;
   margin: 0 auto;
 }
 
-/* Adicionar media queries para telas maiores */
 @media (min-width: 768px) {
   .page-container {
     --padding-start: 24px;
     --padding-end: 24px;
-    max-width: 1200px; /* Aumentar significativamente a largura máxima */
+    max-width: 1200px; 
   }
 
   .content-wrapper {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Layout em duas colunas para telas grandes */
+    grid-template-columns: 1fr 1fr;
     gap: 24px;
     align-items: flex-start;
   }
 
-  /* Quando há apenas um segmento ativo, ocupar toda a largura */
   .single-segment-content {
     grid-column: 1 / -1;
   }
 
   .segment-bar {
     margin: 20px 0;
-    grid-column: 1 / -1; /* Segmento ocupa toda a largura */
+    grid-column: 1 / -1;
   }
 
   .next-appointment-banner,
   .next-queue-banner {
-    grid-column: 1 / -1; /* Banners ocupam toda a largura */
+    grid-column: 1 / -1; 
     margin: 0 0 20px 0;
   }
 
-  /* Ajustar cards para layout em grid quando necessário */
   .custom-list {
     display: grid;
     grid-template-columns: 1fr;
     gap: 16px;
   }
 
-  /* Para telas muito grandes, mostrar cards lado a lado */
   @media (min-width: 1024px) {
     .custom-list.two-columns {
       grid-template-columns: 1fr 1fr;
     }
-    
+
     .queue-card,
     .appointment-card {
       min-height: 120px;
@@ -116,7 +111,6 @@
   }
 }
 
-/* Ajustes para o segment bar em telas maiores */
 .segment-bar {
   margin: 16px 0;
   border-radius: 0;
@@ -144,69 +138,67 @@
   }
 }
 
-/* Manter os estilos existentes para mobile */
 @media (max-width: 480px) {
   .page-container {
     --padding-start: 12px;
     --padding-end: 12px;
   }
-  
+
   .section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
     margin: 16px 0 12px 0;
   }
-  
+
   .collapsed-content {
     padding: 12px;
     min-height: 72px;
     gap: 8px;
   }
-  
+
   .expanded-content {
     padding: 0 12px 12px 12px;
   }
-  
+
   .store-logo-compact {
     width: 40px;
     height: 40px;
   }
-  
+
   .store-name-compact {
     font-size: 0.9rem;
     -webkit-line-clamp: 2;
   }
-  
+
   .service-name-compact {
     font-size: 0.75rem;
   }
-  
+
   .queue-info-compact,
   .appointment-info-compact {
     min-width: 80px;
   }
-  
+
   .expand-icon {
     margin-left: 8px;
     min-width: 16px;
   }
-  
+
   .info-row {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .expanded-actions {
     flex-direction: column;
   }
-  
+
   .expanded-actions ion-button {
     width: 100%;
   }
 }
 
-/* Resto do CSS permanece igual */
 .segment-with-badge {
   position: relative;
   font-weight: 600;
@@ -533,7 +525,8 @@
   flex-shrink: 0;
   margin-left: 12px;
   align-self: center;
-  min-width: 20px; 
+  min-width: 20px;
+  margin-top: 44px;
 }
 
 .expand-icon.rotated {
@@ -779,4 +772,124 @@ ion-content::part(scroll) {
   color: #2c3e50;
   line-height: 1.3;
   list-style-type: disc;
+}
+
+.queue-status-icon {
+  font-size: 1.2rem;
+  margin-left: 8px;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.queue-card .queue-status-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 1.4rem;
+  z-index: 2;
+  background: #ffffff;
+  border-radius: 50%;
+  padding: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.queue-card .queue-status-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.services-list ul {
+  margin: 4px 0 0 0;
+  padding-left: 16px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.services-list li {
+  font-size: 0.85rem;
+  color: #2c3e50;
+  line-height: 1.4;
+  margin-bottom: 4px;
+  padding: 2px 0;
+  list-style-type: disc;
+}
+
+.services-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.service-tag {
+  font-size: 0.75rem;
+  color: #495057;
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.more-services {
+  font-size: 0.7rem;
+  color: #6c757d;
+  background: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-style: italic;
+}
+
+.services-preview .service-tag:not(:first-child) {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .service-tag {
+    max-width: 100px;
+    font-size: 0.7rem;
+  }
+  
+  .services-list ul {
+    max-height: 100px;
+  }
+}
+
+.status-badge-below-name {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  font-weight: 600;
+  width: fit-content;
+  margin-top: 4px;
+}
+
+.store-details-compact {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.time-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .status-badge-below-name {
+    font-size: 0.6rem;
+    padding: 1px 4px;
+  }
+  
+  .store-details-compact {
+    gap: 2px;
+  }
 }
