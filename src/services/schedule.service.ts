@@ -7,6 +7,7 @@ import { ScheduleCreateRequest } from 'src/models/requests/schedule-create-reque
 import { ScheduleResponse } from 'src/models/responses/schedule-response';
 import { ScheduleDateResponse } from 'src/models/responses/schedule-date-response';
 import { AddCustomerToScheduleRequest } from 'src/models/requests/add-customer-to-schedule-request copy';
+import { ScheduleItem } from 'src/models/responses/dashboard-response';
 
 @Injectable({ providedIn: 'root' })
 export class ScheduleService {
@@ -23,6 +24,10 @@ export class ScheduleService {
     );
   }
 
+  getCustomerScheduleForDay(customerId: number, date: Date): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/next-day/${customerId}/${date.toISOString()}`);
+  }
+
   updateCustomerName(customerId: number, newName: string) {
     return this.http.patch(`${this.apiUrl}/${customerId}/name`, { name: newName });
   }
@@ -35,7 +40,7 @@ export class ScheduleService {
       })
     );
   }
-  
+
   leavaSchedule(custeomerId: number, scheduleId: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${custeomerId}/${scheduleId}/leave`);
   }
@@ -62,7 +67,7 @@ export class ScheduleService {
     return this.http.get<ScheduleResponse>(`${this.apiUrl}/${storeId}/${employeeId}`);
   }
 
-   getEmployeeAgendaForCostumers(storeId: number, employeeId: number, date: Date): Observable<ScheduleDateResponse> {
+  getEmployeeAgendaForCostumers(storeId: number, employeeId: number, date: Date): Observable<ScheduleDateResponse> {
     return this.http.get<ScheduleDateResponse>(`${this.apiUrl}/agenda/${employeeId}/${storeId}/${date.toISOString()}`);
   }
 }

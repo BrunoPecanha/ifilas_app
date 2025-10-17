@@ -8,7 +8,6 @@ import { QueueService } from 'src/services/queue.service';
 import { ScheduleService } from 'src/services/schedule.service';
 import { SessionService } from 'src/services/session.service';
 
-
 @Component({
   selector: 'app-queue',
   templateUrl: './queue.page.html',
@@ -40,7 +39,7 @@ export class QueuePage implements OnInit {
     private dashBoardService: DashBoardService,
     private sessionService: SessionService,
     private queueService: QueueService,
-     private scheduleService: ScheduleService,
+    private scheduleService: ScheduleService,
     public router: Router
   ) {
     this.user = this.sessionService.getUser();
@@ -58,7 +57,7 @@ export class QueuePage implements OnInit {
     this.isLoading = true;
     this.dashBoardService.loadCustomerInfo(id).subscribe({
       next: (response) => {
-        if (response.valid) {          
+        if (response.valid) {
           this.myQueues = response.data.queues || [];
           this.myAppointments = response.data.schedules || [];
           this.updateCrossInformation();
@@ -79,24 +78,42 @@ export class QueuePage implements OnInit {
     const newDate = new Date(this.selectedDate);
     newDate.setDate(newDate.getDate() + 1);
     this.selectedDate = newDate;
-    this.filterAppointmentsByDate();
-    this.collapseAll();
+
+    this.loadSchedulesForDate();
   }
 
   previousDay() {
     const newDate = new Date(this.selectedDate);
     newDate.setDate(newDate.getDate() - 1);
     this.selectedDate = newDate;
-    this.filterAppointmentsByDate();
-    this.collapseAll();
+
+    this.loadSchedulesForDate();
+  }
+
+  private loadSchedulesForDate() {
+    this.isLoading = true;
+
+    this.scheduleService.getCustomerScheduleForDay(this.user.id, this.selectedDate).subscribe({
+      next: (schedules) => {        
+        this.myAppointments = schedules.data || [];
+        this.filterAppointmentsByDate();
+        this.collapseAll();
+      },
+      error: (err) => {
+        console.error('Erro ao buscar agendamentos para o dia:', err);
+        this.showToast('Erro ao carregar agendamentos do dia', 'danger');
+      },
+      complete: () => this.isLoading = false
+    });
   }
 
   filterAppointmentsByDate() {
+    const selDate = this.selectedDate;
     this.filteredAppointments = this.myAppointments.filter(appt => {
       const apptDate = new Date(appt.date);
-      const selectedDate = new Date(this.selectedDate);
-
-      return apptDate.toDateString() === selectedDate.toDateString();
+      return apptDate.getFullYear() === selDate.getFullYear() &&
+        apptDate.getMonth() === selDate.getMonth() &&
+        apptDate.getDate() === selDate.getDate();
     });
   }
 
