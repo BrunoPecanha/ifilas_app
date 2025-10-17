@@ -51,7 +51,7 @@
       <ion-icon name="calendar-outline" class="banner-icon"></ion-icon>
       <div class="banner-text">
         <strong>Próximo agendamento:</strong> {{ nextAppointment.storeName }} às
-        {{ nextAppointment.time }}
+        {{ nextAppointment.time.slice(0,5)  }}
       </div>
       <ion-button
         fill="clear"
@@ -154,8 +154,9 @@
 
                 <div class="queue-info-compact">
                   <div class="time-status">
-                    <span class="wait-time" *ngIf="queue.waitTime">
-                      <ion-icon name="time-outline"></ion-icon> {{ queue.waitTime }} min
+                    <span class="wait-time" *ngIf="queue.waitingTime">
+                      <ion-icon name="time-outline"></ion-icon> {{
+                      queue.waitingTime.slice(0,5) }} min
                     </span>
                     <span class="position-number" *ngIf="queue.position > 0">
                       #{{ queue.position }}
@@ -192,7 +193,7 @@
                         <div class="info-content">
                           <span class="info-label">Tempo estimado</span>
                           <span class="info-value highlight"
-                            >{{ queue.waitTime }} min</span
+                            >{{ queue.waitingTime.slice(0,5)}} min</span
                           >
                         </div>
                       </div>
@@ -204,9 +205,9 @@
                         ></ion-icon>
                         <div class="info-content">
                           <span class="info-label">Entrada</span>
-                          <span class="info-value"
-                            >{{ queue.arrivalTime }}</span
-                          >
+                          <span class="info-value">
+                            {{ queue.arrivalTime | date:'HH:mm':'UTC' }}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -219,14 +220,15 @@
                       <div class="info-content">
                         <span class="info-label">Pagamento</span>
                         <span class="info-value"
-                          >{{ queue.paymentMethod || 'A definir' }}</span
+                          >{{ queue.paymentMethod.name || 'A definir' }}</span
                         >
                       </div>
                     </div>
 
                     <div class="info-item services-list">
                       <ion-icon
-                        name="build-outline"
+                        [name]="queue.categoryIcon || 'storefront-outline'"
+                        slot="start"
                         class="info-icon"
                       ></ion-icon>
                       <div class="info-content">
@@ -397,23 +399,21 @@
                     [color]="getAppointmentStatusColor(appt.status)"
                     class="status-badge-below-name"
                   >
-                    {{ appt.status }}
+                    {{ getAppointmentStatusText(appt.status) }}
                   </ion-badge>
                 </div>
               </div>
               <div class="appointment-info-compact">
-                <div class="time-status">
-                  <!-- Status badge foi movido para abaixo do nome da loja -->
-                </div>
+                <div class="time-status"></div>
                 <div class="datetime-row">
                   <span class="appointment-date"
                     ><ion-icon name="calendar-outline"></ion-icon>{{ appt.date |
                     date:'dd/MM' }}</span
                   >
-                  <span class="appointment-time"
-                    ><ion-icon name="time-outline"></ion-icon>{{ appt.time
-                    }}</span
-                  >
+                  <span class="appointment-time">
+                    <ion-icon name="time-outline"></ion-icon>
+                    {{ appt.time.slice(0,5) }}
+                  </span>
                 </div>
               </div>
 
@@ -451,25 +451,32 @@
                       ></ion-icon>
                       <div class="info-content">
                         <span class="info-label">Horário</span>
-                        <span class="info-value highlight"
-                          >{{ appt.time }}</span
+                        <span class="info-value highlight">
+                          {{ appt.time.slice(0,5) }}</span
                         >
                       </div>
                     </div>
                   </div>
 
                   <div class="info-item">
-                    <ion-icon name="cash-outline" class="info-icon"></ion-icon>
+                    <ion-icon
+                      [name]="appt.paymentMethod.icon"
+                      class="info-icon"
+                    ></ion-icon>
                     <div class="info-content">
                       <span class="info-label">Pagamento</span>
                       <span class="info-value"
-                        >{{ appt.paymentMethod || 'A definir' }}</span
+                        >{{ appt.paymentMethod.name || 'A definir' }}</span
                       >
                     </div>
                   </div>
 
                   <div class="info-item services-list">
-                    <ion-icon name="build-outline" class="info-icon"></ion-icon>
+                    <ion-icon
+                      [name]="appt.categoryIcon || 'storefront-outline'"
+                      slot="start"
+                      class="info-icon"
+                    ></ion-icon>
                     <div class="info-content">
                       <span class="info-label">Serviços agendados</span>
                       <ul>

@@ -859,7 +859,6 @@ ion-content::part(scroll) {
   }
 }
 
-/* Estilo para o badge abaixo do nome da loja */
 .status-badge-below-name {
   font-size: 0.65rem;
   padding: 2px 6px;
@@ -868,7 +867,6 @@ ion-content::part(scroll) {
   margin-top: 4px;
 }
 
-/* Ajuste no store-details-compact para acomodar o badge */
 .store-details-compact {
   flex: 1;
   min-width: 0;
@@ -877,7 +875,6 @@ ion-content::part(scroll) {
   gap: 4px;
 }
 
-/* Ajuste no time-status para remover o espaço do badge removido */
 .time-status {
   display: flex;
   flex-direction: column;
@@ -886,7 +883,6 @@ ion-content::part(scroll) {
   width: 100%;
 }
 
-/* Ajuste responsivo para mobile */
 @media (max-width: 480px) {
   .status-badge-below-name {
     font-size: 0.6rem;
