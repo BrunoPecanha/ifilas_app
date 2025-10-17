@@ -324,7 +324,6 @@ export class QueuePage implements OnInit {
     });
   }
 
-
   public async cancelAppointment(card: ScheduleItem): Promise<void> {
     if (this.expandedAppointmentId === card.id) {
       this.expandedAppointmentId = null;
