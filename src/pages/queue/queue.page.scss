@@ -724,6 +724,11 @@ ion-item-option {
   margin: 0;
 }
 
+ion-icon[name="calendar-outline"] {
+  padding-right: 5px;
+}
+
+
 ion-content::part(scroll) {
   scrollbar-width: none;
   -ms-overflow-style: none;

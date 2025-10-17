@@ -50,8 +50,8 @@
     <div class="banner-content">
       <ion-icon name="calendar-outline" class="banner-icon"></ion-icon>
       <div class="banner-text">
-        <strong>Próximo agendamento:</strong> {{ nextAppointment.storeName }} às
-        {{ nextAppointment.time.slice(0,5)  }}
+        <strong>Próximo agendamento:</strong> {{ nextAppointment.store.name }}
+        às {{ nextAppointment.time.slice(0,5) }}
       </div>
       <ion-button
         fill="clear"
@@ -70,7 +70,7 @@
     <div class="banner-content">
       <ion-icon name="people-outline" class="banner-icon"></ion-icon>
       <div class="banner-text">
-        <strong>Você está na fila:</strong> {{ nextQueue.storeName }} - Posição
+        <strong>Você está na fila:</strong> {{ nextQueue.store.name }} - Posição
         {{ nextQueue.position }}
       </div>
       <ion-button fill="clear" size="small" (click)="goToQueue(nextQueue)">
@@ -137,12 +137,12 @@
               <div class="collapsed-content">
                 <div class="store-info-compact">
                   <img
-                    [src]="queue.storeLogo || ''"
+                    [src]="queue.store.logoPath || ''"
                     class="store-logo-compact"
                     (error)="handleImageError($event)"
                   />
                   <div class="store-details-compact">
-                    <h3 class="store-name-compact">{{ queue.storeName }}</h3>
+                    <h3 class="store-name-compact">{{ queue.store.name }}</h3>
                     <ion-badge
                       [color]="getQueueStatusColor(queue.status)"
                       class="status-badge-below-name"
@@ -225,6 +225,19 @@
                       </div>
                     </div>
 
+                    <div class="info-item" *ngIf="queue.total">
+                      <ion-icon
+                        name="pricetag-outline"
+                        class="info-icon"
+                      ></ion-icon>
+                      <div class="info-content">
+                        <span class="info-label">Valor Total</span>
+                        <span class="info-value highlight"
+                          >{{ queue.total | currency:'BRL' }}</span
+                        >
+                      </div>
+                    </div>
+
                     <div class="info-item services-list">
                       <ion-icon
                         [name]="queue.categoryIcon || 'storefront-outline'"
@@ -256,6 +269,11 @@
                         [style.width.%]="getQueueProgress(queue)"
                       ></div>
                     </div>
+                  </div>
+
+                  <div class="additional-info" *ngIf="queue.notes">
+                    <ion-icon name="information-circle-outline"></ion-icon>
+                    <span>{{ queue.notes }}</span>
                   </div>
 
                   <div class="your-turn-banner" *ngIf="queue.position === 1">
@@ -298,10 +316,7 @@
         </div>
         <h3>Nenhuma fila ativa</h3>
         <p>Você não está em nenhuma fila no momento.</p>
-        <ion-button fill="outline" color="medium" (click)="findQueues()">
-          <ion-icon name="search-outline" slot="start"></ion-icon>
-          Encontrar filas
-        </ion-button>
+        <ion-icon name="search-outline" slot="start"></ion-icon>
       </div>
     </ng-template>
   </ng-container>
@@ -389,12 +404,12 @@
             <div class="collapsed-content">
               <div class="store-info-compact">
                 <img
-                  [src]="appt.storeLogo || ''"
+                  [src]="appt.store.logoPath || ''"
                   class="store-logo-compact"
                   (error)="handleImageError($event)"
                 />
                 <div class="store-details-compact">
-                  <h3 class="store-name-compact">{{ appt.storeName }}</h3>
+                  <h3 class="store-name-compact">{{ appt.store.name }}</h3>
                   <ion-badge
                     [color]="getAppointmentStatusColor(appt.status)"
                     class="status-badge-below-name"
@@ -471,6 +486,19 @@
                     </div>
                   </div>
 
+                  <div class="info-item" *ngIf="appt.total">
+                    <ion-icon
+                      name="pricetag-outline"
+                      class="info-icon"
+                    ></ion-icon>
+                    <div class="info-content">
+                      <span class="info-label">Valor Total</span>
+                      <span class="info-value highlight"
+                        >{{ appt.total | currency:'BRL' }}</span
+                      >
+                    </div>
+                  </div>
+
                   <div class="info-item services-list">
                     <ion-icon
                       [name]="appt.categoryIcon || 'storefront-outline'"
@@ -538,14 +566,7 @@
         </div>
         <h3>Nenhum agendamento</h3>
         <p>Não há agendamentos para a data selecionada.</p>
-        <ion-button
-          fill="outline"
-          color="medium"
-          (click)="scheduleAppointment()"
-        >
-          <ion-icon name="add-outline" slot="start"></ion-icon>
-          Fazer agendamento
-        </ion-button>
+        <ion-icon name="add-outline" slot="start"></ion-icon>
       </div>
     </ng-template>
   </ng-container>
