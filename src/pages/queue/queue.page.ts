@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response';
 import { UserModel } from 'src/models/user-model';
 import { DashBoardService } from 'src/services/dashboard.service';
+import { QueueService } from 'src/services/queue.service';
+import { ScheduleService } from 'src/services/schedule.service';
 import { SessionService } from 'src/services/session.service';
-
 
 @Component({
   selector: 'app-queue',
@@ -35,12 +37,19 @@ export class QueuePage implements OnInit {
     private alertController: AlertController,
     private toastController: ToastController,
     private dashBoardService: DashBoardService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private queueService: QueueService,
+    private scheduleService: ScheduleService,
+    public router: Router
   ) {
     this.user = this.sessionService.getUser();
   }
 
   ngOnInit() {
+    this.loadDashboardData(this.user.id);
+  }
+
+  ionViewWillEnter() {
     this.loadDashboardData(this.user.id);
   }
 
@@ -53,6 +62,11 @@ export class QueuePage implements OnInit {
           this.myAppointments = response.data.schedules || [];
           this.updateCrossInformation();
           this.filterAppointmentsByDate();
+
+          if (this.myQueues.length == 0) {
+            this.activeSegment = 'agendamentos';
+            this.collapseAll();
+          }
         }
       },
       complete: () => this.isLoading = false,
@@ -64,24 +78,42 @@ export class QueuePage implements OnInit {
     const newDate = new Date(this.selectedDate);
     newDate.setDate(newDate.getDate() + 1);
     this.selectedDate = newDate;
-    this.filterAppointmentsByDate();
-    this.collapseAll();
+
+    this.loadSchedulesForDate();
   }
 
   previousDay() {
     const newDate = new Date(this.selectedDate);
     newDate.setDate(newDate.getDate() - 1);
     this.selectedDate = newDate;
-    this.filterAppointmentsByDate();
-    this.collapseAll();
+
+    this.loadSchedulesForDate();
+  }
+
+  private loadSchedulesForDate() {
+    this.isLoading = true;
+
+    this.scheduleService.getCustomerScheduleForDay(this.user.id, this.selectedDate).subscribe({
+      next: (schedules) => {        
+        this.myAppointments = schedules.data || [];
+        this.filterAppointmentsByDate();
+        this.collapseAll();
+      },
+      error: (err) => {
+        console.error('Erro ao buscar agendamentos para o dia:', err);
+        this.showToast('Erro ao carregar agendamentos do dia', 'danger');
+      },
+      complete: () => this.isLoading = false
+    });
   }
 
   filterAppointmentsByDate() {
+    const selDate = this.selectedDate;
     this.filteredAppointments = this.myAppointments.filter(appt => {
       const apptDate = new Date(appt.date);
-      const selectedDate = new Date(this.selectedDate);
-
-      return apptDate.toDateString() === selectedDate.toDateString();
+      return apptDate.getFullYear() === selDate.getFullYear() &&
+        apptDate.getMonth() === selDate.getMonth() &&
+        apptDate.getDate() === selDate.getDate();
     });
   }
 
@@ -93,7 +125,6 @@ export class QueuePage implements OnInit {
     const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
     return days[date.getDay()];
   }
-
 
   toggleQueueExpansion(queueId: number) {
     if (this.expandedQueueId === queueId) {
@@ -113,16 +144,24 @@ export class QueuePage implements OnInit {
     }
   }
 
-
   updateCrossInformation() {
     this.nextAppointment = this.myAppointments
       .filter(appt => appt.status === 0)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0] || null;
 
-
     this.nextQueue = this.myQueues
       .filter(queue => queue.position > 0)
       .sort((a, b) => a.position - b.position)[0] || null;
+  }
+
+  public editQueueServices(card: QueueItem): void {
+    this.router.navigate(['/select-services'], {
+      queryParams: {
+        queueId: card.id,
+        storeId: card.store.id,
+        customerId: card.customerId
+      }
+    });
   }
 
   getServiceColor(service: string): string {
@@ -228,30 +267,19 @@ export class QueuePage implements OnInit {
     return `${minutes} minutos`;
   }
 
-
   goToAppointment(appt: ScheduleItem) {
     this.activeSegment = 'agendamentos';
     this.expandedAppointmentId = appt.id;
     this.expandedQueueId = null;
-    this.showToast(`Indo para agendamento: ${appt.storeName}`, 'primary');
+    this.showToast(`Indo para agendamento: ${appt.store.name}`, 'primary');
   }
 
   goToQueue(queue: QueueItem) {
     this.activeSegment = 'filas';
     this.expandedQueueId = queue.id;
     this.expandedAppointmentId = null;
-    this.showToast(`Indo para fila: ${queue.storeName}`, 'primary');
+    this.showToast(`Indo para fila: ${queue.store.name}`, 'primary');
   }
-
-  findQueues() {
-    this.showToast('Buscando filas disponíveis...', 'primary');
-  }
-
-  scheduleAppointment() {
-    this.showToast('Abrindo agendamentos...', 'primary');
-  }
-
-
   async refreshAll() {
     this.showToast('Atualizando dados...', 'primary');
     setTimeout(() => {
@@ -260,90 +288,71 @@ export class QueuePage implements OnInit {
     }, 800);
   }
 
-  async editQueueServices(queue: QueueItem) {
-    if (this.expandedQueueId === queue.id) {
-      this.expandedQueueId = null;
-    }
-
+  public async leaveQueue(card: QueueItem): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Editar Serviços',
-      message: `Deseja editar os serviços?`,
+      header: 'Confirmar Saída',
+      message: 'Você tem certeza que deseja sair da fila?',
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
-          text: 'Editar',
-          handler: () => {
-            this.showToast('Editando serviços...', 'warning');
-          }
-        }
+          text: 'Confirmar',
+          handler: async () => {
+            this.queueService.exitQueue(card.customerId, card.id).subscribe({
+              next: async () => {
+                await this.showToast('Você saiu da fila com sucesso!', 'success');
+                this.loadDashboardData(this.user.id);
+              },
+              error: async (err) => {
+                console.error('Erro ao sair da fila:', err);
+                await this.showToast('Ocorreu um erro ao sair da fila', 'danger');
+              }
+            });
+          },
+        },
       ],
     });
     await alert.present();
   }
 
-  async leaveQueue(queue: QueueItem) {
-    if (this.expandedQueueId === queue.id) {
-      this.expandedQueueId = null;
-    }
-
-    const alert = await this.alertController.create({
-      header: 'Sair da Fila',
-      message: `Tem certeza que deseja sair da fila de ${queue.storeName}`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Sair',
-          handler: () => {
-            this.myQueues = this.myQueues.filter(q => q.id !== queue.id);
-            this.updateCrossInformation();
-            this.showToast('Você saiu da fila!', 'warning');
-          }
-        }
-      ],
+  public editAppointmentServices(card: ScheduleItem): void {
+    this.router.navigate(['/select-services'], {
+      queryParams: {
+        scheduleId: card.id,
+        storeId: card.store.id,
+        customerId: card.customerId
+      }
     });
-    await alert.present();
   }
 
-  async editAppointmentServices(appt: ScheduleItem) {
-    if (this.expandedAppointmentId === appt.id) {
+  public async cancelAppointment(card: ScheduleItem): Promise<void> {
+    if (this.expandedAppointmentId === card.id) {
       this.expandedAppointmentId = null;
     }
 
     const alert = await this.alertController.create({
-      header: 'Editar Agendamento',
-      message: `Editar agendamento para <b>${appt.storeName}</b>?`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Editar',
-          handler: () => {
-            this.showToast('Editando agendamento...', 'warning');
-          }
-        }
-      ],
-    });
-    await alert.present();
-  }
-
-  async cancelAppointment(appt: ScheduleItem) {
-    if (this.expandedAppointmentId === appt.id) {
-      this.expandedAppointmentId = null;
-    }
-
-    const alert = await this.alertController.create({
-      header: 'Cancelar Agendamento',
-      message: `Cancelar agendamento em <b>${appt.storeName}</b>?`,
+      header: 'Confirmar Agendamento',
+      message: `Cancelar agendamento em ${card.store.name}?`,
       buttons: [
         { text: 'Manter', role: 'cancel' },
         {
-          text: 'Cancelar',
-          handler: () => {
-            this.myAppointments = this.myAppointments.filter(a => a.id !== appt.id);
-            this.updateCrossInformation();
-            this.filterAppointmentsByDate();
-            this.showToast('Agendamento cancelado!', 'warning');
-          }
-        }
+          text: 'Confirmar',
+          handler: async () => {
+            this.scheduleService.leavaSchedule(card.customerId, card.id).subscribe({
+              next: async () => {
+                this.myAppointments = this.myAppointments.filter(a => a.id !== card.id);
+                this.updateCrossInformation();
+                this.filterAppointmentsByDate();
+                this.showToast('Agendamento cancelado!', 'warning');
+                await this.showToast('Você saiu da fila com sucesso!', 'success');
+                this.loadDashboardData(this.user.id);
+              },
+              error: async (err) => {
+                console.error('Erro ao sair da fila:', err);
+                await this.showToast('Ocorreu um erro ao sair da fila', 'danger');
+              }
+            });
+          },
+        },
       ],
     });
     await alert.present();

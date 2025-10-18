@@ -1,3 +1,5 @@
+import { StoreModel } from "../store-model";
+
 export interface DashBoardResponse {
   valid: boolean;
   data: DashboardData;
@@ -12,8 +14,7 @@ export interface DashboardData {
 export interface QueueItem {
   id: number;
   customerId: number;
-  storeName: string | null;
-  storeLogo: string | null;
+  store: StoreModel;
   attendantsName: string | null;
   position: number;
   status: number;
@@ -31,8 +32,7 @@ export interface QueueItem {
 export interface ScheduleItem {
   id: number;
   customerId: number;
-  storeName: string;
-  storeLogo: string;
+  store: StoreModel;
   attendantsName: string;
   date: string;
   time: string;

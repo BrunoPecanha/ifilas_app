@@ -11,6 +11,8 @@ import { QueueService } from 'src/services/queue.service';
 import { ServiceService } from 'src/services/services.service';
 import { SessionService } from 'src/services/session.service';
 import { SignalRService } from 'src/services/seignalr.service';
+import { ScheduleService } from 'src/services/schedule.service';
+import { AddCustomerToScheduleRequest } from 'src/models/requests/add-customer-to-schedule-request copy';
 
 @Component({
   selector: 'app-select-services',
@@ -20,13 +22,14 @@ import { SignalRService } from 'src/services/seignalr.service';
 export class SelectServicesPage {
 
   queueId: number = 0;
+  scheduleId: number = 0;
   storeId: number = 0;
   totalTime = 0;
   totalPrice = 0;
   totalTimeString = '';
   totalPriceString = '';
   notes = '';
-  paymentMethod = '1';
+  paymentMethod = 1;
   selectedServices: ServiceModel[] = [];
   serviceOptions: ServiceModel[] = [];
   user: UserModel = {} as UserModel;
@@ -47,6 +50,7 @@ export class SelectServicesPage {
     private alertController: AlertController,
     private serviceService: ServiceService,
     private queueService: QueueService,
+    private scheduleService: ScheduleService,
     private customerService: CustomerService,
     private sessionService: SessionService,
     private signalRService: SignalRService
@@ -61,6 +65,7 @@ export class SelectServicesPage {
   getProfessionalAndStore() {
     this.route.queryParams.subscribe(params => {
       this.queueId = params['queueId'];
+      this.scheduleId = params['scheduleId'];
       this.storeId = params['storeId'];
       this.professionalId = params['professionalId'];
       this.professionalName = params['professionalName'];
@@ -93,7 +98,7 @@ export class SelectServicesPage {
       next: (response) => {
         const services = response.data.services || [];
 
-        this.paymentMethod = response.data.paymentMethodId || '1';
+        this.paymentMethod = response.data.paymentMethodId || 1;
         this.notes = response.data.notes || '';
 
         this.serviceService.loadServiceById(this.storeId).subscribe({
@@ -263,22 +268,65 @@ export class SelectServicesPage {
     await alert.present();
   }
 
-  addCustomerToQueue() {
+  addCustomer() {
     const servicesToSend: AddServiceRequest[] = this.selectedServices.map(service => ({
       id: service.id,
       quantity: service.quantity
     }));
 
-    const command: AddCustomerToQueueRequest = {
-      selectedServices: servicesToSend,
-      notes: this.notes,
-      paymentMethod: this.paymentMethod,
-      queueId: this.queueId,
-      userId: this.user.id,
-      looseCustomer: this.looseCustomer
-    };
+    if (this.scheduleId && this.scheduleId > 0) {
+      const command: AddCustomerToQueueRequest = {
+        selectedServices: servicesToSend,
+        notes: this.notes,
+        paymentMethod: this.paymentMethod,
+        queueId: this.queueId,
+        userId: this.user.id,
+        looseCustomer: this.looseCustomer
+      };
+      this.addToQueue(command);
+    } else {
+      const command: AddCustomerToScheduleRequest = {
+        selectedServices: servicesToSend,
+        notes: this.notes,
+        paymentMethod: this.paymentMethod,
+        scheduleId: this.scheduleId,
+        customerId: this.user.id,
+        looseCustomer: this.looseCustomer,
+        storeId: this.storeId,
+        professionalId: this.professionalId,
+        time: '',
+        date: new Date(),
+        editingExistingAppointment: true
+      };
+      this.addToSchedule(command);
+    }
+  }
 
-    this.queueService.addCustomerToQueue(command).subscribe();
+  private addToQueue(command: AddCustomerToQueueRequest) {
+    this.queueService.addCustomerToQueue(command).subscribe({
+      next: async (response) => {
+        console.log('Cliente adicionado à fila:', response);
+        // await this.toastService.show('Cliente adicionado à fila com sucesso!', 'success');
+      },
+      error: async (err) => {
+        console.error('Erro ao adicionar à fila:', err);
+        // await this.toastService.show(err.error || 'Erro ao adicionar à fila.', 'danger');
+      }
+    });
+  }
+
+  private addToSchedule(command: AddCustomerToScheduleRequest) {
+    this.scheduleService.addCustomerToSchedule(command).subscribe({
+      next: async (response) => {
+        console.log('Cliente adicionado ao agendamento:', response);
+        // await this.toastService.show('Cliente adicionado ao agendamento com sucesso!', 'success');
+
+      },
+      error: async (err) => {
+        // console.error('Erro ao adicionar ao agendamento:', err);
+        // await this.toastService.show(err.error || 'Erro ao adicionar ao agendamento.', 'danger');
+      }
+    });
   }
 
   private async initSignalRConnection() {
@@ -333,7 +381,7 @@ export class SelectServicesPage {
     this.sessionService.setGenericKey('notes', this.notes);
     this.sessionService.setGenericKey(this.paymentMethod, 'paymentMethod');
     this.sessionService.setGenericKey(this.storeId, 'storeId');
-    this.sessionService.setGenericKey( this.professionalId, 'professionalId');
+    this.sessionService.setGenericKey(this.professionalId, 'professionalId');
 
     this.router.navigate(['/schedule-appointment']);
   }

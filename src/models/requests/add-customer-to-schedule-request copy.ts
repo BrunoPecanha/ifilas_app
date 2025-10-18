@@ -5,9 +5,11 @@ export interface AddCustomerToScheduleRequest {
   notes: string;
   paymentMethod: number;
   storeId: number;
+  scheduleId: number;
   professionalId: number;
   time: string;
   date: Date;
   customerId: number;
   looseCustomer: boolean;
+  editingExistingAppointment?: boolean;
 }

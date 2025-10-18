@@ -13,7 +13,7 @@
   .page-container {
     --padding-start: 24px;
     --padding-end: 24px;
-    max-width: 1200px; 
+    max-width: 1200px;
   }
 
   .content-wrapper {
@@ -34,7 +34,7 @@
 
   .next-appointment-banner,
   .next-queue-banner {
-    grid-column: 1 / -1; 
+    grid-column: 1 / -1;
     margin: 0 0 20px 0;
   }
 
@@ -724,6 +724,15 @@ ion-item-option {
   margin: 0;
 }
 
+ion-icon[name="calendar-outline"] {
+  padding-right: 5px;
+}
+
+.verified-badge {
+  font-size: 16px;
+  color: #667eea;
+}
+
 ion-content::part(scroll) {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -853,7 +862,7 @@ ion-content::part(scroll) {
     max-width: 100px;
     font-size: 0.7rem;
   }
-  
+
   .services-list ul {
     max-height: 100px;
   }
@@ -888,7 +897,7 @@ ion-content::part(scroll) {
     font-size: 0.6rem;
     padding: 1px 4px;
   }
-  
+
   .store-details-compact {
     gap: 2px;
   }

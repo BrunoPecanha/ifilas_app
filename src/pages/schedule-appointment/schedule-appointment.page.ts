@@ -92,12 +92,13 @@ export class ScheduleAppointmentPage implements OnInit {
               await this.toastService.show('Data não selecionada', 'danger');
               return;
             }
-
+            
             const request: AddCustomerToScheduleRequest = {
               selectedServices: this.selectedServices,
               notes: this.notes ?? '',
               paymentMethod: this.paymentMethod,
               storeId: this.storeId,
+              scheduleId: 0,
               professionalId: this.professionalId,
               time: slot.time,
               date: this.selectedDate,
