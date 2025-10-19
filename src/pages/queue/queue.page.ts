@@ -48,18 +48,9 @@ export class QueuePage implements OnInit {
   }
 
   ngOnInit() {
-    this.activatedRoute.queryParams.subscribe(params => {
-      this.editingExistingAppointment = params['editingExistingAppointment'] === 'true';
-
-      this.loadDashboardData(this.user.id);
-
-      if (this.editingExistingAppointment) {
-        this.loadSchedulesForDate();
-      }
-    });
   }
 
-  ionViewWillEnter() {
+  ionViewWillEnter() {    
     this.activatedRoute.queryParams.subscribe(params => {
       this.editingExistingAppointment = params['editingExistingAppointment'] === 'true';
 
@@ -108,8 +99,8 @@ export class QueuePage implements OnInit {
       this.isSameDay(new Date(appt.date), newDate)
     );
 
-    this.selectedDate = newDate;   
-    
+    this.selectedDate = newDate;
+
     if (hasAppointment) {
       this.loadSchedulesForDate();
     } else {
@@ -170,7 +161,7 @@ export class QueuePage implements OnInit {
     }
   }
 
-  toggleAppointmentExpansion(appointmentId: number) {
+  toggleAppointmentExpansion(appointmentId: number) {    
     if (this.expandedAppointmentId === appointmentId) {
       this.expandedAppointmentId = null;
     } else {
