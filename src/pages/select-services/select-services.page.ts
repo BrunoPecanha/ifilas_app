@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, NavController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { AddCustomerToQueueRequest } from 'src/models/requests/add-customer-to-queue-request';
 import { AddServiceRequest } from 'src/models/requests/add-service-request';
 import { UpdateCustomerToQueueRequest } from 'src/models/requests/update-customer-to-queue-request';
@@ -38,6 +38,7 @@ export class SelectServicesPage {
   useAgenda: boolean = false;
   professionalId = 0;
   professionalName = '';
+  editingExistingAppointment: boolean = false;
 
   hasVariableTime: boolean = false;
   hasVariablePrice: boolean = false;
@@ -62,11 +63,12 @@ export class SelectServicesPage {
     this.getProfessionalAndStore();
   }
 
-  getProfessionalAndStore() {
+  getProfessionalAndStore() {    
     this.route.queryParams.subscribe(params => {
       this.queueId = params['queueId'];
       this.scheduleId = params['scheduleId'];
       this.storeId = params['storeId'];
+      this.editingExistingAppointment = params['editingExistingAppointment'] === 'true';
       this.professionalId = params['professionalId'];
       this.professionalName = params['professionalName'];
       this.useAgenda = params['useAgenda'] === 'true';
@@ -411,9 +413,10 @@ export class SelectServicesPage {
     });
   }
 
-  private navigateAfterQueue() {
+  private navigateAfterQueue() {    
     const queryParams = {
       userId: this.user.id,
+      editingExistingAppointment: this.editingExistingAppointment
     };
 
     if (this.looseCustomer) {
