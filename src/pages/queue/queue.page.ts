@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response';
 import { UserModel } from 'src/models/user-model';
@@ -30,6 +30,7 @@ export class QueuePage implements OnInit {
 
   nextAppointment: ScheduleItem | null = null;
   nextQueue: QueueItem | null = null;
+  editingExistingAppointment: boolean = false;
 
   filteredAppointments: ScheduleItem[] = [];
 
@@ -40,17 +41,34 @@ export class QueuePage implements OnInit {
     private sessionService: SessionService,
     private queueService: QueueService,
     private scheduleService: ScheduleService,
-    public router: Router
+    public router: Router,
+    private activatedRoute: ActivatedRoute,
   ) {
     this.user = this.sessionService.getUser();
   }
 
   ngOnInit() {
-    this.loadDashboardData(this.user.id);
+    this.activatedRoute.queryParams.subscribe(params => {
+      this.editingExistingAppointment = params['editingExistingAppointment'] === 'true';
+
+      this.loadDashboardData(this.user.id);
+
+      if (this.editingExistingAppointment) {
+        this.loadSchedulesForDate();
+      }
+    });
   }
 
   ionViewWillEnter() {
-    this.loadDashboardData(this.user.id);
+    this.activatedRoute.queryParams.subscribe(params => {
+      this.editingExistingAppointment = params['editingExistingAppointment'] === 'true';
+
+      this.loadDashboardData(this.user.id);
+
+      if (this.editingExistingAppointment) {
+        this.loadSchedulesForDate();
+      }
+    });
   }
 
   loadDashboardData(id: number) {
@@ -74,27 +92,44 @@ export class QueuePage implements OnInit {
     });
   }
 
-  nextDay() {
-    const newDate = new Date(this.selectedDate);
-    newDate.setDate(newDate.getDate() + 1);
-    this.selectedDate = newDate;
+  private isSameDay(d1: Date, d2: Date): boolean {
+    return (
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate()
+    );
+  }
 
-    this.loadSchedulesForDate();
+  changeDay(offset: number) {
+    const newDate = new Date(this.selectedDate);
+    newDate.setDate(newDate.getDate() + offset);
+
+    const hasAppointment = this.myAppointments.some(appt =>
+      this.isSameDay(new Date(appt.date), newDate)
+    );
+
+    this.selectedDate = newDate;   
+    
+    if (hasAppointment) {
+      this.loadSchedulesForDate();
+    } else {
+      this.loadDashboardData(this.user.id);
+    }
+  }
+
+  nextDay() {
+    this.changeDay(1);
   }
 
   previousDay() {
-    const newDate = new Date(this.selectedDate);
-    newDate.setDate(newDate.getDate() - 1);
-    this.selectedDate = newDate;
-
-    this.loadSchedulesForDate();
+    this.changeDay(-1);
   }
 
   private loadSchedulesForDate() {
     this.isLoading = true;
 
     this.scheduleService.getCustomerScheduleForDay(this.user.id, this.selectedDate).subscribe({
-      next: (schedules) => {        
+      next: (schedules) => {
         this.myAppointments = schedules.data || [];
         this.filterAppointmentsByDate();
         this.collapseAll();
@@ -319,7 +354,8 @@ export class QueuePage implements OnInit {
       queryParams: {
         scheduleId: card.id,
         storeId: card.store.id,
-        customerId: card.customerId
+        customerId: card.customerId,
+        editingExistingAppointment: true,
       }
     });
   }
