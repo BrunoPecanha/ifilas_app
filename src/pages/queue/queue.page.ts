@@ -91,7 +91,7 @@ export class QueuePage implements OnInit {
     );
   }
 
-  changeDay(offset: number) {
+  changeDay(offset: number) {    
     const newDate = new Date(this.selectedDate);
     newDate.setDate(newDate.getDate() + offset);
 

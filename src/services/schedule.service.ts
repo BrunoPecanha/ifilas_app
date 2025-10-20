@@ -25,7 +25,10 @@ export class ScheduleService {
   }
 
   getCustomerScheduleForDay(customerId: number, date: Date): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/next-day/${customerId}/${date.toISOString()}`);
+    const localISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, -1); 
+    return this.http.get<any>(`${this.apiUrl}/next-day/${customerId}/${localISO}`);
   }
 
   updateCustomerName(customerId: number, newName: string) {
