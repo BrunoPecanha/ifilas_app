@@ -50,7 +50,7 @@ export class QueuePage implements OnInit {
   ngOnInit() {
   }
 
-  ionViewWillEnter() {    
+  ionViewWillEnter() {
     this.activatedRoute.queryParams.subscribe(params => {
       this.editingExistingAppointment = params['editingExistingAppointment'] === 'true';
 
@@ -91,7 +91,7 @@ export class QueuePage implements OnInit {
     );
   }
 
-  changeDay(offset: number) {    
+  changeDay(offset: number) {
     const newDate = new Date(this.selectedDate);
     newDate.setDate(newDate.getDate() + offset);
 
@@ -161,7 +161,7 @@ export class QueuePage implements OnInit {
     }
   }
 
-  toggleAppointmentExpansion(appointmentId: number) {    
+  toggleAppointmentExpansion(appointmentId: number) {
     if (this.expandedAppointmentId === appointmentId) {
       this.expandedAppointmentId = null;
     } else {
@@ -272,27 +272,48 @@ export class QueuePage implements OnInit {
     return ((queue.totalInQueue - queue.position) / queue.totalInQueue) * 100;
   }
 
+  private getLocalAppointmentDate(appt: ScheduleItem): Date {
+    // date vem em UTC (ex: "2025-10-20T03:00:00Z")
+    const datePart = new Date(appt.date); // só pra extrair a data (dia/mês/ano)
+
+    // time vem separado (ex: "10:00:00")
+    const [hours, minutes, seconds] = appt.time.split(':').map(Number);
+
+    // Monta a data local com o horário certo no fuso do dispositivo
+    const localDate = new Date(
+      datePart.getFullYear(),
+      datePart.getMonth(),
+      datePart.getDate(),
+      hours,
+      minutes,
+      seconds
+    );
+
+    return localDate;
+  }
   isUpcomingAppointment(appt: ScheduleItem): boolean {
     const now = new Date();
-    const appointmentDate = new Date(appt.date);
+    const appointmentDate = this.getLocalAppointmentDate(appt);
     const timeDiff = appointmentDate.getTime() - now.getTime();
     return timeDiff > 0 && timeDiff < 2 * 60 * 60 * 1000;
   }
 
   getTimeUntilAppointment(appt: ScheduleItem): string {
     const now = new Date();
-    const appointmentDate = new Date(appt.date);
+    const appointmentDate = this.getLocalAppointmentDate(appt);
     const timeDiff = appointmentDate.getTime() - now.getTime();
 
-    if (timeDiff <= 0) return 'agora';
+    if (timeDiff <= 0) 
+      return 'agora';
 
     const hours = Math.floor(timeDiff / (1000 * 60 * 60));
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
 
-    if (hours > 0) return `${hours}h ${minutes}m`;
+    if (hours > 0) 
+      return `${hours}h ${minutes}m`;
     return `${minutes} minutos`;
   }
-
+  
   goToAppointment(appt: ScheduleItem) {
     this.activeSegment = 'agendamentos';
     this.expandedAppointmentId = appt.id;
