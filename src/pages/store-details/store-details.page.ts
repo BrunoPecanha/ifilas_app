@@ -3,8 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { ServiceModel } from 'src/models/service-model';
 import { StoreModel } from 'src/models/store-model';
+import { FavoriteService } from 'src/services/favorite.service';
 import { ServiceService } from 'src/services/services.service';
+import { SessionService } from 'src/services/session.service';
 import { StoresService } from 'src/services/stores.service';
+import { ToastService } from 'src/services/toast.service';
 
 @Component({
   selector: 'app-store-details',
@@ -20,35 +23,53 @@ export class StoreDetailsPage implements OnInit {
   isInfoModalOpen: boolean = false;
   isLoading: boolean = true;
   selectedTab: string = 'services';
+  liked: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private storeService: StoresService,
     private serviceService: ServiceService,
-    private navCtrl: NavController
-  ) { }
+    private navCtrl: NavController,
+    private session: SessionService,
+    private favoriteService: FavoriteService,
+    private toastService: ToastService
+  ) {
+  }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     this.storeId = id ? parseInt(id, 10) : null;
 
     if (this.storeId !== null && !isNaN(this.storeId)) {
-      this.loadData();
+      this.loadData().then(() => this.checkLiked());
     } else {
       console.error('Loja não encontrada');
       this.isLoading = false;
     }
   }
 
-  loadData() {
-    Promise.all([
+  async loadData() {
+    await Promise.all([
       this.loadStore(),
       this.loadServices(),
       this.loadProducts(),
       this.loadGallery()
-    ]).finally(() => {
-      this.isLoading = false;
-    });
+    ]);
+    this.isLoading = false;
+  }
+
+  checkLiked() {
+    const user = this.session.getUser();
+    if (!this.storeId || !user?.id) 
+      return;
+
+    this.favoriteService.likedStore(this.storeId, user.id)
+      .subscribe({
+        next: (response) => {          
+          this.liked = response.data; 
+        },
+        error: (err) => console.error('Erro ao buscar like', err)
+      });
   }
 
   loadStore(): Promise<void> {
@@ -116,7 +137,7 @@ export class StoreDetailsPage implements OnInit {
       setTimeout(() => {
         this.galleryImages = [
           {
-            url: 'assets/images/gallery/salon-1.jpg',
+            url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyRLiNRrAezLc8omVTVVMQhM_i-z0o-2T1YQ&s',
             caption: 'Nosso ambiente principal'
           },
           {
@@ -170,17 +191,45 @@ export class StoreDetailsPage implements OnInit {
     }
   }
 
-  toggleLike(store: any) {
-    if (!store.likesCount) store.likesCount = 0;
-    store.liked = !store.liked;
+  toggleLike(store: StoreModel, event: MouseEvent): void {
+    event.stopPropagation();
 
-    if (store.liked) {
-      store.likesCount++;
-    } else {
-      store.likesCount--;
+    const heart = event.target as HTMLElement;
+    const user = this.session.getUser();
+
+    const previousLikeState = this.liked; 
+
+    this.liked = !this.liked;
+    store.votes += this.liked ? 1 : -1;
+
+    if (this.liked) {
+      heart.classList.add('heart-animation');
     }
 
-    // this.apiService.toggleLike(store.id, store.liked).subscribe(...)
+    const likeOperation = this.liked
+      ? this.favoriteService.likeStore(store.id, user.id)
+      : this.favoriteService.dislikeStore(store.id, user.id);
+
+    likeOperation.subscribe({
+      next: (response) => {
+        if (!response.valid) {
+          this.liked = previousLikeState; 
+          store.votes += this.liked ? 1 : -1;
+          this.toastService.show('Erro ao processar sua ação.', 'danger');
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao atualizar like:', err);
+        this.liked = previousLikeState;
+        store.votes += this.liked ? 1 : -1;
+        this.toastService.show('Falha na conexão. Tente novamente.', 'danger');
+      },
+      complete: () => {
+        setTimeout(() => {
+          heart.classList.remove('heart-animation');
+        }, 500);
+      },
+    });
   }
 
   getServiceDuration(service: ServiceModel): string {

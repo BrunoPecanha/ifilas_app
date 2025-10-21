@@ -812,3 +812,25 @@ ion-content::part(scroll) {
   transform: scale(1.3);
 }
 
+
+.store-likes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.store-likes:hover {
+  transform: scale(1.05);
+}
+
+.heart-animation {
+  animation: pulse 0.4s ease;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}

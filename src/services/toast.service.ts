@@ -5,6 +5,9 @@ import { ToastController } from '@ionic/angular';
   providedIn: 'root',
 })
 export class ToastService {
+  error(arg0: string) {
+    throw new Error('Method not implemented.');
+  }
   constructor(private toastController: ToastController) {}
 
   async show(
