@@ -32,12 +32,17 @@ export class ScheduleAppointmentPage implements OnInit {
   looseCustomer: boolean = false;
   customer!: UserModel;
 
-  constructor(private service: ScheduleService,
+  selectedTimeSlot: TimeSlotModel | null = null;
+  currentWeekOffset: number = 0;
+  visibleDates: AvailableDateModel[] = [];
+
+  constructor(
+    private service: ScheduleService,
     private alertController: AlertController,
     private toastService: ToastService,
     private router: Router,
-    private sessionService: SessionService) {
-  }
+    private sessionService: SessionService
+  ) {}
 
   ngOnInit() {
     const msg = sessionStorage.getItem('toastMessage');
@@ -49,7 +54,7 @@ export class ScheduleAppointmentPage implements OnInit {
 
     this.selectedServices = this.sessionService.getGenericKey('selectedServices') || [];
     this.notes = this.sessionService.getGenericKey('notes') || '';
-    this.paymentMethod = this.sessionService.getGenericKey('paymentMethod') || '1';
+    this.paymentMethod = this.sessionService.getGenericKey('paymentMethod') || 1;
     this.storeId = this.sessionService.getGenericKey('storeId') || 0;
     this.professionalId = this.sessionService.getGenericKey('professionalId') || 0;
 
@@ -65,21 +70,127 @@ export class ScheduleAppointmentPage implements OnInit {
         ...d,
         date: new Date(d.date)
       }));
+      
+      this.updateVisibleDates();
     });
   }
 
-  selectDate(day: AvailableDateModel) {
-    if (!day.available)
+ updateVisibleDates() {
+    if (this.availableDates.length === 0) {
+      this.visibleDates = [];
       return;
+    }
+
+    const startIndex = this.currentWeekOffset * 7;
+    this.visibleDates = this.availableDates.slice(startIndex, startIndex + 7);
+    
+    while (this.visibleDates.length < 7) {
+      this.visibleDates.push({
+        date: new Date(),
+        available: false,
+        timeSlots: []
+      });
+    }
+  }
+
+  nextWeek() {
+    if (this.canNavigateNext()) {
+      this.currentWeekOffset++;
+      this.updateVisibleDates();
+      this.selectedDate = null;
+      this.selectedTimeSlots = [];
+      this.selectedTimeSlot = null;
+    }
+  }
+
+  previousWeek() {
+    if (this.canNavigatePrevious()) {
+      this.currentWeekOffset--;
+      this.updateVisibleDates();
+      this.selectedDate = null;
+      this.selectedTimeSlots = [];
+      this.selectedTimeSlot = null;
+    }
+  }
+
+  canNavigateNext(): boolean {
+    const startIndex = (this.currentWeekOffset + 1) * 7;
+    return startIndex < this.availableDates.length;
+  }
+
+  canNavigatePrevious(): boolean {
+    return this.currentWeekOffset > 0;
+  }
+
+  getCurrentWeekRange(): string {
+    if (this.visibleDates.length === 0 || !this.visibleDates[0].available) 
+      return 'Sem datas';
+    
+    const firstDate = this.visibleDates[0].date;
+    const lastDate = this.visibleDates[this.visibleDates.length - 1].date;
+    
+    return `${firstDate.getDate()} ${firstDate.toLocaleDateString('pt-BR', { month: 'short' })} - ${lastDate.getDate()} ${lastDate.toLocaleDateString('pt-BR', { month: 'short' })}`;
+  }
+
+  selectDate(day: AvailableDateModel) {
+    if (!day.available) return;
 
     this.selectedDate = day.date;
     this.selectedTimeSlots = day.timeSlots;
+    this.selectedTimeSlot = null; 
   }
 
-  public async selectTimeSlot(slot: TimeSlotModel): Promise<void> {
+  selectTimeSlot(slot: TimeSlotModel) {
+    if (!slot.available) 
+      return;
+    
+    this.selectedTimeSlot = slot;
+  }
+
+  isTimeSlotSelected(slot: TimeSlotModel): boolean {
+    return this.selectedTimeSlot?.time === slot.time;
+  }
+
+  groupTimeSlotsByPeriod(): any[] {
+    if (!this.selectedTimeSlots || this.selectedTimeSlots.length === 0) 
+      return [];
+    
+    const morning = this.selectedTimeSlots.filter(slot => {
+      const hour = parseInt(slot.time.split(':')[0]);
+      return hour < 12;
+    });
+    
+    const afternoon = this.selectedTimeSlots.filter(slot => {
+      const hour = parseInt(slot.time.split(':')[0]);
+      return hour >= 12 && hour < 18;
+    });
+    
+    const evening = this.selectedTimeSlots.filter(slot => {
+      const hour = parseInt(slot.time.split(':')[0]);
+      return hour >= 18;
+    });
+    
+    const periods = [];
+    
+    if (morning.length > 0) 
+      periods.push({ period: 'Manhã', slots: morning });
+    if (afternoon.length > 0) 
+      periods.push({ period: 'Tarde', slots: afternoon });
+    if (evening.length > 0) 
+      periods.push({ period: 'Noite', slots: evening });
+    
+    return periods;
+  }
+
+  async confirmAppointment() {
+    if (!this.selectedDate || !this.selectedTimeSlot) {
+      await this.toastService.show('Selecione uma data e horário', 'danger');
+      return;
+    }
+    
     const alert = await this.alertController.create({
       header: 'Confirmar Agendamento',
-      message: `${this.formatDate(this.selectedDate!)} às ${slot.time}?`,
+      message: `Deseja confirmar o agendamento para <strong>${this.formatDate(this.selectedDate)} às ${this.selectedTimeSlot.time}</strong>?`,
       buttons: [
         {
           text: 'Cancelar',
@@ -100,7 +211,7 @@ export class ScheduleAppointmentPage implements OnInit {
               storeId: this.storeId,
               scheduleId: 0,
               professionalId: this.professionalId,
-              time: slot.time,
+              time: this.selectedTimeSlot!.time,
               date: this.selectedDate,
               customerId: this.customer.id,
               looseCustomer: this.looseCustomer
