@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
+import { firstValueFrom } from 'rxjs';
 import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response';
 import { UserModel } from 'src/models/user-model';
 import { DashBoardService } from 'src/services/dashboard.service';
 import { QueueService } from 'src/services/queue.service';
 import { ScheduleService } from 'src/services/schedule.service';
 import { SessionService } from 'src/services/session.service';
+import { TokenService } from 'src/services/token.service';
 
 @Component({
   selector: 'app-queue',
@@ -18,6 +20,9 @@ export class QueuePage implements OnInit {
   currentDate = new Date();
   user!: UserModel;
   isLoading = false;
+  showQrModal = false;
+  isLoadingQr = false;
+  qrCodeDataUrl: string = '';
 
   activeSegment: 'filas' | 'agendamentos' = 'filas';
   selectedDate: Date = new Date();
@@ -43,20 +48,12 @@ export class QueuePage implements OnInit {
     private scheduleService: ScheduleService,
     public router: Router,
     private activatedRoute: ActivatedRoute,
+    private tokenService: TokenService
   ) {
     this.user = this.sessionService.getUser();
   }
 
   ngOnInit() {
-    this.activatedRoute.queryParams.subscribe(params => {
-      this.editingExistingAppointment = params['editingExistingAppointment'] === 'true';
-
-      this.loadDashboardData(this.user.id);
-
-      if (this.editingExistingAppointment) {
-        this.loadSchedulesForDate();
-      }
-    });
   }
 
   ionViewWillEnter() {
@@ -108,8 +105,8 @@ export class QueuePage implements OnInit {
       this.isSameDay(new Date(appt.date), newDate)
     );
 
-    this.selectedDate = newDate;   
-    
+    this.selectedDate = newDate;
+
     if (hasAppointment) {
       this.loadSchedulesForDate();
     } else {
@@ -281,24 +278,41 @@ export class QueuePage implements OnInit {
     return ((queue.totalInQueue - queue.position) / queue.totalInQueue) * 100;
   }
 
+  private getLocalAppointmentDate(appt: ScheduleItem): Date {
+    const datePart = new Date(appt.date);
+    const [hours, minutes, seconds] = appt.time.split(':').map(Number);
+
+    const localDate = new Date(
+      datePart.getFullYear(),
+      datePart.getMonth(),
+      datePart.getDate(),
+      hours,
+      minutes,
+      seconds
+    );
+
+    return localDate;
+  }
   isUpcomingAppointment(appt: ScheduleItem): boolean {
     const now = new Date();
-    const appointmentDate = new Date(appt.date);
+    const appointmentDate = this.getLocalAppointmentDate(appt);
     const timeDiff = appointmentDate.getTime() - now.getTime();
     return timeDiff > 0 && timeDiff < 2 * 60 * 60 * 1000;
   }
 
   getTimeUntilAppointment(appt: ScheduleItem): string {
     const now = new Date();
-    const appointmentDate = new Date(appt.date);
+    const appointmentDate = this.getLocalAppointmentDate(appt);
     const timeDiff = appointmentDate.getTime() - now.getTime();
 
-    if (timeDiff <= 0) return 'agora';
+    if (timeDiff <= 0)
+      return 'agora';
 
     const hours = Math.floor(timeDiff / (1000 * 60 * 60));
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
 
-    if (hours > 0) return `${hours}h ${minutes}m`;
+    if (hours > 0)
+      return `${hours}h ${minutes}m`;
     return `${minutes} minutos`;
   }
 
@@ -412,6 +426,41 @@ export class QueuePage implements OnInit {
     await toast.present();
   }
 
+  async generateQrCodeForAtendance(item: QueueItem | ScheduleItem) {
+    this.isLoadingQr = true;
+    this.showQrModal = true;
+
+    try {
+      const response = await firstValueFrom(
+        this.tokenService.generate(item.customerId, item.id)
+      );
+
+      this.qrCodeDataUrl = response.startsWith('data:image')
+        ? response
+        : 'data:image/png;base64,' + response;
+    } catch (err) {
+      this.showToast('Erro ao gerar QR Code', 'danger');
+      this.qrCodeDataUrl = '';
+    } finally {
+      this.isLoadingQr = false;
+    }
+  }
+
+  closeQrModal() {
+    this.showQrModal = false;
+    this.qrCodeDataUrl = '';
+    this.isLoadingQr = false;
+  }
+
+
+  async copyQrCode() {
+    try {
+      await navigator.clipboard.writeText(this.qrCodeDataUrl);
+      this.showToast('QR Code copiado para a área de transferência', 'success');
+    } catch {
+      this.showToast('Não foi possível copiar o QR Code', 'danger');
+    }
+  }
 
   collapseAll() {
     this.expandedQueueId = null;

@@ -8,18 +8,28 @@ import { FavoriteResponse } from "src/models/responses/favorite-response";
   providedIn: 'root'
 })
 export class FavoriteService {
+  toggleStoreLike(storeId: number, id: any) {
+    throw new Error('Method not implemented.');
+  }
   private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
-  likeStore(storeId: number, userId: number): Observable<FavoriteResponse> {
-    return this.http.post<FavoriteResponse>(
-      `${this.apiUrl}/favorite/like/store/${storeId}/${userId}`,
-      {} 
+  likedStore(storeId: number, userId: number): Observable<any> {
+    return this.http.get<FavoriteResponse>(
+      `${this.apiUrl}/favorite/liked/store/${storeId}/${userId}`,
+      {}
     );
   }
 
-   dislikeStore(storeId: number, userId: number): Observable<FavoriteResponse> {
+  likeStore(storeId: number, userId: number): Observable<FavoriteResponse> {
+    return this.http.post<FavoriteResponse>(
+      `${this.apiUrl}/favorite/like/store/${storeId}/${userId}`,
+      {}
+    );
+  }
+
+  dislikeStore(storeId: number, userId: number): Observable<FavoriteResponse> {
     return this.http.delete<FavoriteResponse>(
       `${this.apiUrl}/favorite/dislike/store/${storeId}/${userId}`
     );

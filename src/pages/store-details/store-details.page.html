@@ -51,12 +51,12 @@
 
           <p class="store-subtitle">{{ store.storeSubtitle }}</p>
 
-          <div class="store-likes" (click)="toggleLike(store)">
+          <div class="store-likes" (click)="toggleLike(store, $event)">
             <ion-icon
-              [name]="store.liked ? 'heart' : 'heart-outline'"
-              [color]="store.liked ? 'danger' : 'medium'"
+              [name]="liked ? 'heart' : 'heart-outline'"
+              [color]="liked ? 'danger' : 'medium'"
             ></ion-icon>
-            <span>{{ store.likesCount || 0 }}</span>
+            <span>{{ store.votes || 0 }}</span>
           </div>
 
           <div class="highlights-container">
@@ -330,7 +330,11 @@
             <ion-icon name="location-outline" class="info-icon"></ion-icon>
             <div class="info-text">
               <h3>Endereço</h3>
-              <p>{{ store.address || 'Endereço não informado' }}</p>
+              <p>
+                {{ store.address || 'Endereço não informado' }},
+                {{store.number}}, {{ store.neighborhood || ''}}, {{ store.city
+                || '' }} - {{ store.state || '' }}
+              </p>
             </div>
           </div>
         </div>

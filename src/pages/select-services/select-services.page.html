@@ -1,7 +1,7 @@
 <app-custom-header
   title="SELECIONE OS SERVIÇOS"
   [subtitle]="professionalName"
-  [showStartButton]="true"
+  [showStartButton]="!editingExistingAppointment"
   (onStartClick)="getBack()"
   [endDisabled]="selectedServices.length === 0"
   startIconName="close-outline"

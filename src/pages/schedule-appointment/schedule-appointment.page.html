@@ -8,57 +8,147 @@
 >
 </app-custom-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding">  
   <section class="store-header" *ngIf="selectedStore">
     <div class="store-card">
-      <ion-avatar class="store-avatar">
-        <img
-          [src]="selectedStore.logoPath"
-          [alt]="selectedStore.name"
-        />
-      </ion-avatar>
+      <div class="store-avatar-container">
+        <ion-avatar class="store-avatar">
+          <img
+            [src]="selectedStore.logoPath || defaultLogo"
+            [alt]="selectedStore.name"
+            (error)="selectedStore.logoPath = defaultLogo"
+          />
+        </ion-avatar>
+        <div class="availability-indicator" [class.available]="availableDates.length > 0"></div>
+      </div>
 
       <div class="store-info">
-        <h2 class="store-title"><span>{{ selectedStore.name }}</span></h2>
-        <p class="store-address">{{ selectedStore.address }}</p>
+        <h2 class="store-title">{{ selectedStore.name }}</h2>
+        <p class="store-address">
+          <ion-icon name="location-outline"></ion-icon>
+          {{ selectedStore.address }}
+        </p>
+        <p class="store-status" *ngIf="availableDates.length > 0">
+          <ion-icon name="calendar-outline"></ion-icon>
+          {{ availableDates.length }} dias disponíveis
+        </p>
       </div>
     </div>
   </section>
 
-  <section class="days-section">
-    <h3>Selecione a data</h3>
-    <div class="days-grid">
-      <ion-button
-        *ngFor="let day of availableDates"
-        [disabled]="!day.available"
-        [fill]="day.date.toDateString() === selectedDate?.toDateString() ? 'solid' : 'outline'"
-        color="primary"
-        (click)="selectDate(day)"
-      >
-        <div class="day-label">
-          <span class="weekday">{{ day.date | date:'EEE' }}</span>
-          <span class="daynum">{{ day.date | date:'dd/MM' }}</span>
+  <div class="cards-container">
+    <ion-card class="schedule-card" *ngIf="availableDates.length > 0">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="calendar-outline" class="card-icon"></ion-icon>
+          Selecione a data
+        </ion-card-title>
+        <ion-card-subtitle>Escolha um dia disponível para o agendamento</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="calendar-container">
+          <div class="calendar-navigation">
+            <ion-button fill="clear" size="small" (click)="previousWeek()" [disabled]="!canNavigatePrevious()">
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </ion-button>
+            <span class="current-week">{{ getCurrentWeekRange() }}</span>
+            <ion-button fill="clear" size="small" (click)="nextWeek()" [disabled]="!canNavigateNext()">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </ion-button>
+          </div>
+          
+          <div class="calendar-grid">
+            <div 
+              *ngFor="let day of visibleDates" 
+              class="calendar-day" 
+              [class.selected]="day.date.toDateString() === selectedDate?.toDateString()"
+              [class.available]="day.available"
+              [class.unavailable]="!day.available"
+              (click)="day.available && selectDate(day)"
+            >
+              <div class="day-weekday">{{ day.date | date:'EEE' }}</div>
+              <div class="day-number">{{ day.date | date:'d' }}</div>
+              <div class="day-month">{{ day.date | date:'MMM' }}</div>
+              <div class="day-availability" *ngIf="day.available">
+                <ion-icon name="checkmark-circle" *ngIf="day.timeSlots.length > 0"></ion-icon>
+                <span class="slot-count" *ngIf="day.timeSlots.length > 0">{{ day.timeSlots.length }}</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="schedule-card" *ngIf="selectedDate">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="time-outline" class="card-icon"></ion-icon>
+          Horários disponíveis
+        </ion-card-title>
+        <ion-card-subtitle>{{ formatDate(selectedDate) }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="time-slots-container" *ngIf="selectedTimeSlots?.length">
+          <div class="time-periods">
+            <div class="time-period" *ngFor="let period of groupTimeSlotsByPeriod()">
+              <h4 class="period-title">{{ period.period }}</h4>
+              <div class="period-slots">
+                <div 
+                  *ngFor="let slot of period.slots" 
+                  class="time-slot"
+                  [class.available]="slot.available"
+                  [class.selected]="isTimeSlotSelected(slot)"
+                  (click)="slot.available && selectTimeSlot(slot)"
+                >
+                  <span class="slot-time">{{ slot.time }}</span>
+                  <ion-icon 
+                    name="checkmark" 
+                    class="selection-indicator"
+                    *ngIf="isTimeSlotSelected(slot)"
+                  ></ion-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="selection-summary" *ngIf="selectedTimeSlot">
+            <div class="summary-content">
+              <p>Selecionado: <strong>{{ formatDate(selectedDate) }} às {{ selectedTimeSlot.time }}</strong></p>
+              <ion-button 
+                fill="solid" 
+                color="primary" 
+                expand="block"
+                (click)="confirmAppointment()"
+                class="confirm-button"
+              >
+                <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                Confirmar Agendamento
+              </ion-button>
+            </div>
+          </div>
+        </div>
+
+        <div class="no-slots-message" *ngIf="!selectedTimeSlots?.length">
+          <ion-icon name="time-outline"></ion-icon>
+          <p>Nenhum horário disponível neste dia.</p>
+          <p class="suggestion">Tente selecionar outra data.</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <section class="empty-state" *ngIf="availableDates.length === 0 && selectedStore">
+    <div class="empty-content">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <h3>Nenhuma data disponível</h3>
+      <p>No momento, não há horários disponíveis para agendamento.</p>
+      <ion-button fill="outline" routerLink="/select-services">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Voltar aos serviços
       </ion-button>
     </div>
-  </section>
-
-  <section *ngIf="selectedDate" class="times-section">
-    <h3>{{ formatDate(selectedDate) }}</h3>
-
-    <div class="times-grid">
-      <ion-chip
-        *ngFor="let slot of selectedTimeSlots"
-        [color]="slot.available ? 'primary' : 'medium'"
-        (click)="slot.available && selectTimeSlot(slot)"
-      >
-        {{ slot.time }}
-      </ion-chip>
-    </div>
-
-    <p *ngIf="!selectedTimeSlots?.length" class="no-slots">
-      Nenhum horário disponível neste dia.
-    </p>
   </section>
 </ion-content>
 
