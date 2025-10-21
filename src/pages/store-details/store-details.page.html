@@ -330,7 +330,11 @@
             <ion-icon name="location-outline" class="info-icon"></ion-icon>
             <div class="info-text">
               <h3>Endereço</h3>
-              <p>{{ store.address || 'Endereço não informado' }}</p>
+              <p>
+                {{ store.address || 'Endereço não informado' }},
+                {{store.number}}, {{ store.neighborhood || ''}},  {{ store.city || '' }} -
+                {{ store.state || '' }}
+              </p>
             </div>
           </div>
         </div>
