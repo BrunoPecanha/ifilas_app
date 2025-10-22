@@ -40,6 +40,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
   releaseOrdersBeforeGetsQueued: boolean = false;
   pendingOrdersCount: number = 0;
   interval: any;
+  isNexTuneOpen = false;
 
   ngOnInit(): void {
     this.menuOpenedListener = () => this.loadUserQueInfo();
@@ -110,6 +111,10 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     await alert.present();
   }
 
+  toggleNexTune() {
+    this.isNexTuneOpen = !this.isNexTuneOpen;
+  }
+
   loadUserInformations() {
     this.userFromSession = this.sessionService.getUser();
     this.companyFromSession = this.sessionService.getStore();
@@ -132,7 +137,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     this.router.navigate([route]);
   }
 
-  loadUserQueInfo() {    
+  loadUserQueInfo() {
     this.userFromSession = this.sessionService.getUser();
 
     if (this.userFromSession) {

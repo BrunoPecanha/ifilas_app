@@ -98,6 +98,17 @@
         <ion-label>Trocar perfil</ion-label>
       </ion-item>
 
+      <ion-item
+        *ngIf="userFromSession?.profile === 1 || userFromSession?.profile === 2"
+        (click)="navigateTo('/role-registration')"
+        detail="false"
+        class="menu-item-with-badge disabled-item"
+      >
+        <ion-icon name="musical-note" slot="start"></ion-icon>
+        <ion-label>NexTune</ion-label>
+        <span class="menu-badge-soon">EM BREVE</span>
+      </ion-item>
+
       <ng-container
         *ngIf="
           profile === 1 || (userFromSession?.profile === 2 && profile === 1)
