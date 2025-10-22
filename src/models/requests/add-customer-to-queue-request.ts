@@ -7,4 +7,5 @@ export interface AddCustomerToQueueRequest {
   queueId: number;
   userId: number;
   looseCustomer: boolean;
+  professionalId: number;
 }

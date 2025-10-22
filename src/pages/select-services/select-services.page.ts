@@ -281,7 +281,8 @@ export class SelectServicesPage {
         selectedServices: servicesToSend,
         notes: this.notes,
         paymentMethod: this.paymentMethod,
-        queueId: this.queueId,
+        queueId: this.queueId,        
+        professionalId: this.professionalId,
         userId: this.user.id,
         looseCustomer: this.looseCustomer
       };
@@ -398,6 +399,7 @@ export class SelectServicesPage {
       selectedServices: servicesToSend,
       notes: this.notes,
       paymentMethod: this.paymentMethod,
+      professionalId: this.professionalId,
       queueId: this.queueId,
       userId: this.user.id,
       looseCustomer: this.looseCustomer
