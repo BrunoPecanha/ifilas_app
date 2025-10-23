@@ -32,6 +32,7 @@ export class SelectCompanyPage implements OnInit {
   searchQuery = '';
   selectedCategoryId: number | null = null;
   selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
+  favoriteStores: StoreModel[] = [];
 
   loadingMore = false;
   currentPage = 1;
@@ -72,19 +73,19 @@ export class SelectCompanyPage implements OnInit {
     });
   }
 
-  private loadStores() {
-    const user = this.session.getUser();
-    const userId = user?.id;
+  // private loadStores() {
+  //   const user = this.session.getUser();
+  //   const userId = user?.id;
 
-    if (!userId) {
-      console.warn('Usuário não logado');
-      this.displayedCompanies = [];
-      this.isEmptyResult = true;
-      return;
-    }
+  //   if (!userId) {
+  //     console.warn('Usuário não logado');
+  //     this.displayedCompanies = [];
+  //     this.isEmptyResult = true;
+  //     return;
+  //   }
 
-    this.loadFilteredStores(userId);
-  }
+  //   this.loadFilteredStores(userId);
+  // }
 
   private loadFilteredStores(userId: number) {
     this.isLoading = true;
@@ -178,6 +179,57 @@ export class SelectCompanyPage implements OnInit {
     if (!this.searching) {
       this.searchQuery = '';
     }
+  }
+
+  private loadStores() {
+    const user = this.session.getUser();
+    const userId = user?.id;
+
+    if (!userId) {
+      console.warn('Usuário não logado');
+      this.displayedCompanies = [];
+      this.favoriteStores = [];
+      this.isEmptyResult = true;
+      return;
+    }
+
+    this.loadFilteredStores(userId);
+    this.loadFavoriteStores(userId);
+  }
+
+  // Adicione este método para carregar lojas favoritadas
+  private loadFavoriteStores(userId: number) {
+    this.service.loadStoresByCategoryId(1).subscribe({
+      next: (response) => {
+        this.favoriteStores = response.data.map((store: StoreModel) => ({
+          ...store,
+          isNew: this.checkIfNew(store.createdAt),
+          liked: true, // São favoritos por definição
+          minorQueue: store.minorQueue || false,
+          distance: store.distance || this.calculateRandomDistance()
+        } as StoreModel));
+      },
+      error: (err) => {
+        console.error('Erro ao carregar lojas favoritadas:', err);
+        this.favoriteStores = [];
+      }
+    });
+  }
+
+  // Adicione este método para ver todos os favoritos
+  viewAllFavorites() {
+    // Aplica o filtro de favoritos
+    this.selectedFilter = 'favorites';
+    this.resetPagination();
+    this.loadStores();
+
+    // Rola para a lista de empresas
+    setTimeout(() => {
+      const content = document.querySelector('ion-content');
+      if (content) {
+        content.scrollToTop(500);
+      }
+    }, 100);
   }
 
   toggleLike(card: StoreModel, event: MouseEvent): void {

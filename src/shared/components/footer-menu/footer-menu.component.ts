@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 import { NavController } from '@ionic/angular';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { StoreModel } from 'src/models/store-model';
 import { NotificationService } from 'src/services/notification.service';
 import { SessionService } from 'src/services/session.service';
@@ -12,13 +13,15 @@ import { UserService } from 'src/services/user-service';
   templateUrl: './footer-menu.component.html',
   styleUrls: ['./footer-menu.component.scss'],
 })
-export class FooterMenuComponent implements OnInit {
+export class FooterMenuComponent implements OnInit, OnDestroy {
   notificationsCount$!: Observable<number>;
   profile = 0;
   store: StoreModel | null = null;
   userFromSession: any;
   total: number = 0;  
   activeButton: string = 'home';
+  private notificationsSubscription!: Subscription;
+  private routerSubscription!: Subscription;
 
   constructor(
     private notificationService: NotificationService,
@@ -32,18 +35,55 @@ export class FooterMenuComponent implements OnInit {
     this.store = this.sessionService.getStore();
   }
 
-  ionViewWillEnter() {
-    this.notificationsCount$ = this.notificationService.notificacoesNaoLidas$;
+  ngOnInit() {
+    this.loadUserQueInfo();
+    this.initializeNotifications();
+    this.setActiveBasedOnRoute();
+    this.setupRouterListener();
+  }
 
-    this.notificationsCount$.subscribe(() => {
+  ngOnDestroy() {
+    if (this.notificationsSubscription) {
+      this.notificationsSubscription.unsubscribe();
+    }
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+  }
+
+  setupRouterListener() {
+    this.routerSubscription = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.setActiveBasedOnRoute();
+        this.cdr.detectChanges();
+      });
+  }
+
+  setActiveBasedOnRoute() {
+    const currentUrl = this.router.url;
+    
+    if (currentUrl.includes('/notification')) {
+      this.activeButton = 'notifications';
+    } else if (currentUrl.includes('/select-company') || currentUrl.includes('/queue') || 
+               currentUrl.includes('/order-approval') || currentUrl.includes('/customer-list-in-queue') || 
+               currentUrl.includes('/owner-schedule') || currentUrl.includes('/queue-list-for-owner')) {
+      this.activeButton = 'home';
+    } else if (currentUrl.includes('/promotions')) {
+      this.activeButton = 'cart';
+    } else {
+      this.activeButton = 'home'; 
+    }
+  }
+
+  initializeNotifications() {
+    this.notificationsCount$ = this.notificationService.notificacoesNaoLidas$;
+    
+    this.notificationsSubscription = this.notificationsCount$.subscribe(() => {
       this.cdr.detectChanges();
     });
 
     this.notificationService.atualizarContadorNaoLidas();
-  }
-
-  ngOnInit() {
-    this.loadUserQueInfo();
   }
 
   async goToHome(main: boolean = false) {
@@ -71,19 +111,25 @@ export class FooterMenuComponent implements OnInit {
   }
 
   goToNotifications() {
+    this.activeButton = 'notifications';
+    this.cdr.detectChanges();
     this.navController.navigateForward('/notification');
   }
 
   goToPromotions() {
+    this.activeButton = 'cart';
+    this.cdr.detectChanges();
     //this.navController.navigateForward('/promotions');
   }
 
   setActive(button: string) {
     this.activeButton = button;
+    this.cdr.detectChanges();
   }
 
-
   openMenu() {
+    this.activeButton = 'menu';
+    this.cdr.detectChanges();
     const menu = document.querySelector('ion-menu');
     menu?.open();
     window.dispatchEvent(new CustomEvent('menuOpened'));
@@ -99,6 +145,7 @@ export class FooterMenuComponent implements OnInit {
       this.userService.getUserInfoById(userId, this.profile).subscribe({
         next: (value) => {
           this.total = value.data;
+          this.cdr.detectChanges();
         },
         error: (error) => {
           console.error('Erro ao buscar info do usuário:', error);

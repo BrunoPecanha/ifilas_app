@@ -1,24 +1,39 @@
 <app-custom-header
   [title]="'ESTABELECIMENTOS'"
-  [subtitle]="'Selecione um estabelecimento'" 
+  [subtitle]="'Selecione um estabelecimento'"
   [showEndButton]="true"
   [endIconName]="searching ? 'close-outline' : 'search-outline'"
   (onEndClick)="toggleSearch()"
 ></app-custom-header>
 
-<ion-searchbar
-  *ngIf="searching"
-  [(ngModel)]="searchQuery"
-  (ionInput)="onSearch($event)"
-  placeholder="Buscar estabelecimentos..."
-  debounce="500"
-  showCancelButton="focus"
-  animated
-  clear-input="true"
-  class="modern-searchbar"
-></ion-searchbar>
+<div class="promotional-banner">
+  <div class="banner-curve-effect">
+    <div class="curve"></div>
+  </div>
+  <div class="banner-background">
+    <div class="banner-overlay"></div>
+  </div>
+  <div class="banner-content">
+    <div class="banner-text">
+      <h2 class="banner-title">ESPAÇO PARA PROPAGANDA!</h2>
+    </div>
+  </div>
+</div>
 
-<div class="content-container">
+<div class="header-content">
+  <div class="searchbar-container" *ngIf="searching">
+    <ion-searchbar
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearch($event)"
+      placeholder="Buscar estabelecimentos..."
+      debounce="500"
+      showCancelButton="focus"
+      animated
+      clear-input="true"
+      class="modern-searchbar"
+    ></ion-searchbar>
+  </div>
+
   <div class="collapsible-filters" [class.expanded]="filtersExpanded">
     <div class="filters-header" (click)="toggleFilters()">
       <div class="filters-title">
@@ -55,32 +70,32 @@
       <div class="filter-section">
         <h4 class="section-title">Ordenar por</h4>
         <div class="filters-grid">
-          <button 
-            class="filter-btn" 
+          <button
+            class="filter-btn"
             [class.active]="selectedFilter === 'nearby'"
             (click)="applyFilter('nearby')"
           >
             <ion-icon name="navigate-outline"></ion-icon>
             <span>Próximos</span>
           </button>
-          <button 
-            class="filter-btn" 
+          <button
+            class="filter-btn"
             [class.active]="selectedFilter === 'minorQueue'"
             (click)="applyFilter('minorQueue')"
           >
             <ion-icon name="time-outline"></ion-icon>
             <span>Menor fila</span>
           </button>
-          <button 
-            class="filter-btn" 
+          <button
+            class="filter-btn"
             [class.active]="selectedFilter === 'favorites'"
             (click)="applyFilter('favorites')"
           >
             <ion-icon name="heart-outline"></ion-icon>
             <span>Favoritos</span>
           </button>
-          <button 
-            class="filter-btn" 
+          <button
+            class="filter-btn"
             [class.active]="selectedFilter === 'recent'"
             (click)="applyFilter('recent')"
           >
@@ -91,16 +106,65 @@
       </div>
     </div>
   </div>
+</div>
 
-  <ion-content class="modern-content" (ionScroll)="onContentScroll($event)" [scrollEvents]="true">
-    <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-      <ion-refresher-content
-        pullingIcon="chevron-down-outline"
-        pullingText="Arraste para atualizar"
-        refreshingSpinner="circles"
-        refreshingText="Atualizando..."
-      ></ion-refresher-content>
-    </ion-refresher>
+<ion-content
+  class="modern-content"
+  (ionScroll)="onContentScroll($event)"
+  [scrollEvents]="true"
+>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-outline"
+      pullingText="Arraste para atualizar"
+      refreshingSpinner="circles"
+      refreshingText="Atualizando..."
+    ></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="content-container">
+    <div class="favorite-stores-section" *ngIf="favoriteStores.length > 0">
+      <div class="section-header">
+        <h3 class="section-title">Seus Favoritos</h3>
+        <a class="see-all-link" (click)="viewAllFavorites()">Ver todos</a>
+      </div>
+      <div class="favorite-stores-scroll">
+        <div
+          class="favorite-store-card"
+          *ngFor="let store of favoriteStores"
+          (click)="selectCard(store)"
+        >
+          <div class="store-image">
+            <img
+              *ngIf="store.logoPath; else defaultLogo"
+              [src]="store.logoPath"
+              alt="{{ store.name }}"
+            />
+            <ng-template #defaultLogo>
+              <div class="default-logo-favorite">
+                <ion-icon name="business"></ion-icon>
+              </div>
+            </ng-template>
+            <div class="favorite-badge">
+              <ion-icon name="heart"></ion-icon>
+            </div>
+          </div>
+          <div class="store-info">
+            <h4 class="store-name">{{ store.name }}</h4>
+            <div class="store-meta">
+              <span class="rating">
+                <ion-icon name="star"></ion-icon>
+                {{ store.rating || '0' }}
+              </span>
+              <span class="category">{{ store.category }}</span>
+            </div>
+            <div class="store-status" [class.open]="store.isOpen">
+              {{ store.isOpen ? 'Aberto' : 'Fechado' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div *ngIf="isLoading" class="state-container">
       <ion-spinner name="crescent"></ion-spinner>
@@ -110,14 +174,16 @@
     <div *ngIf="!isLoading && isEmptyResult" class="state-container">
       <ion-icon name="storefront-outline"></ion-icon>
       <h3>Nenhum estabelecimento encontrado</h3>
-      <ion-button fill="clear" (click)="clearFilters()"> 
+      <ion-button fill="clear" (click)="clearFilters()">
         Limpar filtros
       </ion-button>
     </div>
 
     <div *ngIf="!isLoading && !isEmptyResult" class="companies-container">
       <div class="results-header">
-        <span class="results-count">{{ filteredCards.length }} estabelecimento(s)</span>
+        <span class="results-count"
+          >{{ filteredCards.length }} estabelecimento(s)</span
+        >
         <button
           class="clear-filters-btn"
           (click)="clearFilters()"
@@ -134,7 +200,7 @@
           *ngFor="let card of filteredCards"
           (click)="selectCard(card)"
         >
-        <div class="status-indicator" [class.open]="card.isOpen"></div>
+          <div class="status-indicator" [class.open]="card.isOpen"></div>
           <div class="card-content">
             <div class="card-main">
               <div class="logo-section">
@@ -150,18 +216,15 @@
                     </div>
                   </ng-template>
                 </div>
-                <!-- <div class="status-badge" [class.open]="card.isOpen">
-                  {{ card.isOpen ? 'Aberto' : 'Fechado' }}
-                </div> -->
               </div>
 
               <div class="info-section">
                 <div class="company-header">
                   <h3 class="company-name">
                     {{ card.name }}
-                    <ion-icon 
-                      *ngIf="card.isVerified" 
-                      name="checkmark-circle" 
+                    <ion-icon
+                      *ngIf="card.isVerified"
+                      name="checkmark-circle"
                       class="verified-badge"
                     ></ion-icon>
                   </h3>
@@ -185,24 +248,30 @@
 
                 <div class="services-info">
                   <div class="service-item" *ngIf="card.useQueue">
-                    <ion-icon name="people-outline" class="service-icon"></ion-icon>
+                    <ion-icon
+                      name="people-outline"
+                      class="service-icon"
+                    ></ion-icon>
                     <div class="service-details">
                       <span class="service-type">Ordem de Chegada</span>
                       <span class="service-status">
                         {{ card.minorQueue === -1 ? 'Não abriu a fila hoje' :
-                          card.minorQueue == 0 ? 'Ninguém na fila' : 
-                          card.minorQueue + ' pessoa(s) na fila' }}
+                        card.minorQueue == 0 ? 'Ninguém na fila' :
+                        card.minorQueue + ' pessoa(s) na fila' }}
                       </span>
                     </div>
                   </div>
 
                   <div class="service-item" *ngIf="card.useAgenda">
-                    <ion-icon name="calendar-outline" class="service-icon"></ion-icon>
+                    <ion-icon
+                      name="calendar-outline"
+                      class="service-icon"
+                    ></ion-icon>
                     <div class="service-details">
                       <span class="service-type">Agendamento</span>
                       <span class="service-status">
-                        {{ card.nextHourOnAgenda ? 'Próx: ' + card.nextHourOnAgenda : 
-                          'Sem horários' }}
+                        {{ card.nextHourOnAgenda ? 'Próx: ' +
+                        card.nextHourOnAgenda : 'Sem horários' }}
                       </span>
                     </div>
                   </div>
@@ -218,7 +287,7 @@
         <span>Carregando mais...</span>
       </div>
     </div>
-  </ion-content>
-</div>
+  </div>
+</ion-content>
 
 <app-footer-menu></app-footer-menu>
