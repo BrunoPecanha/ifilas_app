@@ -112,7 +112,7 @@
 }
 
 .filter-btn.active::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 50%;
@@ -138,7 +138,7 @@
 }
 
 .filter-buttons.clean .filter-btn::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -526,16 +526,16 @@ ion-chip ion-icon {
   .atendente-card {
     height: 130px;
   }
-  
+
   .card-content-wrapper {
     padding: 12px;
     gap: 12px;
   }
-  
+
   .photo-column {
     width: 70px;
   }
-  
+
   .professional-photo {
     width: 60px;
     height: 60px;
@@ -565,21 +565,21 @@ ion-chip ion-icon {
     height: auto;
     min-height: 120px;
   }
-  
+
   .info-column {
     gap: 6px;
   }
-  
+
   .info-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
   }
-  
+
   .top-row {
     flex-direction: row;
   }
-  
+
   .status-section {
     align-self: flex-end;
   }
@@ -589,20 +589,20 @@ ion-chip ion-icon {
   .filter-buttons {
     gap: 0;
   }
-  
+
   .filter-btn {
     padding: 8px 10px;
     font-size: 0.8rem;
   }
-  
+
   .filter-btn ion-icon {
     font-size: 0.9rem;
   }
-  
+
   .filter-buttons.clean {
     gap: 12px;
   }
-  
+
   .filter-buttons.clean .filter-btn {
     padding: 6px 1px;
     font-size: 0.8rem;
@@ -611,16 +611,16 @@ ion-chip ion-icon {
   .photo-column {
     width: 60px;
   }
-  
+
   .professional-photo {
     width: 50px;
     height: 50px;
   }
-  
+
   .photo-icon {
     font-size: 35px;
   }
-  
+
   .status-indicator {
     width: 14px;
     height: 14px;
@@ -632,13 +632,13 @@ ion-chip ion-icon {
     flex-direction: column;
     gap: 3px;
   }
-  
+
   .name-section {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
   }
-  
+
   .professional-badges {
     margin-left: 0;
   }
@@ -648,12 +648,12 @@ ion-chip ion-icon {
   .filter-section {
     padding: 10px 12px 4px;
   }
-  
+
   .filter-btn {
     padding: 6px 8px;
     font-size: 0.75rem;
   }
-  
+
   .filter-btn ion-icon {
     font-size: 0.85rem;
   }
@@ -661,7 +661,7 @@ ion-chip ion-icon {
   .atendentes-wrapper {
     padding: 0 6px 10px;
   }
-  
+
   .card-content-wrapper {
     padding: 10px;
     gap: 8px;
@@ -673,9 +673,8 @@ ion-content::part(scroll) {
   -ms-overflow-style: none;
 }
 
-
 .info-column {
-  flex: 1 1 auto; 
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -699,7 +698,7 @@ ion-content::part(scroll) {
 
 .additional-info {
   display: flex;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   gap: 6px;
   flex-shrink: 0;
 }
@@ -715,4 +714,275 @@ ion-content::part(scroll) {
   .additional-info {
     width: 100%;
   }
+}
+
+.banner-loja {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.banner-image,
+.banner-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.banner-fallback {
+  background: linear-gradient(180deg, #f3f4f6 0%, #e9eefb 100%);
+}
+
+.banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.35),
+    rgba(0, 0, 0, 0.05)
+  );
+  pointer-events: none;
+}
+
+.store-card {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  transform: translateY(-48px);
+  padding: 0 14px;
+  z-index: 2;
+  margin-top: 20px;
+}
+
+.store-card-inner {
+  background: #fff;
+  border-radius: 18px;
+  padding: 30px 16px 14px 92px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+  position: relative;
+  overflow: visible;
+  display: block;
+}
+
+.store-card-inner::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 8px;
+  bottom: -6px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.02);
+  z-index: -1;
+  filter: blur(6px);
+  opacity: 0.6;
+}
+
+.logo-wrap {
+  position: absolute;
+  top: -35px;
+  left: 10px;
+  width: 85px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+}
+
+.logo-loja {
+  width: 90px;
+  height: 90px;
+  border-width: 10px;
+  border-radius: 50px;
+  object-fit: cover;
+  border: 6px solid #fff;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.12);
+  display: block;
+}
+
+.logo-loja.rounded {
+  border-radius: 14px;
+}
+
+.store-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.store-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-left: 30px;
+}
+
+.title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.nome-loja {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0;
+  color: #0b1720;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.verified-icon {
+  font-size: 16px;
+  color: var(--ion-color-primary);
+}
+
+.descricao-loja {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.87rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.store-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.store-actions {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.store-kpis {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.kpi-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  min-width: 60px;
+}
+
+.kpi-item strong {
+  display: block;
+  font-size: 14px;
+  color: #0b1720;
+}
+
+.kpi-item span {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .banner-loja {
+    height: 140px;
+  }
+  .store-card-inner {
+    padding-left: 86px;
+    padding-right: 12px;
+  }
+
+  .nome-loja {
+    font-size: 1.05rem;
+  }
+  .descricao-loja {
+    white-space: normal;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 420px) {
+  .banner-loja {
+    height: 110px;
+  }
+  .store-card-inner {
+    padding-left: 76px;
+    padding-right: 10px;
+  }
+
+  .logo-loja {
+    width: 90px;
+    height: 80px;
+    border-width: 5px;
+    border-radius: 50px;
+  }
+  .nome-loja {
+    font-size: 1rem;
+  }
+}
+
+.filter-section {
+  position: relative;
+  z-index: 1000;
+  background: #fff;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.header-loja-dinamico {
+  position: relative;
+  margin-bottom: -40px;
+}
+
+.banner-loja {
+  position: relative;
+  z-index: 1;
+}
+
+.store-card {
+  position: relative;
+  z-index: 2;
+  margin-top: -10px;
+}
+
+.banner-loja {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  margin-top: 0px;
+}
+
+.banner-image {
+  width: 100%;
+  height: 130%;
+  object-fit: cover;
+  transform: translateY(-15%);
+}
+
+.banner-loja::after {
+  content: "";
+  position: absolute;
+  bottom: -25px;
+  left: -20px;
+  right: -20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 60% 60% 0 0;
+  z-index: 1;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }

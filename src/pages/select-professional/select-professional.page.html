@@ -9,35 +9,51 @@
 ></app-custom-header>
 
 <div class="header-loja-dinamico">
-  <div class="banner-loja" *ngIf="store?.storeLogoPath">
+  <div class="banner-loja">
     <img
-      [src]="store?.storeLogoPath"
+      *ngIf="store?.wallPaperPath; else bannerPlaceholder"
+      [src]="store?.wallPaperPath"
       alt="Banner da loja"
       class="banner-image"
     />
+    <ng-template #bannerPlaceholder>
+      <div class="banner-fallback"></div>
+    </ng-template>
+
     <div class="banner-overlay"></div>
   </div>
 
-  <div class="info-loja">
-    <img
-      [src]="store?.storeLogoPath || 'assets/images/utils/default-logo.png'"
-      (load)="logoLoaded = true"
-      [class.loaded]="logoLoaded"
-      class="logo-loja shimmer"
-    />
-    <div *ngIf="!logoLoaded" class="shimmer-placeholder logo-placeholder"></div>
+  <div class="store-card">
+    <div class="store-card-inner">
+      <div class="logo-wrap" aria-hidden="true">
+        <img
+          [src]="store?.storeLogoPath || 'assets/images/utils/default-logo.png'"
+          alt="{{ store?.name || 'Loja' }} logo"
+          class="logo-loja"
+        />
+      </div>
 
-    <h2 class="nome-loja">
-      {{ store?.name }}
-      <ion-icon
-        *ngIf="store?.isVerified"
-        name="checkmark-circle"
-        class="verified-icon"
-        color="primary"
-      ></ion-icon>
-    </h2>
+      <div class="store-meta">
+        <div class="store-row">
+          <div class="title-block">
+            <h2 class="nome-loja">
+              {{ store?.name }}
+              <ion-icon
+                *ngIf="store?.isVerified"
+                name="checkmark-circle"
+                class="verified-icon"
+                color="primary"
+              ></ion-icon>
+            </h2>
+            <p class="descricao-loja">{{ store?.subtitle }}</p>
+          </div>
 
-    <p class="descricao-loja">{{ store?.subtitle }}</p>
+          <div class="store-badges"></div>
+        </div>
+
+        <div class="store-actions" aria-hidden="true"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -127,7 +143,9 @@
         <div class="info-column">
           <div class="info-row top-row">
             <div class="name-section">
-              <h2 class="nome-profissional">{{ professional.name + ' ' + professional.lastName }} </h2>
+              <h2 class="nome-profissional">
+                {{ professional.name + ' ' + professional.lastName }}
+              </h2>
               <div class="professional-badges">
                 <ion-badge
                   [color]="professional.useAgenda ? 'secondary' : 'primary'"
@@ -153,10 +171,10 @@
                 class="status-badge"
                 [ngClass]="getStatusClass(professional.status)"
               >
-                <ion-icon [name]="getStatusIcon(professional.status)"></ion-icon>
-                <span>
-                  {{ getStatusText(professional) }}
-                </span>
+                <ion-icon
+                  [name]="getStatusIcon(professional.status)"
+                ></ion-icon>
+                <span> {{ getStatusText(professional) }} </span>
                 <ion-icon
                   *ngIf="professional.status === StatusQueueEnum.paused"
                   name="help-circle-outline"
@@ -171,7 +189,7 @@
               <p class="nome-fila">{{ professional.queueName }}</p>
               <p class="subtitulo">{{ professional.subtitle }}</p>
             </div>
-            
+
             <div class="rating-section" *ngIf="shouldShowRating(professional)">
               <div class="stars">
                 <ion-icon
@@ -215,7 +233,8 @@
                 >
                   <ion-icon name="hourglass-outline" color="medium"></ion-icon>
                   <span>
-                    {{ formatWaitingTime(professional.averageServiceTime) }} por serviço
+                    {{ formatWaitingTime(professional.averageServiceTime) }} por
+                    serviço
                   </span>
                 </div>
               </div>
@@ -230,19 +249,16 @@
                 <ion-label>{{ professional.servicesProvided }}</ion-label>
               </ion-chip>
 
-              <ion-chip 
-                *ngIf="!professional.useAgenda"
-                class="time-chip"
-              >
+              <ion-chip *ngIf="!professional.useAgenda" class="time-chip">
                 <ion-icon name="time-outline"></ion-icon>
                 <ion-label>
                   {{ formatWaitingTime(professional.averageWaitingTime) }}
                 </ion-label>
               </ion-chip>
 
-              <ion-chip 
+              <ion-chip
                 *ngIf="professional.useAgenda"
-                class="schedule-chip" 
+                class="schedule-chip"
                 color="secondary"
               >
                 <ion-icon name="calendar-outline"></ion-icon>
