@@ -1,69 +1,50 @@
-<ion-footer class="menu-fixed-bottom">
-  <div class="content-menu-border">
-    <div class="footer-item">
-      <div class="icon-wrapper">
-        <ion-icon
-          name="home-outline"
-          aria-label="Início"
-          (click)="goToHome(true)"
-        ></ion-icon>
-        <span class="footer-label">Início</span>
+<div class="custom-footer-fixed">
+  <div class="footer-container">
+    <div 
+      class="footer-button" 
+      [class.active]="activeButton === 'home'"
+      (click)="goToHome(true); setActive('home')">
+      <ion-icon name="home-outline"></ion-icon>
+      <span *ngIf="activeButton !== 'home'">Início</span>
+    </div>
+
+    <div 
+      class="footer-button" 
+      [class.active]="activeButton === 'cart'"
+      (click)="goToPromotions(); setActive('cart')">
+      <ion-icon name="cart-outline"></ion-icon>
+      <span *ngIf="activeButton !== 'cart'">Feirinha <br> do Bairro</span>
+    </div>
+
+    <div class="footer-button central" (click)="goToHome()">
+      <div class="central-icon fila-notification-wrapper">
+        <ion-icon *ngIf="profile === 0 || !userFromSession?.useAgenda" name="people-outline"></ion-icon>
+        <ion-icon *ngIf="profile > 0 && userFromSession?.useAgenda" name="calendar-outline"></ion-icon>
+        <span class="notification-badge" *ngIf="total > 0">{{ total }}</span>
+      </div>
+      <div class="central-labels">
+        <span *ngIf="profile === 0 || !userFromSession?.useAgenda" class="central-menu">Filas</span>
+        <span *ngIf="profile > 0 && userFromSession?.useAgenda" class="central-menu">Agenda</span>
       </div>
     </div>
 
-    <div class="footer-item">
-      <div class="icon-wrapper">
-        <!-- <span class="coming-soon-badge">EM BREVE</span> -->
-        <ion-icon
-          name="cart-outline"
-          (click)="goToPromotions()"
-          aria-label="Promoções"
-        ></ion-icon>
-        <span class="footer-label">Feirinha do Bairro</span>
-      </div>
-    </div>
-
-    <div class="placeholder"></div>
-
-    <div class="footer-item">
-      <div class="icon-wrapper notification-wrapper">
-        <ion-icon
-          name="notifications-outline"
-          aria-label="Notificações"
-          (click)="goToNotifications()"
-        ></ion-icon>
-        <span
-          class="notification-badge"
-          *ngIf="notificationsCount$ | async as contador"
-          [hidden]="contador === 0"
-        >
-          {{ contador }}
-        </span>
-        <span class="footer-label">Notificações</span>
-      </div>
-    </div>
-
-    <div class="footer-item">
-      <div class="icon-wrapper">
-        <ion-icon
-          name="menu-outline"
-          aria-label="Menu"
-          (click)="openMenu()"
-        ></ion-icon>
-        <span class="footer-label">Menu</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="go-fila-central" (click)="goToHome()">
-    <div class="fila-button fila-notification-wrapper">
-      <ion-icon *ngIf="this.profile === 0 || !userFromSession?.useAgenda" name="people-outline" aria-label="Filas"></ion-icon>
-      <ion-icon *ngIf="this.profile > 0 && userFromSession?.useAgenda" name="calendar-outline" aria-label="Filas"></ion-icon>
-      <span class="notification-badge" *ngIf="total > 0">
-        {{ total }}
+    <div 
+      class="footer-button" 
+      [class.active]="activeButton === 'notifications'"
+      (click)="goToNotifications(); setActive('notifications')">
+      <ion-icon name="notifications-outline"></ion-icon>
+      <span *ngIf="activeButton !== 'notifications'">Notificações</span>
+      <span class="notification-badge" *ngIf="notificationsCount$ | async as contador" [hidden]="contador === 0">
+        {{ contador }}
       </span>
     </div>
-    <span *ngIf="this.profile === 0 || !userFromSession?.useAgenda" class="footer-label">Fila</span>
-    <span *ngIf="this.profile > 0 && userFromSession?.useAgenda" class="footer-label">Agenda</span>
+
+    <div 
+      class="footer-button" 
+      [class.active]="activeButton === 'menu'"
+      (click)="openMenu(); setActive('menu')">
+      <ion-icon name="menu-outline"></ion-icon>
+      <span *ngIf="activeButton !== 'menu'">Menu</span>
+    </div>
   </div>
-</ion-footer>
+</div>

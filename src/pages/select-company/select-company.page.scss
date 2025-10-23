@@ -503,3 +503,7 @@ ion-content::part(scroll)::-webkit-scrollbar {
   z-index: 4;
   border: 2px solid white;
 }
+
+.modern-content {
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
+}

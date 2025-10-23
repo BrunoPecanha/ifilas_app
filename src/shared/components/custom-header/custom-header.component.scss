@@ -1,72 +1,53 @@
-ion-toolbar.toolbar {
-  --background: #ffffff;
-  --min-height: 64px;
-  --border-width: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  border-radius: 0 0 16px 16px; 
-}
-
-.header-content {
+.floating-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: transparent !important;
+  --background: transparent !important;
+  z-index: 999;
   padding-top: env(safe-area-inset-top);
-  background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+  pointer-events: none;
 }
 
-ion-buttons {
-  align-items: center;
-}
-
-.circle-btn {
-  --padding-start: 8px;
-  --padding-end: 8px;
-  --background-hover: rgba(0, 0, 0, 0.05);
-  --background-activated: rgba(0, 0, 0, 0.1);
-  --border-radius: 50%;
-  transition: transform 0.2s ease;
-}
-
-.circle-btn:active {
-  transform: scale(0.9);
-}
-
-.start-button {
-  --color: var(--ion-color-medium);
-}
-
-.end-button {
-  --color: var(--ion-color-danger);
-}
-
-.play-icon {
-  color: var(--ion-color-success);
-}
-
-.pause-icon {
-  color: var(--ion-color-warning);
-}
-
-.title-container {
+.floating-toolbar {
+  --background: transparent !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  pointer-events: all; 
+}
+
+.icon-wrapper {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
 
-.title-container .title {
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 22px;
+.icon-wrapper ion-icon {
+  font-size: 20px;
   color: #1c1c1e;
-  letter-spacing: 0.2px;
 }
 
-.title-container .subtitle {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ion-color-medium);
-  margin-top: 3px;
-  letter-spacing: 0.3px;
+.icon-wrapper:active {
+  transform: scale(0.9);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
 }
 
-ion-icon[slot="icon-only"].disabled-icon {
-  opacity: 0.4;
+ion-spinner {
+  width: 20px;
+  height: 20px;
 }

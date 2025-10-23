@@ -17,7 +17,8 @@ export class FooterMenuComponent implements OnInit {
   profile = 0;
   store: StoreModel | null = null;
   userFromSession: any;
-  total: number = 0;
+  total: number = 0;  
+  activeButton: string = 'home';
 
   constructor(
     private notificationService: NotificationService,
@@ -54,7 +55,7 @@ export class FooterMenuComponent implements OnInit {
         });
       } else if (this.profile === 1) {
         this.router.navigate(
-          [main && this.store?.releaseOrdersBeforeGetsQueued ? '/order-approval' :  !this.userFromSession.useAgenda ? '/customer-list-in-queue' : '/owner-schedule' ],
+          [main && this.store?.releaseOrdersBeforeGetsQueued ? '/order-approval' : !this.userFromSession.useAgenda ? '/customer-list-in-queue' : '/owner-schedule'],
           { replaceUrl: true, state: { redirectedFromBack: true } }
         );
       } else if (this.profile === 2) {
@@ -76,6 +77,11 @@ export class FooterMenuComponent implements OnInit {
   goToPromotions() {
     //this.navController.navigateForward('/promotions');
   }
+
+  setActive(button: string) {
+    this.activeButton = button;
+  }
+
 
   openMenu() {
     const menu = document.querySelector('ion-menu');

@@ -927,7 +927,7 @@ ion-content::part(scroll) {
 
   .logo-loja {
     width: 90px;
-    height: 80px;
+    height: 85px;
     border-width: 5px;
     border-radius: 50px;
   }
@@ -985,4 +985,8 @@ ion-content::part(scroll) {
   border-radius: 60% 60% 0 0;
   z-index: 1;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.scroll-area {
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
 }

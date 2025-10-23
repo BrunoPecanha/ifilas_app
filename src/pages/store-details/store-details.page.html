@@ -26,49 +26,52 @@
         <div class="banner-overlay"></div>
       </div>
 
-      <div class="store-identity">
-        <div class="logo-container">
-          <ng-container *ngIf="store.logoPath; else defaultLogo">
-            <img [src]="store.logoPath" alt="Logo da loja" class="store-logo" />
-          </ng-container>
-          <ng-template #defaultLogo>
-            <div class="store-logo default-logo">
-              <ion-icon name="business"></ion-icon>
-            </div>
-          </ng-template>
-        </div>
-
-        <div class="store-info">
-          <h1 class="store-name">
-            {{ store.name }}
-            <ion-icon
-              *ngIf="store?.isVerified"
-              name="checkmark-circle"
-              class="verified-icon"
-              color="primary"
-            ></ion-icon>
-          </h1>
-
-          <p class="store-subtitle">{{ store.storeSubtitle }}</p>
-
-          <div class="store-likes" (click)="toggleLike(store, $event)">
-            <ion-icon
-              [name]="liked ? 'heart' : 'heart-outline'"
-              [color]="liked ? 'danger' : 'medium'"
-            ></ion-icon>
-            <span>{{ store.votes || 0 }}</span>
+      <!-- CARD COM LOGO E INFORMAÇÕES -->
+      <div class="store-card">
+        <div class="store-identity">
+          <div class="logo-container">
+            <ng-container *ngIf="store.logoPath; else defaultLogo">
+              <img [src]="store.logoPath" alt="Logo da loja" class="store-logo" />
+            </ng-container>
+            <ng-template #defaultLogo>
+              <div class="store-logo default-logo">
+                <ion-icon name="business"></ion-icon>
+              </div>
+            </ng-template>
           </div>
 
-          <div class="highlights-container">
-            <ion-chip
-              *ngFor="let chip of store.highLights"
-              color="medium"
-              class="highlight-chip"
-              outline
-            >
-              <ion-icon [name]="chip.icon"></ion-icon>
-              <ion-label>{{ chip.phrase }}</ion-label>
-            </ion-chip>
+          <div class="store-info">
+            <h1 class="store-name">
+              {{ store.name }}
+              <ion-icon
+                *ngIf="store?.isVerified"
+                name="checkmark-circle"
+                class="verified-icon"
+                color="primary"
+              ></ion-icon>
+            </h1>
+
+            <p class="store-subtitle">{{ store.storeSubtitle }}</p>
+
+            <div class="store-likes" (click)="toggleLike(store, $event)">
+              <ion-icon
+                [name]="liked ? 'heart' : 'heart-outline'"
+                [color]="liked ? 'danger' : 'medium'"
+              ></ion-icon>
+              <span>{{ store.votes || 0 }}</span>
+            </div>
+
+            <div class="highlights-container">
+              <ion-chip
+                *ngFor="let chip of store.highLights"
+                color="medium"
+                class="highlight-chip"
+                outline
+              >
+                <ion-icon [name]="chip.icon"></ion-icon>
+                <ion-label>{{ chip.phrase }}</ion-label>
+              </ion-chip>
+            </div>
           </div>
         </div>
       </div>
