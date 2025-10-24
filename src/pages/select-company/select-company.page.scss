@@ -1211,14 +1211,38 @@ app-custom-header {
   margin-top: 0;
 }
 
-.section-header .filter-icon {
-  font-size: 22px;
-  color: #667eea;
-  cursor: pointer;
-  transition: transform 0.2s ease, color 0.2s ease;
+.promotional-banner.hidden {
+  opacity: 0;
+  transform: translateY(-40px);
+  height: 0;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
 }
 
-.section-header .filter-icon:hover {
-  color: #5a67d8;
-  transform: scale(1.1);
+.close-filters-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #edf2f7;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 101;
+  transition: all 0.2s ease;
+}
+
+.close-filters-btn ion-icon {
+  font-size: 18px;
+  color: #4a5568;
+}
+
+.close-filters-btn:hover {
+  background: #e2e8f0;
 }

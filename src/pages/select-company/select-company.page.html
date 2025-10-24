@@ -1,4 +1,4 @@
-<app-custom-header  
+<app-custom-header
   (showStartButton)="false"
   [endIconName]="searching ? 'close-outline' : 'search-outline'"
   (onEndClick)="toggleSearch()"
@@ -6,7 +6,7 @@
   startIconName="filter-outline"
 ></app-custom-header>
 
-<div class="promotional-banner">
+<div class="promotional-banner" [class.hidden]="bannerHidden">
   <div class="banner-curve-effect">
     <div class="curve"></div>
   </div>
@@ -39,6 +39,11 @@
     [class.expanded]="filtersExpanded"
     *ngIf="filtersExpanded"
   >
+    <!-- Botão de fechar -->
+    <button class="close-filters-btn" (click)="toggleFilters()">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+
     <div class="filters-content">
       <div class="filter-section">
         <h4 class="section-title">Categorias</h4>

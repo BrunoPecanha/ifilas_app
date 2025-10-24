@@ -33,6 +33,8 @@ export class SelectCompanyPage implements OnInit {
   selectedCategoryId: number | null = null;
   selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
   favoriteStores: StoreModel[] = [];
+  bannerHidden = false;
+  lastScrollTop = 0;
 
   loadingMore = false;
   currentPage = 1;
@@ -299,6 +301,22 @@ export class SelectCompanyPage implements OnInit {
     this.categoriesExpanded = !this.categoriesExpanded;
   }
 
+  onContentScroll(event: any) {
+    const scrollTop = event.detail.scrollTop;
+
+    // Quando rolar pra baixo além de 150px -> esconde
+    if (scrollTop > this.lastScrollTop && scrollTop > 150) {
+      this.bannerHidden = true;
+    }
+
+    // Quando rolar pra cima (mas não totalmente no topo) -> mostra
+    else if (scrollTop < this.lastScrollTop && scrollTop < 400) {
+      this.bannerHidden = false;
+    }
+
+    this.lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+  }
+
   toggleFilters() {
     this.filtersExpanded = !this.filtersExpanded;
   }
@@ -321,19 +339,19 @@ export class SelectCompanyPage implements OnInit {
     this.canScrollRight = element.scrollWidth > element.clientWidth + element.scrollLeft;
   }
 
-  async onContentScroll(event: any) {
-    const scrollElement = await event.target.getScrollElement();
-    const scrollHeight = scrollElement.scrollHeight;
-    const scrollTop = scrollElement.scrollTop;
-    const clientHeight = scrollElement.clientHeight;
+  // async onContentScroll(event: any) {
+  //   const scrollElement = await event.target.getScrollElement();
+  //   const scrollHeight = scrollElement.scrollHeight;
+  //   const scrollTop = scrollElement.scrollTop;
+  //   const clientHeight = scrollElement.clientHeight;
 
-    if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
-      this.hasMoreData &&
-      !this.loadingMore &&
-      !this.isLoading) {
-      this.loadMoreData();
-    }
-  }
+  //   if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
+  //     this.hasMoreData &&
+  //     !this.loadingMore &&
+  //     !this.isLoading) {
+  //     this.loadMoreData();
+  //   }
+  // }
 
   private loadMoreData() {
     this.loadingMore = true;
