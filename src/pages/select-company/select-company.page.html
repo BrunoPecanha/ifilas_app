@@ -1,10 +1,9 @@
-<app-custom-header
-  [showStartButton]="true"
+<app-custom-header  
+  (showStartButton)="false"
   [endIconName]="searching ? 'close-outline' : 'search-outline'"
   (onEndClick)="toggleSearch()"
-  (showStartButton)="true"
   (onStartClick)="toggleFilters()"
-  startIconName="menu-outline"
+  startIconName="filter-outline"
 ></app-custom-header>
 
 <div class="promotional-banner">
@@ -35,7 +34,6 @@
     ></ion-searchbar>
   </div>
 
-  <!-- Área dos filtros - inicialmente escondida -->
   <div
     class="collapsible-filters"
     [class.expanded]="filtersExpanded"
@@ -117,8 +115,12 @@
   <div class="content-container">
     <div class="favorite-stores-section" *ngIf="favoriteStores.length > 0">
       <div class="section-header">
-        <h3 class="section-title">Seus Favoritos</h3>
-        <a class="see-all-link" (click)="viewAllFavorites()">Ver todos</a>
+        <h3 class="section-title">Suas Lojas Favoritas</h3>
+        <ion-icon
+          name="filter-outline"
+          class="filter-icon"
+          (click)="toggleFilters()"
+        ></ion-icon>
       </div>
       <div class="favorite-stores-scroll">
         <div

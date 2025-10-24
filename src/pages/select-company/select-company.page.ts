@@ -197,14 +197,13 @@ export class SelectCompanyPage implements OnInit {
     this.loadFavoriteStores(userId);
   }
 
-  // Adicione este método para carregar lojas favoritadas
   private loadFavoriteStores(userId: number) {
-    this.service.loadStoresByCategoryId(1).subscribe({
+    this.service.getAllLikedStoresByUserId(userId).subscribe({
       next: (response) => {
         this.favoriteStores = response.data.map((store: StoreModel) => ({
           ...store,
           isNew: this.checkIfNew(store.createdAt),
-          liked: true, // São favoritos por definição
+          liked: true,
           minorQueue: store.minorQueue || false,
           distance: store.distance || this.calculateRandomDistance()
         } as StoreModel));

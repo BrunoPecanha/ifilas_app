@@ -1210,3 +1210,15 @@ app-custom-header {
   z-index: 1001;
   margin-top: 0;
 }
+
+.section-header .filter-icon {
+  font-size: 22px;
+  color: #667eea;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.section-header .filter-icon:hover {
+  color: #5a67d8;
+  transform: scale(1.1);
+}
