@@ -217,14 +217,11 @@ export class SelectCompanyPage implements OnInit {
     });
   }
 
-  // Adicione este método para ver todos os favoritos
   viewAllFavorites() {
-    // Aplica o filtro de favoritos
     this.selectedFilter = 'favorites';
     this.resetPagination();
     this.loadStores();
 
-    // Rola para a lista de empresas
     setTimeout(() => {
       const content = document.querySelector('ion-content');
       if (content) {
@@ -301,16 +298,23 @@ export class SelectCompanyPage implements OnInit {
     this.categoriesExpanded = !this.categoriesExpanded;
   }
 
-  onContentScroll(event: any) {
-    const scrollTop = event.detail.scrollTop;
+  async onContentScroll(event: any) {
+    const scrollElement = await event.target.getScrollElement();
 
-    // Quando rolar pra baixo além de 150px -> esconde
-    if (scrollTop > this.lastScrollTop && scrollTop > 150) {
-      this.bannerHidden = true;
+    const scrollHeight = scrollElement.scrollHeight;
+    const scrollTop = scrollElement.scrollTop;
+    const clientHeight = scrollElement.clientHeight;
+
+    if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
+      this.hasMoreData &&
+      !this.loadingMore &&
+      !this.isLoading) {
+      this.loadMoreData();
     }
 
-    // Quando rolar pra cima (mas não totalmente no topo) -> mostra
-    else if (scrollTop < this.lastScrollTop && scrollTop < 400) {
+    if (scrollTop > this.lastScrollTop && scrollTop > 150) {
+      this.bannerHidden = true;
+    } else if (scrollTop < this.lastScrollTop && scrollTop < 400) {
       this.bannerHidden = false;
     }
 
