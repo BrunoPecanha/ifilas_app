@@ -1,9 +1,10 @@
 <app-custom-header
-  [title]="'ESTABELECIMENTOS'"
-  [subtitle]="'Selecione um estabelecimento'"
-  [showEndButton]="true"
+  [showStartButton]="true"
   [endIconName]="searching ? 'close-outline' : 'search-outline'"
   (onEndClick)="toggleSearch()"
+  (showStartButton)="true"
+  (onStartClick)="toggleFilters()"
+  startIconName="menu-outline"
 ></app-custom-header>
 
 <div class="promotional-banner">
@@ -34,21 +35,12 @@
     ></ion-searchbar>
   </div>
 
-  <div class="collapsible-filters" [class.expanded]="filtersExpanded">
-    <div class="filters-header" (click)="toggleFilters()">
-      <div class="filters-title">
-        <ion-icon name="filter-outline" class="filter-icon"></ion-icon>
-        <span>Filtros</span>
-        <div class="active-filters-badge" *ngIf="hasActiveFilters()">
-          {{getActiveFiltersCount()}}
-        </div>
-      </div>
-      <ion-icon
-        [name]="filtersExpanded ? 'chevron-up-outline' : 'chevron-down-outline'"
-        class="toggle-icon"
-      ></ion-icon>
-    </div>
-
+  <!-- Área dos filtros - inicialmente escondida -->
+  <div
+    class="collapsible-filters"
+    [class.expanded]="filtersExpanded"
+    *ngIf="filtersExpanded"
+  >
     <div class="filters-content">
       <div class="filter-section">
         <h4 class="section-title">Categorias</h4>
