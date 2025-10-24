@@ -707,10 +707,7 @@ ion-searchbar {
   margin-top: 0;
 }
 
-.searchbar-container {
-  background: #fff;
-  border-bottom: 1px solid #e8ecef;
-}
+
 
 .modern-searchbar {
   --background: #f8f9fa;
@@ -775,10 +772,7 @@ app-custom-header {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.searchbar-container {
-  position: relative;
-  z-index: 101;
-}
+
 
 .collapsible-filters {
   position: relative;
@@ -1245,4 +1239,28 @@ app-custom-header {
 
 .close-filters-btn:hover {
   background: #e2e8f0;
+}
+
+.searchbar-container {
+  position: fixed;
+  top: -2px;
+  left: 0;
+  right: 0;
+  z-index: 9999; 
+  display: flex;
+  justify-content: center;
+  background: transparent;
+  pointer-events: none;
+}
+
+.searchbar-container ion-searchbar {
+  pointer-events: auto;
+  width: 88%;
+  margin-right: 57px;
+  border-radius: 30px;
+  --background: #fff;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --color: #2d3748;
+  --placeholder-color: #a0aec0;
+  transition: all 0.3s ease;
 }

@@ -6,6 +6,19 @@
   startIconName="filter-outline"
 ></app-custom-header>
 
+<!-- <div class="searchbar-container" *ngIf="searching">
+  <ion-searchbar
+    [(ngModel)]="searchQuery"
+    (ionInput)="onSearch($event)"
+    placeholder="Buscar estabelecimentos..."
+    debounce="500"
+    showCancelButton="focus"
+    animated
+    clear-input="true"
+    class="modern-searchbar"
+  ></ion-searchbar>
+</div> -->
+
 <div class="promotional-banner" [class.hidden]="bannerHidden">
   <div class="banner-curve-effect">
     <div class="curve"></div>
@@ -21,19 +34,6 @@
 </div>
 
 <div class="header-content">
-  <div class="searchbar-container" *ngIf="searching">
-    <ion-searchbar
-      [(ngModel)]="searchQuery"
-      (ionInput)="onSearch($event)"
-      placeholder="Buscar estabelecimentos..."
-      debounce="500"
-      showCancelButton="focus"
-      animated
-      clear-input="true"
-      class="modern-searchbar"
-    ></ion-searchbar>
-  </div>
-
   <div
     class="collapsible-filters"
     [class.expanded]="filtersExpanded"
