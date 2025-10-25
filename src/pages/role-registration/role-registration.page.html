@@ -1,12 +1,12 @@
 <app-custom-header
-  title="SELECIONE O PERFIL"
+  subtitle="SELECIONE O PERFIL"
   [showStartButton]="false"
   startIconName="arrow-back"
   routerLink="/queue-admin"
   [showEndButton]="false"
 ></app-custom-header>
 
-<ion-content fullscreen>
+<ion-content fullscreen class="role">
   <div class="container">
     <div class="cards-function">
       <ion-card class="box card-wrapper" (click)="redirect('/select-company', 0)">

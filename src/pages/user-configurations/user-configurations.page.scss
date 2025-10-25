@@ -322,3 +322,15 @@ ion-content::part(scroll) {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+ion-content::part(scroll)::-webkit-scrollbar {
+  display: none;
+}
+
+.ion-padding {
+  --background: #f8f9fa;
+  --padding-top: 0;
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
+  position: relative;
+  z-index: 1;
+}

@@ -32,6 +32,9 @@ export class SelectCompanyPage implements OnInit {
   searchQuery = '';
   selectedCategoryId: number | null = null;
   selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
+  favoriteStores: StoreModel[] = [];
+  bannerHidden = false;
+  lastScrollTop = 0;
 
   loadingMore = false;
   currentPage = 1;
@@ -72,19 +75,19 @@ export class SelectCompanyPage implements OnInit {
     });
   }
 
-  private loadStores() {
-    const user = this.session.getUser();
-    const userId = user?.id;
+  // private loadStores() {
+  //   const user = this.session.getUser();
+  //   const userId = user?.id;
 
-    if (!userId) {
-      console.warn('Usuário não logado');
-      this.displayedCompanies = [];
-      this.isEmptyResult = true;
-      return;
-    }
+  //   if (!userId) {
+  //     console.warn('Usuário não logado');
+  //     this.displayedCompanies = [];
+  //     this.isEmptyResult = true;
+  //     return;
+  //   }
 
-    this.loadFilteredStores(userId);
-  }
+  //   this.loadFilteredStores(userId);
+  // }
 
   private loadFilteredStores(userId: number) {
     this.isLoading = true;
@@ -180,6 +183,53 @@ export class SelectCompanyPage implements OnInit {
     }
   }
 
+  private loadStores() {
+    const user = this.session.getUser();
+    const userId = user?.id;
+
+    if (!userId) {
+      console.warn('Usuário não logado');
+      this.displayedCompanies = [];
+      this.favoriteStores = [];
+      this.isEmptyResult = true;
+      return;
+    }
+
+    this.loadFilteredStores(userId);
+    this.loadFavoriteStores(userId);
+  }
+
+  private loadFavoriteStores(userId: number) {
+    this.service.getAllLikedStoresByUserId(userId).subscribe({
+      next: (response) => {
+        this.favoriteStores = response.data.map((store: StoreModel) => ({
+          ...store,
+          isNew: this.checkIfNew(store.createdAt),
+          liked: true,
+          minorQueue: store.minorQueue || false,
+          distance: store.distance || this.calculateRandomDistance()
+        } as StoreModel));
+      },
+      error: (err) => {
+        console.error('Erro ao carregar lojas favoritadas:', err);
+        this.favoriteStores = [];
+      }
+    });
+  }
+
+  viewAllFavorites() {
+    this.selectedFilter = 'favorites';
+    this.resetPagination();
+    this.loadStores();
+
+    setTimeout(() => {
+      const content = document.querySelector('ion-content');
+      if (content) {
+        content.scrollToTop(500);
+      }
+    }, 100);
+  }
+
   toggleLike(card: StoreModel, event: MouseEvent): void {
     event.stopPropagation();
 
@@ -248,6 +298,33 @@ export class SelectCompanyPage implements OnInit {
     this.categoriesExpanded = !this.categoriesExpanded;
   }
 
+  openExplore(){
+    this.router.navigate(['/explore']);
+  }
+
+  async onContentScroll(event: any) {
+    const scrollElement = await event.target.getScrollElement();
+
+    const scrollHeight = scrollElement.scrollHeight;
+    const scrollTop = scrollElement.scrollTop;
+    const clientHeight = scrollElement.clientHeight;
+
+    if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
+      this.hasMoreData &&
+      !this.loadingMore &&
+      !this.isLoading) {
+      this.loadMoreData();
+    }
+
+    if (scrollTop > this.lastScrollTop && scrollTop > 150) {
+      this.bannerHidden = true;
+    } else if (scrollTop < this.lastScrollTop && scrollTop < 400) {
+      this.bannerHidden = false;
+    }
+
+    this.lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+  }
+
   toggleFilters() {
     this.filtersExpanded = !this.filtersExpanded;
   }
@@ -270,19 +347,19 @@ export class SelectCompanyPage implements OnInit {
     this.canScrollRight = element.scrollWidth > element.clientWidth + element.scrollLeft;
   }
 
-  async onContentScroll(event: any) {
-    const scrollElement = await event.target.getScrollElement();
-    const scrollHeight = scrollElement.scrollHeight;
-    const scrollTop = scrollElement.scrollTop;
-    const clientHeight = scrollElement.clientHeight;
+  // async onContentScroll(event: any) {
+  //   const scrollElement = await event.target.getScrollElement();
+  //   const scrollHeight = scrollElement.scrollHeight;
+  //   const scrollTop = scrollElement.scrollTop;
+  //   const clientHeight = scrollElement.clientHeight;
 
-    if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
-      this.hasMoreData &&
-      !this.loadingMore &&
-      !this.isLoading) {
-      this.loadMoreData();
-    }
-  }
+  //   if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
+  //     this.hasMoreData &&
+  //     !this.loadingMore &&
+  //     !this.isLoading) {
+  //     this.loadMoreData();
+  //   }
+  // }
 
   private loadMoreData() {
     this.loadingMore = true;

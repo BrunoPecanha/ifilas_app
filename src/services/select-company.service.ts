@@ -30,6 +30,10 @@ export class SelectCompanyService {
     return this.http.get<StoreListResponse>(`${this.apiUrl}/store/all`);
   }
 
+  getAllLikedStoresByUserId(id: number): Observable<StoreListResponse> {
+    return this.http.get<StoreListResponse>(`${this.apiUrl}/favorite/liked-stores/${id}`);
+  }
+
   loadFilteredStores(
     userId: number,
     categoryId?: number | null,

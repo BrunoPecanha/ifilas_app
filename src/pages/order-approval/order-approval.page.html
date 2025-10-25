@@ -1,10 +1,10 @@
 <app-custom-header
-  title="APROVAÇÃO DE PEDIDOS"
+  subtitle="APROVAÇÃO DE PEDIDOS"
   [subtitle]="(currentDate | date:'dd/MM/yyyy') || ''"
   [showEndButton]="false"
 ></app-custom-header>
 
-<ion-content>
+<ion-content class="ion-padding">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-outline"

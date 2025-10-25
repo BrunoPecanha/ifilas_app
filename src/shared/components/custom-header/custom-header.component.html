@@ -1,25 +1,20 @@
-<ion-header class="header-content">
-  <ion-toolbar class="toolbar">
-
+<ion-header class="floating-header" mode="ios">
+  <ion-toolbar class="floating-toolbar">
     <ion-buttons slot="start">
-      <ion-button 
+      <ion-button
         *ngIf="showStartButton"
         fill="clear"
-        class="circle-btn start-button"
+        class="icon-wrapper"
         (click)="handleStartButtonClick()"
         [disabled]="startDisabled || startLoading"
       >
         <ng-container *ngIf="!startLoading; else startSpinner">
-          <ion-icon 
-            [name]="startIconName"
-            slot="icon-only"
-          ></ion-icon>
+          <ion-icon [name]="startIconName" slot="icon-only"></ion-icon>
         </ng-container>
         <ng-template #startSpinner>
           <ion-spinner name="crescent" slot="icon-only"></ion-spinner>
         </ng-template>
       </ion-button>
-
       <ng-content select="[left-buttons]"></ng-content>
     </ion-buttons>
 
@@ -30,31 +25,14 @@
 
     <ion-buttons slot="end">
       <ion-button
-        *ngIf="showPausePlayButton"
-        fill="clear"
-        class="circle-btn"
-        (click)="onPausePlayClick.emit()"
-      >
-        <ion-icon 
-          [name]="isPaused ? 'play' : 'pause'"
-          slot="icon-only"
-          [class.play-icon]="isPaused"
-          [class.pause-icon]="!isPaused"
-        ></ion-icon>
-      </ion-button>
-
-      <ion-button
         *ngIf="showEndButton"
         fill="clear"
-        class="circle-btn end-button"
+        class="icon-wrapper"
         (click)="!endDisabled && !endLoading && onEndClick.emit()"
         [disabled]="endDisabled || endLoading"
       >
         <ng-container *ngIf="!endLoading; else endSpinner">
-          <ion-icon 
-            [name]="endIconName"
-            slot="icon-only"
-          ></ion-icon>
+          <ion-icon [name]="endIconName" slot="icon-only"></ion-icon>
         </ng-container>
         <ng-template #endSpinner>
           <ion-spinner name="crescent" slot="icon-only"></ion-spinner>
@@ -63,6 +41,5 @@
 
       <ng-content select="[right-buttons]"></ng-content>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>

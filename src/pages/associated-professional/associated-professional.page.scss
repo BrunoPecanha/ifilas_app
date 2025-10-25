@@ -16,7 +16,6 @@
   letter-spacing: 0.5px;
 }
 
-
 .invite-section {
   background: white;
   border-radius: 12px;
@@ -37,7 +36,6 @@
   height: 48px;
   font-weight: 500;
 }
-
 
 .team-section,
 .invites-section,
@@ -60,7 +58,7 @@
   align-items: center;
   padding: 12px 0;
   border-bottom: 1px solid #f0f0f0;
-  
+
   &:last-child {
     border-bottom: none;
   }
@@ -75,7 +73,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   ion-icon {
     font-size: 24px;
   }
@@ -83,7 +81,7 @@
 
 .member-avatar {
   background: #f0f0f0;
-  
+
   ion-icon {
     color: var(--ion-color-medium);
   }
@@ -91,7 +89,7 @@
 
 .invite-avatar {
   background: #fff8e1;
-  
+
   ion-icon {
     color: #ffa000;
   }
@@ -99,7 +97,7 @@
 
 .establishment-avatar {
   background: #e0e7ff;
-  
+
   ion-icon {
     color: var(--ion-color-primary);
   }
@@ -136,7 +134,7 @@
   --padding-end: 0;
   width: 36px;
   height: 36px;
-  
+
   ion-icon {
     font-size: 20px;
   }
@@ -151,7 +149,6 @@
   gap: 4px;
 }
 
-
 .empty-state {
   text-align: center;
   padding: 40px 20px;
@@ -159,19 +156,19 @@
   border-radius: 12px;
   margin-top: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  
+
   .empty-icon {
     font-size: 48px;
     color: var(--ion-color-medium);
     margin-bottom: 16px;
   }
-  
+
   h3 {
     font-size: 1.1rem;
     color: #333;
     margin-bottom: 8px;
   }
-  
+
   p {
     font-size: 0.9rem;
     color: var(--ion-color-medium);
@@ -179,20 +176,19 @@
   }
 }
 
-
 @media (min-width: 600px) {
   .management-content {
     --padding-start: 24px;
     --padding-end: 24px;
   }
-  
+
   .invite-section,
   .team-section,
   .invites-section,
   .associated-section {
     padding: 20px;
   }
-  
+
   .team-member,
   .invite-item,
   .establishment-item {
@@ -201,8 +197,14 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .team-member,
@@ -216,3 +218,10 @@ ion-content::part(scroll) {
   -ms-overflow-style: none;
 }
 
+.management-content {
+  --background: #f8f9fa;
+  --padding-top: calc(70px + env(safe-area-inset-top));
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
+  position: relative;
+  z-index: 1;
+}

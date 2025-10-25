@@ -1,12 +1,11 @@
 <app-custom-header
-  [title]="'MINHAS FILAS'"
   [showStartButton]="true"
   [startIconName]="'arrow-back-outline'"
   [showEndButton]="false"
   [subtitle]="(queueInfo?.businessName + ' -  Sua posição: ' + queueInfo?.position)"
 ></app-custom-header>
 
-<ion-content #chatContainer>
+<ion-content #chatContainer class="ion-padding">
   <div class="chat-messages">
     <div
       *ngFor="let message of messages"

@@ -395,8 +395,6 @@ export class OwnerSchedulePage implements OnInit {
     this.loadAgenda();
   }
 
-
-
   getConsolidatedStats() {
     const appointments = this.getAllCustomers(); 
 
