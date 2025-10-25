@@ -6,30 +6,28 @@
   startIconName="filter-outline"
 ></app-custom-header>
 
-<!-- <div class="searchbar-container" *ngIf="searching">
-  <ion-searchbar
-    [(ngModel)]="searchQuery"
-    (ionInput)="onSearch($event)"
-    placeholder="Buscar estabelecimentos..."
-    debounce="500"
-    showCancelButton="focus"
-    animated
-    clear-input="true"
-    class="modern-searchbar"
-  ></ion-searchbar>
-</div> -->
-
 <div class="promotional-banner" [class.hidden]="bannerHidden">
-  <div class="banner-curve-effect">
-    <div class="curve"></div>
-  </div>
-  <div class="banner-background">
-    <div class="banner-overlay"></div>
-  </div>
+  <div class="banner-curve top-curve"></div>
+  <div class="banner-curve bottom-curve"></div>
   <div class="banner-content">
     <div class="banner-text">
-      <h2 class="banner-title">ESPAÇO PARA PROPAGANDA!</h2>
+      <h2 class="banner-title">Ganhe tempo com <br/>o NexTu!</h2>
+      <p class="banner-subtitle">
+        Entre na fila de onde estiver e seja avisado de tudo que acontece no estabelecimento até a sua vez !
+      </p>
     </div>
+    <div class="mascot-container">
+      <img
+        src="assets/images/banner/mascote.png"
+        alt="Mascote NexTu"
+        class="mascot"
+      />
+    </div>
+  </div>
+  <div class="banner-decoration">
+    <div class="decoration-circle circle-1"></div>
+    <div class="decoration-circle circle-2"></div>
+    <div class="decoration-circle circle-3"></div>
   </div>
 </div>
 
@@ -119,7 +117,7 @@
   <div class="content-container">
     <div class="favorite-stores-section" *ngIf="favoriteStores.length > 0">
       <div class="section-header">
-        <h3 class="section-title">Suas Lojas Favoritas</h3>
+        <h3 class="section-title">Lojas Curtidas</h3>
         <ion-icon
           name="filter-outline"
           class="filter-icon"

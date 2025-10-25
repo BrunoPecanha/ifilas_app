@@ -298,6 +298,10 @@ export class SelectCompanyPage implements OnInit {
     this.categoriesExpanded = !this.categoriesExpanded;
   }
 
+  openExplore(){
+    this.router.navigate(['/explore']);
+  }
+
   async onContentScroll(event: any) {
     const scrollElement = await event.target.getScrollElement();
 

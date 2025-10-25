@@ -1,6 +1,5 @@
 <app-custom-header
-  [title]="'FILA ATUAL'"
-  [subtitle]="'Clientes aguardando atendimento'"
+  [subtitle]="'FILA ATUAL'"
   [showStartButton]="true"
   [startIconName]="'arrow-back-outline'"
   [endLoading]="isLoading"
@@ -12,6 +11,7 @@
 </app-custom-header>
 
 <ion-content
+  class="ion-padding"
   [class.content-paused]="isPaused"
   (ionScroll)="onContentScroll($event)"
 >

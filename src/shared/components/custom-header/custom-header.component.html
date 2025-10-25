@@ -1,6 +1,5 @@
 <ion-header class="floating-header" mode="ios">
   <ion-toolbar class="floating-toolbar">
-
     <ion-buttons slot="start">
       <ion-button
         *ngIf="showStartButton"
@@ -18,6 +17,11 @@
       </ion-button>
       <ng-content select="[left-buttons]"></ng-content>
     </ion-buttons>
+
+    <ion-title class="title-container">
+      <div class="title">{{ title }}</div>
+      <div *ngIf="subtitle" class="subtitle">{{ subtitle }}</div>
+    </ion-title>
 
     <ion-buttons slot="end">
       <ion-button
@@ -37,6 +41,5 @@
 
       <ng-content select="[right-buttons]"></ng-content>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
