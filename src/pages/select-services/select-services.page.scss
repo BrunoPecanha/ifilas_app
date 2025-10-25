@@ -562,13 +562,11 @@ ion-content::part(scroll) {
   }
 }
 
-/* ===== estilos existentes mantidos / base ===== */
 .services-content {
   --background: #f8f9fa;
-  padding: 12px 16px 120px 16px; /* espaço extra pro floating cart */
+  padding: 12px 16px 120px 16px; 
 }
 
-/* summary bar */
 .summary-bar {
   background: linear-gradient(135deg, var(--ion-color-primary), #5d6afe);
   border-radius: 16px;
