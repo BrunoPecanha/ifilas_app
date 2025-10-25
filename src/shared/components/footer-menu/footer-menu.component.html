@@ -10,15 +10,17 @@
     </div>
 
     <div
-      class="footer-button"
+      class="footer-button feirinha-container"
       [class.active]="activeButton === 'cart'"
-      (click)="goToPromotions(); setActive('cart')"
     >
-      <ion-icon name="cart-outline"></ion-icon>
-      <span *ngIf="activeButton !== 'cart'"
-        >Feirinha <br />
-        do Bairro</span
-      >
+      <div class="feirinha-wrapper">
+        <div class="coming-soon-banner">Em breve</div>
+        <ion-icon name="cart-outline"></ion-icon>
+        <span *ngIf="activeButton !== 'cart'"
+          >Feirinha <br/>do Bairro 
+         </span
+        >
+      </div>
     </div>
 
     <div class="footer-button central" (click)="goToHome()">
