@@ -163,9 +163,8 @@ export class OwnerSchedulePage implements OnInit {
       slot.customers.length > 0 ||
       (slot.customers.length === 0 && this.showEmptySlots())
     );
-
-    // Opcional: recolher os filtros após aplicar
-    // this.showFilters = false;
+    
+     this.showFilters = false;
   }
 
   passesStatusFilter(customer: any): boolean {
