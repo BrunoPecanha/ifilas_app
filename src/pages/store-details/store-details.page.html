@@ -1,4 +1,3 @@
-<!-- HTML ATUALIZADO -->
 <app-custom-header
   title="LOJA"
   [showStartButton]="true"
@@ -57,6 +56,14 @@
                 <p class="descricao-loja">{{ store.storeSubtitle }}</p>
               </div>
 
+              <div class="store-likes" (click)="toggleLike(store, $event)">
+                <ion-icon
+                  [name]="liked ? 'heart' : 'heart-outline'"
+                  [color]="liked ? 'danger' : 'medium'"
+                ></ion-icon>
+                <span>{{ store.votes || 0 }}</span>
+              </div>
+
               <div class="store-badges"></div>
             </div>
 
@@ -66,7 +73,6 @@
       </div>
     </div>
 
-    <!-- ABAIXO DESTA LINHA NÃO MEXER -->
     <div class="store-details-section">
       <div class="navigation-section">
         <div class="filter-buttons clean">
