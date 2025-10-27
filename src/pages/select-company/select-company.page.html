@@ -27,7 +27,6 @@
   </div>
 </div>
 
-<!-- Barra de Pesquisa Corrigida -->
 <div class="floating-search" [class.active]="searching">
   <div class="search-container">
     <ion-searchbar
@@ -123,11 +122,9 @@
   </ion-refresher>
 
   <div class="content-container">
-    <!-- Seção de Categorias Corrigida -->
     <div class="categories-section">
       <div class="section-header">
         <h3 class="section-title">Categorias</h3>
-        <a class="see-all" (click)="toggleCategories()">Ver todas</a>
       </div>
       <div class="categories-scroll">
         <div
@@ -144,7 +141,6 @@
       </div>
     </div>
 
-    <!-- Seção de Lojas Curtidas Corrigida -->
     <div class="favorite-stores-section" *ngIf="favoriteStores.length > 0">
       <div class="section-header">
         <h3 class="section-title">Seus favoritos</h3>
@@ -185,14 +181,13 @@
                 <ion-icon name="star"></ion-icon>
                 {{ store.rating || '0' }}
               </span>
-              <span class="distance">{{ store.distance }} m</span>
+              <span class="distance">{{ store.distance }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Cards de Estabelecimentos Corrigidos -->
     <div *ngIf="!isLoading && !isEmptyResult" class="companies-container">
       <div class="results-header">
         <span class="results-count"
@@ -250,12 +245,7 @@
                     </div>
                   </ng-template>
                 </div>
-                <button class="like-btn" (click)="toggleLike(card, $event)">
-                  <ion-icon
-                    [name]="card.liked ? 'heart' : 'heart-outline'"
-                    [class.liked]="card.liked"
-                  ></ion-icon>
-                </button>
+                <span class="distance">{{ card.distance }} m</span>
               </div>
 
               <div class="info-section">
@@ -268,7 +258,12 @@
                       class="verified-badge"
                     ></ion-icon>
                   </h3>
-                  <span class="distance">{{ card.distance }} m</span>
+                  <button class="like-btn" (click)="toggleLike(card, $event)">
+                    <ion-icon
+                      [name]="card.liked ? 'heart' : 'heart-outline'"
+                      [class.liked]="card.liked"
+                    ></ion-icon>
+                  </button>
                 </div>
 
                 <div class="company-meta">
@@ -290,8 +285,6 @@
                       card.nextHourOnAgenda : 'Sem horários' }}
                     </span>
                   </div>
-
-                  <!-- Removido o estimatedTime que não existe no StoreModel -->
                 </div>
               </div>
             </div>
@@ -303,12 +296,6 @@
         <ion-spinner name="crescent"></ion-spinner>
         <span>Carregando mais...</span>
       </div>
-    </div>
-
-    <!-- Estados de carregamento e vazio (mantidos) -->
-    <div *ngIf="isLoading" class="state-container">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Carregando estabelecimentos...</p>
     </div>
 
     <div *ngIf="!isLoading && isEmptyResult" class="state-container">
