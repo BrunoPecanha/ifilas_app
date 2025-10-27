@@ -39,6 +39,11 @@ export interface SlotModel {
     isBooked: boolean;
 }
 
+export interface SlotReducedModel {
+    time: string;
+    available: boolean;  
+}
+
 export interface ServiceBookedModel {
     [serviceName: string]: number;
 }
