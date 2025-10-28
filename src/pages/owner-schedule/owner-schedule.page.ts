@@ -1,6 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { ScheduleService } from "src/services/schedule.service";
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { UserModel } from "src/models/user-model";
+import { SessionService } from "src/services/session.service";
+import { StoreModel } from "src/models/store-model";
+import { ToastService } from "src/services/toast.service";
 
 @Component({
   selector: "app-owner-schedule",
@@ -17,87 +21,207 @@ export class OwnerSchedulePage implements OnInit {
   trashHover = false;
   isDragging = false;
   searchQuery = '';
+  isLoading = false;
+  user!: UserModel;
+  store!: StoreModel;
   searching = false;
   showFilters: boolean = false;
   viewMode: 'grid' | 'list' = 'grid';
   filteredAppointments: any[] = [];
 
   statusFilters = [
-    { value: 'confirmed', label: 'Confirmado', selected: true, count: 0, color: 'success' },
-    { value: 'pending', label: 'Pendente', selected: true, count: 0, color: 'warning' },
-    { value: 'completed', label: 'Realizado', selected: true, count: 0, color: 'primary' },
-    { value: 'cancelled', label: 'Cancelado', selected: false, count: 0, color: 'danger' }
+    { value: 'waiting', label: 'Aguardando', selected: false, count: 0, color: 'medium' },
+    { value: 'pending', label: 'Pendente', selected: false, count: 0, color: 'warning' },
+    { value: 'confirmed', label: 'Confirmado', selected: false, count: 0, color: 'success' },
+    { value: 'inservice', label: 'Em Atendimento', selected: false, count: 0, color: 'primary' },
+    { value: 'done', label: 'Realizado', selected: false, count: 0, color: 'primary' },
+    { value: 'absent', label: 'Ausente', selected: false, count: 0, color: 'danger' },
+    { value: 'cancelled', label: 'Cancelado', selected: false, count: 0, color: 'danger' },
+    { value: 'next', label: 'Próximo', selected: false, count: 0, color: 'secondary' },
+    { value: 'rejected', label: 'Rejeitado', selected: false, count: 0, color: 'danger' },
+    { value: 'scheduled', label: 'Agendado', selected: false, count: 0, color: 'tertiary' }
   ];
 
   serviceFilters: any[] = [];
 
-  ngOnInit() {
-    this.loadMockAgenda();
-    this.updateFilterCounts();
-    this.applyFilters();
+  constructor(private service: ScheduleService,
+    private sessionService: SessionService,
+    private toastController: ToastService
+  ) {
+    this.user = this.sessionService.getUser();
+    this.store = this.sessionService.getStore();
   }
 
-  loadMockAgenda() {
-    this.selectedTimeSlots = [
-      {
-        id: 1,
-        time: '09:00',
-        customers: [
-          {
-            id: 1,
-            name: 'João Silva',
-            avatar: 'https://i.pravatar.cc/100?img=1',
-            totalSlots: 2,
-            status: 'confirmed',
-            services: [
-              { name: 'Corte de cabelo', slots: 1, color: 'primary' },
-              { name: 'Barba', slots: 1, color: 'tertiary' },
-            ],
-          },
-        ],
-      },
-      {
-        id: 2,
-        time: '10:00',
-        customers: [
-          {
-            id: 2,
-            name: 'Maria Souza',
-            avatar: 'https://i.pravatar.cc/100?img=2',
-            totalSlots: 1,
-            status: 'pending',
-            services: [{ name: 'Coloração', slots: 1, color: 'success' }],
-          },
-        ],
-      },
-      {
-        id: 3,
-        time: '11:00',
-        customers: [
-          {
-            id: 3,
-            name: 'Carlos Oliveira',
-            avatar: 'https://i.pravatar.cc/100?img=3',
-            totalSlots: 3,
-            status: 'completed',
-            services: [
-              { name: 'Corte social', slots: 2, color: 'primary' },
-              { name: 'Hidratação', slots: 1, color: 'secondary' },
-            ],
+  ngOnInit() {
+    this.loadSchedulesForDate();
+  }
+
+  applyFilters(): void {
+    if (!this.selectedTimeSlots || this.selectedTimeSlots.length === 0) {
+      this.filteredTimeSlots = [];
+      return;
+    }
+
+    const hasStatusFilters = this.statusFilters.some(f => f.selected);
+    const hasServiceFilters = this.serviceFilters.some(f => f.selected);
+    const hasSearch = this.searchTerm.trim().length > 0;
+
+    if (!hasStatusFilters && !hasServiceFilters && !hasSearch) {
+      this.filteredTimeSlots = [...this.selectedTimeSlots];
+      this.updateFilterCounts();
+      return;
+    }
+
+    const activeStatus = this.statusFilters.filter(f => f.selected).map(f => f.value.toLowerCase());
+    const activeServices = this.serviceFilters.filter(f => f.selected).map(f => f.name.toLowerCase());
+    const term = this.searchTerm.toLowerCase();
+
+    this.filteredTimeSlots = this.selectedTimeSlots.map(slot => {
+      const filteredCustomers = slot.customers.filter((customer: any) => {
+        if (hasStatusFilters) {
+          const statusMatch = activeStatus.includes(customer.status.toLowerCase());
+          if (!statusMatch) return false;
+        }
+
+        if (hasServiceFilters) {
+          const serviceMatch = customer.services.some((s: any) =>
+            activeServices.includes(s.name.toLowerCase())
+          );
+          if (!serviceMatch) return false;
+        }
+
+        if (hasSearch) {
+          const nameMatch = customer.name.toLowerCase().includes(term);
+          const serviceMatch = customer.services.some((s: any) =>
+            s.name.toLowerCase().includes(term)
+          );
+          if (!nameMatch && !serviceMatch) return false;
+        }
+
+        return true;
+      });
+
+      return { ...slot, customers: filteredCustomers };
+    }).filter(slot => slot.customers.length > 0);
+
+    this.updateFilterCounts();
+    this.showFilters = false;
+  }
+
+  private loadSchedulesForDate() {
+    this.isLoading = true;
+    this.service.getOwnerAgendaForDate(this.store.id, this.user.id, this.selectedDate).subscribe({
+      next: (response) => {
+        const data = response.data;
+        if (!data) {
+          this.toastController.show('Nenhum dado encontrado', 'warning');
+          this.isLoading = false;
+          return;
+        }
+
+        this.selectedTimeSlots = data.slots.map(slot => ({
+          time: slot.time,
+          id: slot.time,
+          available: slot.available,
+          customers: []
+        }));
+
+        data.customers?.forEach(customer => {
+          const slotStart = customer.customerSelectedSlots?.slotStart;
+          const slotEnd = customer.customerSelectedSlots?.slotEnd;
+
+          if (!slotStart || !slotEnd)
+            return;
+
+          const slotStartShort = slotStart.substring(0, 5);
+          const slot = this.selectedTimeSlots.find(s => s.time === slotStartShort);
+
+          if (!slot)
+            return;
+
+          const totalSlots = this.calculateTotalSlots(slotStart, slotEnd, data.slots);
+
+          const mappedCustomer = {
+            id: customer.id,
+            name: customer.name,
+            avatar: customer.imageUrl || 'assets/default-avatar.png',
+            totalSlots,
+            status: this.mapStatus(customer.status ?? 0),
+            services: (customer.services || []).map(s => ({
+              name: s.name,
+              slots: s.quantity || 1,
+              color: this.getRandomServiceColor()
+            }))
+          };
+
+          slot.customers.push(mappedCustomer);
+
+          const startIndex = this.selectedTimeSlots.findIndex(s => s.time === slotStartShort);
+          for (let i = startIndex; i < startIndex + totalSlots && i < this.selectedTimeSlots.length; i++) {
+            this.selectedTimeSlots[i].available = false;
           }
-        ]
+        });
+
+        this.updateFilterCounts();
+        this.applyFilters();
+        this.isLoading = false;
       },
-      { id: 4, time: '12:00', customers: [] },
-      { id: 5, time: '13:00', customers: [] },
-    ];
+      error: (err) => {
+        console.error('Erro ao buscar agendamentos para o dia:', err);
+        this.toastController.show('Erro ao carregar agendamentos do dia', 'danger');
+        this.isLoading = false;
+      }
+    });
+  }
 
-    const allServices = this.selectedTimeSlots.flatMap(slot =>
-      slot.customers.flatMap((customer: any) => customer.services)
-    );
+  private calculateTotalSlots(slotStart: string, slotEnd: string, allSlots: any[]): number {
+    if (!slotStart || !slotEnd || allSlots.length < 2) return 1;
 
-    this.serviceFilters = [...new Map(allServices.map(service =>
-      [service.name, { ...service, selected: true, count: 0 }]
-    )).values()];
+    const toMinutes = (time: string) => {
+      const [h, m] = time.split(':').map(Number);
+      return h * 60 + m;
+    };
+
+    const start = toMinutes(slotStart.substring(0, 5));
+    const end = toMinutes(slotEnd.substring(0, 5));
+    if (end <= start) return 1;
+
+    const slotDurations: number[] = [];
+    for (let i = 1; i < allSlots.length; i++) {
+      const prev = toMinutes(allSlots[i - 1].time);
+      const curr = toMinutes(allSlots[i].time);
+      slotDurations.push(curr - prev);
+    }
+
+    const avgSlotDuration = slotDurations.length
+      ? slotDurations.reduce((a, b) => a + b, 0) / slotDurations.length
+      : 60;
+
+    const totalDuration = end - start;
+    const totalSlots = Math.ceil(totalDuration / avgSlotDuration);
+
+    return totalSlots > 0 ? totalSlots : 1;
+  }
+
+  private mapStatus(status: number): string {
+    const statusMap: { [key: number]: string } = {
+      0: 'waiting',
+      1: 'removed',
+      2: 'inservice',
+      3: 'done',
+      4: 'absent',
+      5: 'cancelled',
+      6: 'next',
+      7: 'pending',
+      8: 'rejected',
+      9: 'confirmed'
+    };
+    return statusMap[status] || 'pending';
+  }
+
+  private getRandomServiceColor(): string {
+    const colors = ['primary', 'secondary', 'tertiary', 'success', 'warning'];
+    return colors[Math.floor(Math.random() * colors.length)];
   }
 
   filterAppointments(event: any) {
@@ -119,17 +243,27 @@ export class OwnerSchedulePage implements OnInit {
 
   updateFilterCounts() {
     this.statusFilters.forEach(filter => {
-      filter.count = this.selectedTimeSlots.reduce((total, slot) =>
-        total + slot.customers.filter((c: any) => c.status === filter.value).length, 0
-      );
+      filter.count = 0;
     });
 
     this.serviceFilters.forEach(serviceFilter => {
-      serviceFilter.count = this.selectedTimeSlots.reduce((total, slot) =>
-        total + slot.customers.filter((c: any) =>
-          c.services.some((s: any) => s.name === serviceFilter.name)
-        ).length, 0
-      );
+      serviceFilter.count = 0;
+    });
+
+    this.selectedTimeSlots.forEach(slot => {
+      slot.customers.forEach((customer: any) => {
+        const statusFilter = this.statusFilters.find(f => f.value === customer.status);
+        if (statusFilter) {
+          statusFilter.count++;
+        }
+
+        customer.services.forEach((service: any) => {
+          const serviceFilter = this.serviceFilters.find(f => f.name === service.name);
+          if (serviceFilter) {
+            serviceFilter.count++;
+          }
+        });
+      });
     });
   }
 
@@ -147,24 +281,6 @@ export class OwnerSchedulePage implements OnInit {
       'danger': '#eb445a'
     };
     return colorMap[colorName] || '#666';
-  }
-
-  applyFilters() {
-    this.updateFilterCounts();
-
-    this.filteredTimeSlots = this.selectedTimeSlots.map(slot => ({
-      ...slot,
-      customers: slot.customers.filter((customer: any) =>
-        this.passesStatusFilter(customer) &&
-        this.passesServiceFilter(customer) &&
-        this.passesSearchFilter(customer)
-      )
-    })).filter(slot =>
-      slot.customers.length > 0 ||
-      (slot.customers.length === 0 && this.showEmptySlots())
-    );
-    
-     this.showFilters = false;
   }
 
   passesStatusFilter(customer: any): boolean {
@@ -191,16 +307,15 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   showEmptySlots(): boolean {
-    // Mostrar slots vazios apenas se não houver filtros ativos
     return this.searchTerm === '' &&
-      this.statusFilters.every(f => f.selected) &&
-      this.serviceFilters.every(f => f.selected);
+      this.statusFilters.every(f => !f.selected) &&
+      this.serviceFilters.every(f => !f.selected);
   }
 
   hasActiveFilters(): boolean {
     return this.searchTerm !== '' ||
-      !this.statusFilters.every(f => f.selected) ||
-      !this.serviceFilters.every(f => f.selected);
+      this.statusFilters.some(f => f.selected) ||
+      this.serviceFilters.some(f => f.selected);
   }
 
   getActiveFilters(): any[] {
@@ -211,11 +326,11 @@ export class OwnerSchedulePage implements OnInit {
     }
 
     this.statusFilters
-      .filter(f => !f.selected)
+      .filter(f => f.selected)
       .forEach(f => filters.push({ key: f.value, label: `Status: ${f.label}`, color: f.color }));
 
     this.serviceFilters
-      .filter(f => !f.selected)
+      .filter(f => f.selected)
       .forEach(f => filters.push({ key: f.name, label: `Serviço: ${f.name}`, color: 'tertiary' }));
 
     return filters;
@@ -224,13 +339,15 @@ export class OwnerSchedulePage implements OnInit {
   removeFilter(key: string) {
     if (key === 'search') {
       this.searchTerm = '';
+      this.searchQuery = '';
     } else {
       const statusFilter = this.statusFilters.find(f => f.value === key);
       if (statusFilter) {
-        statusFilter.selected = true;
+        statusFilter.selected = false;
       } else {
         const serviceFilter = this.serviceFilters.find(f => f.name === key);
-        if (serviceFilter) serviceFilter.selected = true;
+        if (serviceFilter)
+          serviceFilter.selected = false;
       }
     }
     this.applyFilters();
@@ -238,8 +355,9 @@ export class OwnerSchedulePage implements OnInit {
 
   clearFilters() {
     this.searchTerm = '';
-    this.statusFilters.forEach(f => f.selected = true);
-    this.serviceFilters.forEach(f => f.selected = true);
+    this.searchQuery = '';
+    this.statusFilters.forEach(f => f.selected = false);
+    this.serviceFilters.forEach(f => f.selected = false);
     this.applyFilters();
   }
 
@@ -261,32 +379,54 @@ export class OwnerSchedulePage implements OnInit {
     return this.selectedTimeSlots.flatMap(slot => slot.customers);
   }
 
+  getFilteredCustomers() {
+    return this.filteredTimeSlots.flatMap(slot => slot.customers);
+  }
+
   getStatusColor(status: string): string {
     const colorMap: { [key: string]: string } = {
-      confirmed: 'success',
-      pending: 'warning',
-      completed: 'primary',
-      cancelled: 'danger'
+      'waiting': 'medium',
+      'pending': 'warning',
+      'confirmed': 'success',
+      'inservice': 'primary',
+      'done': 'primary',
+      'absent': 'danger',
+      'cancelled': 'danger',
+      'next': 'secondary',
+      'rejected': 'danger',
+      'scheduled': 'tertiary'
     };
     return colorMap[status] || 'medium';
   }
 
   getStatusText(status: string): string {
     const textMap: { [key: string]: string } = {
-      confirmed: 'Confirmado',
-      pending: 'Pendente',
-      completed: 'Realizado',
-      cancelled: 'Cancelado'
+      'waiting': 'Aguardando',
+      'pending': 'Pendente',
+      'confirmed': 'Confirmado',
+      'inservice': 'Em Atendimento',
+      'done': 'Realizado',
+      'absent': 'Ausente',
+      'cancelled': 'Cancelado',
+      'next': 'Próximo',
+      'rejected': 'Rejeitado',
+      'scheduled': 'Agendado'
     };
     return textMap[status] || status;
   }
 
   getActionIcon(status: string): string {
     const iconMap: { [key: string]: string } = {
-      confirmed: 'checkmark-circle',
-      pending: 'time',
-      completed: 'checkmark-done',
-      cancelled: 'close-circle'
+      'waiting': 'time',
+      'pending': 'time',
+      'confirmed': 'checkmark-circle',
+      'inservice': 'play-circle',
+      'done': 'checkmark-done',
+      'absent': 'close-circle',
+      'cancelled': 'close-circle',
+      'next': 'play-forward',
+      'rejected': 'close-circle',
+      'scheduled': 'calendar'
     };
     return iconMap[status] || 'ellipsis-horizontal';
   }
@@ -297,9 +437,12 @@ export class OwnerSchedulePage implements OnInit {
         customer.status = 'confirmed';
         break;
       case 'confirmed':
-        customer.status = 'completed';
+        customer.status = 'inservice';
         break;
-      case 'completed':
+      case 'inservice':
+        customer.status = 'done';
+        break;
+      case 'done':
         customer.status = 'confirmed';
         break;
     }
@@ -307,7 +450,6 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   addAppointment(slot: any) {
-    // Mock - adicionar novo agendamento
     const newCustomer = {
       id: Date.now(),
       name: 'Novo Cliente',
@@ -323,13 +465,11 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   editAppointment(customer: any) {
-    // Mock - editar agendamento
     console.log('Editando agendamento:', customer);
     // Aqui abriria um modal de edição
   }
 
   addNewAppointment() {
-    // Mock - novo agendamento em slot vazio
     const emptySlot = this.selectedTimeSlots.find(slot => slot.customers.length === 0);
     if (emptySlot) {
       this.addAppointment(emptySlot);
@@ -381,33 +521,31 @@ export class OwnerSchedulePage implements OnInit {
 
   previousDay() {
     this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() - 1));
-    this.loadAgenda();
+    this.loadSchedulesForDate();
   }
 
   nextDay() {
     this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + 1));
-    this.loadAgenda();
+    this.loadSchedulesForDate();
   }
 
   goToToday() {
     this.selectedDate = new Date();
-    this.loadAgenda();
+    this.loadSchedulesForDate();
   }
 
   getConsolidatedStats() {
-    const appointments = this.getAllCustomers(); 
+    const appointments = this.getAllCustomers();
 
     return {
       confirmed: appointments.filter(a => a.status === 'confirmed').length,
       pending: appointments.filter(a => a.status === 'pending').length,
-      completed: appointments.filter(a => a.status === 'completed').length,
+      completed: appointments.filter(a => a.status === 'done').length,
       total: appointments.length
     };
   }
 
   loadAgenda() {
-    // Mock - recarregar agenda para nova data
-    this.loadMockAgenda();
     this.applyFilters();
   }
 
@@ -425,7 +563,8 @@ export class OwnerSchedulePage implements OnInit {
   getActiveFiltersCount(): number {
     const statusCount = this.statusFilters.filter(s => s.selected).length;
     const serviceCount = this.serviceFilters.filter(s => s.selected).length;
-    return statusCount + serviceCount;
+    const searchCount = this.searchTerm ? 1 : 0;
+    return statusCount + serviceCount + searchCount;
   }
 
   formatDate(date: Date): string {

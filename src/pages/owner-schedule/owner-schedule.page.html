@@ -10,25 +10,43 @@
   <div class="page-header">
     <div class="date-navigation-card">
       <div class="date-display">
-        <ion-button fill="clear" size="small" (click)="previousDay()" class="nav-button">
+        <ion-button
+          fill="clear"
+          size="small"
+          (click)="previousDay()"
+          class="nav-button"
+        >
           <ion-icon name="chevron-back"></ion-icon>
         </ion-button>
-        
+
         <div class="current-date">
           <div class="date-main">
             <ion-icon name="calendar-outline" class="date-icon"></ion-icon>
             <span class="date-text">{{ formatDate(selectedDate) }}</span>
-            <ion-badge color="primary" *ngIf="isToday()" class="today-badge">Hoje</ion-badge>
+            <ion-badge color="primary" *ngIf="isToday()" class="today-badge"
+              >Hoje</ion-badge
+            >
           </div>
           <div class="date-weekday">{{ getWeekdayName(selectedDate) }}</div>
         </div>
-        
-        <ion-button fill="clear" size="small" (click)="nextDay()" class="nav-button">
+
+        <ion-button
+          fill="clear"
+          size="small"
+          (click)="nextDay()"
+          class="nav-button"
+        >
           <ion-icon name="chevron-forward"></ion-icon>
         </ion-button>
       </div>
-      
-      <ion-button fill="clear" size="small" (click)="goToToday()" [disabled]="isToday()" class="today-button">
+
+      <ion-button
+        fill="clear"
+        size="small"
+        (click)="goToToday()"
+        [disabled]="isToday()"
+        class="today-button"
+      >
         Ir para hoje
       </ion-button>
     </div>
@@ -49,7 +67,7 @@
 
       <div class="right-controls">
         <ion-segment
-          value="grid"
+          [value]="currentView"
           (ionChange)="changeView($event)"
           class="view-segment"
         >
@@ -61,9 +79,19 @@
           </ion-segment-button>
         </ion-segment>
 
-        <ion-button fill="clear" size="small" (click)="toggleFilters()" class="filter-toggle-btn">
+        <ion-button
+          fill="clear"
+          size="small"
+          (click)="toggleFilters()"
+          class="filter-toggle-btn"
+        >
           <ion-icon name="filter" class="filter-icon"></ion-icon>
-          <ion-badge color="danger" *ngIf="hasActiveFilters()" class="filter-badge">!</ion-badge>
+          <ion-badge
+            color="danger"
+            *ngIf="hasActiveFilters()"
+            class="filter-badge"
+            >{{ getActiveFiltersCount() }}</ion-badge
+          >
         </ion-button>
       </div>
     </div>
@@ -73,9 +101,9 @@
         <div class="filter-section">
           <h4>Status</h4>
           <div class="filter-chips">
-            <ion-chip 
-              *ngFor="let status of statusFilters" 
-              [color]="status.selected ? status.color : 'medium'" 
+            <ion-chip
+              *ngFor="let status of statusFilters"
+              [color]="status.selected ? status.color : 'medium'"
               outline="{{!status.selected}}"
               (click)="toggleStatusFilter(status)"
               class="status-chip"
@@ -89,9 +117,9 @@
         <div class="filter-section" *ngIf="serviceFilters.length > 0">
           <h4>Serviços</h4>
           <div class="filter-chips">
-            <ion-chip 
-              *ngFor="let service of serviceFilters" 
-              [color]="service.selected ? service.color : 'medium'" 
+            <ion-chip
+              *ngFor="let service of serviceFilters"
+              [color]="service.selected ? service.color : 'medium'"
               outline="{{!service.selected}}"
               (click)="toggleServiceFilter(service)"
               class="service-chip"
@@ -103,10 +131,20 @@
         </div>
 
         <div class="filter-actions">
-          <ion-button fill="clear" size="small" color="medium" (click)="clearFilters()">
+          <ion-button
+            fill="clear"
+            size="small"
+            color="medium"
+            (click)="clearFilters()"
+          >
             Limpar tudo
           </ion-button>
-          <ion-button fill="solid" size="small" color="primary" (click)="applyFilters()">
+          <ion-button
+            fill="solid"
+            size="small"
+            color="primary"
+            (click)="applyFilters()"
+          >
             Aplicar
           </ion-button>
         </div>
@@ -139,18 +177,31 @@
     <div class="active-filters-content">
       <span class="filters-label">Filtros ativos:</span>
       <div class="active-chips">
-        <ion-chip *ngFor="let filter of getActiveFilters()" color="primary" outline size="small">
+        <ion-chip
+          *ngFor="let filter of getActiveFilters()"
+          color="primary"
+          outline
+          size="small"
+        >
           {{ filter.label }}
           <ion-icon name="close" (click)="removeFilter(filter.key)"></ion-icon>
         </ion-chip>
       </div>
-      <ion-button fill="clear" size="small" color="medium" (click)="clearFilters()">
+      <ion-button
+        fill="clear"
+        size="small"
+        color="medium"
+        (click)="clearFilters()"
+      >
         Limpar
       </ion-button>
     </div>
   </div>
 
-  <section *ngIf="selectedDate && currentView === 'grid'" class="agenda-section">
+  <section
+    *ngIf="selectedDate && currentView === 'grid'"
+    class="agenda-section"
+  >
     <div class="agenda-grid" cdkDropListGroup>
       <div
         *ngFor="let slot of filteredTimeSlots"
@@ -168,12 +219,21 @@
               ({{ slot.customers.length }})
             </span>
           </h4>
-          <ion-button fill="clear" size="small" color="success" (click)="addAppointment(slot)" class="add-btn">
+          <ion-button
+            fill="clear"
+            size="small"
+            color="success"
+            (click)="addAppointment(slot)"
+            class="add-btn"
+          >
             <ion-icon name="add"></ion-icon>
           </ion-button>
         </div>
 
-        <div *ngIf="slot.customers?.length; else emptySlot" class="customers-container">
+        <div
+          *ngIf="slot.customers?.length; else emptySlot"
+          class="customers-container"
+        >
           <div
             *ngFor="let customer of slot.customers"
             class="customer-card-compact"
@@ -187,28 +247,47 @@
                 <img [src]="customer.avatar" />
                 <div class="status-indicator" [class]="customer.status"></div>
               </div>
-              
+
               <div class="customer-info">
                 <div class="customer-name">{{ customer.name }}</div>
                 <div class="customer-details">
-                  <span class="duration">{{ customer.totalSlots }} slot(s)</span>
-                  <ion-badge [color]="getStatusColor(customer.status)" class="status-badge">
+                  <span class="duration"
+                    >{{ customer.totalSlots }} slot(s)</span
+                  >
+                  <ion-badge
+                    [color]="getStatusColor(customer.status)"
+                    class="status-badge"
+                  >
                     {{ getStatusText(customer.status) }}
                   </ion-badge>
                 </div>
                 <div class="services-tags">
-                  <span *ngFor="let service of customer.services" class="service-tag" [style.border-color]="getServiceColor(service.color)">
+                  <span
+                    *ngFor="let service of customer.services"
+                    class="service-tag"
+                    [style.border-color]="getServiceColor(service.color)"
+                  >
                     {{ service.name }}
                   </span>
                 </div>
               </div>
             </div>
-            
+
             <div class="customer-actions">
-              <ion-button fill="clear" size="small" color="medium" (click)="editAppointment(customer)">
+              <ion-button
+                fill="clear"
+                size="small"
+                color="medium"
+                (click)="editAppointment(customer)"
+              >
                 <ion-icon name="create-outline"></ion-icon>
               </ion-button>
-              <ion-button fill="clear" size="small" [color]="getStatusColor(customer.status)" (click)="quickAction(customer, slot)">
+              <ion-button
+                fill="clear"
+                size="small"
+                [color]="getStatusColor(customer.status)"
+                (click)="quickAction(customer, slot)"
+              >
                 <ion-icon [name]="getActionIcon(customer.status)"></ion-icon>
               </ion-button>
             </div>
@@ -223,11 +302,17 @@
         </ng-template>
       </div>
     </div>
+
+    <div *ngIf="filteredTimeSlots.length === 0" class="no-results">
+      <ion-icon name="search-outline" class="no-results-icon"></ion-icon>
+      <h3>Nenhum agendamento encontrado</h3>
+      <p>Tente ajustar os filtros ou buscar por outros termos</p>
+    </div>
   </section>
 
   <section *ngIf="selectedDate && currentView === 'list'" class="list-section">
     <ion-list class="compact-list">
-      <ion-item-sliding *ngFor="let customer of getAllCustomers()">
+      <ion-item-sliding *ngFor="let customer of getFilteredCustomers()">
         <ion-item [class]="customer.status" class="list-item-compact">
           <ion-avatar slot="start" class="list-avatar">
             <img [src]="customer.avatar" />
@@ -236,19 +321,32 @@
 
           <ion-label class="list-label">
             <h3>{{ customer.name }}</h3>
-            <p>{{ getSlotTime(customer) }} • {{ customer.totalSlots }} slot(s)</p>
+            <p>
+              {{ getSlotTime(customer) }} • {{ customer.totalSlots }} slot(s)
+            </p>
             <div class="service-tags">
-              <ion-badge *ngFor="let service of customer.services" [color]="service.color" class="service-badge">
+              <ion-badge
+                *ngFor="let service of customer.services"
+                [color]="service.color"
+                class="service-badge"
+              >
                 {{ service.name }}
               </ion-badge>
             </div>
           </ion-label>
 
           <div class="list-actions">
-            <ion-badge [color]="getStatusColor(customer.status)" class="status-badge-list">
+            <ion-badge
+              [color]="getStatusColor(customer.status)"
+              class="status-badge-list"
+            >
               {{ getStatusText(customer.status) }}
             </ion-badge>
-            <ion-button fill="clear" size="small" (click)="quickAction(customer)">
+            <ion-button
+              fill="clear"
+              size="small"
+              (click)="quickAction(customer)"
+            >
               <ion-icon [name]="getActionIcon(customer.status)"></ion-icon>
             </ion-button>
           </div>
@@ -256,7 +354,10 @@
 
         <ion-item-options side="end">
           <ion-item-option color="primary" (click)="quickAction(customer)">
-            <ion-icon slot="icon-only" [name]="getActionIcon(customer.status)"></ion-icon>
+            <ion-icon
+              slot="icon-only"
+              [name]="getActionIcon(customer.status)"
+            ></ion-icon>
           </ion-item-option>
           <ion-item-option color="tertiary" (click)="editAppointment(customer)">
             <ion-icon slot="icon-only" name="create-outline"></ion-icon>
@@ -264,6 +365,12 @@
         </ion-item-options>
       </ion-item-sliding>
     </ion-list>
+
+    <div *ngIf="getFilteredCustomers().length === 0" class="no-results">
+      <ion-icon name="search-outline" class="no-results-icon"></ion-icon>
+      <h3>Nenhum agendamento encontrado</h3>
+      <p>Tente ajustar os filtros ou buscar por outros termos</p>
+    </div>
   </section>
 </ion-content>
 
