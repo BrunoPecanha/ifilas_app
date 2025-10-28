@@ -1,6 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { ScheduleService } from "src/services/schedule.service";
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { UserModel } from "src/models/user-model";
+import { SessionService } from "src/services/session.service";
+import { StoreModel } from "src/models/store-model";
+import { ToastService } from "src/services/toast.service";
 
 @Component({
   selector: "app-owner-schedule",
@@ -17,6 +21,9 @@ export class OwnerSchedulePage implements OnInit {
   trashHover = false;
   isDragging = false;
   searchQuery = '';
+  isLoading = false;
+  user!: UserModel;
+  store!: StoreModel;
   searching = false;
   showFilters: boolean = false;
   viewMode: 'grid' | 'list' = 'grid';
@@ -31,10 +38,37 @@ export class OwnerSchedulePage implements OnInit {
 
   serviceFilters: any[] = [];
 
+  constructor(private service: ScheduleService,
+    private sessionService: SessionService,
+    private toastController: ToastService
+  ) {
+    this.user = this.sessionService.getUser();
+    this.store = this.sessionService.getStore();
+  }
+
   ngOnInit() {
     this.loadMockAgenda();
-    this.updateFilterCounts();
-    this.applyFilters();
+    this.loadSchedulesForDate();
+    // this.updateFilterCounts();
+    // this.applyFilters();
+  }
+
+
+  private loadSchedulesForDate() {
+     this.isLoading = true;
+
+    this.service.getOwnerAgendaForDate(this.store.id, this.user.id, this.selectedDate).subscribe({
+      next: (schedules) => {        
+        debugger
+        console.log('Agendamentos carregados para o dia:', schedules.data);
+        // this.myAppointments = schedules.data || [];
+      },
+      error: (err) => {
+        console.error('Erro ao buscar agendamentos para o dia:', err);
+        this.toastController.show('Erro ao carregar agendamentos do dia', 'danger');
+      },
+      complete: () => this.isLoading = false
+    });
   }
 
   loadMockAgenda() {
@@ -163,8 +197,8 @@ export class OwnerSchedulePage implements OnInit {
       slot.customers.length > 0 ||
       (slot.customers.length === 0 && this.showEmptySlots())
     );
-    
-     this.showFilters = false;
+
+    this.showFilters = false;
   }
 
   passesStatusFilter(customer: any): boolean {
@@ -191,7 +225,6 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   showEmptySlots(): boolean {
-    // Mostrar slots vazios apenas se não houver filtros ativos
     return this.searchTerm === '' &&
       this.statusFilters.every(f => f.selected) &&
       this.serviceFilters.every(f => f.selected);
@@ -307,7 +340,6 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   addAppointment(slot: any) {
-    // Mock - adicionar novo agendamento
     const newCustomer = {
       id: Date.now(),
       name: 'Novo Cliente',
@@ -329,7 +361,6 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   addNewAppointment() {
-    // Mock - novo agendamento em slot vazio
     const emptySlot = this.selectedTimeSlots.find(slot => slot.customers.length === 0);
     if (emptySlot) {
       this.addAppointment(emptySlot);
@@ -381,12 +412,12 @@ export class OwnerSchedulePage implements OnInit {
 
   previousDay() {
     this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() - 1));
-    this.loadAgenda();
+    this.loadSchedulesForDate();
   }
 
   nextDay() {
     this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + 1));
-    this.loadAgenda();
+    this.loadSchedulesForDate();
   }
 
   goToToday() {
@@ -395,7 +426,7 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   getConsolidatedStats() {
-    const appointments = this.getAllCustomers(); 
+    const appointments = this.getAllCustomers();
 
     return {
       confirmed: appointments.filter(a => a.status === 'confirmed').length,
@@ -406,7 +437,6 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   loadAgenda() {
-    // Mock - recarregar agenda para nova data
     this.loadMockAgenda();
     this.applyFilters();
   }
