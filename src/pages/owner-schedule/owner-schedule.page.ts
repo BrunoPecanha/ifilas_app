@@ -75,10 +75,8 @@ export class OwnerSchedulePage implements OnInit {
           return;
         }
 
-        // salva template original (somente times)
         this.originalSlotsTemplate = data.slots.map((s: any) => ({ time: s.time }));
 
-        // inicializa visual com cópia vazia (será preenchida por recalculateSlots)
         this.selectedTimeSlots = this.originalSlotsTemplate.map(s => ({
           time: s.time,
           id: s.time,
@@ -86,7 +84,6 @@ export class OwnerSchedulePage implements OnInit {
           customers: [] as any[]
         }));
 
-        // popula appointments (fonte) — agora com durationMinutes preservada
         this.appointments = [];
         data.customers?.forEach((customer: any) => {
           const slotStartFull = customer.customerSelectedSlots?.slotStart;
@@ -116,7 +113,6 @@ export class OwnerSchedulePage implements OnInit {
           });
         });
 
-        // reconstrói grade
         this.recalculateSlots();
 
         this.updateFilterCounts();
@@ -150,8 +146,6 @@ export class OwnerSchedulePage implements OnInit {
     return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`;
   }
 
-  // calcula quantos slots (inteiros) cobre o intervalo entre slotStart e slotEnd, baseado em allSlots
-  // note: slotStart/slotEnd podem ser "HH:mm" ou "HH:mm:ss" — usamos somente primeiros 5 chars
   private calculateTotalSlots(slotStart: string, slotEnd: string, allSlots: any[]): number {
     if (!slotStart || !slotEnd || allSlots.length < 2) return 1;
 
@@ -191,35 +185,35 @@ export class OwnerSchedulePage implements OnInit {
     const movedCustomer = event.previousContainer.data[event.previousIndex];
     if (!movedCustomer) return;
 
-    // procura appointment fonte para recuperar durationMinutes
     const appt = this.appointments.find(a => a.id === movedCustomer.id);
     const durationMinutesFromAppt = appt?.durationMinutes;
 
-    // fallback: if movedCustomer already has slotStart/slotEnd/duration
-    const fallbackDuration = (movedCustomer.durationMinutes)
-      || (movedCustomer.slotStart && movedCustomer.slotEnd ? this.toMinutes(movedCustomer.slotEnd) - this.toMinutes(movedCustomer.slotStart) : null);
+    const fallbackDuration =
+      movedCustomer.durationMinutes ||
+      (movedCustomer.slotStart && movedCustomer.slotEnd
+        ? this.toMinutes(movedCustomer.slotEnd) - this.toMinutes(movedCustomer.slotStart)
+        : null);
 
-    const durationMinutes = durationMinutesFromAppt ?? fallbackDuration ?? ((movedCustomer.totalSlots || 1) * this.slotDuration);
+    const durationMinutes =
+      durationMinutesFromAppt ??
+      fallbackDuration ??
+      ((movedCustomer.totalSlots || 1) * this.slotDuration);
 
     const targetTime = targetSlot.time;
-    // compute index within originalSlotsTemplate even if targetTime is a partial (not in template)
     const targetIndex = this.computeStartIndexFromTime(targetTime);
-
-    // quantos slots inteiros precisamos cobrir (para checagem de conflito)
     const computedEnd = this.addMinutesToTime(targetTime, durationMinutes);
     const neededSlots = this.calculateTotalSlots(targetTime, computedEnd, this.originalSlotsTemplate as any);
 
-    // checa conflito com outros appointments (exclui o próprio)
     const conflict = this.doesRangeConflict(targetIndex, neededSlots, movedCustomer.id);
     if (conflict) {
       this.toastController.show('Esse intervalo está ocupado por outro atendimento.', 'warning');
       return;
     }
 
-    // remove do array visual antigo (para UI imediata)
-    try { event.previousContainer.data.splice(event.previousIndex, 1); } catch { }
+    try {
+      event.previousContainer.data.splice(event.previousIndex, 1);
+    } catch { }
 
-    // atualiza fonte de appointments preservando durationMinutes
     if (!appt) {
       const newAppt = {
         id: movedCustomer.id,
@@ -230,7 +224,7 @@ export class OwnerSchedulePage implements OnInit {
         totalSlots: neededSlots,
         slotStart: targetTime,
         slotEnd: computedEnd,
-        durationMinutes
+        durationMinutes,
       };
       this.appointments.push(newAppt);
     } else {
@@ -240,25 +234,37 @@ export class OwnerSchedulePage implements OnInit {
       appt.totalSlots = neededSlots;
     }
 
-    // reconstrói grade
-    this.recalculateSlots();
+    this.isLoading = true;
+    this.service.updateCustomerAgendaAsync(movedCustomer.id, targetTime).subscribe({
+      next: () => {
+        this.toastController.show('Agenda atualizada com sucesso!', 'success');
+        this.recalculateSlots();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erro ao atualizar agenda:', err);
+        this.toastController.show('Falha ao atualizar o horário do cliente.', 'danger');
+        this.isLoading = false;
+
+        this.loadSchedulesForDate();
+      },
+    });
   }
 
-  // nova função helper: converte qualquer HH:mm para um índice aproximado dentro de originalSlotsTemplate
   private computeStartIndexFromTime(time: string): number {
     const baseTimes = this.originalSlotsTemplate.map(s => s.time);
     const exact = baseTimes.indexOf(time);
-    if (exact !== -1) return exact;
 
-    // procura primeiro slot com horário maior que 'time'
+    if (exact !== -1)
+      return exact;
+
     const insertion = baseTimes.findIndex(t => this.toMinutes(t) > this.toMinutes(time));
-    if (insertion !== -1) return insertion;
+    if (insertion !== -1)
+      return insertion;
 
-    // se não encontrou (time depois do último template), devolve índice do último template
     return baseTimes.length - 1;
   }
 
-  // verifica se a faixa target conflita com outros appointments (exceto exceptAppointmentId)
   private doesRangeConflict(startIndex: number, slotsCount: number, exceptAppointmentId: any): boolean {
     const baseTimes = this.originalSlotsTemplate.map(s => s.time);
 
@@ -266,7 +272,6 @@ export class OwnerSchedulePage implements OnInit {
       if (other.id === exceptAppointmentId) continue;
       if (!other.slotStart || !other.slotEnd) continue;
 
-      // determina índice aproximado do início do other
       let otherStartIndex = baseTimes.indexOf(other.slotStart);
       if (otherStartIndex === -1) {
         otherStartIndex = baseTimes.findIndex(t => this.toMinutes(t) > this.toMinutes(other.slotStart));
@@ -291,7 +296,6 @@ export class OwnerSchedulePage implements OnInit {
   private recalculateSlots() {
     const slotDuration = this.slotDuration;
 
-    // reconstrói base ordenada a partir do template
     const baseSlots: any[] = this.originalSlotsTemplate.map(s => ({
       time: s.time,
       id: s.time,
@@ -299,7 +303,6 @@ export class OwnerSchedulePage implements OnInit {
       customers: [] as any[]
     }));
 
-    // helper para garantir existência de um tempo específico (p/ partial times)
     const ensureSlotExists = (time: string): number => {
       let idx = baseSlots.findIndex(s => s.time === time);
       if (idx !== -1) return idx;
@@ -315,8 +318,6 @@ export class OwnerSchedulePage implements OnInit {
       }
     };
 
-    // percorre todas as appointments e marca intervalos
-    // ordenando por slotStart (para comportamento determinístico)
     const sortedAppts = this.appointments.slice().sort((a, b) => {
       if (!a.slotStart) return 1;
       if (!b.slotStart) return -1;
@@ -329,7 +330,6 @@ export class OwnerSchedulePage implements OnInit {
       if (!slotStart || !slotEnd) continue;
 
       const startIndex = ensureSlotExists(slotStart);
-      // se slotEnd não estiver no formato correto, calc a partir de durationMinutes
       let effectiveEnd = slotEnd;
       if (!effectiveEnd && appt.durationMinutes) {
         effectiveEnd = this.addMinutesToTime(slotStart, appt.durationMinutes);
@@ -351,7 +351,6 @@ export class OwnerSchedulePage implements OnInit {
         baseSlots[i].available = false;
       }
 
-      // se terminar no meio do último slot, garantir existência do corte (partial slot)
       const lastSlotIndex = startIndex + totalSlots - 1;
       const lastSlot = baseSlots[lastSlotIndex];
       if (lastSlot) {
@@ -372,14 +371,12 @@ export class OwnerSchedulePage implements OnInit {
       }
     }
 
-    // agrupa para visual — agora usa slotEnd real quando disponível (preserva partial ends)
     this.selectedTimeSlots = this.groupCustomerSlots(baseSlots);
     this.filteredTimeSlots = [...this.selectedTimeSlots];
     this.updateFilterCounts();
     this.applyFilters();
   }
 
-  // agrupa clientes que ocupam slots consecutivos em um único bloco visual
   private groupCustomerSlots(slots: any[]): any[] {
     const grouped: any[] = [];
     const seen = new Set<number | string>();
@@ -394,7 +391,6 @@ export class OwnerSchedulePage implements OnInit {
       for (const customer of slot.customers) {
         if (seen.has(customer.id)) continue;
 
-        // quantos slots consecutivos
         let count = 1;
         for (let j = i + 1; j < slots.length; j++) {
           const next = slots[j];
@@ -402,7 +398,6 @@ export class OwnerSchedulePage implements OnInit {
           else break;
         }
 
-        // se o appointment tiver slotEnd real, use-o; senão calc por count
         const realSlotEnd = customer.slotEnd ? customer.slotEnd : this.addMinutesToTime(slot.time, count * this.slotDuration);
 
         grouped.push({

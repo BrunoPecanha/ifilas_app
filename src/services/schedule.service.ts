@@ -26,12 +26,16 @@ export class ScheduleService {
   getCustomerScheduleForDay(customerId: number, date: Date): Observable<any> {
     const localISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
       .toISOString()
-      .slice(0, -1); 
+      .slice(0, -1);
     return this.http.get<any>(`${this.apiUrl}/next-day/${customerId}/${localISO}`);
   }
 
   updateCustomerName(customerId: number, newName: string) {
     return this.http.patch(`${this.apiUrl}/${customerId}/name`, { name: newName });
+  }
+
+  updateCustomerAgendaAsync(customerId: number, newAgendaTime: string) {
+    return this.http.patch(`${this.apiUrl}/${customerId}/customer-agenda`, { newAgendaTime: newAgendaTime });
   }
 
   updateSchedule(scheduleId: number, command: ScheduleCreateRequest): Observable<ScheduleResponse> {
@@ -64,7 +68,7 @@ export class ScheduleService {
     return this.http.get<ScheduleDateResponse>(`${this.apiUrl}/agenda/${employeeId}/${storeId}/${date.toISOString()}`);
   }
 
-    getOwnerAgendaForDate(storeId: number, employeeId: number, date: Date): Observable<AttendantsScheduleResponse> {
+  getOwnerAgendaForDate(storeId: number, employeeId: number, date: Date): Observable<AttendantsScheduleResponse> {
     return this.http.get<AttendantsScheduleResponse>(`${this.apiUrl}/owner-agenda/${employeeId}/${storeId}/${date.toISOString()}`);
   }
 }
