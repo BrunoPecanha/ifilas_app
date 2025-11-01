@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ScheduleService } from "src/services/schedule.service";
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserModel } from "src/models/user-model";
 import { SessionService } from "src/services/session.service";
 import { StoreModel } from "src/models/store-model";
@@ -13,21 +13,25 @@ import { ToastService } from "src/services/toast.service";
 })
 export class OwnerSchedulePage implements OnInit {
   selectedDate: Date = new Date();
+
   selectedTimeSlots: any[] = [];
   filteredTimeSlots: any[] = [];
+
+  private originalSlotsTemplate: { time: string }[] = [];
+
   currentView: 'grid' | 'list' = 'grid';
   searchTerm: string = '';
-  showFilterModal: boolean = false;
+  searchQuery: string = '';
   trashHover = false;
   isDragging = false;
-  searchQuery = '';
   isLoading = false;
   user!: UserModel;
   store!: StoreModel;
-  searching = false;
-  showFilters: boolean = false;
-  viewMode: 'grid' | 'list' = 'grid';
-  filteredAppointments: any[] = [];
+  showFilters = false;
+
+  appointments: any[] = [];
+
+  slotDuration = 30;
 
   statusFilters = [
     { value: 'waiting', label: 'Aguardando', selected: false, count: 0, color: 'medium' },
@@ -44,7 +48,8 @@ export class OwnerSchedulePage implements OnInit {
 
   serviceFilters: any[] = [];
 
-  constructor(private service: ScheduleService,
+  constructor(
+    private service: ScheduleService,
     private sessionService: SessionService,
     private toastController: ToastService
   ) {
@@ -55,6 +60,368 @@ export class OwnerSchedulePage implements OnInit {
   ngOnInit() {
     this.loadSchedulesForDate();
   }
+
+
+  private loadSchedulesForDate() {
+    this.isLoading = true;
+    this.service.getOwnerAgendaForDate(this.store.id, this.user.id, this.selectedDate).subscribe({
+      next: (response) => {
+        const data = response.data;
+        this.slotDuration = data?.slotDuration ?? 30;
+
+        if (!data) {
+          this.toastController.show('Nenhum dado encontrado', 'warning');
+          this.isLoading = false;
+          return;
+        }
+
+        // salva template original (somente times)
+        this.originalSlotsTemplate = data.slots.map((s: any) => ({ time: s.time }));
+
+        // inicializa visual com cópia vazia (será preenchida por recalculateSlots)
+        this.selectedTimeSlots = this.originalSlotsTemplate.map(s => ({
+          time: s.time,
+          id: s.time,
+          available: true,
+          customers: [] as any[]
+        }));
+
+        // popula appointments (fonte) — agora com durationMinutes preservada
+        this.appointments = [];
+        data.customers?.forEach((customer: any) => {
+          const slotStartFull = customer.customerSelectedSlots?.slotStart;
+          const slotEndFull = customer.customerSelectedSlots?.slotEnd;
+          if (!slotStartFull || !slotEndFull) return;
+
+          const slotStart = slotStartFull.substring(0, 5);
+          const slotEnd = slotEndFull.substring(0, 5);
+          const durationMinutes = this.toMinutes(slotEnd) - this.toMinutes(slotStart);
+
+          const totalSlots = this.calculateTotalSlots(slotStartFull, slotEndFull, data.slots);
+
+          this.appointments.push({
+            id: customer.id,
+            name: customer.name,
+            avatar: customer.imageUrl || 'assets/default-avatar.png',
+            totalSlots,
+            slotStart,
+            slotEnd,
+            durationMinutes,
+            status: this.mapStatus(customer.status ?? 0),
+            services: (customer.services || []).map((s: any) => ({
+              name: s.name,
+              slots: s.quantity || 1,
+              color: this.getRandomServiceColor()
+            }))
+          });
+        });
+
+        // reconstrói grade
+        this.recalculateSlots();
+
+        this.updateFilterCounts();
+        this.applyFilters();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erro ao buscar agendamentos para o dia:', err);
+        this.toastController.show('Erro ao carregar agendamentos do dia', 'danger');
+        this.isLoading = false;
+      }
+    });
+  }
+
+  private toMinutes(time: string): number {
+    const [h, m] = time.substring(0, 5).split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  private formatMinutes(totalMinutes: number): string {
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+  }
+
+  private addMinutesToTime(time: string, minutesToAdd: number): string {
+    const [h, m] = time.split(':').map(Number);
+    const totalMinutes = h * 60 + m + minutesToAdd;
+    const hh = Math.floor(totalMinutes / 60) % 24;
+    const mm = totalMinutes % 60;
+    return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`;
+  }
+
+  // calcula quantos slots (inteiros) cobre o intervalo entre slotStart e slotEnd, baseado em allSlots
+  // note: slotStart/slotEnd podem ser "HH:mm" ou "HH:mm:ss" — usamos somente primeiros 5 chars
+  private calculateTotalSlots(slotStart: string, slotEnd: string, allSlots: any[]): number {
+    if (!slotStart || !slotEnd || allSlots.length < 2) return 1;
+
+    const toMin = (time: string) => {
+      const t = time.substring(0, 5);
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
+    };
+
+    const start = toMin(slotStart);
+    const end = toMin(slotEnd);
+    if (end <= start) return 1;
+
+    const slotDurations: number[] = [];
+    for (let i = 1; i < allSlots.length; i++) {
+      const prev = toMin(allSlots[i - 1].time);
+      const curr = toMin(allSlots[i].time);
+      slotDurations.push(curr - prev);
+    }
+
+    const avgSlotDuration = slotDurations.length
+      ? slotDurations.reduce((a, b) => a + b, 0) / slotDurations.length
+      : this.slotDuration;
+
+    const totalDuration = end - start;
+    const totalSlots = Math.ceil(totalDuration / avgSlotDuration);
+
+    return totalSlots > 0 ? totalSlots : 1;
+  }
+
+  onDrop(event: CdkDragDrop<any[]>, targetSlot: any) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(targetSlot.customers, event.previousIndex, event.currentIndex);
+      return;
+    }
+
+    const movedCustomer = event.previousContainer.data[event.previousIndex];
+    if (!movedCustomer) return;
+
+    // procura appointment fonte para recuperar durationMinutes
+    const appt = this.appointments.find(a => a.id === movedCustomer.id);
+    const durationMinutesFromAppt = appt?.durationMinutes;
+
+    // fallback: if movedCustomer already has slotStart/slotEnd/duration
+    const fallbackDuration = (movedCustomer.durationMinutes)
+      || (movedCustomer.slotStart && movedCustomer.slotEnd ? this.toMinutes(movedCustomer.slotEnd) - this.toMinutes(movedCustomer.slotStart) : null);
+
+    const durationMinutes = durationMinutesFromAppt ?? fallbackDuration ?? ((movedCustomer.totalSlots || 1) * this.slotDuration);
+
+    const targetTime = targetSlot.time;
+    // compute index within originalSlotsTemplate even if targetTime is a partial (not in template)
+    const targetIndex = this.computeStartIndexFromTime(targetTime);
+
+    // quantos slots inteiros precisamos cobrir (para checagem de conflito)
+    const computedEnd = this.addMinutesToTime(targetTime, durationMinutes);
+    const neededSlots = this.calculateTotalSlots(targetTime, computedEnd, this.originalSlotsTemplate as any);
+
+    // checa conflito com outros appointments (exclui o próprio)
+    const conflict = this.doesRangeConflict(targetIndex, neededSlots, movedCustomer.id);
+    if (conflict) {
+      this.toastController.show('Esse intervalo está ocupado por outro atendimento.', 'warning');
+      return;
+    }
+
+    // remove do array visual antigo (para UI imediata)
+    try { event.previousContainer.data.splice(event.previousIndex, 1); } catch { }
+
+    // atualiza fonte de appointments preservando durationMinutes
+    if (!appt) {
+      const newAppt = {
+        id: movedCustomer.id,
+        name: movedCustomer.name,
+        avatar: movedCustomer.avatar || 'assets/default-avatar.png',
+        services: movedCustomer.services || [],
+        status: movedCustomer.status || 'pending',
+        totalSlots: neededSlots,
+        slotStart: targetTime,
+        slotEnd: computedEnd,
+        durationMinutes
+      };
+      this.appointments.push(newAppt);
+    } else {
+      appt.slotStart = targetTime;
+      appt.slotEnd = computedEnd;
+      appt.durationMinutes = durationMinutes;
+      appt.totalSlots = neededSlots;
+    }
+
+    // reconstrói grade
+    this.recalculateSlots();
+  }
+
+  // nova função helper: converte qualquer HH:mm para um índice aproximado dentro de originalSlotsTemplate
+  private computeStartIndexFromTime(time: string): number {
+    const baseTimes = this.originalSlotsTemplate.map(s => s.time);
+    const exact = baseTimes.indexOf(time);
+    if (exact !== -1) return exact;
+
+    // procura primeiro slot com horário maior que 'time'
+    const insertion = baseTimes.findIndex(t => this.toMinutes(t) > this.toMinutes(time));
+    if (insertion !== -1) return insertion;
+
+    // se não encontrou (time depois do último template), devolve índice do último template
+    return baseTimes.length - 1;
+  }
+
+  // verifica se a faixa target conflita com outros appointments (exceto exceptAppointmentId)
+  private doesRangeConflict(startIndex: number, slotsCount: number, exceptAppointmentId: any): boolean {
+    const baseTimes = this.originalSlotsTemplate.map(s => s.time);
+
+    for (const other of this.appointments) {
+      if (other.id === exceptAppointmentId) continue;
+      if (!other.slotStart || !other.slotEnd) continue;
+
+      // determina índice aproximado do início do other
+      let otherStartIndex = baseTimes.indexOf(other.slotStart);
+      if (otherStartIndex === -1) {
+        otherStartIndex = baseTimes.findIndex(t => this.toMinutes(t) > this.toMinutes(other.slotStart));
+        if (otherStartIndex === -1) otherStartIndex = baseTimes.length - 1;
+      }
+
+      const otherSlots = this.calculateTotalSlots(other.slotStart, other.slotEnd, this.originalSlotsTemplate as any);
+      const otherStart = otherStartIndex;
+      const otherEnd = otherStartIndex + otherSlots - 1;
+
+      const targetStart = startIndex;
+      const targetEnd = startIndex + slotsCount - 1;
+
+      if (!(targetEnd < otherStart || targetStart > otherEnd)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private recalculateSlots() {
+    const slotDuration = this.slotDuration;
+
+    // reconstrói base ordenada a partir do template
+    const baseSlots: any[] = this.originalSlotsTemplate.map(s => ({
+      time: s.time,
+      id: s.time,
+      available: true,
+      customers: [] as any[]
+    }));
+
+    // helper para garantir existência de um tempo específico (p/ partial times)
+    const ensureSlotExists = (time: string): number => {
+      let idx = baseSlots.findIndex(s => s.time === time);
+      if (idx !== -1) return idx;
+
+      const tMinutes = this.toMinutes(time);
+      idx = baseSlots.findIndex(s => this.toMinutes(s.time) > tMinutes);
+      if (idx === -1) {
+        baseSlots.push({ time, id: time, available: true, customers: [] as any[] });
+        return baseSlots.length - 1;
+      } else {
+        baseSlots.splice(idx, 0, { time, id: time, available: true, customers: [] as any[] });
+        return idx;
+      }
+    };
+
+    // percorre todas as appointments e marca intervalos
+    // ordenando por slotStart (para comportamento determinístico)
+    const sortedAppts = this.appointments.slice().sort((a, b) => {
+      if (!a.slotStart) return 1;
+      if (!b.slotStart) return -1;
+      return this.toMinutes(a.slotStart) - this.toMinutes(b.slotStart);
+    });
+
+    for (const appt of sortedAppts) {
+      const slotStart = appt.slotStart;
+      const slotEnd = appt.slotEnd;
+      if (!slotStart || !slotEnd) continue;
+
+      const startIndex = ensureSlotExists(slotStart);
+      // se slotEnd não estiver no formato correto, calc a partir de durationMinutes
+      let effectiveEnd = slotEnd;
+      if (!effectiveEnd && appt.durationMinutes) {
+        effectiveEnd = this.addMinutesToTime(slotStart, appt.durationMinutes);
+      }
+      if (!effectiveEnd) continue;
+
+      const totalSlots = this.calculateTotalSlots(slotStart, effectiveEnd, baseSlots);
+
+      const mappedCustomer = {
+        ...appt,
+        totalSlots,
+        status: appt.status || 'pending',
+        services: appt.services || []
+      };
+
+      for (let i = startIndex; i < startIndex + totalSlots && i < baseSlots.length; i++) {
+        if (!baseSlots[i].customers) baseSlots[i].customers = [];
+        baseSlots[i].customers.push(mappedCustomer);
+        baseSlots[i].available = false;
+      }
+
+      // se terminar no meio do último slot, garantir existência do corte (partial slot)
+      const lastSlotIndex = startIndex + totalSlots - 1;
+      const lastSlot = baseSlots[lastSlotIndex];
+      if (lastSlot) {
+        const endTimeMinutes = this.toMinutes(effectiveEnd);
+        const lastSlotEndMinutes = this.toMinutes(this.addMinutesToTime(lastSlot.time, slotDuration));
+        if (endTimeMinutes < lastSlotEndMinutes) {
+          const formattedEnd = this.formatMinutes(endTimeMinutes);
+          const exists = baseSlots.some(s => s.time === formattedEnd);
+          if (!exists) {
+            baseSlots.splice(lastSlotIndex + 1, 0, {
+              time: formattedEnd,
+              id: formattedEnd,
+              available: true,
+              customers: [] as any[]
+            });
+          }
+        }
+      }
+    }
+
+    // agrupa para visual — agora usa slotEnd real quando disponível (preserva partial ends)
+    this.selectedTimeSlots = this.groupCustomerSlots(baseSlots);
+    this.filteredTimeSlots = [...this.selectedTimeSlots];
+    this.updateFilterCounts();
+    this.applyFilters();
+  }
+
+  // agrupa clientes que ocupam slots consecutivos em um único bloco visual
+  private groupCustomerSlots(slots: any[]): any[] {
+    const grouped: any[] = [];
+    const seen = new Set<number | string>();
+
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i];
+      if (!slot.customers || slot.customers.length === 0) {
+        grouped.push(slot);
+        continue;
+      }
+
+      for (const customer of slot.customers) {
+        if (seen.has(customer.id)) continue;
+
+        // quantos slots consecutivos
+        let count = 1;
+        for (let j = i + 1; j < slots.length; j++) {
+          const next = slots[j];
+          if (next.customers.some((c: any) => c.id === customer.id)) count++;
+          else break;
+        }
+
+        // se o appointment tiver slotEnd real, use-o; senão calc por count
+        const realSlotEnd = customer.slotEnd ? customer.slotEnd : this.addMinutesToTime(slot.time, count * this.slotDuration);
+
+        grouped.push({
+          ...slot,
+          groupedCustomer: {
+            ...customer,
+            slotStart: slot.time,
+            slotEnd: realSlotEnd,
+            totalSlots: count
+          }
+        });
+
+        seen.add(customer.id);
+      }
+    }
+
+    return grouped;
+  }
+
 
   applyFilters(): void {
     if (!this.selectedTimeSlots || this.selectedTimeSlots.length === 0) {
@@ -77,25 +444,28 @@ export class OwnerSchedulePage implements OnInit {
     const term = this.searchTerm.toLowerCase();
 
     this.filteredTimeSlots = this.selectedTimeSlots.map(slot => {
-      const filteredCustomers = slot.customers.filter((customer: any) => {
+      const filteredCustomers = (slot.customers || []).filter((customer: any) => {
         if (hasStatusFilters) {
-          const statusMatch = activeStatus.includes(customer.status.toLowerCase());
-          if (!statusMatch) return false;
+          const statusMatch = activeStatus.includes((customer.status || '').toLowerCase());
+          if (!statusMatch)
+            return false;
         }
 
         if (hasServiceFilters) {
-          const serviceMatch = customer.services.some((s: any) =>
-            activeServices.includes(s.name.toLowerCase())
+          const serviceMatch = (customer.services || []).some((s: any) =>
+            activeServices.includes((s.name || '').toLowerCase())
           );
-          if (!serviceMatch) return false;
+          if (!serviceMatch)
+            return false;
         }
 
         if (hasSearch) {
-          const nameMatch = customer.name.toLowerCase().includes(term);
-          const serviceMatch = customer.services.some((s: any) =>
-            s.name.toLowerCase().includes(term)
+          const nameMatch = (customer.name || '').toLowerCase().includes(term);
+          const serviceMatch = (customer.services || []).some((s: any) =>
+            (s.name || '').toLowerCase().includes(term)
           );
-          if (!nameMatch && !serviceMatch) return false;
+          if (!nameMatch && !serviceMatch)
+            return false;
         }
 
         return true;
@@ -108,162 +478,28 @@ export class OwnerSchedulePage implements OnInit {
     this.showFilters = false;
   }
 
-  private loadSchedulesForDate() {
-    this.isLoading = true;
-    this.service.getOwnerAgendaForDate(this.store.id, this.user.id, this.selectedDate).subscribe({
-      next: (response) => {
-        const data = response.data;
-        if (!data) {
-          this.toastController.show('Nenhum dado encontrado', 'warning');
-          this.isLoading = false;
-          return;
-        }
-
-        this.selectedTimeSlots = data.slots.map(slot => ({
-          time: slot.time,
-          id: slot.time,
-          available: slot.available,
-          customers: []
-        }));
-
-        data.customers?.forEach(customer => {
-          const slotStart = customer.customerSelectedSlots?.slotStart;
-          const slotEnd = customer.customerSelectedSlots?.slotEnd;
-
-          if (!slotStart || !slotEnd)
-            return;
-
-          const slotStartShort = slotStart.substring(0, 5);
-          const slot = this.selectedTimeSlots.find(s => s.time === slotStartShort);
-
-          if (!slot)
-            return;
-
-          const totalSlots = this.calculateTotalSlots(slotStart, slotEnd, data.slots);
-
-          const mappedCustomer = {
-            id: customer.id,
-            name: customer.name,
-            avatar: customer.imageUrl || 'assets/default-avatar.png',
-            totalSlots,
-            status: this.mapStatus(customer.status ?? 0),
-            services: (customer.services || []).map(s => ({
-              name: s.name,
-              slots: s.quantity || 1,
-              color: this.getRandomServiceColor()
-            }))
-          };
-
-          slot.customers.push(mappedCustomer);
-
-          const startIndex = this.selectedTimeSlots.findIndex(s => s.time === slotStartShort);
-          for (let i = startIndex; i < startIndex + totalSlots && i < this.selectedTimeSlots.length; i++) {
-            this.selectedTimeSlots[i].available = false;
-          }
-        });
-
-        this.updateFilterCounts();
-        this.applyFilters();
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Erro ao buscar agendamentos para o dia:', err);
-        this.toastController.show('Erro ao carregar agendamentos do dia', 'danger');
-        this.isLoading = false;
-      }
-    });
-  }
-
-  private calculateTotalSlots(slotStart: string, slotEnd: string, allSlots: any[]): number {
-    if (!slotStart || !slotEnd || allSlots.length < 2) return 1;
-
-    const toMinutes = (time: string) => {
-      const [h, m] = time.split(':').map(Number);
-      return h * 60 + m;
-    };
-
-    const start = toMinutes(slotStart.substring(0, 5));
-    const end = toMinutes(slotEnd.substring(0, 5));
-    if (end <= start) return 1;
-
-    const slotDurations: number[] = [];
-    for (let i = 1; i < allSlots.length; i++) {
-      const prev = toMinutes(allSlots[i - 1].time);
-      const curr = toMinutes(allSlots[i].time);
-      slotDurations.push(curr - prev);
-    }
-
-    const avgSlotDuration = slotDurations.length
-      ? slotDurations.reduce((a, b) => a + b, 0) / slotDurations.length
-      : 60;
-
-    const totalDuration = end - start;
-    const totalSlots = Math.ceil(totalDuration / avgSlotDuration);
-
-    return totalSlots > 0 ? totalSlots : 1;
-  }
-
-  private mapStatus(status: number): string {
-    const statusMap: { [key: number]: string } = {
-      0: 'waiting',
-      1: 'removed',
-      2: 'inservice',
-      3: 'done',
-      4: 'absent',
-      5: 'cancelled',
-      6: 'next',
-      7: 'pending',
-      8: 'rejected',
-      9: 'confirmed'
-    };
-    return statusMap[status] || 'pending';
-  }
-
-  private getRandomServiceColor(): string {
-    const colors = ['primary', 'secondary', 'tertiary', 'success', 'warning'];
-    return colors[Math.floor(Math.random() * colors.length)];
-  }
-
-  filterAppointments(event: any) {
-    this.searchTerm = event.detail.value.toLowerCase();
-    this.applyFilters();
-  }
-
-  toggleFilters() {
-    this.showFilters = !this.showFilters;
-  }
-
-  toggleStatusFilter(status: any) {
-    status.selected = !status.selected;
-  }
-
-  toggleServiceFilter(service: any) {
-    service.selected = !service.selected;
-  }
-
   updateFilterCounts() {
-    this.statusFilters.forEach(filter => {
-      filter.count = 0;
-    });
-
-    this.serviceFilters.forEach(serviceFilter => {
-      serviceFilter.count = 0;
-    });
+    this.statusFilters.forEach(filter => filter.count = 0);
+    this.serviceFilters.forEach(filter => filter.count = 0);
 
     this.selectedTimeSlots.forEach(slot => {
-      slot.customers.forEach((customer: any) => {
+      (slot.customers || []).forEach((customer: any) => {
         const statusFilter = this.statusFilters.find(f => f.value === customer.status);
-        if (statusFilter) {
-          statusFilter.count++;
-        }
+        if (statusFilter) statusFilter.count++;
 
-        customer.services.forEach((service: any) => {
+        (customer.services || []).forEach((service: any) => {
           const serviceFilter = this.serviceFilters.find(f => f.name === service.name);
-          if (serviceFilter) {
-            serviceFilter.count++;
-          }
+          if (serviceFilter) serviceFilter.count++;
         });
       });
+    });
+  }
+
+  formatDate(date: Date): string {
+    return date.toLocaleDateString("pt-BR", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
     });
   }
 
@@ -271,46 +507,25 @@ export class OwnerSchedulePage implements OnInit {
     return date.toLocaleDateString("pt-BR", { weekday: "long" });
   }
 
-  getServiceColor(colorName: string): string {
-    const colorMap: { [key: string]: string } = {
-      'primary': '#3880ff',
-      'secondary': '#3dc2ff',
-      'tertiary': '#5260ff',
-      'success': '#2dd36f',
-      'warning': '#ffc409',
-      'danger': '#eb445a'
-    };
-    return colorMap[colorName] || '#666';
+  isToday(): boolean {
+    const today = new Date();
+    return this.selectedDate.toDateString() === today.toDateString();
   }
 
-  passesStatusFilter(customer: any): boolean {
-    const activeStatusFilters = this.statusFilters.filter(f => f.selected);
-    return activeStatusFilters.some(filter => customer.status === filter.value);
+  changeView(event: any) {
+    this.currentView = event.detail?.value || this.currentView;
   }
 
-  passesServiceFilter(customer: any): boolean {
-    const activeServiceFilters = this.serviceFilters.filter(f => f.selected);
-    if (activeServiceFilters.length === 0) return true;
-
-    return customer.services.some((service: any) =>
-      activeServiceFilters.some(filter => filter.name === service.name)
-    );
+  filterAppointments(event: any) {
+    const v = event?.detail?.value ?? event?.target?.value ?? this.searchQuery;
+    this.searchQuery = v ?? '';
+    this.searchTerm = (this.searchQuery || '').trim();
+    this.applyFilters();
   }
 
-  passesSearchFilter(customer: any): boolean {
-    if (!this.searchTerm) return true;
-
-    return customer.name.toLowerCase().includes(this.searchTerm) ||
-      customer.services.some((s: any) =>
-        s.name.toLowerCase().includes(this.searchTerm)
-      );
-  }
-
-  showEmptySlots(): boolean {
-    return this.searchTerm === '' &&
-      this.statusFilters.every(f => !f.selected) &&
-      this.serviceFilters.every(f => !f.selected);
-  }
+  toggleFilters() { this.showFilters = !this.showFilters; }
+  toggleStatusFilter(status: any) { status.selected = !status.selected; this.applyFilters(); }
+  toggleServiceFilter(service: any) { service.selected = !service.selected; this.applyFilters(); }
 
   hasActiveFilters(): boolean {
     return this.searchTerm !== '' ||
@@ -319,132 +534,103 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   getActiveFilters(): any[] {
-    const filters = [];
-
-    if (this.searchTerm) {
-      filters.push({ key: 'search', label: `Busca: "${this.searchTerm}"`, color: 'medium' });
-    }
-
-    this.statusFilters
-      .filter(f => f.selected)
-      .forEach(f => filters.push({ key: f.value, label: `Status: ${f.label}`, color: f.color }));
-
-    this.serviceFilters
-      .filter(f => f.selected)
-      .forEach(f => filters.push({ key: f.name, label: `Serviço: ${f.name}`, color: 'tertiary' }));
-
+    const filters: any[] = [];
+    if (this.searchTerm) filters.push({ key: 'search', label: `Busca: "${this.searchTerm}"`, color: 'medium' });
+    this.statusFilters.filter(f => f.selected).forEach(f => filters.push({ key: f.value, label: `Status: ${f.label}`, color: f.color }));
+    this.serviceFilters.filter(f => f.selected).forEach(f => filters.push({ key: f.name, label: `Serviço: ${f.name}`, color: 'tertiary' }));
     return filters;
   }
 
+  getActiveFiltersCount(): number {
+    const statusCount = this.statusFilters.filter(s => s.selected).length;
+    const serviceCount = this.serviceFilters.filter(s => s.selected).length;
+    const searchCount = this.searchTerm ? 1 : 0;
+    return statusCount + serviceCount + searchCount;
+  }
+
   removeFilter(key: string) {
-    if (key === 'search') {
-      this.searchTerm = '';
-      this.searchQuery = '';
-    } else {
+    if (key === 'search') { this.searchTerm = ''; this.searchQuery = ''; }
+    else {
       const statusFilter = this.statusFilters.find(f => f.value === key);
-      if (statusFilter) {
-        statusFilter.selected = false;
-      } else {
+      if (statusFilter) statusFilter.selected = false;
+      else {
         const serviceFilter = this.serviceFilters.find(f => f.name === key);
-        if (serviceFilter)
-          serviceFilter.selected = false;
+        if (serviceFilter) serviceFilter.selected = false;
       }
     }
     this.applyFilters();
   }
 
   clearFilters() {
-    this.searchTerm = '';
-    this.searchQuery = '';
+    this.searchTerm = ''; this.searchQuery = '';
     this.statusFilters.forEach(f => f.selected = false);
     this.serviceFilters.forEach(f => f.selected = false);
     this.applyFilters();
   }
 
-  changeView(event: any) {
-    this.currentView = event.detail.value;
-  }
-
-  getStats() {
-    const allCustomers = this.getAllCustomers();
+  getConsolidatedStats() {
+    const appointments = this.getAllCustomers();
     return {
-      confirmed: allCustomers.filter(c => c.status === 'confirmed').length,
-      pending: allCustomers.filter(c => c.status === 'pending').length,
-      completed: allCustomers.filter(c => c.status === 'completed').length,
-      total: allCustomers.length
+      confirmed: appointments.filter((a: any) => a.status === 'confirmed').length,
+      pending: appointments.filter((a: any) => a.status === 'pending').length,
+      completed: appointments.filter((a: any) => a.status === 'done').length,
+      total: appointments.length
     };
   }
 
-  getAllCustomers() {
-    return this.selectedTimeSlots.flatMap(slot => slot.customers);
+  getAllCustomers() { return this.appointments.slice(); }
+
+  getFilteredCustomers() { return this.filteredTimeSlots.flatMap(slot => slot.customers || []); }
+
+  getSlotTime(customer: any): string {
+    const appt = this.appointments.find(a => a.id === customer.id);
+    return appt ? appt.slotStart : '';
   }
 
-  getFilteredCustomers() {
-    return this.filteredTimeSlots.flatMap(slot => slot.customers);
+  getEmptySlotsCount(): number {
+    return this.selectedTimeSlots.filter(slot => !slot.customers || slot.customers.length === 0).length;
   }
 
   getStatusColor(status: string): string {
     const colorMap: { [key: string]: string } = {
-      'waiting': 'medium',
-      'pending': 'warning',
-      'confirmed': 'success',
-      'inservice': 'primary',
-      'done': 'primary',
-      'absent': 'danger',
-      'cancelled': 'danger',
-      'next': 'secondary',
-      'rejected': 'danger',
-      'scheduled': 'tertiary'
+      'waiting': 'medium', 'pending': 'warning', 'confirmed': 'success', 'inservice': 'primary', 'done': 'primary',
+      'absent': 'danger', 'cancelled': 'danger', 'next': 'secondary', 'rejected': 'danger', 'scheduled': 'tertiary'
     };
     return colorMap[status] || 'medium';
   }
 
   getStatusText(status: string): string {
     const textMap: { [key: string]: string } = {
-      'waiting': 'Aguardando',
-      'pending': 'Pendente',
-      'confirmed': 'Confirmado',
-      'inservice': 'Em Atendimento',
-      'done': 'Realizado',
-      'absent': 'Ausente',
-      'cancelled': 'Cancelado',
-      'next': 'Próximo',
-      'rejected': 'Rejeitado',
-      'scheduled': 'Agendado'
+      'waiting': 'Aguardando', 'pending': 'Pendente', 'confirmed': 'Confirmado', 'inservice': 'Em Atendimento', 'done': 'Realizado',
+      'absent': 'Ausente', 'cancelled': 'Cancelado', 'next': 'Próximo', 'rejected': 'Rejeitado', 'scheduled': 'Agendado'
     };
     return textMap[status] || status;
   }
 
   getActionIcon(status: string): string {
     const iconMap: { [key: string]: string } = {
-      'waiting': 'time',
-      'pending': 'time',
-      'confirmed': 'checkmark-circle',
-      'inservice': 'play-circle',
-      'done': 'checkmark-done',
-      'absent': 'close-circle',
-      'cancelled': 'close-circle',
-      'next': 'play-forward',
-      'rejected': 'close-circle',
-      'scheduled': 'calendar'
+      'waiting': 'time', 'pending': 'time', 'confirmed': 'checkmark-circle', 'inservice': 'play-circle', 'done': 'checkmark-done',
+      'absent': 'close-circle', 'cancelled': 'close-circle', 'next': 'play-forward', 'rejected': 'close-circle', 'scheduled': 'calendar'
     };
     return iconMap[status] || 'ellipsis-horizontal';
   }
 
+  getServiceColor(colorName: string): string {
+    const colorMap: { [key: string]: string } = {
+      'primary': '#3880ff', 'secondary': '#3dc2ff', 'tertiary': '#5260ff', 'success': '#2dd36f', 'warning': '#ffc409', 'danger': '#eb445a'
+    };
+    return colorMap[colorName] || '#666';
+  }
+
+
+  editAppointment(customer: any) { console.log('Abrir edição para', customer); }
+
   quickAction(customer: any, slot?: any) {
     switch (customer.status) {
-      case 'pending':
-        customer.status = 'confirmed';
-        break;
-      case 'confirmed':
-        customer.status = 'inservice';
-        break;
-      case 'inservice':
-        customer.status = 'done';
-        break;
-      case 'done':
-        customer.status = 'confirmed';
-        break;
+      case 'pending': customer.status = 'confirmed'; break;
+      case 'confirmed': customer.status = 'inservice'; break;
+      case 'inservice': customer.status = 'done'; break;
+      case 'done': customer.status = 'confirmed'; break;
     }
     this.applyFilters();
   }
@@ -456,67 +642,18 @@ export class OwnerSchedulePage implements OnInit {
       avatar: 'https://i.pravatar.cc/100?img=6',
       totalSlots: 1,
       status: 'pending',
-      time: slot.time,
+      slotStart: slot.time,
+      slotEnd: this.addMinutesToTime(slot.time, this.slotDuration),
+      durationMinutes: this.slotDuration,
       services: [{ name: 'Corte', slots: 1, color: 'primary' }]
     };
-
-    slot.customers.push(newCustomer);
-    this.applyFilters();
+    this.appointments.push(newCustomer);
+    this.recalculateSlots();
   }
 
-  editAppointment(customer: any) {
-    console.log('Editando agendamento:', customer);
-    // Aqui abriria um modal de edição
-  }
-
-  addNewAppointment() {
-    const emptySlot = this.selectedTimeSlots.find(slot => slot.customers.length === 0);
-    if (emptySlot) {
-      this.addAppointment(emptySlot);
-    }
-  }
-
-  onDrop(event: CdkDragDrop<any[]>, targetSlot: any) {
-    this.isDragging = false;
-
-    if (event.previousContainer === event.container) {
-      moveItemInArray(targetSlot.customers, event.previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        targetSlot.customers,
-        event.previousIndex,
-        event.currentIndex
-      );
-
-      const movedCustomer = targetSlot.customers[event.currentIndex];
-      movedCustomer.time = targetSlot.time;
-    }
-    this.applyFilters();
-  }
-
-  onTrashDrop(event: CdkDragDrop<any[]>) {
-    const customer = event.previousContainer.data[event.previousIndex];
-    event.previousContainer.data.splice(event.previousIndex, 1);
-    this.trashHover = false;
-    this.isDragging = false;
-    this.applyFilters();
-  }
-
-  removeAppointment(customer: any, slot?: any) {
-    if (slot) {
-      slot.customers = slot.customers.filter((c: any) => c.id !== customer.id);
-    } else {
-      this.selectedTimeSlots.forEach(s => {
-        s.customers = s.customers.filter((c: any) => c.id !== customer.id);
-      });
-    }
-    this.applyFilters();
-  }
-
-  isToday(): boolean {
-    const today = new Date();
-    return this.selectedDate.toDateString() === today.toDateString();
+  removeAppointment(customer: any) {
+    this.appointments = this.appointments.filter(a => a.id !== customer.id);
+    this.recalculateSlots();
   }
 
   previousDay() {
@@ -534,53 +671,20 @@ export class OwnerSchedulePage implements OnInit {
     this.loadSchedulesForDate();
   }
 
-  getConsolidatedStats() {
-    const appointments = this.getAllCustomers();
+  onDragStarted() { this.isDragging = true; }
+  onDragEnded() { this.isDragging = false; this.trashHover = false; }
 
-    return {
-      confirmed: appointments.filter(a => a.status === 'confirmed').length,
-      pending: appointments.filter(a => a.status === 'pending').length,
-      completed: appointments.filter(a => a.status === 'done').length,
-      total: appointments.length
+
+  private mapStatus(status: number): string {
+    const statusMap: { [key: number]: string } = {
+      0: 'waiting', 1: 'removed', 2: 'inservice', 3: 'done', 4: 'absent',
+      5: 'cancelled', 6: 'next', 7: 'pending', 8: 'rejected', 9: 'confirmed'
     };
+    return statusMap[status] || 'pending';
   }
 
-  loadAgenda() {
-    this.applyFilters();
-  }
-
-  getSlotTime(customer: any): string {
-    const slot = this.selectedTimeSlots.find(s =>
-      s.customers.some((c: any) => c.id === customer.id)
-    );
-    return slot ? slot.time : '';
-  }
-
-  getEmptySlotsCount(): number {
-    return this.selectedTimeSlots.filter(slot => slot.customers.length === 0).length;
-  }
-
-  getActiveFiltersCount(): number {
-    const statusCount = this.statusFilters.filter(s => s.selected).length;
-    const serviceCount = this.serviceFilters.filter(s => s.selected).length;
-    const searchCount = this.searchTerm ? 1 : 0;
-    return statusCount + serviceCount + searchCount;
-  }
-
-  formatDate(date: Date): string {
-    return date.toLocaleDateString("pt-BR", {
-      weekday: "long",
-      day: "2-digit",
-      month: "long",
-    });
-  }
-
-  onDragStarted() {
-    this.isDragging = true;
-  }
-
-  onDragEnded() {
-    this.isDragging = false;
-    this.trashHover = false;
+  private getRandomServiceColor(): string {
+    const colors = ['primary', 'secondary', 'tertiary', 'success', 'warning'];
+    return colors[Math.floor(Math.random() * colors.length)];
   }
 }

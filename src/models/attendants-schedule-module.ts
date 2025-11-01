@@ -4,4 +4,5 @@ import { SlotReducedModel } from "./schedule-model";
 export interface AttendantsScheduleModel {
   slots: SlotReducedModel[];
   customers?: CustomerModel[];
+  slotDuration: number;
 }

@@ -435,7 +435,7 @@
 
 .empty-slot {
   text-align: center;
-  padding: 16px 0;
+  padding: 10px 0;
   color: #999;
 }
 
@@ -675,4 +675,26 @@ ion-content::part(scroll) {
   .no-results:hover {
     background: var(--ion-color-dark);
   }
+}
+
+.customer-block {
+  border: 2px solid var(--ion-color-primary);
+  border-radius: 12px;
+  margin-bottom: 4px;
+  background: white;
+}
+
+.customer-card-compact.cdk-drag-preview {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  border-radius: 12px;
+  transform: rotate(2deg);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drop-list.drag-invalid {
+  background-color: rgba(255, 0, 0, 0.1);
+  border: 1px dashed #ff4d4f;
 }

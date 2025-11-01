@@ -206,17 +206,17 @@
       <div
         *ngFor="let slot of filteredTimeSlots"
         class="agenda-slot"
-        [class.has-appointments]="slot.customers?.length"
+        [class.has-appointments]="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length"
         cdkDropList
-        [cdkDropListData]="slot.customers"
+        [cdkDropListData]="slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers"
         (cdkDropListDropped)="onDrop($event, slot)"
       >
         <div class="slot-header">
           <h4 class="slot-time">
             <ion-icon name="time-outline"></ion-icon>
             {{ slot.time }}
-            <span class="appointment-count" *ngIf="slot.customers?.length">
-              ({{ slot.customers.length }})
+            <span class="appointment-count" *ngIf="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length">
+              ({{ slot.groupedCustomer ? 1 : slot.customers?.length }})
             </span>
           </h4>
           <ion-button
@@ -231,11 +231,11 @@
         </div>
 
         <div
-          *ngIf="slot.customers?.length; else emptySlot"
+          *ngIf="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length; else emptySlot"
           class="customers-container"
         >
           <div
-            *ngFor="let customer of slot.customers"
+            *ngFor="let customer of (slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)"
             class="customer-card-compact"
             [class]="customer.status"
             cdkDrag
