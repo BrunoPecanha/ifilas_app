@@ -215,7 +215,10 @@
           <h4 class="slot-time">
             <ion-icon name="time-outline"></ion-icon>
             {{ slot.time }}
-            <span class="appointment-count" *ngIf="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length">
+            <span
+              class="appointment-count"
+              *ngIf="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length"
+            >
               ({{ slot.groupedCustomer ? 1 : slot.customers?.length }})
             </span>
           </h4>
@@ -373,5 +376,22 @@
     </div>
   </section>
 </ion-content>
+
+<!-- Lixeira flutuante contextual -->
+<div
+  *ngIf="isDragging"
+  class="trash-contextual"
+  cdkDropList
+  [cdkDropListData]="trashData" 
+  (cdkDropListDropped)="onTrashDrop($event)"
+  (cdkDropListEntered)="trashHover = true"
+  (cdkDropListExited)="trashHover = false"
+  [ngClass]="{ 'hover': trashHover }"
+>
+  <ion-icon
+    [name]="trashHover ? 'trash-sharp' : 'trash-outline'"
+    class="trash-icon"
+  ></ion-icon>
+</div>
 
 <app-footer-menu></app-footer-menu>
