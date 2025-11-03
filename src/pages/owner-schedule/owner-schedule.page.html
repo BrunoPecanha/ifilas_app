@@ -242,6 +242,7 @@
             class="customer-card-compact"
             [class]="customer.status"
             cdkDrag
+            [cdkDragData]="customer"
             (cdkDragStarted)="onDragStarted()"
             (cdkDragEnded)="onDragEnded()"
           >
@@ -382,7 +383,7 @@
   *ngIf="isDragging"
   class="trash-contextual"
   cdkDropList
-  [cdkDropListData]="trashData" 
+  [cdkDropListData]="trashData"
   (cdkDropListDropped)="onTrashDrop($event)"
   (cdkDropListEntered)="trashHover = true"
   (cdkDropListExited)="trashHover = false"

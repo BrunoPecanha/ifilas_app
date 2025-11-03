@@ -62,7 +62,6 @@ export class OwnerSchedulePage implements OnInit {
     this.loadSchedulesForDate();
   }
 
-
   private loadSchedulesForDate() {
     this.isLoading = true;
     this.service.getOwnerAgendaForDate(this.store.id, this.user.id, this.selectedDate).subscribe({
@@ -258,20 +257,21 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   onTrashDrop(event: CdkDragDrop<any[]>) {
-    debugger;
-
-    // Verifique se há dados no item arrastado
+    console.log('Evento de drop na lixeira:', event);
+    
+    // Acesse os dados do item arrastado
     const customer = event.item.data;
-
+    
     if (customer && customer.id) {
       console.log('Removendo cliente:', customer);
       this.removeAppointment(customer);
-      this.toastController.show('Atendimento removido!', 'danger');
+      this.toastController.show('Atendimento removido!', 'success');
     } else {
       console.warn('Nenhum dado de cliente encontrado no item arrastado');
+      console.log('Dados completos do evento:', event);
       this.toastController.show('Erro ao remover atendimento', 'danger');
     }
-
+    
     this.trashHover = false;
     this.isDragging = false;
   }
@@ -449,7 +449,6 @@ export class OwnerSchedulePage implements OnInit {
 
     return grouped;
   }
-
 
   applyFilters(): void {
     if (!this.selectedTimeSlots || this.selectedTimeSlots.length === 0) {
@@ -654,8 +653,9 @@ export class OwnerSchedulePage implements OnInit {
     return colorMap[colorName] || '#666';
   }
 
-
-  editAppointment(customer: any) { console.log('Abrir edição para', customer); }
+  editAppointment(customer: any) { 
+    console.log('Abrir edição para', customer); 
+  }
 
   quickAction(customer: any, slot?: any) {
     switch (customer.status) {
@@ -705,10 +705,13 @@ export class OwnerSchedulePage implements OnInit {
 
   onDragStarted() {
     this.isDragging = true;
+    console.log('Drag iniciado');
   }
 
   onDragEnded() {
-    this.isDragging = false; this.trashHover = false;
+    this.isDragging = false; 
+    this.trashHover = false;
+    console.log('Drag finalizado');
   }
 
   private mapStatus(status: number): string {
