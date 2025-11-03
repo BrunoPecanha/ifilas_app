@@ -16,6 +16,7 @@ export class OwnerSchedulePage implements OnInit {
 
   selectedTimeSlots: any[] = [];
   filteredTimeSlots: any[] = [];
+  trashData: any[] = [];
 
   private originalSlotsTemplate: { time: string }[] = [];
 
@@ -60,7 +61,6 @@ export class OwnerSchedulePage implements OnInit {
   ngOnInit() {
     this.loadSchedulesForDate();
   }
-
 
   private loadSchedulesForDate() {
     this.isLoading = true;
@@ -147,7 +147,8 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   private calculateTotalSlots(slotStart: string, slotEnd: string, allSlots: any[]): number {
-    if (!slotStart || !slotEnd || allSlots.length < 2) return 1;
+    if (!slotStart || !slotEnd || allSlots.length < 2)
+      return 1;
 
     const toMin = (time: string) => {
       const t = time.substring(0, 5);
@@ -157,7 +158,9 @@ export class OwnerSchedulePage implements OnInit {
 
     const start = toMin(slotStart);
     const end = toMin(slotEnd);
-    if (end <= start) return 1;
+
+    if (end <= start)
+      return 1;
 
     const slotDurations: number[] = [];
     for (let i = 1; i < allSlots.length; i++) {
@@ -183,7 +186,9 @@ export class OwnerSchedulePage implements OnInit {
     }
 
     const movedCustomer = event.previousContainer.data[event.previousIndex];
-    if (!movedCustomer) return;
+
+    if (!movedCustomer)
+      return;
 
     const appt = this.appointments.find(a => a.id === movedCustomer.id);
     const durationMinutesFromAppt = appt?.durationMinutes;
@@ -251,6 +256,26 @@ export class OwnerSchedulePage implements OnInit {
     });
   }
 
+  onTrashDrop(event: CdkDragDrop<any[]>) {
+    console.log('Evento de drop na lixeira:', event);
+    
+    // Acesse os dados do item arrastado
+    const customer = event.item.data;
+    
+    if (customer && customer.id) {
+      console.log('Removendo cliente:', customer);
+      this.removeAppointment(customer);
+      this.toastController.show('Atendimento removido!', 'success');
+    } else {
+      console.warn('Nenhum dado de cliente encontrado no item arrastado');
+      console.log('Dados completos do evento:', event);
+      this.toastController.show('Erro ao remover atendimento', 'danger');
+    }
+    
+    this.trashHover = false;
+    this.isDragging = false;
+  }
+
   private computeStartIndexFromTime(time: string): number {
     const baseTimes = this.originalSlotsTemplate.map(s => s.time);
     const exact = baseTimes.indexOf(time);
@@ -269,8 +294,11 @@ export class OwnerSchedulePage implements OnInit {
     const baseTimes = this.originalSlotsTemplate.map(s => s.time);
 
     for (const other of this.appointments) {
-      if (other.id === exceptAppointmentId) continue;
-      if (!other.slotStart || !other.slotEnd) continue;
+      if (other.id === exceptAppointmentId)
+        continue;
+
+      if (!other.slotStart || !other.slotEnd)
+        continue;
 
       let otherStartIndex = baseTimes.indexOf(other.slotStart);
       if (otherStartIndex === -1) {
@@ -327,14 +355,18 @@ export class OwnerSchedulePage implements OnInit {
     for (const appt of sortedAppts) {
       const slotStart = appt.slotStart;
       const slotEnd = appt.slotEnd;
-      if (!slotStart || !slotEnd) continue;
+
+      if (!slotStart || !slotEnd)
+        continue;
 
       const startIndex = ensureSlotExists(slotStart);
       let effectiveEnd = slotEnd;
       if (!effectiveEnd && appt.durationMinutes) {
         effectiveEnd = this.addMinutesToTime(slotStart, appt.durationMinutes);
       }
-      if (!effectiveEnd) continue;
+
+      if (!effectiveEnd)
+        continue;
 
       const totalSlots = this.calculateTotalSlots(slotStart, effectiveEnd, baseSlots);
 
@@ -389,7 +421,8 @@ export class OwnerSchedulePage implements OnInit {
       }
 
       for (const customer of slot.customers) {
-        if (seen.has(customer.id)) continue;
+        if (seen.has(customer.id))
+          continue;
 
         let count = 1;
         for (let j = i + 1; j < slots.length; j++) {
@@ -416,7 +449,6 @@ export class OwnerSchedulePage implements OnInit {
 
     return grouped;
   }
-
 
   applyFilters(): void {
     if (!this.selectedTimeSlots || this.selectedTimeSlots.length === 0) {
@@ -573,9 +605,13 @@ export class OwnerSchedulePage implements OnInit {
     };
   }
 
-  getAllCustomers() { return this.appointments.slice(); }
+  getAllCustomers() {
+    return this.appointments.slice();
+  }
 
-  getFilteredCustomers() { return this.filteredTimeSlots.flatMap(slot => slot.customers || []); }
+  getFilteredCustomers() {
+    return this.filteredTimeSlots.flatMap(slot => slot.customers || []);
+  }
 
   getSlotTime(customer: any): string {
     const appt = this.appointments.find(a => a.id === customer.id);
@@ -617,8 +653,9 @@ export class OwnerSchedulePage implements OnInit {
     return colorMap[colorName] || '#666';
   }
 
-
-  editAppointment(customer: any) { console.log('Abrir edição para', customer); }
+  editAppointment(customer: any) { 
+    console.log('Abrir edição para', customer); 
+  }
 
   quickAction(customer: any, slot?: any) {
     switch (customer.status) {
@@ -666,9 +703,16 @@ export class OwnerSchedulePage implements OnInit {
     this.loadSchedulesForDate();
   }
 
-  onDragStarted() { this.isDragging = true; }
-  onDragEnded() { this.isDragging = false; this.trashHover = false; }
+  onDragStarted() {
+    this.isDragging = true;
+    console.log('Drag iniciado');
+  }
 
+  onDragEnded() {
+    this.isDragging = false; 
+    this.trashHover = false;
+    console.log('Drag finalizado');
+  }
 
   private mapStatus(status: number): string {
     const statusMap: { [key: number]: string } = {
