@@ -302,8 +302,10 @@ export class OwnerSchedulePage implements OnInit {
   }
 
 
-  private hasTimePassed(time: string): boolean {
-    if (!this.isToday()) return false; // Só bloqueia se for o dia atual
+  private hasTimePassed(time: string): boolean {    
+    if (!this.isToday()) 
+      return false; 
+    
     const now = new Date();
     const [h, m] = time.split(':').map(Number);
     const slotTime = new Date();
@@ -383,8 +385,10 @@ export class OwnerSchedulePage implements OnInit {
     };
 
     const sortedAppts = this.appointments.slice().sort((a, b) => {
-      if (!a.slotStart) return 1;
-      if (!b.slotStart) return -1;
+      if (!a.slotStart) 
+        return 1;
+      if (!b.slotStart) 
+        return -1;
       return this.toMinutes(a.slotStart) - this.toMinutes(b.slotStart);
     });
 
@@ -484,6 +488,10 @@ export class OwnerSchedulePage implements OnInit {
     }
 
     return grouped;
+  }
+
+  onEditCustomer(customer: any) {
+    debugger
   }
 
   applyFilters(): void {
