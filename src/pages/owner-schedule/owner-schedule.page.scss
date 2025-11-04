@@ -701,13 +701,13 @@ ion-content::part(scroll) {
 
 .trash-contextual {
   position: fixed;
-  bottom: 100px; /* Acima do rodapé */
-  left: 50%;
+  bottom: 100px; 
+  left: 40%;
   transform: translateX(-50%);
   z-index: 9999;
   background: rgba(255, 0, 0, 0.15);
-  width: 90px;
-  height: 90px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -725,3 +725,18 @@ ion-content::part(scroll) {
   font-size: 36px;
   color: red;
 }
+
+
+.trash-contextual {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.9);
+  transition: all 0.2s ease;
+}
+
+.trash-contextual.visible {
+  opacity: 1;
+  pointer-events: all;
+  transform: scale(1);
+}
+

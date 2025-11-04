@@ -1,6 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, QueryList, ViewChildren } from "@angular/core";
 import { ScheduleService } from "src/services/schedule.service";
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserModel } from "src/models/user-model";
 import { SessionService } from "src/services/session.service";
 import { StoreModel } from "src/models/store-model";
@@ -12,6 +12,10 @@ import { ToastService } from "src/services/toast.service";
   styleUrls: ["./owner-schedule.page.scss"],
 })
 export class OwnerSchedulePage implements OnInit {
+  @ViewChildren('slotList', { read: CdkDropList }) slotLists!: QueryList<CdkDropList>;
+  @ViewChildren('trashList', { read: CdkDropList }) trashList!: QueryList<CdkDropList>;
+
+
   selectedDate: Date = new Date();
 
   selectedTimeSlots: any[] = [];
@@ -60,6 +64,14 @@ export class OwnerSchedulePage implements OnInit {
 
   ngOnInit() {
     this.loadSchedulesForDate();
+  }
+
+  getAllSlotIds(): string[] {
+    return this.slotLists ? this.slotLists.map(l => l.id) : [];
+  }
+
+  get connectedDropLists(): string[] {
+    return this.filteredTimeSlots.map(s => 'slot-' + s.time);
   }
 
   private loadSchedulesForDate() {
@@ -257,11 +269,8 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   onTrashDrop(event: CdkDragDrop<any[]>) {
-    console.log('Evento de drop na lixeira:', event);
-    
-    // Acesse os dados do item arrastado
     const customer = event.item.data;
-    
+
     if (customer && customer.id) {
       console.log('Removendo cliente:', customer);
       this.removeAppointment(customer);
@@ -271,7 +280,7 @@ export class OwnerSchedulePage implements OnInit {
       console.log('Dados completos do evento:', event);
       this.toastController.show('Erro ao remover atendimento', 'danger');
     }
-    
+
     this.trashHover = false;
     this.isDragging = false;
   }
@@ -653,8 +662,8 @@ export class OwnerSchedulePage implements OnInit {
     return colorMap[colorName] || '#666';
   }
 
-  editAppointment(customer: any) { 
-    console.log('Abrir edição para', customer); 
+  editAppointment(customer: any) {
+    console.log('Abrir edição para', customer);
   }
 
   quickAction(customer: any, slot?: any) {
@@ -709,7 +718,7 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   onDragEnded() {
-    this.isDragging = false; 
+    this.isDragging = false;
     this.trashHover = false;
     console.log('Drag finalizado');
   }
