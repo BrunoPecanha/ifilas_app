@@ -198,6 +198,7 @@
         cdkDropList
         [cdkDropListData]="slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers"
         (cdkDropListDropped)="onDrop($event, slot)"
+         [cdkDropListDisabled]="slot.disabled"
       >
         <div class="slot-header">
           <h4 class="slot-time">
