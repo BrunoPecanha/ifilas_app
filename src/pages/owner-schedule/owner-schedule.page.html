@@ -1,8 +1,8 @@
 <app-custom-header
   subtitle="AGENDA"
-  [showStartButton]="true"
+  [showStartButton]="false"
   startIconName="arrow-back"
-  routerLink="/stores"
+  routerLink="/splash"
 >
 </app-custom-header>
 <ion-content class="ion-padding">
@@ -193,11 +193,13 @@
       <div
         *ngFor="let slot of filteredTimeSlots"
         class="agenda-slot"
+        [ngClass]="{ 'slot-passed': isSlotPassed(slot.time) }"
         [id]="'slot-' + slot.time"
         [class.has-appointments]="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length"
         cdkDropList
         [cdkDropListData]="slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers"
         (cdkDropListDropped)="onDrop($event, slot)"
+        [cdkDropListDisabled]="slot.disabled"
       >
         <div class="slot-header">
           <h4 class="slot-time">
@@ -212,9 +214,11 @@
           <ion-button
             fill="clear"
             size="small"
-            color="success"
-            (click)="addAppointment(slot)"
+            [color]="isSlotPassed(slot.time) ? 'danger' : 'success'"
+            (click)="!isSlotPassed(slot.time) && addAppointment(slot)"
+            [disabled]="isSlotPassed(slot.time)"
             class="add-btn"
+            [ngClass]="{ 'disabled-btn': isSlotPassed(slot.time) }"
           >
             <ion-icon name="add"></ion-icon>
           </ion-button>
@@ -284,12 +288,13 @@
         <ng-template #emptySlot>
           <div class="empty-slot">
             <ion-icon name="person-add-outline" class="empty-icon"></ion-icon>
-            <p>Horário disponível</p>
+            <p *ngIf="!slot.disabled">Horário disponível</p>
+            <p *ngIf="slot.disabled">Horário indisponível</p>
           </div>
         </ng-template>
       </div>
       <div
-         [class.visible]="isDragging"
+        [class.visible]="isDragging"
         class="trash-contextual"
         cdkDropList
         [cdkDropListData]="trashData"

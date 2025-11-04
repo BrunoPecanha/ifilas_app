@@ -387,7 +387,7 @@ export class QueuePage implements OnInit {
         {
           text: 'Confirmar',
           handler: async () => {
-            this.scheduleService.leavaSchedule(card.customerId, card.id).subscribe({
+            this.scheduleService.leavaSchedule(card.customerId).subscribe({
               next: async () => {
                 this.myAppointments = this.myAppointments.filter(a => a.id !== card.id);
                 this.updateCrossInformation();

@@ -15,7 +15,6 @@ export class OwnerSchedulePage implements OnInit {
   @ViewChildren('slotList', { read: CdkDropList }) slotLists!: QueryList<CdkDropList>;
   @ViewChildren('trashList', { read: CdkDropList }) trashList!: QueryList<CdkDropList>;
 
-
   selectedDate: Date = new Date();
 
   selectedTimeSlots: any[] = [];
@@ -192,6 +191,11 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   onDrop(event: CdkDragDrop<any[]>, targetSlot: any) {
+    if (targetSlot.disabled) {
+      this.toastController.show(`Drop bloqueado: ${targetSlot.time} já passou.`, 'warning');
+      return;
+    }
+
     if (event.previousContainer === event.container) {
       moveItemInArray(targetSlot.customers, event.previousIndex, event.currentIndex);
       return;
@@ -271,18 +275,42 @@ export class OwnerSchedulePage implements OnInit {
   onTrashDrop(event: CdkDragDrop<any[]>) {
     const customer = event.item.data;
 
-    if (customer && customer.id) {
-      console.log('Removendo cliente:', customer);
-      this.removeAppointment(customer);
-      this.toastController.show('Atendimento removido!', 'success');
-    } else {
-      console.warn('Nenhum dado de cliente encontrado no item arrastado');
-      console.log('Dados completos do evento:', event);
-      this.toastController.show('Erro ao remover atendimento', 'danger');
-    }
+    this.service.leavaSchedule(customer.id).subscribe({
+      next: () => {
+        this.toastController.show('Atendimento removido!', 'success');
+        this.removeAppointment(customer);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erro ao atualizar agenda:', err);
+        this.toastController.show('Erro ao remover atendimento', 'danger');
+        this.isLoading = false;
+        this.loadSchedulesForDate();
+      },
+    });
 
     this.trashHover = false;
     this.isDragging = false;
+  }
+
+  isSlotPassed(slotTime: string): boolean {
+    const now = new Date();
+    const [hours, minutes] = slotTime.split(':').map(Number);
+    const slotDate = new Date(this.selectedDate);
+    slotDate.setHours(hours, minutes, 0, 0);
+    return slotDate.getTime() < now.getTime();
+  }
+
+
+  private hasTimePassed(time: string): boolean {    
+    if (!this.isToday()) 
+      return false; 
+    
+    const now = new Date();
+    const [h, m] = time.split(':').map(Number);
+    const slotTime = new Date();
+    slotTime.setHours(h, m, 0, 0);
+    return slotTime.getTime() < now.getTime();
   }
 
   private computeStartIndexFromTime(time: string): number {
@@ -337,7 +365,8 @@ export class OwnerSchedulePage implements OnInit {
       time: s.time,
       id: s.time,
       available: true,
-      customers: [] as any[]
+      customers: [] as any[],
+      disabled: this.hasTimePassed(s.time)
     }));
 
     const ensureSlotExists = (time: string): number => {
@@ -356,8 +385,10 @@ export class OwnerSchedulePage implements OnInit {
     };
 
     const sortedAppts = this.appointments.slice().sort((a, b) => {
-      if (!a.slotStart) return 1;
-      if (!b.slotStart) return -1;
+      if (!a.slotStart) 
+        return 1;
+      if (!b.slotStart) 
+        return -1;
       return this.toMinutes(a.slotStart) - this.toMinutes(b.slotStart);
     });
 
@@ -457,6 +488,10 @@ export class OwnerSchedulePage implements OnInit {
     }
 
     return grouped;
+  }
+
+  onEditCustomer(customer: any) {
+    debugger
   }
 
   applyFilters(): void {
