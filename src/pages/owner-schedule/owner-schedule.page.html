@@ -5,7 +5,6 @@
   routerLink="/stores"
 >
 </app-custom-header>
-
 <ion-content class="ion-padding">
   <div class="page-header">
     <div class="date-navigation-card">
@@ -18,7 +17,6 @@
         >
           <ion-icon name="chevron-back"></ion-icon>
         </ion-button>
-
         <div class="current-date">
           <div class="date-main">
             <ion-icon name="calendar-outline" class="date-icon"></ion-icon>
@@ -29,7 +27,6 @@
           </div>
           <div class="date-weekday">{{ getWeekdayName(selectedDate) }}</div>
         </div>
-
         <ion-button
           fill="clear"
           size="small"
@@ -39,7 +36,6 @@
           <ion-icon name="chevron-forward"></ion-icon>
         </ion-button>
       </div>
-
       <ion-button
         fill="clear"
         size="small"
@@ -51,7 +47,6 @@
       </ion-button>
     </div>
   </div>
-
   <div class="toolbar-section">
     <div class="toolbar-compact">
       <div class="left-controls">
@@ -64,7 +59,6 @@
           class="compact-searchbar"
         ></ion-searchbar>
       </div>
-
       <div class="right-controls">
         <ion-segment
           [value]="currentView"
@@ -78,7 +72,6 @@
             <ion-icon name="list" size="small"></ion-icon>
           </ion-segment-button>
         </ion-segment>
-
         <ion-button
           fill="clear"
           size="small"
@@ -95,7 +88,6 @@
         </ion-button>
       </div>
     </div>
-
     <div class="filters-container" [class.expanded]="showFilters">
       <div class="filters-content">
         <div class="filter-section">
@@ -113,7 +105,6 @@
             </ion-chip>
           </div>
         </div>
-
         <div class="filter-section" *ngIf="serviceFilters.length > 0">
           <h4>Serviços</h4>
           <div class="filter-chips">
@@ -129,7 +120,6 @@
             </ion-chip>
           </div>
         </div>
-
         <div class="filter-actions">
           <ion-button
             fill="clear"
@@ -151,7 +141,6 @@
       </div>
     </div>
   </div>
-
   <div class="stats-section">
     <div class="stats-grid">
       <div class="stat-item confirmed">
@@ -172,7 +161,6 @@
       </div>
     </div>
   </div>
-
   <div class="active-filters-bar" *ngIf="hasActiveFilters() && !showFilters">
     <div class="active-filters-content">
       <span class="filters-label">Filtros ativos:</span>
@@ -197,7 +185,6 @@
       </ion-button>
     </div>
   </div>
-
   <section
     *ngIf="selectedDate && currentView === 'grid'"
     class="agenda-section"
@@ -206,6 +193,7 @@
       <div
         *ngFor="let slot of filteredTimeSlots"
         class="agenda-slot"
+        [id]="'slot-' + slot.time"
         [class.has-appointments]="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length"
         cdkDropList
         [cdkDropListData]="slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers"
@@ -213,8 +201,7 @@
       >
         <div class="slot-header">
           <h4 class="slot-time">
-            <ion-icon name="time-outline"></ion-icon>
-            {{ slot.time }}
+            <ion-icon name="time-outline"></ion-icon> {{ slot.time }}
             <span
               class="appointment-count"
               *ngIf="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length"
@@ -232,7 +219,6 @@
             <ion-icon name="add"></ion-icon>
           </ion-button>
         </div>
-
         <div
           *ngIf="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length; else emptySlot"
           class="customers-container"
@@ -251,7 +237,6 @@
                 <img [src]="customer.avatar" />
                 <div class="status-indicator" [class]="customer.status"></div>
               </div>
-
               <div class="customer-info">
                 <div class="customer-name">{{ customer.name }}</div>
                 <div class="customer-details">
@@ -276,7 +261,6 @@
                 </div>
               </div>
             </div>
-
             <div class="customer-actions">
               <ion-button
                 fill="clear"
@@ -297,7 +281,6 @@
             </div>
           </div>
         </div>
-
         <ng-template #emptySlot>
           <div class="empty-slot">
             <ion-icon name="person-add-outline" class="empty-icon"></ion-icon>
@@ -305,15 +288,29 @@
           </div>
         </ng-template>
       </div>
+      <div
+         [class.visible]="isDragging"
+        class="trash-contextual"
+        cdkDropList
+        [cdkDropListData]="trashData"
+        [cdkDropListConnectedTo]="connectedDropLists"
+        (cdkDropListDropped)="onTrashDrop($event)"
+        (cdkDropListEntered)="trashHover = true"
+        (cdkDropListExited)="trashHover = false"
+        [ngClass]="{ 'hover': trashHover }"
+      >
+        <ion-icon
+          [name]="trashHover ? 'trash-sharp' : 'trash-outline'"
+          class="trash-icon"
+        ></ion-icon>
+      </div>
     </div>
-
     <div *ngIf="filteredTimeSlots.length === 0" class="no-results">
       <ion-icon name="search-outline" class="no-results-icon"></ion-icon>
       <h3>Nenhum agendamento encontrado</h3>
       <p>Tente ajustar os filtros ou buscar por outros termos</p>
     </div>
   </section>
-
   <section *ngIf="selectedDate && currentView === 'list'" class="list-section">
     <ion-list class="compact-list">
       <ion-item-sliding *ngFor="let customer of getFilteredCustomers()">
@@ -322,7 +319,6 @@
             <img [src]="customer.avatar" />
             <div class="status-indicator" [class]="customer.status"></div>
           </ion-avatar>
-
           <ion-label class="list-label">
             <h3>{{ customer.name }}</h3>
             <p>
@@ -338,7 +334,6 @@
               </ion-badge>
             </div>
           </ion-label>
-
           <div class="list-actions">
             <ion-badge
               [color]="getStatusColor(customer.status)"
@@ -355,7 +350,6 @@
             </ion-button>
           </div>
         </ion-item>
-
         <ion-item-options side="end">
           <ion-item-option color="primary" (click)="quickAction(customer)">
             <ion-icon
@@ -369,7 +363,6 @@
         </ion-item-options>
       </ion-item-sliding>
     </ion-list>
-
     <div *ngIf="getFilteredCustomers().length === 0" class="no-results">
       <ion-icon name="search-outline" class="no-results-icon"></ion-icon>
       <h3>Nenhum agendamento encontrado</h3>
@@ -377,22 +370,4 @@
     </div>
   </section>
 </ion-content>
-
-<!-- Lixeira flutuante contextual -->
-<div
-  *ngIf="isDragging"
-  class="trash-contextual"
-  cdkDropList
-  [cdkDropListData]="trashData"
-  (cdkDropListDropped)="onTrashDrop($event)"
-  (cdkDropListEntered)="trashHover = true"
-  (cdkDropListExited)="trashHover = false"
-  [ngClass]="{ 'hover': trashHover }"
->
-  <ion-icon
-    [name]="trashHover ? 'trash-sharp' : 'trash-outline'"
-    class="trash-icon"
-  ></ion-icon>
-</div>
-
 <app-footer-menu></app-footer-menu>
