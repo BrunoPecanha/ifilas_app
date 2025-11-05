@@ -605,9 +605,18 @@ export class OwnerSchedulePage implements OnInit {
     this.applyFilters();
   }
 
-  toggleFilters() { this.showFilters = !this.showFilters; }
-  toggleStatusFilter(status: any) { status.selected = !status.selected; this.applyFilters(); }
-  toggleServiceFilter(service: any) { service.selected = !service.selected; this.applyFilters(); }
+  toggleFilters() {
+    this.showFilters = !this.showFilters;
+  }
+
+  toggleStatusFilter(status: any) {
+    status.selected = !status.selected;
+  }
+
+  toggleServiceFilter(service: any) {
+    service.selected = !service.selected;
+    this.applyFilters();
+  }
 
   hasActiveFilters(): boolean {
     return this.searchTerm !== '' ||
