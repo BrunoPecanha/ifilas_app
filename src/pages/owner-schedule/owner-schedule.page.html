@@ -1,11 +1,11 @@
 <app-custom-header
   subtitle="AGENDA"
   [showStartButton]="false"
-  startIconName="arrow-back"
-  routerLink="/splash"
+  [hideSubtitle]="subtitleHidden"
 >
 </app-custom-header>
-<ion-content class="ion-padding">
+
+<ion-content class="ion-padding" [scrollEvents]="true" (ionScroll)="onContentScroll($event)">
   <div class="page-header">
     <div class="date-navigation-card">
       <div class="date-display">

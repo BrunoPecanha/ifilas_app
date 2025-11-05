@@ -20,7 +20,9 @@
 
     <ion-title class="title-container">
       <div class="title">{{ title }}</div>
-      <div *ngIf="subtitle" class="subtitle">{{ subtitle }}</div>
+      <div *ngIf="subtitle && !hideSubtitle" class="subtitle" [class.hidden]="hideSubtitle">
+        {{ subtitle }}
+      </div>
     </ion-title>
 
     <ion-buttons slot="end">

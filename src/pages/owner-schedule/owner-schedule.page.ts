@@ -16,6 +16,8 @@ export class OwnerSchedulePage implements OnInit {
   @ViewChildren('trashList', { read: CdkDropList }) trashList!: QueryList<CdkDropList>;
 
   selectedDate: Date = new Date();
+  subtitleHidden = false;
+  private lastScrollCheck = 0;
 
   selectedTimeSlots: any[] = [];
   filteredTimeSlots: any[] = [];
@@ -63,6 +65,15 @@ export class OwnerSchedulePage implements OnInit {
 
   ngOnInit() {
     this.loadSchedulesForDate();
+  }
+
+  onContentScroll(ev: any) {
+    const now = Date.now();
+    if (now - this.lastScrollCheck < 30) return;
+    this.lastScrollCheck = now;
+
+    const scrollTop = ev?.detail?.scrollTop ?? 0;
+    this.subtitleHidden = scrollTop > 5;
   }
 
   getAllSlotIds(): string[] {
@@ -302,10 +313,10 @@ export class OwnerSchedulePage implements OnInit {
   }
 
 
-  private hasTimePassed(time: string): boolean {    
-    if (!this.isToday()) 
-      return false; 
-    
+  private hasTimePassed(time: string): boolean {
+    if (!this.isToday())
+      return false;
+
     const now = new Date();
     const [h, m] = time.split(':').map(Number);
     const slotTime = new Date();
@@ -385,9 +396,9 @@ export class OwnerSchedulePage implements OnInit {
     };
 
     const sortedAppts = this.appointments.slice().sort((a, b) => {
-      if (!a.slotStart) 
+      if (!a.slotStart)
         return 1;
-      if (!b.slotStart) 
+      if (!b.slotStart)
         return -1;
       return this.toMinutes(a.slotStart) - this.toMinutes(b.slotStart);
     });
