@@ -1,0 +1,111 @@
+<app-custom-header
+  subtitle="BUSCA CLIENTE"
+  endIconName="close"
+  (onEndClick)="dismiss()"
+>
+</app-custom-header>
+
+<ion-content class="ion-padding">
+  <div class="search-container">
+    <ion-searchbar
+      [(ngModel)]="cpf"
+      (ionInput)="searchCustomer()"
+      placeholder="000.000.000-00"
+      debounce="500"
+      class="custom-searchbar"
+      [class.has-value]="cpf && cpf.length > 0"
+    ></ion-searchbar>
+
+    <div class="format-hint" *ngIf="!cpf">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span>Digite o CPF com ou sem pontuação</span>
+    </div>
+  </div>
+
+  <div class="results-container">
+    <div *ngIf="loading" class="state-container loading-state">
+      <div class="spinner-container">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+      <h3>Buscando cliente...</h3>
+      <p>Aguarde enquanto localizamos o cliente</p>
+    </div>
+
+    <div *ngIf="customer && !loading" class="state-container customer-state">
+      <ion-card 
+        class="customer-card clickable-card"
+        (click)="selectCustomer()"
+        [class.card-hover]="!isSelecting"
+        tappable
+      >
+        <ion-card-content>
+          <div class="customer-info">
+            <ion-avatar class="customer-avatar">
+              <img [src]="customer.avatar" [alt]="customer.name" />
+            </ion-avatar>
+            <div class="customer-details">
+              <h2>{{ customer.name }}</h2>
+              <div class="customer-meta">
+                <ion-badge color="medium" *ngIf="customer.phone">
+                  <ion-icon name="call-outline"></ion-icon>
+                  {{ customer.phone }}
+                </ion-badge>
+                <ion-badge color="medium" *ngIf="customer.email">
+                  <ion-icon name="mail-outline"></ion-icon>
+                  {{ customer.email }}
+                </ion-badge>
+              </div>
+            </div>
+            <div class="selection-indicator">
+              <ion-icon 
+                name="chevron-forward" 
+                color="medium"
+                class="arrow-icon"
+              ></ion-icon>
+            </div>
+          </div>
+          
+          <div *ngIf="isSelecting" class="selecting-overlay">
+            <ion-spinner name="crescent" color="primary"></ion-spinner>
+            <span>Selecionando...</span>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <div class="action-hint">
+        <ion-icon name="hand-left-outline" color="medium"></ion-icon>
+        <span>Toque no card para selecionar o cliente</span>
+      </div>
+    </div>
+
+    <div *ngIf="error && !loading" class="state-container error-state">
+      <div class="error-header">
+        <ion-icon name="alert-circle" color="danger"></ion-icon>
+        <h3>Cliente não encontrado</h3>
+      </div>
+      
+      <ion-card class="error-card">
+        <ion-card-content>
+          <p>{{ error }}</p>
+          <ion-button 
+            fill="outline" 
+            expand="block" 
+            (click)="clearSearch()"
+            class="retry-button"
+          >
+            <ion-icon name="refresh" slot="start"></ion-icon>
+            Tentar Novamente
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div *ngIf="!customer && !loading && !error" class="state-container initial-state">
+      <div class="initial-illustration">
+        <ion-icon name="search-outline"></ion-icon>
+      </div>
+      <h3>Busque por CPF</h3>
+      <p>Digite o CPF do cliente acima para iniciar a busca</p>
+    </div>
+  </div>
+</ion-content>

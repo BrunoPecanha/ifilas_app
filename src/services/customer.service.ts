@@ -17,6 +17,10 @@ export class CustomerService {
     return this.http.get<CustomerResponse>(`${this.apiUrl}/customer/${id}`);
   }
 
+  getByCpfAsync(cpf: string): Observable<CustomerResponse> {
+    return this.http.get<CustomerResponse>(`${this.apiUrl}/customer/add-schedule/${cpf}`);
+  }
+
   getPendingOrdersCount(storeId: number): Observable<PendingResponse> {
     return this.http.get<PendingResponse>(`${this.apiUrl}/customer/pending/${storeId}`);
   }

@@ -1,0 +1,38 @@
+<app-custom-header
+  subtitle="CLIENTE AVULSO"
+  endIconName="close"
+  (onEndClick)="dismiss()"
+>
+</app-custom-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="customerForm" (ngSubmit)="saveCustomer()">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Nome *</ion-label>
+        <ion-input formControlName="name" type="text"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Telefone</ion-label>
+        <ion-input formControlName="phone" type="tel"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input formControlName="email" type="email"></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-button
+      type="submit"
+      expand="block"
+      [disabled]="!customerForm.valid"
+      class="ion-margin"
+    >
+      Continuar
+    </ion-button>
+  </form>
+</ion-content>
+
+<app-footer-menu></app-footer-menu>

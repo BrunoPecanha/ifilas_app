@@ -25,6 +25,7 @@ export class CustomHeaderComponent {
   @Input() endDisabled: boolean = false;
   @Input() endLoading: boolean = false;
   @Output() onEndClick = new EventEmitter<void>();
+  @Input() hideSubtitle: boolean = false;
 
   @Input() showPausePlayButton: boolean = false;
   @Input() isPaused: boolean = false;
@@ -57,8 +58,8 @@ export class CustomHeaderComponent {
   private async goBack() {
     try {
       const canGoBack = await this.navCtrl.pop();
-      
-      if (!canGoBack) {        
+
+      if (!canGoBack) {
         const route = this.routeLink || (this.profile === 0 ? '/queue' : this.profile === 1 ? '/customer-list-in-queue' : 'queue-list-for-owner');
         this.router.navigate([route], {
           replaceUrl: true,
