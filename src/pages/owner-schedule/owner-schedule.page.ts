@@ -5,6 +5,11 @@ import { UserModel } from "src/models/user-model";
 import { SessionService } from "src/services/session.service";
 import { StoreModel } from "src/models/store-model";
 import { ToastService } from "src/services/toast.service";
+import { Router } from "@angular/router";
+import { ModalController } from "@ionic/angular";
+import { CpfSearchModalComponent } from "./modals/cpf-search-modal/cpf-search-modal.component";
+import { CustomerTypeModalComponent } from "./modals/customer-type-modal/customer-type-modal.component";
+import { WalkInCustomerModalComponent } from "./modals/walk-in-customer-modal/walk-in-customer-modal.component";
 
 @Component({
   selector: "app-owner-schedule",
@@ -22,6 +27,7 @@ export class OwnerSchedulePage implements OnInit {
   selectedTimeSlots: any[] = [];
   filteredTimeSlots: any[] = [];
   trashData: any[] = [];
+  preSelectedSlot: any = null;
 
   private originalSlotsTemplate: { time: string }[] = [];
 
@@ -57,7 +63,9 @@ export class OwnerSchedulePage implements OnInit {
   constructor(
     private service: ScheduleService,
     private sessionService: SessionService,
-    private toastController: ToastService
+    private toastController: ToastService,
+    private modalController: ModalController,
+    private router: Router
   ) {
     this.user = this.sessionService.getUser();
     this.store = this.sessionService.getStore();
@@ -731,21 +739,21 @@ export class OwnerSchedulePage implements OnInit {
     this.applyFilters();
   }
 
-  addAppointment(slot: any) {
-    const newCustomer = {
-      id: Date.now(),
-      name: 'Novo Cliente',
-      avatar: 'https://i.pravatar.cc/100?img=6',
-      totalSlots: 1,
-      status: 'pending',
-      slotStart: slot.time,
-      slotEnd: this.addMinutesToTime(slot.time, this.slotDuration),
-      durationMinutes: this.slotDuration,
-      services: [{ name: 'Corte', slots: 1, color: 'primary' }]
-    };
-    this.appointments.push(newCustomer);
-    this.recalculateSlots();
-  }
+  // addAppointment(slot: any) {
+  //   const newCustomer = {
+  //     id: Date.now(),
+  //     name: 'Novo Cliente',
+  //     avatar: 'https://i.pravatar.cc/100?img=6',
+  //     totalSlots: 1,
+  //     status: 'pending',
+  //     slotStart: slot.time,
+  //     slotEnd: this.addMinutesToTime(slot.time, this.slotDuration),
+  //     durationMinutes: this.slotDuration,
+  //     services: [{ name: 'Corte', slots: 1, color: 'primary' }]
+  //   };
+  //   this.appointments.push(newCustomer);
+  //   this.recalculateSlots();
+  // }
 
   removeAppointment(customer: any) {
     this.appointments = this.appointments.filter(a => a.id !== customer.id);
@@ -790,4 +798,95 @@ export class OwnerSchedulePage implements OnInit {
     const colors = ['primary', 'secondary', 'tertiary', 'success', 'warning'];
     return colors[Math.floor(Math.random() * colors.length)];
   }
+
+  addAppointment(slot: any) {
+    // Armazena o slot selecionado para uso posterior
+    this.preSelectedSlot = slot;
+    this.openAddCustomerModal();
+  }
+
+  async openAddCustomerModal() {
+    const modal = await this.modalController.create({
+      component: CustomerTypeModalComponent,
+      cssClass: 'customer-type-modal'
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data) {
+        this.handleCustomerTypeSelection(result.data);
+      }
+    });
+
+    await modal.present();
+  }
+
+  handleCustomerTypeSelection(type: 'app' | 'walkin') {
+    if (type === 'app') {
+      this.openCpfSearch();
+    } else {
+      this.openWalkInForm();
+    }
+  }
+
+  async openCpfSearch() {
+    const modal = await this.modalController.create({
+      component: CpfSearchModalComponent,
+      componentProps: {
+        selectedDate: this.selectedDate
+      }
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data?.customer) {
+        this.navigateToServiceSelection(result.data.customer);
+      }
+    });
+
+    await modal.present();
+  }
+
+  async openWalkInForm() {
+    const modal = await this.modalController.create({
+      component: WalkInCustomerModalComponent,
+      componentProps: {
+        selectedDate: this.selectedDate
+      }
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data?.customerData) {
+        this.createWalkInCustomer(result.data.customerData);
+      }
+    });
+
+    await modal.present();
+  }
+
+  createWalkInCustomer(customerData: any) {
+    const walkInCustomer = {
+      id: 'walkin_' + Date.now(),
+      name: customerData.name,
+      phone: customerData.phone,
+      email: customerData.email,
+      isWalkIn: true,
+      avatar: 'assets/walkin-avatar.png'
+    };
+
+    this.navigateToServiceSelection(walkInCustomer);
+  }
+
+  navigateToServiceSelection(customer: any) {
+    this.router.navigate(['/select-services'], {
+      state: {
+        customer: customer,
+        selectedDate: this.selectedDate,
+        preSelectedSlot: this.preSelectedSlot,
+        source: 'schedule'
+      }
+    });
+
+    // Limpa o slot pré-selecionado após uso
+    this.preSelectedSlot = null;
+  }
+
 }

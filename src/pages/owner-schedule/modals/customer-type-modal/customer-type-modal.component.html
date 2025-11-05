@@ -1,0 +1,93 @@
+<app-custom-header
+  subtitle="ADICIONAR CLIENTE"
+  endIconName="close"
+  (onEndClick)="dismiss()"
+>
+</app-custom-header>
+
+<ion-content class="ion-padding">
+  <div class="selection-container">
+    <div class="options-grid">      
+      <ion-card
+        class="option-card clickable-card"
+        (click)="selectType('app')"
+        [class.card-hover]="!isSelecting"
+        tappable
+      >
+        <ion-card-content>
+          <div class="option-content">
+            <div class="icon-container">
+              <ion-icon name="phone-portrait"></ion-icon>
+            </div>
+            <div class="option-details">
+              <h3>Cliente do App</h3>
+              <p>Clientes cadastrados no aplicativo</p>
+              <div class="option-features">
+                <ion-badge color="medium" class="feature-badge">
+                  <ion-icon name="checkmark-circle"></ion-icon>
+                  Cadastro completo
+                </ion-badge>
+                <ion-badge color="medium" class="feature-badge">
+                  <ion-icon name="search"></ion-icon>
+                  Buscar por CPF
+                </ion-badge>
+              </div>
+            </div>
+            <div class="selection-indicator">
+              <ion-icon name="chevron-forward" color="medium"></ion-icon>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card
+        class="option-card clickable-card"
+        (click)="selectType('walkin')"
+        [class.card-hover]="!isSelecting"
+        tappable
+      >
+        <ion-card-content>
+          <div class="option-content">
+            <div class="icon-container">
+              <ion-icon name="person-add"></ion-icon>
+            </div>
+            <div class="option-details">
+              <h3>Cliente Avulso</h3>
+              <p>Clientes sem cadastro prévio</p>
+              <div class="option-features">
+                <ion-badge color="medium" class="feature-badge">
+                  <ion-icon name="time"></ion-icon>
+                  Cadastro rápido
+                </ion-badge>
+                <ion-badge color="medium" class="feature-badge">
+                  <ion-icon name="create"></ion-icon>
+                  Dados manuais
+                </ion-badge>
+              </div>
+            </div>
+            <div class="selection-indicator">
+              <ion-icon name="chevron-forward" color="medium"></ion-icon>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div *ngIf="isSelecting" class="selecting-overlay">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <span>Carregando...</span>
+    </div>
+
+    <div class="info-section">
+      <div class="compact-info">
+        <ion-icon name="information-circle" color="medium"></ion-icon>
+        <span>
+          <strong>• Cliente do App:</strong> Já é usuário do app  <br />
+          <strong>• Cliente Avulso:</strong> Não é usuário do app
+        </span>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<app-footer-menu></app-footer-menu>

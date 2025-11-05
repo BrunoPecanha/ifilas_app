@@ -1,0 +1,269 @@
+.ion-padding {
+  --padding-top: calc(70px + env(safe-area-inset-top));
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
+  position: relative;
+  z-index: 1;
+}
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.selection-container {
+  padding: 20px 0;
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.header-section h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  margin: 0 0 8px 0;
+}
+
+.header-section p {
+  font-size: 0.95rem;
+  color: var(--ion-color-medium);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.option-card {
+  --border-radius: 16px;
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  margin: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.clickable-card.card-hover:hover {
+  --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  border-color: var(--ion-color-primary-tint);
+}
+
+.clickable-card:active {
+  transform: translateY(0);
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.option-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.icon-container {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--ion-color-primary);
+}
+
+.icon-container ion-icon {
+  font-size: 1.6rem;
+  color: white;
+}
+
+.option-details {
+  flex: 1;
+  text-align: left;
+}
+
+.option-details h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.option-details p {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+  line-height: 1.4;
+}
+
+.option-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.feature-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  background: var(--ion-color-light);
+  color: var(--ion-color-medium);
+}
+
+.feature-badge ion-icon {
+  font-size: 0.7rem;
+  margin-right: 4px;
+}
+
+.selection-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 8px;
+}
+
+.selection-indicator ion-icon {
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+.clickable-card:active .selection-indicator ion-icon {
+  transform: translateX(2px);
+}
+
+.selecting-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  gap: 12px;
+}
+
+.selecting-overlay ion-spinner {
+  width: 40px;
+  height: 40px;
+}
+
+.selecting-overlay span {
+  font-size: 1rem;
+  color: var(--ion-color-primary);
+  font-weight: 500;
+}
+
+.info-section {
+  margin-top: 16px;
+}
+
+.compact-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+}
+
+.compact-info ion-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.compact-info span {
+  line-height: 1.4;
+}
+
+.compact-info strong {
+  color: var(--ion-color-dark);
+  font-weight: 600;
+}
+
+.options-grid {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 380px) {
+  .option-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .option-details {
+    text-align: center;
+  }
+  
+  .option-features {
+    justify-content: center;
+  }
+  
+  .selection-indicator {
+    padding-left: 0;
+    padding-top: 8px;
+  }
+  
+  .selection-indicator ion-icon {
+    transform: rotate(90deg);
+  }
+  
+  .icon-container {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .icon-container ion-icon {
+    font-size: 1.4rem;
+  }
+  
+  .compact-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 6px;
+  }
+  
+  .compact-info span {
+    font-size: 0.8rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .options-grid {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .info-section {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

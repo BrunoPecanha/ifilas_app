@@ -8,6 +8,9 @@ import { OwnerSchedulePage } from './owner-schedule.page';
 import { SharedModule } from 'src/shared/shared.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OwnerSchedulePageRoutingModule } from './owner-schedule-routing.module';
+import { CpfSearchModalComponent } from './modals/cpf-search-modal/cpf-search-modal.component';
+import { CustomerTypeModalComponent } from './modals/customer-type-modal/customer-type-modal.component';
+import { WalkInCustomerModalComponent } from './modals/walk-in-customer-modal/walk-in-customer-modal.component';
 
 @NgModule({
   imports: [
@@ -18,6 +21,11 @@ import { OwnerSchedulePageRoutingModule } from './owner-schedule-routing.module'
     IonicModule,
     OwnerSchedulePageRoutingModule
   ],
-  declarations: [OwnerSchedulePage]
+  declarations: [
+    OwnerSchedulePage,
+    CustomerTypeModalComponent,
+    CpfSearchModalComponent,
+    WalkInCustomerModalComponent
+  ]
 })
 export class OwnerSchedulePageModule { }
