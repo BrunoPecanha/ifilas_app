@@ -1,8 +1,8 @@
-# 🚦 App Suas Vez
+# 🚦 iFilas
 
 ## 📖 Descrição
 
-O **App Suas Vez** é um aplicativo inovador que visa otimizar a gestão de filas em estabelecimentos que trabalham com ordem de chegada. Com funcionalidades robustas e uma interface amigável, o app oferece uma experiência única tanto para os proprietários quanto para os clientes, garantindo que todos sejam atendidos de forma eficiente e organizada.
+O **iFilas** é um aplicativo inovador que visa otimizar a gestão de filas em estabelecimentos que trabalham com ordem de chegada. Com funcionalidades robustas e uma interface amigável, o app oferece uma experiência única tanto para os proprietários quanto para os clientes, garantindo que todos sejam atendidos de forma eficiente e organizada.
 
 ## 🎯 Funcionalidades
 
