@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { CategoryModel } from 'src/models/category-model';
@@ -47,7 +47,9 @@ export class SelectCompanyPage implements OnInit {
     private service: SelectCompanyService,
     private navCtrl: NavController,
     private session: SessionService,
-    private favoriteService: FavoriteService
+    private favoriteService: FavoriteService,
+    private cdr: ChangeDetectorRef,
+    private navController: NavController
   ) { }
 
   ngOnInit() { }
@@ -369,6 +371,11 @@ export class SelectCompanyPage implements OnInit {
         }, 500);
       }
     });
+  }
+
+  goToNotifications() {
+    this.cdr.detectChanges();
+    this.navController.navigateForward('/notification');
   }
 
   viewAllFavorites() {

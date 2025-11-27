@@ -1,7 +1,7 @@
 <app-custom-header
   [showEndButton]="true"
   [endIconName]="'notifications-outline'"
-  [notificationCount]="2"
+  (onEndClick)="goToNotifications()"
 >
 </app-custom-header>
 
