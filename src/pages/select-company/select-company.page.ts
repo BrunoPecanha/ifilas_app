@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { CategoryModel } from 'src/models/category-model';
@@ -13,6 +13,35 @@ import { SessionService } from 'src/services/session.service';
   styleUrls: ['./select-company.page.scss'],
 })
 export class SelectCompanyPage implements OnInit {
+
+  @ViewChild('filtersScroll') filtersScroll: any;
+  @ViewChild('searchInput', { read: ElementRef }) searchInput!: ElementRef;
+
+  canScrollRight = true;
+  isLoading = false;
+  filtersExpanded = false;
+  isEmptyResult = false;
+  searching = false;
+  categoriesExpanded = false;
+
+  categories: CategoryModel[] = [];
+  searchQuery = '';
+  selectedCategoryId: number | null = null;
+  selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
+  favoriteStores: StoreModel[] = [];
+  displayedCompanies: StoreModel[] = [];
+
+  loadingMore = false;
+  currentPage = 1;
+  pageSize = 10;
+  hasMoreData = true;
+
+  headerHidden = false;
+  contentHidden = false;
+  lastScrollTop = 0;
+  private scrollThreshold = 100;
+  private isScrolling = false;
+
   constructor(
     private router: Router,
     private service: SelectCompanyService,
@@ -21,50 +50,36 @@ export class SelectCompanyPage implements OnInit {
     private favoriteService: FavoriteService
   ) { }
 
-  @ViewChild('filtersScroll') filtersScroll: any;
-
-  canScrollRight = true;
-  isLoading = false;
-  filtersExpanded: boolean = false;
-  isEmptyResult = false;
-  searching = false;
-  categories: CategoryModel[] = [];
-  searchQuery = '';
-  selectedCategoryId: number | null = null;
-  selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
-  favoriteStores: StoreModel[] = [];
-  bannerHidden = false;
-  lastScrollTop = 0;
-
-  loadingMore = false;
-  currentPage = 1;
-  pageSize = 10;
-  hasMoreData = true;
-
-  displayedCompanies: StoreModel[] = [];
-
-  categoriesExpanded: boolean = false;
-
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   ionViewWillEnter() {
     this.resetPagination();
     this.loadData();
   }
 
-  private resetPagination() {
-    this.currentPage = 1;
-    this.hasMoreData = true;
-    this.displayedCompanies = [];
-  }
 
   private loadData() {
     this.loadCategories();
     this.loadStores();
   }
 
-  loadCategories() {
+  private loadStores() {
+    const user = this.session.getUser();
+    const userId = user?.id;
+
+    if (!userId) {
+      console.warn('Usuário não logado');
+      this.displayedCompanies = [];
+      this.favoriteStores = [];
+      this.isEmptyResult = true;
+      return;
+    }
+
+    this.loadFilteredStores(userId);
+    this.loadFavoriteStores(userId);
+  }
+
+  private loadCategories() {
     this.service.loadCategories().subscribe({
       next: (response) => {
         this.categories = response.data;
@@ -74,20 +89,6 @@ export class SelectCompanyPage implements OnInit {
       }
     });
   }
-
-  // private loadStores() {
-  //   const user = this.session.getUser();
-  //   const userId = user?.id;
-
-  //   if (!userId) {
-  //     console.warn('Usuário não logado');
-  //     this.displayedCompanies = [];
-  //     this.isEmptyResult = true;
-  //     return;
-  //   }
-
-  //   this.loadFilteredStores(userId);
-  // }
 
   private loadFilteredStores(userId: number) {
     this.isLoading = true;
@@ -103,6 +104,24 @@ export class SelectCompanyPage implements OnInit {
       error: (err) => {
         console.error('Erro ao carregar lojas filtradas:', err);
         this.handleLoadError();
+      }
+    });
+  }
+
+  private loadFavoriteStores(userId: number) {
+    this.service.getAllLikedStoresByUserId(userId).subscribe({
+      next: (response) => {
+        this.favoriteStores = response.data.map((store: StoreModel) => ({
+          ...store,
+          isNew: this.checkIfNew(store.createdAt),
+          liked: true,
+          minorQueue: store.minorQueue || false,
+          distance: store.distance || this.calculateRandomDistance()
+        } as StoreModel));
+      },
+      error: (err) => {
+        console.error('Erro ao carregar lojas favoritadas:', err);
+        this.favoriteStores = [];
       }
     });
   }
@@ -138,8 +157,158 @@ export class SelectCompanyPage implements OnInit {
     this.hasMoreData = false;
   }
 
-  private calculateRandomDistance(): number {
-    return Math.round((Math.random() * 10 + 0.5) * 10) / 10;
+  get filteredCards() {
+    if (!this.searchQuery || this.searchQuery.trim() === '') {
+      return this.displayedCompanies;
+    } else {
+      const query = this.searchQuery.toLowerCase().trim();
+      return this.displayedCompanies.filter(card =>
+        card.name?.toLowerCase().includes(query) ||
+        card.category?.toLowerCase().includes(query)
+      );
+    }
+  }
+
+  get shouldShowContent(): boolean {
+    return (!this.searchQuery || this.searchQuery.trim() === '') && !this.contentHidden;
+  }
+
+  onSearch(event: any) {
+    const searchValue = event.detail?.value || event.target?.value || '';
+    this.searchQuery = searchValue;
+
+    if (searchValue.trim() !== '') {
+      this.contentHidden = true;
+    }
+  }
+
+  toggleSearch() {
+    this.searching = !this.searching;
+    if (!this.searching) {
+      this.searchQuery = '';
+      this.contentHidden = false;
+    } else {
+      setTimeout(() => {
+        if (this.searchInput && this.searchInput.nativeElement) {
+          this.searchInput.nativeElement.focus();
+        }
+      }, 100);
+    }
+  }
+
+  clearFilters() {
+    this.selectedFilter = null;
+    this.selectedCategoryId = null;
+    this.searchQuery = '';
+    this.categoriesExpanded = false;
+    this.resetPagination();
+    this.loadStores();
+
+    this.contentHidden = false;
+    this.headerHidden = false;
+  }
+
+  hasActiveFilters(): boolean {
+    return !!this.selectedFilter || !!this.selectedCategoryId || !!this.searchQuery;
+  }
+
+  getActiveFiltersCount(): number {
+    let count = 0;
+    if (this.selectedFilter) count++;
+    if (this.selectedCategoryId) count++;
+    if (this.searchQuery) count++;
+    return count;
+  }
+
+  applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
+    if (this.selectedFilter === filter) {
+      this.selectedFilter = null;
+    } else {
+      this.selectedFilter = filter;
+    }
+
+    this.resetPagination();
+    this.loadStores();
+
+    setTimeout(() => {
+      this.filtersExpanded = false;
+    }, 300);
+  }
+
+  selectCategory(idCategory: number): void {
+    if (this.selectedCategoryId === idCategory) {
+      this.selectedCategoryId = null;
+    } else {
+      this.selectedCategoryId = idCategory;
+    }
+
+    this.resetPagination();
+    this.loadStores();
+
+    setTimeout(() => {
+      this.filtersExpanded = false;
+    }, 300);
+  }
+
+  async onContentScroll(event: any) {
+    if (this.isScrolling) return;
+
+    this.isScrolling = true;
+
+    const scrollElement = await event.target.getScrollElement();
+    const scrollHeight = scrollElement.scrollHeight;
+    const scrollTop = scrollElement.scrollTop;
+    const clientHeight = scrollElement.clientHeight;
+
+    if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
+      this.hasMoreData &&
+      !this.loadingMore &&
+      !this.isLoading) {
+      this.loadMoreData();
+    }
+
+    if (!this.searchQuery || this.searchQuery.trim() === '') {
+      const isScrollingDown = scrollTop > this.lastScrollTop;
+
+      if (isScrollingDown && scrollTop > this.scrollThreshold && !this.contentHidden) {
+        this.contentHidden = true;
+      } else if (!isScrollingDown && scrollTop <= this.scrollThreshold && this.contentHidden) {
+        this.contentHidden = false;
+      }
+    }
+
+    this.lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+
+    setTimeout(() => {
+      this.isScrolling = false;
+    }, 100);
+  }
+
+  private loadMoreData() {
+    this.loadingMore = true;
+    this.currentPage++;
+
+    const user = this.session.getUser();
+    const userId = user?.id;
+
+    if (!userId) {
+      this.loadingMore = false;
+      return;
+    }
+
+    const categoryId = this.selectedCategoryId ?? undefined;
+    const quickFilter = this.selectedFilter ?? undefined;
+
+    this.service.loadFilteredStores(userId, categoryId, quickFilter, this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        this.handleStoresResponse(response);
+      },
+      error: (err) => {
+        console.error('Erro ao carregar mais lojas filtradas:', err);
+        this.loadingMore = false;
+        this.currentPage--;
+      }
+    });
   }
 
   async handleRefresh(event: any) {
@@ -148,86 +317,16 @@ export class SelectCompanyPage implements OnInit {
       await this.loadStores();
     } finally {
       event.target.complete();
+      this.contentHidden = false;
+      this.headerHidden = false;
     }
   }
 
-  private checkIfNew(createdAt: string): boolean {
-    try {
-      const createdDate = new Date(createdAt);
-      const today = new Date();
-      const diffTime = Math.abs(today.getTime() - createdDate.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays <= 7;
-    } catch (e) {
-      console.warn('Erro ao verificar data:', e);
-      return false;
-    }
-  }
 
-  get filteredCards() {
-    if (!this.searchQuery) {
-      return this.displayedCompanies;
-    } else {
-      const query = this.searchQuery.toLowerCase();
-      return this.displayedCompanies.filter(card =>
-        card.name.toLowerCase().includes(query) ||
-        card.category?.toLowerCase().includes(query)
-      );
-    }
-  }
-
-  toggleSearch() {
-    this.searching = !this.searching;
-    if (!this.searching) {
-      this.searchQuery = '';
-    }
-  }
-
-  private loadStores() {
-    const user = this.session.getUser();
-    const userId = user?.id;
-
-    if (!userId) {
-      console.warn('Usuário não logado');
-      this.displayedCompanies = [];
-      this.favoriteStores = [];
-      this.isEmptyResult = true;
-      return;
-    }
-
-    this.loadFilteredStores(userId);
-    this.loadFavoriteStores(userId);
-  }
-
-  private loadFavoriteStores(userId: number) {
-    this.service.getAllLikedStoresByUserId(userId).subscribe({
-      next: (response) => {
-        this.favoriteStores = response.data.map((store: StoreModel) => ({
-          ...store,
-          isNew: this.checkIfNew(store.createdAt),
-          liked: true,
-          minorQueue: store.minorQueue || false,
-          distance: store.distance || this.calculateRandomDistance()
-        } as StoreModel));
-      },
-      error: (err) => {
-        console.error('Erro ao carregar lojas favoritadas:', err);
-        this.favoriteStores = [];
-      }
+  selectCard(card: StoreModel): void {
+    this.router.navigate(['/select-professional'], {
+      queryParams: { storeId: card.id }
     });
-  }
-
-  viewAllFavorites() {
-    this.selectedFilter = 'favorites';
-    this.resetPagination();
-    this.loadStores();
-
-    setTimeout(() => {
-      const content = document.querySelector('ion-content');
-      if (content) {
-        content.scrollToTop(500);
-      }
-    }, 100);
   }
 
   toggleLike(card: StoreModel, event: MouseEvent): void {
@@ -272,23 +371,19 @@ export class SelectCompanyPage implements OnInit {
     });
   }
 
-  private showLoginAlert(): void {
-    console.warn('Usuário não logado. Redirecionar para login.');
+  viewAllFavorites() {
+    this.selectedFilter = 'favorites';
+    this.resetPagination();
+    this.loadStores();
+
+    setTimeout(() => {
+      const content = document.querySelector('ion-content');
+      if (content) {
+        content.scrollToTop(500);
+      }
+    }, 100);
   }
 
-  private showErrorToast(message: string): void {
-    console.error(message);
-  }
-
-  selectCard(card: StoreModel): void {
-    this.router.navigate(['/select-professional'], {
-      queryParams: { storeId: card.id }
-    });
-  }
-
-  onSearch(event: any) {
-    this.searchQuery = event.detail.value;
-  }
 
   getBack() {
     this.navCtrl.back();
@@ -298,48 +393,12 @@ export class SelectCompanyPage implements OnInit {
     this.categoriesExpanded = !this.categoriesExpanded;
   }
 
-  openExplore(){
-    this.router.navigate(['/explore']);
-  }
-
-  async onContentScroll(event: any) {
-    const scrollElement = await event.target.getScrollElement();
-
-    const scrollHeight = scrollElement.scrollHeight;
-    const scrollTop = scrollElement.scrollTop;
-    const clientHeight = scrollElement.clientHeight;
-
-    if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
-      this.hasMoreData &&
-      !this.loadingMore &&
-      !this.isLoading) {
-      this.loadMoreData();
-    }
-
-    if (scrollTop > this.lastScrollTop && scrollTop > 150) {
-      this.bannerHidden = true;
-    } else if (scrollTop < this.lastScrollTop && scrollTop < 400) {
-      this.bannerHidden = false;
-    }
-
-    this.lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-  }
-
   toggleFilters() {
     this.filtersExpanded = !this.filtersExpanded;
   }
 
-  hasActiveFilters(): boolean {
-    return !!this.selectedFilter || !!this.selectedCategoryId || !!this.searchQuery;
-  }
-
-  clearFilters() {
-    this.selectedFilter = null;
-    this.selectedCategoryId = null;
-    this.searchQuery = '';
-    this.categoriesExpanded = false;
-    this.resetPagination();
-    this.loadStores();
+  openExplore() {
+    this.router.navigate(['/explore']);
   }
 
   checkScrollPosition() {
@@ -347,82 +406,50 @@ export class SelectCompanyPage implements OnInit {
     this.canScrollRight = element.scrollWidth > element.clientWidth + element.scrollLeft;
   }
 
-  // async onContentScroll(event: any) {
-  //   const scrollElement = await event.target.getScrollElement();
-  //   const scrollHeight = scrollElement.scrollHeight;
-  //   const scrollTop = scrollElement.scrollTop;
-  //   const clientHeight = scrollElement.clientHeight;
 
-  //   if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
-  //     this.hasMoreData &&
-  //     !this.loadingMore &&
-  //     !this.isLoading) {
-  //     this.loadMoreData();
-  //   }
-  // }
-
-  private loadMoreData() {
-    this.loadingMore = true;
-    this.currentPage++;
-
-    const user = this.session.getUser();
-    const userId = user?.id;
-
-    if (!userId) {
-      this.loadingMore = false;
-      return;
-    }
-
-    const categoryId = this.selectedCategoryId ?? undefined;
-    const quickFilter = this.selectedFilter ?? undefined;
-
-    this.service.loadFilteredStores(userId, categoryId, quickFilter, this.currentPage, this.pageSize).subscribe({
-      next: (response) => {
-        this.handleStoresResponse(response);
-      },
-      error: (err) => {
-        console.error('Erro ao carregar mais lojas filtradas:', err);
-        this.loadingMore = false;
-        this.currentPage--;
-      }
-    });
+  private resetPagination() {
+    this.currentPage = 1;
+    this.hasMoreData = true;
+    this.displayedCompanies = [];
   }
 
-  getActiveFiltersCount(): number {
-    let count = 0;
-    if (this.selectedFilter) count++;
-    if (this.selectedCategoryId) count++;
-    if (this.searchQuery) count++;
-    return count;
+  private calculateRandomDistance(): number {
+    return Math.round((Math.random() * 10 + 0.5) * 10) / 10;
   }
 
-  applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
-    if (this.selectedFilter === filter) {
-      this.selectedFilter = null;
-    } else {
-      this.selectedFilter = filter;
+  private checkIfNew(createdAt: string): boolean {
+    try {
+      const createdDate = new Date(createdAt);
+      const today = new Date();
+      const diffTime = Math.abs(today.getTime() - createdDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays <= 7;
+    } catch (e) {
+      console.warn('Erro ao verificar data:', e);
+      return false;
     }
-
-    this.resetPagination();
-    this.loadStores();
-
-    setTimeout(() => {
-      this.filtersExpanded = false;
-    }, 300);
   }
 
-  selectCategory(idCategory: number): void {
-    if (this.selectedCategoryId === idCategory) {
-      this.selectedCategoryId = null;
-    } else {
-      this.selectedCategoryId = idCategory;
-    }
+  private showLoginAlert(): void {
+    console.warn('Usuário não logado. Redirecionar para login.');
+  }
 
-    this.resetPagination();
-    this.loadStores();
+  private showErrorToast(message: string): void {
+    console.error(message);
+  }
 
-    setTimeout(() => {
-      this.filtersExpanded = false;
-    }, 300);
+  get shouldShowFavorites(): boolean {
+    return this.favoriteStores.length > 0 &&
+      (!this.searchQuery || this.searchQuery.trim() === '') &&
+      !this.contentHidden;
+  }
+
+  showContent() {
+    this.contentHidden = false;
+    this.headerHidden = false;
+  }
+
+  hideContent() {
+    this.contentHidden = true;
   }
 }

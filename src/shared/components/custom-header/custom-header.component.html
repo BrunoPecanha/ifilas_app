@@ -20,26 +20,42 @@
 
     <ion-title class="title-container">
       <div class="title">{{ title }}</div>
-      <div *ngIf="subtitle && !hideSubtitle" class="subtitle" [class.hidden]="hideSubtitle">
+      <div
+        *ngIf="subtitle && !hideSubtitle"
+        class="subtitle"
+        [class.hidden]="hideSubtitle"
+      >
         {{ subtitle }}
       </div>
     </ion-title>
 
     <ion-buttons slot="end">
-      <ion-button
-        *ngIf="showEndButton"
-        fill="clear"
-        class="icon-wrapper"
-        (click)="!endDisabled && !endLoading && onEndClick.emit()"
-        [disabled]="endDisabled || endLoading"
-      >
-        <ng-container *ngIf="!endLoading; else endSpinner">
-          <ion-icon [name]="endIconName" slot="icon-only"></ion-icon>
-        </ng-container>
-        <ng-template #endSpinner>
-          <ion-spinner name="crescent" slot="icon-only"></ion-spinner>
-        </ng-template>
-      </ion-button>
+      <!-- Host externo: mantém o botão e o badge fora do shadow DOM do ion-button -->
+      <div class="notification-host">
+        <ion-button
+          *ngIf="showEndButton"
+          fill="clear"
+          class="icon-wrapper"
+          (click)="!endDisabled && !endLoading && onEndClick.emit()"
+          [disabled]="endDisabled || endLoading"
+          aria-label="Notificações"
+        >
+          <ng-container *ngIf="!endLoading; else endSpinner">
+            <ion-icon [name]="endIconName" slot="icon-only"></ion-icon>
+          </ng-container>
+          <ng-template #endSpinner>
+            <ion-spinner name="crescent" slot="icon-only"></ion-spinner>
+          </ng-template>
+        </ion-button>
+
+        <!-- Badge fora do ion-button (sibling) -->
+        <span
+          class="notification-badge"
+          *ngIf="hasNotifications()"
+          aria-hidden="false"
+          >{{ displayNotificationText() }}</span
+        >
+      </div>
 
       <ng-content select="[right-buttons]"></ng-content>
     </ion-buttons>

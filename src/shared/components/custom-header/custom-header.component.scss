@@ -20,7 +20,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 12px;
-  pointer-events: all; 
+  pointer-events: all;
 }
 
 .icon-wrapper {
@@ -87,6 +87,91 @@ ion-spinner {
   opacity: 0;
   transform: translateY(-6px);
   pointer-events: none;
-  height: 0; 
+  height: 0;
   margin-top: 0;
+}
+
+.notification-wrapper {
+  position: relative;
+  overflow: visible !important;
+  z-index: 0;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 10;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  background: #ff3b30;
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  white-space: nowrap;
+  transform-origin: center;
+}
+
+.notification-wrapper .icon-wrapper,
+.notification-wrapper ion-icon {
+  z-index: 1;
+  position: relative;
+}
+
+.notification-host {
+  position: relative;
+  display: inline-block;
+  overflow: visible;
+}
+
+.icon-wrapper {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  z-index: 20;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  background: #ff3b30;
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.floating-header,
+.floating-toolbar,
+ion-buttons {
+  overflow: visible !important;
 }

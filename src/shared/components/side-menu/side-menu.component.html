@@ -1,50 +1,58 @@
 <div class="menu-content">
-  <div class="user-info">
-    <ion-avatar>
-      @if (userFromSession && userFromSession.imageUrl) {
-      <img [src]="userFromSession.imageUrl" alt="Avatar do usuário" />
-      } @else {
-      <ion-icon name="person-circle-outline"></ion-icon>
-      }
-    </ion-avatar>
-    <div style="margin-left: 20px">
-      <div class="user-name">{{ userName }}</div>
+  <div class="menu-header-box">
+    <div class="user-info-header">
+      <ion-avatar class="header-avatar">
+        @if (userFromSession && userFromSession.imageUrl) {
+        <img [src]="userFromSession.imageUrl" alt="Avatar do usuário" />
+        } @else {
+        <ion-icon name="person-circle"></ion-icon>
+        }
+      </ion-avatar>
 
-      <div
-        class="profile-badge"
-        [ngClass]="{
-          'client-badge': profile === 0,
-          'professional-badge': profile === 1,
-          'owner-badge': profile === 2
-        }"
-      >
-        {{
-          profile === 0
-            ? "Cliente"
-            : profile === 1
-            ? "Profissional"
-            : "Proprietário"
-        }}
-      </div>
-      <div class="queue-status" *ngIf="profile === 1">
-        <span *ngIf="customersWaiting > 0"
-          >{{ customersWaiting }} pessoa(s) aguardando</span
+      <div class="header-text">
+        <div class="user-name">{{ userName }}</div>
+
+        <div class="queue-status-header">
+          <ng-container *ngIf="profile === 1">
+            <span *ngIf="customersWaiting > 0">
+              {{ customersWaiting }} pessoa(s) aguardando
+            </span>
+            <span *ngIf="customersWaiting === 0">
+              Ninguém aguardando atendimento
+            </span>
+          </ng-container>
+
+          <ng-container *ngIf="profile === 2">
+            {{ queues }} fila(s) aberta(s) na(s) loja(s)
+          </ng-container>
+
+          <ng-container *ngIf="profile === 0">
+            <span *ngIf="queues > 0">Aguardando em {{ queues }} fila(s)</span>
+            <span *ngIf="queues === 0">Você não está em nenhuma fila</span>
+          </ng-container>
+        </div>
+
+        <div
+          class="profile-badge"
+          [ngClass]="{
+            'client-badge': profile === 0,
+            'professional-badge': profile === 1,
+            'owner-badge': profile === 2
+          }"
         >
-        <span *ngIf="customersWaiting === 0"
-          >Ninguém aguardando atendimento</span
-        >
-      </div>
-      <div class="queue-status" *ngIf="profile === 2">
-        {{ queues }} fila(s) aberta(s) na(s) loja(s)
-      </div>
-      <div class="queue-status" *ngIf="profile === 0">
-        <span *ngIf="queues > 0">Aguardando em {{ queues }} fila(s)</span>
-        <span *ngIf="queues === 0">Você não está em nenhuma fila</span>
+          {{
+            profile === 0
+              ? "Cliente"
+              : profile === 1
+              ? "Profissional"
+              : "Proprietário"
+          }}
+        </div>
       </div>
     </div>
   </div>
 
-  <ion-list>
+  <ion-list class="menu-list">
     <ion-menu-toggle auto-hide="true">
       <ng-container
         *ngIf="
@@ -54,17 +62,17 @@
         "
       >
         <ion-item (click)="navigateTo('/select-company')" detail="false">
-          <ion-icon name="storefront-outline" slot="start"></ion-icon>
+          <ion-icon name="storefront" slot="start"></ion-icon>
           <ion-label>Estabelecimentos</ion-label>
         </ion-item>
 
         <ion-item (click)="navigateTo('/user-configurations')" detail="false">
-          <ion-icon name="settings-outline" slot="start"></ion-icon>
+          <ion-icon name="settings" slot="start"></ion-icon>
           <ion-label>Configurações Conta</ion-label>
         </ion-item>
 
         <ion-item (click)="navigateTo('/client-history')" detail="false">
-          <ion-icon name="time-outline" slot="start"></ion-icon>
+          <ion-icon name="time" slot="start"></ion-icon>
           <ion-label>Histórico</ion-label>
         </ion-item>
 
@@ -73,8 +81,8 @@
           detail="false"
           class="menu-item-with-badge disabled-item"
         >
-          <ion-icon name="star-outline" slot="start"></ion-icon>
-          <ion-label>Avaliação Atendimento</ion-label>
+          <ion-icon name="star" slot="start"></ion-icon>
+          <ion-label>Avaliações</ion-label>
           <span class="menu-badge-soon">EM BREVE</span>
         </ion-item>
 
@@ -83,7 +91,7 @@
           detail="false"
           class="menu-item-with-badge disabled-item"
         >
-          <ion-icon name="chatbubble-outline" slot="start"></ion-icon>
+          <ion-icon name="chatbubble" slot="start"></ion-icon>
           <ion-label>Mensagens</ion-label>
           <span class="menu-badge-soon">EM BREVE</span>
         </ion-item>
@@ -98,7 +106,7 @@
         <ion-label>Trocar perfil</ion-label>
       </ion-item>
 
-      <ion-item
+      <!-- <ion-item
         *ngIf="userFromSession?.profile === 1 || userFromSession?.profile === 2"
         (click)="navigateTo('/role-registration')"
         detail="false"
@@ -107,7 +115,7 @@
         <ion-icon name="musical-note" slot="start"></ion-icon>
         <ion-label>NexTune</ion-label>
         <span class="menu-badge-soon">EM BREVE</span>
-      </ion-item>
+      </ion-item> -->
 
       <ng-container
         *ngIf="
@@ -115,7 +123,7 @@
         "
       >
         <ion-item (click)="navigateTo('/user-configurations')" detail="false">
-          <ion-icon name="settings-outline" slot="start"></ion-icon>
+          <ion-icon name="settings" slot="start"></ion-icon>
           <ion-label>Configurações Conta</ion-label>
         </ion-item>
 
@@ -125,7 +133,7 @@
           detail="false"
           class="menu-item-with-badge"
         >
-          <ion-icon name="receipt-outline" slot="start"></ion-icon>
+          <ion-icon name="receipt" slot="start"></ion-icon>
           <ion-label>Liberação de Pedidos</ion-label>
           <span class="menu-badge" ionTooltip="Pedidos aguardando liberação">{{
             pendingOrdersCount
@@ -138,7 +146,7 @@
           detail="false"
           *ngIf="!userFromSession?.useAgenda"
         >
-          <ion-icon name="list-outline" slot="start"></ion-icon>
+          <ion-icon name="list" slot="start"></ion-icon>
           <ion-label>Filas</ion-label>
         </ion-item>
 
@@ -147,7 +155,7 @@
           detail="false"
           *ngIf="userFromSession?.useAgenda"
         >
-          <ion-icon name="calendar-outline" slot="start"></ion-icon>
+          <ion-icon name="calendar" slot="start"></ion-icon>
           <ion-label>Agenda</ion-label>
         </ion-item>
 
@@ -156,7 +164,7 @@
           detail="false"
           class="menu-item-with-badge disabled-item"
         >
-          <ion-icon name="chatbubble-outline" slot="start"></ion-icon>
+          <ion-icon name="chatbubble" slot="start"></ion-icon>
           <ion-label>Mensagens</ion-label>
           <span class="menu-badge-soon">EM BREVE</span>
         </ion-item>
@@ -167,19 +175,19 @@
           (click)="navigateTo('/company-configurations')"
           detail="false"
         >
-          <ion-icon name="settings-outline" slot="start"></ion-icon>
+          <ion-icon name="settings" slot="start"></ion-icon>
           <ion-label>Configurações Empresa</ion-label>
         </ion-item>
         <ion-item
           (click)="navigateTo('/associated-professional')"
           detail="false"
         >
-          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-icon name="person" slot="start"></ion-icon>
           <ion-label>Colaboradores</ion-label>
         </ion-item>
 
         <ion-item (click)="navigateTo('service-registration')" detail="false">
-          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          <ion-icon name="add-circle" slot="start"></ion-icon>
           <ion-label>Serviços/Produtos</ion-label>
         </ion-item>
 
@@ -188,7 +196,7 @@
           detail="false"
           class="menu-item-with-badge disabled-item"
         >
-          <ion-icon name="bag-handle-outline" slot="start"></ion-icon>
+          <ion-icon name="bag-handle" slot="start"></ion-icon>
           <ion-label>Promoções</ion-label>
           <span class="menu-badge-soon">EM BREVE</span>
         </ion-item>
@@ -198,7 +206,7 @@
           detail="false"
           class="menu-item-with-badge disabled-item"
         >
-          <ion-icon name="chatbubble-outline" slot="start"></ion-icon>
+          <ion-icon name="chatbubble" slot="start"></ion-icon>
           <ion-label>Mensagens</ion-label>
           <span class="menu-badge-soon">EM BREVE</span>
         </ion-item>
@@ -209,7 +217,7 @@
         (click)="navigateTo('/company-configurations')"
         detail="false"
       >
-        <ion-icon name="rocket-outline" slot="start"></ion-icon>
+        <ion-icon name="rocket" slot="start"></ion-icon>
         <ion-label>Crie sua empresa</ion-label>
       </ion-item>
 
@@ -218,7 +226,7 @@
         detail="false"
         class="menu-item-with-badge disabled-item"
       >
-        <ion-icon name="bar-chart-outline" slot="start"></ion-icon>
+        <ion-icon name="bar-chart" slot="start"></ion-icon>
         <ion-label>Relatórios</ion-label>
         <span class="menu-badge-soon">EM BREVE</span>
       </ion-item>
@@ -228,12 +236,12 @@
         (click)="navigateTo('/associated-professional')"
         detail="false"
       >
-        <ion-icon name="briefcase-outline" slot="start"></ion-icon>
+        <ion-icon name="briefcase" slot="start"></ion-icon>
         <ion-label>Trabalhos</ion-label>
       </ion-item>
 
       <ion-item (click)="logout()">
-        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        <ion-icon name="log-out" slot="start"></ion-icon>
         <ion-label>Sair</ion-label>
       </ion-item>
     </ion-menu-toggle>
@@ -268,6 +276,4 @@
       />
     </div>
   </div>
-
-  <!-- <app-ad-banner [ad]="activeAd" class="tall-ad"></app-ad-banner> -->
 </div>

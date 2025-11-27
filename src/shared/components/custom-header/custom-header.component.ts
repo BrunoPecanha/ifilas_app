@@ -33,6 +33,10 @@ export class CustomHeaderComponent {
 
   @Input() routeLink: string = '';
 
+  // --- NOVO: badge de notificações ---
+  /** Se passar um número (>=1) o badge aparece; se undefined/null/0 não aparece */
+  @Input() notificationCount?: number | null;
+
   profile: any;
 
   constructor(
@@ -70,5 +74,15 @@ export class CustomHeaderComponent {
       console.error('Navigation error:', error);
       this.router.navigate(['/role-registration'], { replaceUrl: true });
     }
+  }
+
+  // --- helpers para badge ---
+  hasNotifications(): boolean {
+    return !!(this.notificationCount && this.notificationCount > 0);
+  }
+
+  displayNotificationText(): string {
+    if (!this.notificationCount) return '';
+    return this.notificationCount > 99 ? '99+' : String(this.notificationCount);
   }
 }
