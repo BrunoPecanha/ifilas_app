@@ -1,7 +1,8 @@
 <app-custom-header
   [showEndButton]="true"
   [endIconName]="'notifications-outline'"
-  (onEndClick)="goToNotifications()">
+  (onEndClick)="goToNotifications()"
+>
 </app-custom-header>
 
 <div class="always-visible-content">
@@ -136,33 +137,6 @@
           </div>
           <span class="category-name">Restaurante</span>
         </div>
-
-        <div class="category-item">
-          <div class="category-icon">
-            <img src="assets/images/categories/barber.svg" alt="Barbearia" />
-          </div>
-          <span class="category-name">Barbearia</span>
-        </div>
-
-        <div class="category-item">
-          <div class="category-icon">
-            <img
-              src="assets/images/categories/beauty-salon.svg"
-              alt="Salão de Beleza"
-            />
-          </div>
-          <span class="category-name">Salão de Beleza</span>
-        </div>
-
-        <div class="category-item">
-          <div class="category-icon">
-            <img
-              src="assets/images/categories/restaurant.svg"
-              alt="Restaurante"
-            />
-          </div>
-          <span class="category-name">Restaurante</span>
-        </div>
       </div>
     </div>
 
@@ -223,71 +197,70 @@
           *ngFor="let card of filteredCards"
           (click)="selectCard(card)"
         >
-          <div class="card-header">
-            <div class="company-badge" *ngIf="card.isNew">Novo</div>
-            <div class="queue-indicator" *ngIf="card.useQueue && card.isOpen">
-              <ion-icon name="people-outline"></ion-icon>
-              <span
-                >{{ card.minorQueue === -1 ? 'Fila fechada' : card.minorQueue ==
-                0 ? 'Sem fila' : card.minorQueue + ' na fila' }}</span
-              >
+          <div class="card-main-content">
+            <div class="store-image-section">
+              <div class="store-image-wrapper">
+                <img
+                  *ngIf="card.logoPath; else defaultLogo"
+                  [src]="card.logoPath"
+                  alt="{{ card.name }}"
+                  class="store-image"
+                />
+                <ng-template #defaultLogo>
+                  <div class="default-logo">
+                    <ion-icon name="business"></ion-icon>
+                  </div>
+                </ng-template>
+              </div>
             </div>
-          </div>
 
-          <div class="card-content">
-            <div class="card-main">
-              <div class="logo-section">
-                <div class="logo-wrapper">
-                  <img
-                    *ngIf="card.logoPath; else defaultLogo"
-                    [src]="card.logoPath"
-                    alt="{{ card.name }}"
-                  />
-                  <ng-template #defaultLogo>
-                    <div class="default-logo">
-                      <ion-icon name="business"></ion-icon>
-                    </div>
-                  </ng-template>
+            <div class="store-info-section">
+              <div class="store-header">
+                <div class="store-name-section">
+                  <h3 class="company-name">{{ card.name }}</h3>
+                  <p class="store-description">{{ 'Barbearia premium' }}</p>
                 </div>
-                <span class="distance">{{ card.distance }}</span>
+                <button class="like-btn" (click)="toggleLike(card, $event)">
+                  <ion-icon
+                    [name]="card.liked ? 'heart' : 'heart-outline'"
+                    [class.liked]="card.liked"
+                  ></ion-icon>
+                </button>
               </div>
 
-              <div class="info-section">
-                <div class="company-header">
-                  <h3 class="company-name">
-                    {{ card.name }}
-                    <ion-icon
-                      *ngIf="card.isVerified"
-                      name="checkmark-circle"
-                      class="verified-badge"
-                    ></ion-icon>
-                  </h3>
-                  <button class="like-btn" (click)="toggleLike(card, $event)">
-                    <ion-icon
-                      [name]="card.liked ? 'heart' : 'heart-outline'"
-                      [class.liked]="card.liked"
-                    ></ion-icon>
-                  </button>
+              <div class="status-badge" [class.open]="card.isOpen">
+                {{ card.isOpen ? 'Aberto' : 'Fechado' }}
+              </div>
+
+              <div class="store-details-grid">
+                <div class="detail-item">
+                  <ion-icon
+                    name="people-outline"
+                    class="detail-icon"
+                  ></ion-icon>
+                  <div class="detail-content">
+                    <span class="detail-value"
+                      >{{ '6' }} pessoas na frente</span
+                    >
+                  </div>
                 </div>
 
-                <div class="company-meta">
-                  <span class="rating">
-                    <ion-icon name="star"></ion-icon>
-                    {{ card.rating || '0' }}
-                  </span>
-                  <span class="category">{{ card.category }}</span>
-                  <span class="status" [class.open]="card.isOpen">
-                    {{ card.isOpen ? 'Aberto agora' : 'Fechado' }}
-                  </span>
+                <div class="detail-item">
+                  <ion-icon name="time-outline" class="detail-icon"></ion-icon>
+                  <div class="detail-content">
+                    <span class="detail-value">{{ '12' }} min de espera</span>
+                  </div>
                 </div>
 
-                <div class="services-info">
-                  <div class="service-item" *ngIf="card.useAgenda">
-                    <ion-icon name="calendar-outline"></ion-icon>
-                    <span>
-                      {{ card.nextHourOnAgenda ? 'Próx: ' +
-                      card.nextHourOnAgenda : 'Sem horários' }}
-                    </span>
+                <div class="detail-item">
+                  <ion-icon
+                    name="location-outline"
+                    class="detail-icon"
+                  ></ion-icon>
+                  <div class="detail-content">
+                    <span class="detail-value"
+                      >{{ card.distance || '500' }} m</span
+                    >
                   </div>
                 </div>
               </div>
