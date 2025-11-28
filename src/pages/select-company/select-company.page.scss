@@ -927,7 +927,6 @@ ion-header.hidden {
   color: #718096;
 }
 
-/* Responsividade */
 @media (max-width: 480px) {
   .banner-card {
     width: calc(100vw - 32px);
@@ -1001,4 +1000,68 @@ ion-content::part(scroll)::-webkit-scrollbar {
 
 .modern-content.content-collapsed .content-container {
   transform: translateY(0); 
+}
+
+.modern-content.content-collapsed {
+  --padding-top: 120px; 
+}
+
+.modern-content.content-collapsed .content-container {
+  margin-top: -200px; 
+}
+
+.modern-content.content-collapsed {
+  --padding-top: 250px;
+  --offset-top: 250px;
+}
+
+.modern-content.content-collapsed .content-container {
+  transform: translateY(0); 
+}
+
+.collapsible-content {
+  transition: all 0.3s ease;
+  overflow: hidden;
+  max-height: 1000px;
+  opacity: 1;
+}
+
+.collapsible-content.hidden {
+  max-height: 0;
+  opacity: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  pointer-events: none;
+}
+
+.content-container {
+  padding: 0;
+  background: #f8f9fa;
+  min-height: 100%;
+  transition: margin-top 0.3s ease;
+}
+
+
+.collapsible-content.hidden + .content-container {
+  margin-top: 0;
+}
+
+
+.collapsible-content {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+  overflow: hidden;
+  max-height: 1000px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.collapsible-content.hidden {
+  max-height: 0;
+  opacity: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  pointer-events: none;
+  transform: translateY(-20px); 
 }

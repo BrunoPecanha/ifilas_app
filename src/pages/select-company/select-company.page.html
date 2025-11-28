@@ -1,8 +1,7 @@
 <app-custom-header
   [showEndButton]="true"
   [endIconName]="'notifications-outline'"
-  (onEndClick)="goToNotifications()"
->
+  (onEndClick)="goToNotifications()">
 </app-custom-header>
 
 <div class="always-visible-content">
@@ -40,123 +39,9 @@
   </div>
 </div>
 
-<div class="collapsible-content" *ngIf="shouldShowContent">
-  <!-- Depois precisa pegar e montar esses banners dinamicanente -->
-  <div class="banners-section">
-    <div class="banners-scroll">
-      <div class="banner-card">
-        <div class="banner-content">
-          <h3 class="banner-title">Pizzaria Bella Massa</h3>
-          <p class="banner-description">
-            Oferta especial da semana! Peça 2 pizzas e ganhe 1 refrigerante
-            grátis.
-          </p>
-          <div class="banner-price">
-            <span class="price-label">Por Apenas:</span>
-            <span class="price-value">R$ 39,50</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="banner-card">
-        <div class="banner-content">
-          <h3 class="banner-title">Restaurante Sabor & Arte</h3>
-          <p class="banner-description">
-            Almoço executivo com sobremesa inclusa. De segunda a sexta.
-          </p>
-          <div class="banner-price">
-            <span class="price-label">Apenas:</span>
-            <span class="price-value">R$ 29,90</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="banner-card">
-        <div class="banner-content">
-          <h3 class="banner-title">Café Aconchego</h3>
-          <p class="banner-description">
-            Café especial + pão de queijo por um preço único.
-          </p>
-          <div class="banner-price">
-            <span class="price-label">Combo por:</span>
-            <span class="price-value">R$ 15,90</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="scroll-indicator">
-      <div class="scroll-dot active"></div>
-      <div class="scroll-dot"></div>
-      <div class="scroll-dot"></div>
-    </div>
-  </div>
-
-  <div class="categories-header">
-    <h3 class="section-title">Categorias</h3>
-  </div>
-
-  <div class="categories-section">
-    <div class="categories-scroll">
-      <div class="category-item">
-        <div class="category-icon">
-          <img src="assets/images/categories/barber.svg" alt="Barbearia" />
-        </div>
-        <span class="category-name">Barbearia</span>
-      </div>
-
-      <div class="category-item">
-        <div class="category-icon">
-          <img
-            src="assets/images/categories/beauty-salon.svg"
-            alt="Salão de Beleza"
-          />
-        </div>
-        <span class="category-name">Beleza</span>
-      </div>
-
-      <div class="category-item">
-        <div class="category-icon">
-          <img
-            src="assets/images/categories/restaurant.svg"
-            alt="Restaurante"
-          />
-        </div>
-        <span class="category-name">Restaurante</span>
-      </div>
-
-      <div class="category-item">
-        <div class="category-icon">
-          <img src="assets/images/categories/barber.svg" alt="Barbearia" />
-        </div>
-        <span class="category-name">Barbearia</span>
-      </div>
-
-      <div class="category-item">
-        <div class="category-icon">
-          <img
-            src="assets/images/categories/beauty-salon.svg"
-            alt="Salão de Beleza"
-          />
-        </div>
-        <span class="category-name">Salão de Beleza</span>
-      </div>
-
-      <div class="category-item">
-        <div class="category-icon">
-          <img
-            src="assets/images/categories/restaurant.svg"
-            alt="Restaurante"
-          />
-        </div>
-        <span class="category-name">Restaurante</span>
-      </div>
-    </div>
-  </div>
-</div>
-
 <ion-content
   class="modern-content"
-  [class.content-collapsed]="searchQuery || contentHidden"
+  [class.content-collapsed]="contentHidden"
   (ionScroll)="onContentScroll($event)"
   [scrollEvents]="true"
 >
@@ -169,15 +54,121 @@
     ></ion-refresher-content>
   </ion-refresher>
 
-  <div class="content-container">
+  <div class="collapsible-content" [class.hidden]="contentHidden">
+    <div class="banners-section">
+      <div class="banners-scroll">
+        <div class="banner-card">
+          <div class="banner-content">
+            <h3 class="banner-title">Pizzaria Bella Massa</h3>
+            <p class="banner-description">
+              Oferta especial da semana! Peça 2 pizzas e ganhe 1 refrigerante
+              grátis.
+            </p>
+            <div class="banner-price">
+              <span class="price-label">Por Apenas:</span>
+              <span class="price-value">R$ 39,50</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="banner-card">
+          <div class="banner-content">
+            <h3 class="banner-title">Restaurante Sabor & Arte</h3>
+            <p class="banner-description">
+              Almoço executivo com sobremesa inclusa. De segunda a sexta.
+            </p>
+            <div class="banner-price">
+              <span class="price-label">Apenas:</span>
+              <span class="price-value">R$ 29,90</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="banner-card">
+          <div class="banner-content">
+            <h3 class="banner-title">Café Aconchego</h3>
+            <p class="banner-description">
+              Café especial + pão de queijo por um preço único.
+            </p>
+            <div class="banner-price">
+              <span class="price-label">Combo por:</span>
+              <span class="price-value">R$ 15,90</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <div class="scroll-dot active"></div>
+        <div class="scroll-dot"></div>
+        <div class="scroll-dot"></div>
+      </div>
+    </div>
+
+    <div class="categories-header">
+      <h3 class="section-title">Categorias</h3>
+    </div>
+
+    <div class="categories-section">
+      <div class="categories-scroll">
+        <div class="category-item">
+          <div class="category-icon">
+            <img src="assets/images/categories/barber.svg" alt="Barbearia" />
+          </div>
+          <span class="category-name">Barbearia</span>
+        </div>
+
+        <div class="category-item">
+          <div class="category-icon">
+            <img
+              src="assets/images/categories/beauty-salon.svg"
+              alt="Salão de Beleza"
+            />
+          </div>
+          <span class="category-name">Beleza</span>
+        </div>
+
+        <div class="category-item">
+          <div class="category-icon">
+            <img
+              src="assets/images/categories/restaurant.svg"
+              alt="Restaurante"
+            />
+          </div>
+          <span class="category-name">Restaurante</span>
+        </div>
+
+        <div class="category-item">
+          <div class="category-icon">
+            <img src="assets/images/categories/barber.svg" alt="Barbearia" />
+          </div>
+          <span class="category-name">Barbearia</span>
+        </div>
+
+        <div class="category-item">
+          <div class="category-icon">
+            <img
+              src="assets/images/categories/beauty-salon.svg"
+              alt="Salão de Beleza"
+            />
+          </div>
+          <span class="category-name">Salão de Beleza</span>
+        </div>
+
+        <div class="category-item">
+          <div class="category-icon">
+            <img
+              src="assets/images/categories/restaurant.svg"
+              alt="Restaurante"
+            />
+          </div>
+          <span class="category-name">Restaurante</span>
+        </div>
+      </div>
+    </div>
+
     <div class="favorite-stores-section" *ngIf="shouldShowFavorites">
       <div class="section-header">
         <h3 class="section-title">Seus favoritos</h3>
-        <!-- <ion-icon
-          name="ellipsis-horizontal-outline"
-          class="more-icon"
-          (click)="viewAllFavorites()"
-        ></ion-icon> -->
       </div>
       <div class="favorite-stores-scroll">
         <div
@@ -216,30 +207,14 @@
         </div>
       </div>
     </div>
+  </div>
 
+  <div class="content-container">
     <div *ngIf="!isLoading && !isEmptyResult" class="companies-container">
       <div class="results-header">
         <span class="results-count"
           >{{ filteredCards.length }} estabelecimento(s) próximos</span
         >
-        <!-- <div class="sort-options">
-          <button
-            class="sort-btn"
-            [class.active]="selectedFilter === 'nearby'"
-            (click)="applyFilter('nearby')"
-          >
-            <ion-icon name="navigate-outline"></ion-icon>
-            <span>Próximos</span>
-          </button>
-          <button
-            class="sort-btn"
-            [class.active]="selectedFilter === 'minorQueue'"
-            (click)="applyFilter('minorQueue')"
-          >
-            <ion-icon name="time-outline"></ion-icon>
-            <span>Menor fila</span>
-          </button>
-        </div> -->
       </div>
 
       <div class="companies-list">

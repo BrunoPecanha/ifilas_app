@@ -39,7 +39,6 @@ export class SelectCompanyPage implements OnInit {
   headerHidden = false;
   contentHidden = false;
   lastScrollTop = 0;
-  private scrollThreshold = 100;
   private isScrolling = false;
 
   constructor(
@@ -253,14 +252,15 @@ export class SelectCompanyPage implements OnInit {
   }
 
   async onContentScroll(event: any) {
-    if (this.isScrolling) return;
+    if (this.isScrolling) 
+      return;
 
     this.isScrolling = true;
 
     const scrollElement = await event.target.getScrollElement();
-    const scrollHeight = scrollElement.scrollHeight;
     const scrollTop = scrollElement.scrollTop;
     const clientHeight = scrollElement.clientHeight;
+    const scrollHeight = scrollElement.scrollHeight;
 
     if (scrollTop + clientHeight >= scrollHeight * 0.8 &&
       this.hasMoreData &&
@@ -271,10 +271,20 @@ export class SelectCompanyPage implements OnInit {
 
     if (!this.searchQuery || this.searchQuery.trim() === '') {
       const isScrollingDown = scrollTop > this.lastScrollTop;
+      const scrollDelta = Math.abs(scrollTop - this.lastScrollTop);
 
-      if (isScrollingDown && scrollTop > this.scrollThreshold && !this.contentHidden) {
-        this.contentHidden = true;
-      } else if (!isScrollingDown && scrollTop <= this.scrollThreshold && this.contentHidden) {
+      const hideThreshold = 400;
+      const showThreshold = 100;
+
+      if (scrollDelta > 5) {
+        if (isScrollingDown && scrollTop > hideThreshold && !this.contentHidden) {
+          this.contentHidden = true;
+        } else if (!isScrollingDown && scrollTop <= showThreshold && this.contentHidden) {
+          this.contentHidden = false;
+        }
+      }
+
+      if (scrollTop === 0 && this.contentHidden) {
         this.contentHidden = false;
       }
     }
@@ -283,7 +293,7 @@ export class SelectCompanyPage implements OnInit {
 
     setTimeout(() => {
       this.isScrolling = false;
-    }, 100);
+    }, 150);
   }
 
   private loadMoreData() {
@@ -323,7 +333,6 @@ export class SelectCompanyPage implements OnInit {
       this.headerHidden = false;
     }
   }
-
 
   selectCard(card: StoreModel): void {
     this.router.navigate(['/select-professional'], {
@@ -391,7 +400,6 @@ export class SelectCompanyPage implements OnInit {
     }, 100);
   }
 
-
   getBack() {
     this.navCtrl.back();
   }
@@ -447,8 +455,7 @@ export class SelectCompanyPage implements OnInit {
 
   get shouldShowFavorites(): boolean {
     return this.favoriteStores.length > 0 &&
-      (!this.searchQuery || this.searchQuery.trim() === '') &&
-      !this.contentHidden;
+      (!this.searchQuery || this.searchQuery.trim() === '');
   }
 
   showContent() {
