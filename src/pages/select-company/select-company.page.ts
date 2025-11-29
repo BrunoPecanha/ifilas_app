@@ -47,8 +47,7 @@ export class SelectCompanyPage implements OnInit {
     private navCtrl: NavController,
     private session: SessionService,
     private favoriteService: FavoriteService,
-    private cdr: ChangeDetectorRef,
-    private navController: NavController
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() { }
@@ -107,6 +106,10 @@ export class SelectCompanyPage implements OnInit {
         this.handleLoadError();
       }
     });
+  }
+
+  trackById(index: number, item: CategoryModel) {
+    return item.id;
   }
 
   private loadFavoriteStores(userId: number) {
@@ -252,7 +255,7 @@ export class SelectCompanyPage implements OnInit {
   }
 
   async onContentScroll(event: any) {
-    if (this.isScrolling) 
+    if (this.isScrolling)
       return;
 
     this.isScrolling = true;
@@ -382,11 +385,6 @@ export class SelectCompanyPage implements OnInit {
     });
   }
 
-  goToNotifications() {
-    this.cdr.detectChanges();
-    this.navController.navigateForward('/notification');
-  }
-
   viewAllFavorites() {
     this.selectedFilter = 'favorites';
     this.resetPagination();
@@ -456,6 +454,15 @@ export class SelectCompanyPage implements OnInit {
   get shouldShowFavorites(): boolean {
     return this.favoriteStores.length > 0 &&
       (!this.searchQuery || this.searchQuery.trim() === '');
+  }
+
+  goToNotifications() {
+    try {
+      this.navCtrl.navigateForward('/notification');
+    } catch (err) {
+      console.error('Navigation error to notifications:', err);
+      this.router.navigate(['/notification']);
+    }
   }
 
   showContent() {
