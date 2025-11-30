@@ -533,15 +533,6 @@ ion-header.hidden {
   transform: scale(0.95);
 }
 
-.favorite-store-card .store-image {
-  position: relative;
-  width: 100%;
-  height: 90px;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
 .favorite-store-card .store-image img {
   width: 100%;
   height: 100%;
@@ -615,7 +606,6 @@ ion-header.hidden {
   font-size: 10px;
 }
 
-/* NOVOS ESTILOS PARA OS CARDS OTIMIZADOS */
 .companies-container {
   background: white;
   border-radius: 20px 20px 0 0;
@@ -1106,7 +1096,7 @@ ion-content::part(scroll)::-webkit-scrollbar {
 .favorite-store-card .store-image {
   position: relative;
   width: 100%;
-  height: 90px;
+  height: 85%;
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 10px;
@@ -1276,7 +1266,6 @@ ion-content::part(scroll)::-webkit-scrollbar {
   align-items: center;
 }
 
-/* células padrão */
 .store-details-grid .detail-item {
   display: flex;
   align-items: center;
