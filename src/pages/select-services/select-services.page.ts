@@ -45,7 +45,6 @@ export class SelectServicesPage implements OnInit {
   fixedTimeTotal: number = 0;
   fixedPriceTotal: number = 0;
 
-  // controle de animação do botão de adicionar por id do serviço
   animatingAdd: { [id: number]: boolean } = {};
 
   constructor(
@@ -66,7 +65,6 @@ export class SelectServicesPage implements OnInit {
     this.getProfessionalAndStore();
   }
 
-  // trackBy para performance em ngFor
   trackByServiceId = (index: number, item: ServiceModel) => item?.id ?? index;
 
   getProfessionalAndStore() {
@@ -153,10 +151,7 @@ export class SelectServicesPage implements OnInit {
     }
   }
 
-  /**
-   * Adiciona serviço (método original)
-   * Mantive seu comportamento original: incrementa quantity se já existir, senão adiciona.
-   */
+ 
   addService(service: ServiceModel) {
     const existingServiceIndex = this.selectedServices.findIndex(s => s.id === service.id);
 
@@ -172,9 +167,6 @@ export class SelectServicesPage implements OnInit {
     this.updateTotals();
   }
 
-  /**
-   * Remover por index (método original)
-   */
   removeService(index: number) {
     if (!this.selectedServices[index]) return;
     if (this.selectedServices[index].quantity > 1) {
@@ -185,50 +177,33 @@ export class SelectServicesPage implements OnInit {
 
     this.updateTotals();
   }
-
-  /**
-   * Remove por id (usado quando usuario clica no botão de adicionar novamente)
-   */
+  
   removeServiceById(id: number) {
     const idx = this.selectedServices.findIndex(s => s.id === id);
     if (idx >= 0) this.removeService(idx);
   } 
 
 
-  addServiceWithAnimation(service: ServiceModel) {
-    // adiciona de fato
+  addServiceWithAnimation(service: ServiceModel) {    
     this.addService(service);
 
-    // seta animando
     if (service?.id != null) {
       this.animatingAdd[service.id] = true;
-      // limpa após 700-900ms para mostrar check
       setTimeout(() => {
         delete this.animatingAdd[service.id];
       }, 800);
     }
   }
 
-  /**
-   * Abre detalhe do serviço (parâmetro: ServiceModel).
-   * ATENÇÃO: se não tiver rota de detalhe, por enquanto apenas loga.
-   * Você pode adaptar para navegar para a página de detalhe se existir.
-   */
+  // abre detalhes do serviço (a implementar)
   openServiceDetail(service: ServiceModel) {
-    if (!service) return;
-    // Se você tiver uma rota de detalhe, descomente e ajuste a linha abaixo:
-    // this.router.navigate(['/service-detail'], { queryParams: { serviceId: service.id, storeId: this.storeId } });
+    if (!service) 
+      return;
 
-    // Por enquanto, só log pra não quebrar o template e para fácil debugging:
     console.log('openServiceDetail:', service);
   }
 
-  /**
-   * Clique em item selecionado da lista (comportamento atual: remove o item).
-   * Se preferir abrir detalhe, substitua por navegação.
-   */
   onSelectedClick(index: number) {
-    // comportamento padrão: remover item
     this.removeService(index);
   }
 
@@ -399,8 +374,7 @@ export class SelectServicesPage implements OnInit {
       const groupName = store.id.toString();
       await this.signalRService.leaveQueueGroup(groupName);
 
-      this.signalRService.onUpdateQueue((data) => {
-        // tratar update se necessário
+      this.signalRService.onUpdateQueue((data) => {        
       });
 
     } catch (error) {
@@ -494,44 +468,32 @@ export class SelectServicesPage implements OnInit {
     await alert.present();
   }
 
-  // retorna quantidade selecionada para o serviço (0 se não existir)
+  
   getQuantity(service: ServiceModel): number {
     const s = this.selectedServices.find(x => x.id === service.id);
     return s ? (Number(s.quantity) || 0) : 0;
   }
 
-  /**
-   * Chamada a partir do botão + inicial.
-   * Se qty === 0 mostra animação de adição, se já tem, só incrementa.
-   */
   onAddBtnClick(service: ServiceModel, event: Event) {
     event.stopPropagation();
 
     const qty = this.getQuantity(service);
     if (qty === 0) {
-      // primeira adição -> animação + cria item com quantity 1
       this.addServiceWithAnimation(service);
     } else {
-      // se já existe, incrementa normalmente
       this.incrementServiceForUi(service, event);
     }
   }
 
-  /**
-   * Incremente via UI (+ no contador)
-   */
   incrementServiceForUi(service: ServiceModel, event?: Event) {
     if (event) event.stopPropagation();
 
     const idx = this.selectedServices.findIndex(s => s.id === service.id);
-    if (idx >= 0) {
-      // já existe: apenas incrementa
+    if (idx >= 0) {      
       this.selectedServices[idx].quantity = (Number(this.selectedServices[idx].quantity) || 0) + 1;
       this.updateTotals();
     } else {
-      // não existe: adiciona com quantity 1 (sem duplicar referências)
-      this.selectedServices.push({ ...service, quantity: 1 } as ServiceModel);
-      // animação pra feedback
+      this.selectedServices.push({ ...service, quantity: 1 } as ServiceModel);    
       if (service?.id != null) {
         this.animatingAdd[service.id] = true;
         setTimeout(() => delete this.animatingAdd[service.id], 700);
@@ -540,9 +502,6 @@ export class SelectServicesPage implements OnInit {
     }
   }
 
-  /**
-   * Decrementa via UI (- no contador). Se chegar em 0 remove o serviço.
-   */
   decrementServiceForUi(service: ServiceModel, event?: Event) {
     if (event) event.stopPropagation();
 
@@ -553,7 +512,6 @@ export class SelectServicesPage implements OnInit {
     if (current > 1) {
       this.selectedServices[idx].quantity = current - 1;
     } else {
-      // remove completamente quando chega a zero
       this.selectedServices.splice(idx, 1);
     }
     this.updateTotals();
