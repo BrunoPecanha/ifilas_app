@@ -37,6 +37,7 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
 
   @Input() routeLink: string = '';
   @Input() notificationCount?: number | null;
+  @Input() showNotificationBadge: boolean = false;
 
   notificationCount$!: Observable<number>;
 
@@ -131,7 +132,8 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
   }
 
   displayNotificationText(): string {
-    if (!this.notificationCount) return '';
+    if (!this.notificationCount) 
+      return '';
     return this.notificationCount > 99 ? '99+' : String(this.notificationCount);
   }
 }

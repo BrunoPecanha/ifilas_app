@@ -1138,6 +1138,22 @@ ion-content::part(scroll)::-webkit-scrollbar {
   color: #c53030;
 }
 
+.verified-badge {
+  font-size: 16px;
+  color: #667eea;
+}
+
+.verified-icon {
+  font-size: 16px;
+  vertical-align: auto;
+  margin-left: 4px;
+}
+
+.company-name .verified ion-icon {
+  color: #3b82f6; 
+  font-size: 16px;
+}
+
 .favorite-badge {
   position: absolute;
   top: 6px;
@@ -1238,4 +1254,110 @@ ion-content::part(scroll)::-webkit-scrollbar {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+
+.name-with-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.name-with-badge .company-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.store-details-grid.two-rows {
+  display: grid;
+  grid-template-columns: 1fr auto; 
+  gap: 8px 12px;
+  align-items: center;
+}
+
+/* células padrão */
+.store-details-grid .detail-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.rating-cell,
+.distance-cell {
+  justify-content: flex-end;
+  padding-left: 8px;
+}
+
+.rating-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  background: rgba(102, 126, 234, 0.06);
+  border: 1px solid rgba(102, 126, 234, 0.08);
+  flex-shrink: 0;
+  cursor: default;
+}
+
+.rating-star {
+  font-size: 14px;
+  color: #f6ad55;
+  line-height: 1;
+}
+
+.rating-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2d3748;
+  white-space: nowrap;
+}
+
+.distance-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  background: rgba(102, 126, 234, 0.04);
+  border: 1px solid rgba(102, 126, 234, 0.06);
+  flex-shrink: 0;
+  cursor: default;
+}
+
+.distance-icon {
+  font-size: 14px;
+  color: #667eea;
+  line-height: 1;
+}
+
+.distance-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2d3748;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .store-details-grid.two-rows {
+    gap: 6px 8px;
+  }
+  .rating-inline, .distance-inline {
+    padding: 3px 5px;
+  }
+  .rating-star, .distance-icon {
+    font-size: 12px;
+  }
+  .rating-value, .distance-value, .people-cell .detail-value, .time-cell .detail-value {
+    font-size: 11px;
+  }
+}
+
+.people-cell .detail-value,
+.time-cell .detail-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

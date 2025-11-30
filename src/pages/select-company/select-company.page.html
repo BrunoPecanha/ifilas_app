@@ -2,6 +2,7 @@
   [showEndButton]="true"
   [endIconName]="'notifications-outline'"
   (onEndClick)="goToNotifications()"
+  [showNotificationBadge]="true"
 >
 </app-custom-header>
 
@@ -206,8 +207,15 @@
             <div class="store-info-section">
               <div class="store-header">
                 <div class="store-name-section">
-                  <h3 class="company-name">{{ card.name }}</h3>
-                  <p class="store-description">{{ 'Barbearia premium' }}</p>
+                  <div class="name-with-badge">
+                    <h3 class="company-name">{{ card.name }}</h3>
+                    <ion-icon
+                      *ngIf="card.isVerified"
+                      name="checkmark-circle"
+                      class="verified-badge"
+                    ></ion-icon>
+                  </div>
+                  <p class="store-description">Barbearia premium</p>
                 </div>
                 <button class="like-btn" (click)="toggleLike(card, $event)">
                   <ion-icon
@@ -221,8 +229,8 @@
                 {{ card.isOpen ? 'Aberto' : 'Fechado' }}
               </div>
 
-              <div class="store-details-grid">
-                <div class="detail-item">
+              <div class="store-details-grid two-rows">
+                <div class="detail-item people-cell">
                   <ion-icon
                     name="people-outline"
                     class="detail-icon"
@@ -234,20 +242,36 @@
                   </div>
                 </div>
 
-                <div class="detail-item">
+                <div
+                  class="detail-item rating-cell"
+                  (click)="$event.stopPropagation()"
+                >
+                  <div class="rating-inline">
+                    <ion-icon name="star" class="rating-star"></ion-icon>
+                    <span class="rating-value"
+                      >{{ card.rating ? (card.rating | number:'1.1-1') : '0.0'
+                      }}</span
+                    >
+                  </div>
+                </div>
+
+                <div class="detail-item time-cell">
                   <ion-icon name="time-outline" class="detail-icon"></ion-icon>
                   <div class="detail-content">
                     <span class="detail-value">{{ '12' }} min de espera</span>
                   </div>
                 </div>
 
-                <div class="detail-item">
-                  <ion-icon
-                    name="location-outline"
-                    class="detail-icon"
-                  ></ion-icon>
-                  <div class="detail-content">
-                    <span class="detail-value"
+                <div
+                  class="detail-item distance-cell"
+                  (click)="$event.stopPropagation()"
+                >
+                  <div class="distance-inline">
+                    <ion-icon
+                      name="location-outline"
+                      class="distance-icon"
+                    ></ion-icon>
+                    <span class="distance-value"
                       >{{ card.distance || '500' }} m</span
                     >
                   </div>
