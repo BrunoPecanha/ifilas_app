@@ -15,7 +15,7 @@
       <span class="section-subtitle">Escolha seus serviços</span>
     </div>
 
-    <div class="services-grid">
+    <div class="services-list">
       <div
         class="service-card"
         *ngFor="let service of serviceOptions; trackBy: trackByServiceId"
@@ -34,19 +34,27 @@
         </div>
 
         <div class="service-info">
-          <h3>{{ service.name }}</h3>
-          <p class="description">
-            {{ service.description || 'Serviço disponível' }}
+          <h3 class="service-name">{{ service.name }}</h3>
+          <p class="service-category" *ngIf="service.category?.name">
+            {{ service.category.name }}
           </p>
-          <div class="price-time">
-            <span class="price">
-              {{ service.variablePrice ? 'A combinar' : ('R$ ' + (service.price
-              | number:'1.2-2')) }}
-            </span>
-            <span class="time">
-              {{ service.variableTime ? 'A definir' : (service.duration + '
-              min') }}
-            </span>
+          <p class="service-description" *ngIf="service.description">
+            {{ service.description }}
+          </p>
+          
+          <div class="price-time-info">
+            <div class="price-info">
+              <span class="price-label">Preço:</span>
+              <span class="price-value">
+                {{ service.variablePrice ? 'A combinar' : ('R$ ' + (service.price | number:'1.2-2')) }}
+              </span>
+            </div>
+            <div class="time-info">
+              <span class="time-label">Tempo:</span>
+              <span class="time-value">
+                {{ service.variableTime ? 'A definir' : (service.duration + ' min') }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -81,6 +89,7 @@
         </div>
       </div>
     </div>
+    
     <div class="summary-section" *ngIf="selectedServices.length > 0">
       <div class="summary-content">
         <div class="summary-info">
