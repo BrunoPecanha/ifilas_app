@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, IonContent } from '@ionic/angular';
 import { AvailableDateModel } from 'src/models/available-date-model';
 import { AddCustomerToScheduleRequest } from 'src/models/requests/add-customer-to-schedule-request copy';
 import { AddServiceRequest } from 'src/models/requests/add-service-request';
@@ -15,9 +15,11 @@ import { ToastService } from 'src/services/toast.service';
   templateUrl: './schedule-appointment.page.html',
   styleUrls: ['./schedule-appointment.page.scss'],
 })
-export class ScheduleAppointmentPage implements OnInit {
-  defaultLogo = 'assets/images/store.png';
+export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
+  @ViewChild(IonContent) content!: IonContent;
 
+  defaultLogo = 'assets/images/store.png';
+  headerScrolled = false;
   selectedStore: any;
   availableDates: AvailableDateModel[] = [];
   selectedTimeSlots: TimeSlotModel[] = [];
@@ -42,9 +44,10 @@ export class ScheduleAppointmentPage implements OnInit {
     private toastService: ToastService,
     private router: Router,
     private sessionService: SessionService
-  ) {}
+  ) { }
 
   ngOnInit() {
+    this.setupScrollListener();
     const msg = sessionStorage.getItem('toastMessage');
 
     if (msg) {
@@ -62,6 +65,13 @@ export class ScheduleAppointmentPage implements OnInit {
     this.loadStoreAgenda();
   }
 
+  ngAfterViewInit() {
+    this.content.scrollEvents = true;
+    this.content.ionScroll.subscribe((event: any) => {
+      this.headerScrolled = event.detail.scrollTop > 10;
+    });
+  }
+
   loadStoreAgenda() {
     this.service.getEmployeeAgendaForCostumers(this.storeId, this.professionalId, new Date()).subscribe(res => {
       this.selectedStore = res.data.store;
@@ -70,12 +80,12 @@ export class ScheduleAppointmentPage implements OnInit {
         ...d,
         date: new Date(d.date)
       }));
-      
+
       this.updateVisibleDates();
     });
   }
 
- updateVisibleDates() {
+  updateVisibleDates() {
     if (this.availableDates.length === 0) {
       this.visibleDates = [];
       return;
@@ -83,12 +93,21 @@ export class ScheduleAppointmentPage implements OnInit {
 
     const startIndex = this.currentWeekOffset * 7;
     this.visibleDates = this.availableDates.slice(startIndex, startIndex + 7);
-    
+
     while (this.visibleDates.length < 7) {
       this.visibleDates.push({
         date: new Date(),
         available: false,
         timeSlots: []
+      });
+    }
+  }
+
+  setupScrollListener() {
+    const content = document.querySelector('ion-content');
+    if (content) {
+      content.addEventListener('ionScroll', (event: any) => {
+        this.headerScrolled = event.detail.scrollTop > 10;
       });
     }
   }
@@ -123,12 +142,12 @@ export class ScheduleAppointmentPage implements OnInit {
   }
 
   getCurrentWeekRange(): string {
-    if (this.visibleDates.length === 0 || !this.visibleDates[0].available) 
+    if (this.visibleDates.length === 0 || !this.visibleDates[0].available)
       return 'Sem datas';
-    
+
     const firstDate = this.visibleDates[0].date;
     const lastDate = this.visibleDates[this.visibleDates.length - 1].date;
-    
+
     return `${firstDate.getDate()} ${firstDate.toLocaleDateString('pt-BR', { month: 'short' })} - ${lastDate.getDate()} ${lastDate.toLocaleDateString('pt-BR', { month: 'short' })}`;
   }
 
@@ -137,13 +156,13 @@ export class ScheduleAppointmentPage implements OnInit {
 
     this.selectedDate = day.date;
     this.selectedTimeSlots = day.timeSlots;
-    this.selectedTimeSlot = null; 
+    this.selectedTimeSlot = null;
   }
 
   selectTimeSlot(slot: TimeSlotModel) {
-    if (!slot.available) 
+    if (!slot.available)
       return;
-    
+
     this.selectedTimeSlot = slot;
   }
 
@@ -152,33 +171,33 @@ export class ScheduleAppointmentPage implements OnInit {
   }
 
   groupTimeSlotsByPeriod(): any[] {
-    if (!this.selectedTimeSlots || this.selectedTimeSlots.length === 0) 
+    if (!this.selectedTimeSlots || this.selectedTimeSlots.length === 0)
       return [];
-    
+
     const morning = this.selectedTimeSlots.filter(slot => {
       const hour = parseInt(slot.time.split(':')[0]);
       return hour < 12;
     });
-    
+
     const afternoon = this.selectedTimeSlots.filter(slot => {
       const hour = parseInt(slot.time.split(':')[0]);
       return hour >= 12 && hour < 18;
     });
-    
+
     const evening = this.selectedTimeSlots.filter(slot => {
       const hour = parseInt(slot.time.split(':')[0]);
       return hour >= 18;
     });
-    
+
     const periods = [];
-    
-    if (morning.length > 0) 
+
+    if (morning.length > 0)
       periods.push({ period: 'Manhã', slots: morning });
-    if (afternoon.length > 0) 
+    if (afternoon.length > 0)
       periods.push({ period: 'Tarde', slots: afternoon });
-    if (evening.length > 0) 
+    if (evening.length > 0)
       periods.push({ period: 'Noite', slots: evening });
-    
+
     return periods;
   }
 
@@ -187,10 +206,10 @@ export class ScheduleAppointmentPage implements OnInit {
       await this.toastService.show('Selecione uma data e horário', 'danger');
       return;
     }
-    
+
     const alert = await this.alertController.create({
       header: 'Confirmar Agendamento',
-      message: `Deseja confirmar o agendamento para <strong>${this.formatDate(this.selectedDate)} às ${this.selectedTimeSlot.time}</strong>?`,
+      message: `Deseja confirmar o agendamento para ${this.formatDate(this.selectedDate)} às ${this.selectedTimeSlot.time}?`,
       buttons: [
         {
           text: 'Cancelar',
@@ -203,7 +222,7 @@ export class ScheduleAppointmentPage implements OnInit {
               await this.toastService.show('Data não selecionada', 'danger');
               return;
             }
-            
+
             const request: AddCustomerToScheduleRequest = {
               selectedServices: this.selectedServices,
               notes: this.notes ?? '',
