@@ -2527,3 +2527,8 @@ ion-content::part(scroll) {
 .scroll-area {
   --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
 }
+
+.service-card,
+.product-card {
+  border-left: none;
+}

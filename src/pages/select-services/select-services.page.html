@@ -1,5 +1,7 @@
 <app-custom-header
+  [class.scrolled]="headerScrolled"
   [subtitle]="professionalName"
+  [title]="'Seleção de Serviços'"
   [showStartButton]="!editingExistingAppointment"
   (onStartClick)="getBack()"
   [endDisabled]="selectedServices.length === 0"
@@ -10,18 +12,14 @@
 
 <ion-content class="services-content">
   <section class="card-section">
-    <div class="section-header">
-      <h2 class="section-title">Serviços Disponíveis</h2>
-      <span class="section-subtitle">Escolha seus serviços</span>
-    </div>
-
     <div class="services-list">
       <div
-        class="service-row"
+        class="service-card"
         *ngFor="let service of serviceOptions; trackBy: trackByServiceId"
         [class.selected]="isServiceSelected(service)"
+        (click)="openServiceDetail(service)"
       >
-        <div class="service-image" role="img" [attr.aria-label]="service.name">
+        <div class="service-image">
           <img
             *ngIf="service.category?.imgPath"
             [src]="service.category.imgPath"
@@ -32,29 +30,34 @@
           </div>
         </div>
 
-        <div class="service-info" (click)="openServiceDetail(service)">
-          <h3>{{ service.name }}</h3>
-          <p class="description">
-            {{ service.description || 'Serviço disponível' }}
+        <div class="service-info">
+          <h3 class="service-name">{{ service.name }}</h3>
+          <p class="service-category" *ngIf="service.category?.name">
+            {{ service.category.name }}
           </p>
-          <div class="price-time">
-            <span class="price"
-              >{{ service.variablePrice ? 'A combinar' : ('R$ ' + (service.price
-              | number:'1.2-2')) }}</span
-            >
-            <span class="time"
-              >{{ service.variableTime ? 'A definir' : (service.duration + '
-              min') }}</span
-            >
+          <p class="service-description" *ngIf="service.description">
+            {{ service.description }}
+          </p>
+          
+          <div class="price-time-info">
+            <div class="price-info">
+              <span class="price-label">Preço:</span>
+              <span class="price-value">
+                {{ service.variablePrice ? 'A combinar' : ('R$ ' + (service.price | number:'1.2-2')) }}
+              </span>
+            </div>
+            <div class="time-info">
+              <span class="time-label">Tempo:</span>
+              <span class="time-value">
+                {{ service.variableTime ? 'A definir' : (service.duration + ' min') }}
+              </span>
+            </div>
           </div>
         </div>
 
-        <!-- area de controle: mostra + quando qty=0, ou "- qty +" quando qty>0 -->
-        <div class="control-area">
-          <!-- se não tem quantidade, só mostra o botão + -->
+        <div class="card-control-area">
           <div class="only-add" *ngIf="getQuantity(service) === 0">
             <button
-              ion-button
               class="add-btn"
               (click)="onAddBtnClick(service, $event)"
               title="Adicionar"
@@ -63,7 +66,6 @@
             </button>
           </div>
 
-          <!-- se tem quantidade, mostra o controle - N + -->
           <div class="qty-control" *ngIf="getQuantity(service) > 0">
             <button
               class="qty-btn minus"
@@ -84,24 +86,21 @@
         </div>
       </div>
     </div>
+    
+    <div class="summary-section" *ngIf="selectedServices.length > 0">
+      <div class="summary-content">
+        <div class="summary-info">
+          <div class="summary-price">{{ totalPriceString }}</div>
+          <div class="summary-time">{{ totalTimeString }}</div>
+        </div>
+        <button class="continue-btn" (click)="confirmSelection()">
+          Continuar
+        </button>
+      </div>
+    </div>
   </section>
 
   <div class="footer-spacer"></div>
-
-  <div class="floating-cart" *ngIf="selectedServices.length > 0">
-    <div class="cart-info">
-      <div class="cart-price">{{ totalPriceString }}</div>
-      <div class="cart-sub">
-        {{ selectedServices.length }} {{ selectedServices.length === 1 ?
-        'serviço' : 'serviços' }}
-        <span class="cart-delivery">• Tempo total: {{ totalTimeString }}</span>
-      </div>
-    </div>
-
-    <ion-button expand="block" class="cart-btn" (click)="confirmSelection()">
-      Ver Selecionados
-    </ion-button>
-  </div>
 </ion-content>
 
 <app-footer-menu></app-footer-menu>

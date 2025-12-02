@@ -15,7 +15,7 @@
   justify-content: space-around;
   align-items: center;
   background: white;
-  margin: 10px 16px;
+  margin: 20px 16px;
   border-radius: 30px;
   height: 70px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
@@ -273,4 +273,8 @@
 
 .feirinha-container {
   pointer-events: none;
+}
+
+.footer-container {
+  background: rgba(255, 255, 255, 0.5);
 }

@@ -165,7 +165,7 @@ export class ChooseEstablishmentPage implements OnInit {
     } else if (isQueueOpenToday) {
       this.router.navigate(['/customer-list-in-queue']);
     } else if (this.user.useAgenda) {
-      this.router.navigate(['/schedule-config']);
+      this.router.navigate(['/owner-schedule']);
     } else {
       this.router.navigate(['/queue-admin']);
     }
