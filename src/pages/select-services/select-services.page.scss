@@ -445,7 +445,7 @@
   }
 
   .summary-section {
-    bottom: 85px;
+    bottom: 93px;
     width: calc(100% - 32px);
     padding: 20px 20px;
     border-radius: 14px;
@@ -605,7 +605,6 @@ ion-content {
   }
 }
 
-/* Estilo padrão do header (transparente) */
 app-custom-header {
   position: fixed;
   top: 0;
@@ -617,26 +616,24 @@ app-custom-header {
   box-shadow: none !important;
 }
 
-/* Header quando scrolled */
 app-custom-header.scrolled {
   background-color: #ffffff !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Se o app-custom-header tiver um elemento interno que precisa do background */
 app-custom-header.scrolled ::ng-deep header,
 app-custom-header.scrolled ::ng-deep .header-container,
 app-custom-header.scrolled ::ng-deep ion-header {
   background-color: #ffffff !important;
 }
 
-/* Ajuste o conteúdo para começar abaixo do header */
+
 ion-content {
   --padding-top: 80px;
   --padding-bottom: 0px;
 }
 
-/* Garanta que o z-index esteja correto */
+
 app-custom-header {
   z-index: 1000;
 }
