@@ -1,5 +1,7 @@
 <app-custom-header
+  [class.scrolled]="headerScrolled"
   [subtitle]="professionalName"
+  [title]="'Seleção de Serviços'"
   [showStartButton]="!editingExistingAppointment"
   (onStartClick)="getBack()"
   [endDisabled]="selectedServices.length === 0"
@@ -10,11 +12,6 @@
 
 <ion-content class="services-content">
   <section class="card-section">
-    <div class="section-header">
-      <h2 class="section-title">Serviços Disponíveis</h2>
-      <span class="section-subtitle">Escolha seus serviços</span>
-    </div>
-
     <div class="services-list">
       <div
         class="service-card"

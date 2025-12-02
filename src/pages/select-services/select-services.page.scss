@@ -174,7 +174,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #111827;
+  background-color: #667eea;
   color: #ffffff;
   border: none;
   cursor: pointer;
@@ -304,7 +304,7 @@
 }
 
 .continue-btn {
-  background-color: #111827;
+  background-color: #667eea;
   color: #ffffff;
   border: none;
   border-radius: 12px;
@@ -603,4 +603,40 @@ ion-content {
   .footer-spacer {
     height: 160px;
   }
+}
+
+/* Estilo padrão do header (transparente) */
+app-custom-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: transparent !important;
+  transition: all 0.3s ease;
+  box-shadow: none !important;
+}
+
+/* Header quando scrolled */
+app-custom-header.scrolled {
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Se o app-custom-header tiver um elemento interno que precisa do background */
+app-custom-header.scrolled ::ng-deep header,
+app-custom-header.scrolled ::ng-deep .header-container,
+app-custom-header.scrolled ::ng-deep ion-header {
+  background-color: #ffffff !important;
+}
+
+/* Ajuste o conteúdo para começar abaixo do header */
+ion-content {
+  --padding-top: 80px;
+  --padding-bottom: 0px;
+}
+
+/* Garanta que o z-index esteja correto */
+app-custom-header {
+  z-index: 1000;
 }

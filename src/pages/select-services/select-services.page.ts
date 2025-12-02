@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, IonContent } from '@ionic/angular';
 import { AddCustomerToQueueRequest } from 'src/models/requests/add-customer-to-queue-request';
 import { AddServiceRequest } from 'src/models/requests/add-service-request';
 import { UpdateCustomerToQueueRequest } from 'src/models/requests/update-customer-to-queue-request';
@@ -20,6 +20,8 @@ import { AddCustomerToScheduleRequest } from 'src/models/requests/add-customer-t
   styleUrls: ['./select-services.page.scss'],
 })
 export class SelectServicesPage implements OnInit {
+    
+  @ViewChild(IonContent) content: IonContent = null as any;
 
   queueId: number = 0;
   scheduleId: number = 0;
@@ -46,6 +48,7 @@ export class SelectServicesPage implements OnInit {
   fixedPriceTotal: number = 0;
 
   animatingAdd: { [id: number]: boolean } = {};
+  headerScrolled = false;
 
   constructor(
     private router: Router,
@@ -61,8 +64,25 @@ export class SelectServicesPage implements OnInit {
     this.user = this.sessionService.getUser();
   }
 
+  ngAfterViewInit() {
+    this.content.scrollEvents = true;
+    this.content.ionScroll.subscribe((event: any) => {
+      this.headerScrolled = event.detail.scrollTop > 10;
+    });
+  }
+
+  setupScrollListener() {
+    const content = document.querySelector('ion-content');
+    if (content) {
+      content.addEventListener('ionScroll', (event: any) => {
+        this.headerScrolled = event.detail.scrollTop > 10;
+      });
+    }
+  }
+
   ngOnInit() {
     this.getProfessionalAndStore();
+     this.setupScrollListener();
   }
 
   trackByServiceId = (index: number, item: ServiceModel) => item?.id ?? index;
@@ -151,7 +171,7 @@ export class SelectServicesPage implements OnInit {
     }
   }
 
- 
+
   addService(service: ServiceModel) {
     const existingServiceIndex = this.selectedServices.findIndex(s => s.id === service.id);
 
@@ -177,14 +197,14 @@ export class SelectServicesPage implements OnInit {
 
     this.updateTotals();
   }
-  
+
   removeServiceById(id: number) {
     const idx = this.selectedServices.findIndex(s => s.id === id);
     if (idx >= 0) this.removeService(idx);
-  } 
+  }
 
 
-  addServiceWithAnimation(service: ServiceModel) {    
+  addServiceWithAnimation(service: ServiceModel) {
     this.addService(service);
 
     if (service?.id != null) {
@@ -197,7 +217,7 @@ export class SelectServicesPage implements OnInit {
 
   // abre detalhes do serviço (a implementar)
   openServiceDetail(service: ServiceModel) {
-    if (!service) 
+    if (!service)
       return;
 
     console.log('openServiceDetail:', service);
@@ -374,7 +394,7 @@ export class SelectServicesPage implements OnInit {
       const groupName = store.id.toString();
       await this.signalRService.leaveQueueGroup(groupName);
 
-      this.signalRService.onUpdateQueue((data) => {        
+      this.signalRService.onUpdateQueue((data) => {
       });
 
     } catch (error) {
@@ -468,7 +488,7 @@ export class SelectServicesPage implements OnInit {
     await alert.present();
   }
 
-  
+
   getQuantity(service: ServiceModel): number {
     const s = this.selectedServices.find(x => x.id === service.id);
     return s ? (Number(s.quantity) || 0) : 0;
@@ -489,11 +509,11 @@ export class SelectServicesPage implements OnInit {
     if (event) event.stopPropagation();
 
     const idx = this.selectedServices.findIndex(s => s.id === service.id);
-    if (idx >= 0) {      
+    if (idx >= 0) {
       this.selectedServices[idx].quantity = (Number(this.selectedServices[idx].quantity) || 0) + 1;
       this.updateTotals();
     } else {
-      this.selectedServices.push({ ...service, quantity: 1 } as ServiceModel);    
+      this.selectedServices.push({ ...service, quantity: 1 } as ServiceModel);
       if (service?.id != null) {
         this.animatingAdd[service.id] = true;
         setTimeout(() => delete this.animatingAdd[service.id], 700);
