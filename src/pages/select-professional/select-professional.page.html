@@ -166,11 +166,11 @@
             </div>
 
             <div class="status-section">
-              <div
+              <!--<div
                 class="status-badge"
                 [ngClass]="getStatusClass(professional.status)"
               >
-                <ion-icon
+                 <ion-icon
                   [name]="getStatusIcon(professional.status)"
                 ></ion-icon>
                 <span> {{ getStatusText(professional) }} </span>
@@ -178,8 +178,8 @@
                   *ngIf="professional.status === StatusQueueEnum.paused"
                   name="help-circle-outline"
                   (click)="openPauseReason(professional, $event)"
-                ></ion-icon>
-              </div>
+                ></ion-icon> 
+              </div>-->
             </div>
           </div>
 
