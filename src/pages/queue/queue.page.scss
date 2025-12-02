@@ -1018,3 +1018,38 @@ ion-spinner {
 ion-content {
   --padding-top: calc(50px + env(safe-area-inset-top));
 }
+
+/* Estilo para o banner de pausa expandido */
+.paused-info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.paused-info-banner ion-icon {
+  font-size: 1.5rem;
+  margin-top: 2px;
+}
+
+.paused-info-banner div {
+  flex: 1;
+}
+
+.paused-info-banner strong {
+  display: block;
+  color: var(--ion-color-warning);
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.paused-info-banner p {
+  margin: 0;
+  color: #666;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}

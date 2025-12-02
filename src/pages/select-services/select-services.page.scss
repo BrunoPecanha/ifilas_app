@@ -396,7 +396,7 @@
     padding: 16px;
     gap: 12px;
     margin: 0 auto;
-    width: calc(100% - 30px);
+    width: calc(100% - 0px);
   }
 
   .service-image {
@@ -627,13 +627,42 @@ app-custom-header.scrolled ::ng-deep ion-header {
   background-color: #ffffff !important;
 }
 
-
 ion-content {
   --padding-top: 80px;
   --padding-bottom: 0px;
 }
 
-
 app-custom-header {
   z-index: 1000;
+}
+
+.card-section {
+  max-width: 900px; 
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.summary-section {
+  position: fixed;
+  bottom: calc(var(--footer-height, 72px) + env(safe-area-inset-bottom)); 
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(calc(100% - 32px), 900px);
+  max-width: 100%;
+  background-color: #ffffff;
+  padding: 20px 24px;
+  border-radius: 16px;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e5e7eb;
+  z-index: 2000; 
+  pointer-events: auto;
+  margin: 20px auto;
+}
+
+@media (max-width: 768px) {
+  .summary-section {
+    width: calc(100% - 32px);
+    max-width: none;
+  }
 }

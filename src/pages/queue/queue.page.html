@@ -97,6 +97,18 @@
       >
         <ion-item-options side="end" *ngIf="expandedQueueId !== queue.id">
           <ion-item-option
+            *ngIf="queue.isPaused"
+            color="medium"
+            (click)="pauseInfo(queue)"
+            class="action-option compact pause-action"
+          >
+            <ion-icon
+              name="information-circle-outline"
+              slot="icon-only"
+            ></ion-icon>
+          </ion-item-option>
+
+          <ion-item-option
             color="primary"
             (click)="generateQrCodeForAtendance(queue)"
             class="action-option compact"
@@ -127,6 +139,7 @@
           class="queue-card"
           [class.is-your-turn]="queue.position === 1"
           [class.expanded]="expandedQueueId === queue.id"
+          [class.is-paused]="queue.isPaused"
           (click)="toggleQueueExpansion(queue.id)"
         >
           <div
@@ -171,15 +184,7 @@
                       #{{ queue.position }}
                     </span>
                   </div>
-
-                  <ion-icon
-                    [name]="queue.isPaused ? 'pause-circle-outline' : 'play-circle-outline'"
-                    [color]="queue.isPaused ? 'medium' : 'success'"
-                    class="queue-status-icon"
-                    (click)="pauseInfo(queue); $event.stopPropagation()"
-                  ></ion-icon>
                 </div>
-
                 <ion-icon
                   name="chevron-down-outline"
                   class="expand-icon"
@@ -192,6 +197,17 @@
                 *ngIf="expandedQueueId === queue.id"
               >
                 <div class="card-body">
+                  <div class="paused-info-banner" *ngIf="queue.isPaused">
+                    <ion-icon name="pause-circle" color="warning"></ion-icon>
+                    <div>
+                      <strong>Atendimentos Pausados</strong>
+                      <p>
+                        O atendente está temporariamente indisponível, mas você
+                        manterá sua posição na fila.
+                      </p>
+                    </div>
+                  </div>
+
                   <div class="info-grid">
                     <div class="info-row">
                       <div class="info-item">
@@ -619,7 +635,10 @@
               alt="QR Code de Atendimento"
               class="qr-image"
             />
-            <p class="qr-instruction">Mostre este QR Code no estabelecimento para o funcionário responsável pelo seu atendimento.</p>
+            <p class="qr-instruction">
+              Mostre este QR Code no estabelecimento para o funcionário
+              responsável pelo seu atendimento.
+            </p>
           </div>
 
           <div *ngIf="!isLoadingQr && !qrCodeDataUrl" class="qr-error">

@@ -211,12 +211,13 @@ export class QueuePage implements OnInit {
     return colorMap[service] || 'medium';
   }
 
-  getQueueStatusColor(status: number): string {
+  getQueueStatusColor(status: number): string {    
     const statusColors: { [key: number]: string } = {
       6: 'success',
       2: 'warning',
       1: 'medium',
-      3: 'primary'
+      3: 'primary',
+      4: 'danger'
     };
     return statusColors[status] || 'medium';
   }
@@ -226,7 +227,8 @@ export class QueuePage implements OnInit {
       6: 'Sua vez!',
       2: 'Aguardando',
       1: 'Em andamento',
-      3: 'Finalizado'
+      3: 'Finalizado',
+      4: 'Ausente'
     };
     return statusTexts[status] || 'Desconhecido';
   }
