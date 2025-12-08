@@ -211,7 +211,7 @@ export class QueuePage implements OnInit {
     return colorMap[service] || 'medium';
   }
 
-  getQueueStatusColor(status: number): string {    
+  getQueueStatusColor(status: number): string {
     const statusColors: { [key: number]: string } = {
       6: 'success',
       2: 'warning',
@@ -235,7 +235,7 @@ export class QueuePage implements OnInit {
 
   getAppointmentStatusText(status: number): string {
     const statusTexts: { [key: number]: string } = {
-      0: 'Confirmado',
+      9: 'Confirmado',
       1: 'Pendente',
       2: 'Cancelado',
       3: 'Finalizado'
@@ -245,7 +245,7 @@ export class QueuePage implements OnInit {
 
   getAppointmentStatusColor(status: number): string {
     const statusColors: { [key: number]: string } = {
-      0: 'success',
+      9: 'success',
       1: 'warning',
       2: 'danger',
       3: 'medium'
@@ -254,7 +254,7 @@ export class QueuePage implements OnInit {
   }
 
   getAppointmentColor(appt: ScheduleItem): string {
-    if (appt.status === 0)
+    if (appt.status === 9)
       return 'var(--ion-color-success)';
 
     if (appt.status === 1)
@@ -484,6 +484,11 @@ export class QueuePage implements OnInit {
   }
 
   pauseInfo(queue: QueueItem) {
-    this.showToast(queue.isPaused ? 'Fila pausada - Motivo: Saí para almoçar' : 'Fila ativa', 'medium');
+    this.showToast(
+      queue.isPaused
+        ? `Fila pausada: ${queue.pauseReason}`
+        : 'Fila ativa',
+      'medium'
+    );
   }
 }
