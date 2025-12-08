@@ -1053,3 +1053,34 @@ ion-content {
   font-size: 0.8rem;
   line-height: 1.3;
 }
+
+app-custom-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: transparent !important;
+  transition: all 0.3s ease;
+  box-shadow: none !important;
+}
+
+app-custom-header.scrolled {
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+app-custom-header.scrolled ::ng-deep header,
+app-custom-header.scrolled ::ng-deep .header-container,
+app-custom-header.scrolled ::ng-deep ion-header {
+  background-color: #ffffff !important;
+}
+
+ion-content {
+  --padding-top: 80px;
+  --padding-bottom: 0px;
+}
+
+app-custom-header {
+  z-index: 1000;
+}

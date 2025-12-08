@@ -6,6 +6,7 @@
   [routeLink]="fallbackRoute"
   [endIconName]="'refresh-outline'"
   (onEndClick)="refreshAll()"
+  [class.scrolled]="headerScrolled"
 ></app-custom-header>
 
 <ion-content class="page-container">

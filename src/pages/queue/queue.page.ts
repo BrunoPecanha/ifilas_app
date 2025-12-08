@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, IonContent, ToastController } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response';
 import { UserModel } from 'src/models/user-model';
@@ -16,12 +16,16 @@ import { TokenService } from 'src/services/token.service';
   styleUrls: ['./queue.page.scss'],
 })
 export class QueuePage implements OnInit {
+
+  @ViewChild(IonContent) content: IonContent = null as any;
+
   fallbackRoute = '/home';
   currentDate = new Date();
   user!: UserModel;
   isLoading = false;
   showQrModal = false;
   isLoadingQr = false;
+  headerScrolled = false;
   qrCodeDataUrl: string = '';
 
   activeSegment: 'filas' | 'agendamentos' = 'filas';
@@ -51,6 +55,23 @@ export class QueuePage implements OnInit {
     private tokenService: TokenService
   ) {
     this.user = this.sessionService.getUser();
+  }
+
+
+  ngAfterViewInit() {
+    this.content.scrollEvents = true;
+    this.content.ionScroll.subscribe((event: any) => {
+      this.headerScrolled = event.detail.scrollTop > 10;
+    });
+  }
+
+  setupScrollListener() {
+    const content = document.querySelector('ion-content');
+    if (content) {
+      content.addEventListener('ionScroll', (event: any) => {
+        this.headerScrolled = event.detail.scrollTop > 10;
+      });
+    }
   }
 
   ngOnInit() {
