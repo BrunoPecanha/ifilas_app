@@ -1019,7 +1019,6 @@ ion-content {
   --padding-top: calc(50px + env(safe-area-inset-top));
 }
 
-/* Estilo para o banner de pausa expandido */
 .paused-info-banner {
   display: flex;
   align-items: flex-start;
@@ -1083,4 +1082,55 @@ ion-content {
 
 app-custom-header {
   z-index: 1000;
+}
+
+
+ion-content {
+  --padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+
+.sliding-item.expanded {
+  z-index: 1;
+  position: relative;
+  margin-bottom: 80px;
+}
+
+.queue-card,
+.appointment-card {
+  transition: all 0.3s ease;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.queue-card.expanded,
+.appointment-card.expanded {
+  max-height: none; 
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.expanded-content {
+  overflow: visible;
+}
+
+@media (max-width: 768px) {
+  .sliding-item.expanded {
+    margin-bottom: 60px;
+  }
+  
+  ion-content {
+    --padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+}
+
+app-footer-menu {
+  z-index: 100;
+  position: relative;
+}
+
+.scrolling-active {
+  pointer-events: none;
+}
+
+.scrolling-active * {
+  pointer-events: none;
 }

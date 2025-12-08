@@ -16,8 +16,8 @@ import { TokenService } from 'src/services/token.service';
   styleUrls: ['./queue.page.scss'],
 })
 export class QueuePage implements OnInit {
-
   @ViewChild(IonContent) content: IonContent = null as any;
+  @ViewChild(IonContent, { static: false }) ionContent!: IonContent;
 
   fallbackRoute = '/home';
   currentDate = new Date();
@@ -26,6 +26,7 @@ export class QueuePage implements OnInit {
   showQrModal = false;
   isLoadingQr = false;
   headerScrolled = false;
+
   qrCodeDataUrl: string = '';
 
   activeSegment: 'filas' | 'agendamentos' = 'filas';
@@ -56,7 +57,6 @@ export class QueuePage implements OnInit {
   ) {
     this.user = this.sessionService.getUser();
   }
-
 
   ngAfterViewInit() {
     this.content.scrollEvents = true;
@@ -180,20 +180,48 @@ export class QueuePage implements OnInit {
   }
 
   toggleQueueExpansion(queueId: number) {
-    if (this.expandedQueueId === queueId) {
+    const wasExpanded = this.expandedQueueId === queueId;
+
+    if (wasExpanded) {
       this.expandedQueueId = null;
-    } else {
-      this.expandedQueueId = queueId;
       this.expandedAppointmentId = null;
+      return;
     }
+
+    this.expandedQueueId = queueId;
+    this.expandedAppointmentId = null;
+
+    setTimeout(() => {
+      this.scrollToExpandedCard(queueId.toString(), 'queue');
+    }, 100);
   }
 
   toggleAppointmentExpansion(appointmentId: number) {
-    if (this.expandedAppointmentId === appointmentId) {
+    const wasExpanded = this.expandedAppointmentId === appointmentId;
+
+    if (wasExpanded) {
       this.expandedAppointmentId = null;
-    } else {
-      this.expandedAppointmentId = appointmentId;
       this.expandedQueueId = null;
+      return;
+    }
+
+    this.expandedAppointmentId = appointmentId;
+    this.expandedQueueId = null;
+
+    setTimeout(() => {
+      this.scrollToExpandedCard(appointmentId.toString(), 'appointment');
+    }, 100);
+  }
+
+  private scrollToExpandedCard(cardId: string, type: 'queue' | 'appointment') {
+    const elementId = `${type}-${cardId}`;
+    const element = document.getElementById(elementId);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
     }
   }
 
@@ -435,7 +463,7 @@ export class QueuePage implements OnInit {
     event.target.src = '';
   }
 
-  trackById(index: number, item: any) {
+  trackById(index: number, item: any): number {
     return item.id;
   }
 

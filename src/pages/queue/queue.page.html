@@ -95,6 +95,7 @@
         *ngFor="let queue of myQueues; trackBy: trackById"
         class="sliding-item"
         [class.expanded]="expandedQueueId === queue.id"
+        [id]="'queue-' + queue.id"
       >
         <ion-item-options side="end" *ngIf="expandedQueueId !== queue.id">
           <ion-item-option
@@ -389,6 +390,7 @@
         *ngFor="let appt of getFilteredAppointments(); trackBy: trackById"
         class="sliding-item"
         [class.expanded]="expandedAppointmentId === appt.id"
+        [id]="'appointment-' + appt.id"
       >
         <ion-item-options side="end" *ngIf="expandedAppointmentId !== appt.id">
           <ion-item-option
