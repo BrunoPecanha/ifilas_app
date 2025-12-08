@@ -1,9 +1,10 @@
 <app-custom-header
   [title]="'Selecione a Data'"
   [showStartButton]="true"
+  [showEndButton]="true"
   startIconName="arrow-back"
-  routerLink="/select-services"
-  [showEndButton]="false"
+  endIconName="checkmark-outline"
+  (onEndClick)="confirmAppointment()"
   [class.scrolled]="headerScrolled"
 >
 </app-custom-header>
@@ -121,7 +122,7 @@
     </div>
   </section>
 
-  <div *ngIf="selectedTimeSlot">
+  <!-- <div *ngIf="selectedTimeSlot">
     <ion-button
       fill="solid"
       color="primary"
@@ -132,7 +133,7 @@
       <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
       Confirmar Agendamento
     </ion-button>
-  </div>
+  </div> -->
 </ion-content>
 
 <app-footer-menu></app-footer-menu>

@@ -201,7 +201,7 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
     return periods;
   }
 
-  async confirmAppointment() {
+  async confirmAppointment() {    
     if (!this.selectedDate || !this.selectedTimeSlot) {
       await this.toastService.show('Selecione uma data e horário', 'danger');
       return;
@@ -217,7 +217,7 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
         },
         {
           text: 'Confirmar',
-          handler: async () => {
+          handler: async () => {            
             if (!this.selectedDate) {
               await this.toastService.show('Data não selecionada', 'danger');
               return;
@@ -246,7 +246,7 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
                   await this.toastService.show(res.message || 'Erro ao agendar', 'danger');
                 }
               },
-              error: async (err) => {
+              error: async (err) => {                
                 sessionStorage.setItem('toastMessage', err.error || 'Erro ao agendar');
                 window.location.reload();
               }

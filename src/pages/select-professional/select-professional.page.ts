@@ -208,13 +208,13 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
 
   async getInTheQueue(professional: ProfessionalModel) {
     try {
-      if (professional.status !== StatusQueueEnum.open) {
-        await this.presentAlert(
-          'Atendimento Indisponível',
-          'Este profissional não está disponível no momento.'
-        );
-        return;
-      }
+      // if (professional.status !== StatusQueueEnum.open) {
+      //   await this.presentAlert(
+      //     'Atendimento Indisponível',
+      //     'Este profissional não está disponível no momento.'
+      //   );
+      //   return;
+      // }
 
       const isCostumerInQueue = await this.service
         .isCostumerInQueue(professional.queueId, this.user.id)

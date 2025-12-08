@@ -26,6 +26,7 @@ export interface QueueItem {
   notes: string;  
   categoryIcon: string;
   isPaused: boolean;
+  pauseReason: string | null;
   total: number;
 }
 
