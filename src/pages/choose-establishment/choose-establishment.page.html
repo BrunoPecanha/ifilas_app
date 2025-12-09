@@ -1,5 +1,5 @@
 <app-custom-header
-  [subtitle]="'Escolha a loja que deseja acessar'"
+  [subtitle]="'Selecione a loja'"
   [showStartButton]="true"
   [showEndButton]="false"
   [startIconName]="'arrow-back-outline'"
@@ -7,7 +7,7 @@
   (onStartClick)="getBack()">
 </app-custom-header>
 
-<ion-content class="establishment-content" (ionScroll)="onContentScroll($event)"  [scrollEvents]="true">
+<ion-content class="establishment-content" (ionScroll)="onContentScroll($event)" [scrollEvents]="true">
   <div class="content-wrapper">  
 
     <div class="companies-section">

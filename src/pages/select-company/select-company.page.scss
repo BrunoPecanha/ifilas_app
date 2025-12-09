@@ -1350,3 +1350,59 @@ ion-content::part(scroll)::-webkit-scrollbar {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+
+.modern-content.content-collapsed .inner-scroll {
+  padding-top: 0 !important;
+}
+
+.modern-content.content-collapsed::part(scroll) {
+  padding-top: 0 !important;
+}
+
+.modern-content.content-collapsed {
+  --padding-top: 0 !important;
+}
+
+.modern-content.content-collapsed .always-visible-content {
+  margin-bottom: 0;
+}
+
+.search-section {
+  background: white;
+  padding: 16px;
+  position: relative;
+  z-index: 10;
+}
+
+.modern-content.content-collapsed .content-container {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.companies-container {
+  background: white;
+  border-radius: 0;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.modern-content.search-active {
+  --padding-top: 0 !important;
+}
+
+.modern-content.search-active .inner-scroll {
+  padding-top: 0 !important;
+}
+
+.modern-content {
+  --padding-top: 0;
+}
+
+.search-section.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}

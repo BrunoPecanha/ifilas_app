@@ -666,3 +666,8 @@ app-custom-header {
     max-width: none;
   }
 }
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, IonContent, ToastController } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response';
 import { UserModel } from 'src/models/user-model';
 import { DashBoardService } from 'src/services/dashboard.service';
+import { NavegationHistoryService } from 'src/services/navegation-history.service';
 import { QueueService } from 'src/services/queue.service';
 import { ScheduleService } from 'src/services/schedule.service';
 import { SessionService } from 'src/services/session.service';
@@ -15,13 +16,17 @@ import { TokenService } from 'src/services/token.service';
   templateUrl: './queue.page.html',
   styleUrls: ['./queue.page.scss'],
 })
-export class QueuePage implements OnInit {
-  fallbackRoute = '/home';
+export class QueuePage implements AfterViewInit  {
+  @ViewChild(IonContent) content: IonContent = null as any;
+  @ViewChild(IonContent, { static: false }) ionContent!: IonContent;
+
   currentDate = new Date();
   user!: UserModel;
   isLoading = false;
   showQrModal = false;
   isLoadingQr = false;
+  headerScrolled = false;
+
   qrCodeDataUrl: string = '';
 
   activeSegment: 'filas' | 'agendamentos' = 'filas';
@@ -53,8 +58,21 @@ export class QueuePage implements OnInit {
     this.user = this.sessionService.getUser();
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    this.content.scrollEvents = true;
+    this.content.ionScroll.subscribe((event: any) => {
+      this.headerScrolled = event.detail.scrollTop > 10;
+    });
   }
+
+  setupScrollListener() {
+    const content = document.querySelector('ion-content');
+    if (content) {
+      content.addEventListener('ionScroll', (event: any) => {
+        this.headerScrolled = event.detail.scrollTop > 10;
+      });
+    }
+  }  
 
   ionViewWillEnter() {
     this.activatedRoute.queryParams.subscribe(params => {
@@ -159,20 +177,48 @@ export class QueuePage implements OnInit {
   }
 
   toggleQueueExpansion(queueId: number) {
-    if (this.expandedQueueId === queueId) {
+    const wasExpanded = this.expandedQueueId === queueId;
+
+    if (wasExpanded) {
       this.expandedQueueId = null;
-    } else {
-      this.expandedQueueId = queueId;
       this.expandedAppointmentId = null;
+      return;
     }
+
+    this.expandedQueueId = queueId;
+    this.expandedAppointmentId = null;
+
+    setTimeout(() => {
+      this.scrollToExpandedCard(queueId.toString(), 'queue');
+    }, 100);
   }
 
   toggleAppointmentExpansion(appointmentId: number) {
-    if (this.expandedAppointmentId === appointmentId) {
+    const wasExpanded = this.expandedAppointmentId === appointmentId;
+
+    if (wasExpanded) {
       this.expandedAppointmentId = null;
-    } else {
-      this.expandedAppointmentId = appointmentId;
       this.expandedQueueId = null;
+      return;
+    }
+
+    this.expandedAppointmentId = appointmentId;
+    this.expandedQueueId = null;
+
+    setTimeout(() => {
+      this.scrollToExpandedCard(appointmentId.toString(), 'appointment');
+    }, 100);
+  }
+
+  private scrollToExpandedCard(cardId: string, type: 'queue' | 'appointment') {
+    const elementId = `${type}-${cardId}`;
+    const element = document.getElementById(elementId);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
     }
   }
 
@@ -295,6 +341,7 @@ export class QueuePage implements OnInit {
 
     return localDate;
   }
+
   isUpcomingAppointment(appt: ScheduleItem): boolean {
     const now = new Date();
     const appointmentDate = this.getLocalAppointmentDate(appt);
@@ -331,6 +378,7 @@ export class QueuePage implements OnInit {
     this.expandedAppointmentId = null;
     this.showToast(`Indo para fila: ${queue.store.name}`, 'primary');
   }
+
   async refreshAll() {
     this.showToast('Atualizando dados...', 'primary');
     setTimeout(() => {
@@ -414,7 +462,7 @@ export class QueuePage implements OnInit {
     event.target.src = '';
   }
 
-  trackById(index: number, item: any) {
+  trackById(index: number, item: any): number {
     return item.id;
   }
 

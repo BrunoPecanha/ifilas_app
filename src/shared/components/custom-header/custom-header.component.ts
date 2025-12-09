@@ -6,6 +6,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { NotificationService } from 'src/services/notification.service';
 import { SessionService } from 'src/services/session.service';
 import { UserService } from 'src/services/user-service';
+import { NavegationHistoryService } from 'src/services/navegation-history.service';
 
 @Component({
   selector: 'app-custom-header',
@@ -51,8 +52,8 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private sessionService: SessionService,
     private notificationService: NotificationService,
-    private userService: UserService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private history: NavegationHistoryService
   ) {
     this.profile = this.sessionService.getProfile();
   }
@@ -96,19 +97,24 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
     return ['arrow-back', 'arrow-back-outline', 'chevron-back', 'chevron-back-outline'].includes(this.startIconName);
   }
 
-  private async goBack() {
+  async goBack() {
     try {
-      const canGoBack = await this.navCtrl.pop();
-
-      if (!canGoBack) {
-        const route = this.routeLink || (this.profile === 0 ? '/queue' : this.profile === 1 ? '/customer-list-in-queue' : '/queue-list-for-owner');
-        this.router.navigate([route], {
-          replaceUrl: true,
-          state: { redirectedFromBack: true }
-        });
+      const previous = this.history.back();
+      if (previous) {
+        this.router.navigateByUrl(previous, { replaceUrl: true, state: { redirectedFromBack: true } });
+        return;
       }
+
+      const route =
+        this.routeLink ||
+        (this.profile === 0
+          ? '/queue'
+          : this.profile === 1
+            ? '/customer-list-in-queue'
+            : '/queue-list-for-owner');
+
+      this.router.navigate([route], { replaceUrl: true, state: { redirectedFromBack: true } });
     } catch (error) {
-      console.error('Navigation error:', error);
       this.router.navigate(['/role-registration'], { replaceUrl: true });
     }
   }
@@ -132,7 +138,7 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
   }
 
   displayNotificationText(): string {
-    if (!this.notificationCount) 
+    if (!this.notificationCount)
       return '';
     return this.notificationCount > 99 ? '99+' : String(this.notificationCount);
   }
