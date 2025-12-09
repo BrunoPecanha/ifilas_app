@@ -158,7 +158,7 @@ export class SelectServicesPage implements OnInit {
 
   loadAvailablesServices() {
     if (this.storeId) {
-      this.serviceService.loadServiceById(this.storeId).subscribe({
+      this.serviceService.loadServicesByStore(this.storeId, true).subscribe({
         next: (response) => {
           this.serviceOptions = response.data;
         },

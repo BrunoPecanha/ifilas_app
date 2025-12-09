@@ -21,11 +21,11 @@
       >
         <div class="service-image">
           <img
-            *ngIf="service.category?.imgPath"
-            [src]="service.category.imgPath"
+            *ngIf="service.imgPath"
+            [src]="service.imgPath"
             alt="{{ service.name }}"
           />
-          <div class="placeholder" *ngIf="!service.category?.imgPath">
+          <div class="placeholder" *ngIf="!service.imgPath">
             <ion-icon name="cut-outline"></ion-icon>
           </div>
         </div>

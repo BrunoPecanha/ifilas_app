@@ -12,11 +12,11 @@ export class ServiceService {
 
   constructor(private http: HttpClient) { }
 
-  loadServicesByStore(storeId: number, onlyActivated: boolean): Observable<ServiceResponse> {
+  loadServicesByStore(storeId: number, onlyActivated: boolean): Observable<ServiceResponse> {    
     return this.http.get<ServiceResponse>(`${this.apiUrl}/services/all/${storeId}/${onlyActivated}`);
   }
 
-  loadServiceById(id: number): Observable<ServiceResponse> {
+  loadServiceById(id: number): Observable<ServiceResponse> {    
     return this.http.get<ServiceResponse>(`${this.apiUrl}/services/all/${id}/false`);
   }
 

@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonContent, ToastController } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response';
 import { UserModel } from 'src/models/user-model';
 import { DashBoardService } from 'src/services/dashboard.service';
+import { NavegationHistoryService } from 'src/services/navegation-history.service';
 import { QueueService } from 'src/services/queue.service';
 import { ScheduleService } from 'src/services/schedule.service';
 import { SessionService } from 'src/services/session.service';
@@ -15,11 +16,10 @@ import { TokenService } from 'src/services/token.service';
   templateUrl: './queue.page.html',
   styleUrls: ['./queue.page.scss'],
 })
-export class QueuePage implements OnInit {
+export class QueuePage implements AfterViewInit  {
   @ViewChild(IonContent) content: IonContent = null as any;
   @ViewChild(IonContent, { static: false }) ionContent!: IonContent;
 
-  fallbackRoute = '/home';
   currentDate = new Date();
   user!: UserModel;
   isLoading = false;
@@ -72,10 +72,7 @@ export class QueuePage implements OnInit {
         this.headerScrolled = event.detail.scrollTop > 10;
       });
     }
-  }
-
-  ngOnInit() {
-  }
+  }  
 
   ionViewWillEnter() {
     this.activatedRoute.queryParams.subscribe(params => {
@@ -344,6 +341,7 @@ export class QueuePage implements OnInit {
 
     return localDate;
   }
+
   isUpcomingAppointment(appt: ScheduleItem): boolean {
     const now = new Date();
     const appointmentDate = this.getLocalAppointmentDate(appt);
@@ -380,6 +378,7 @@ export class QueuePage implements OnInit {
     this.expandedAppointmentId = null;
     this.showToast(`Indo para fila: ${queue.store.name}`, 'primary');
   }
+
   async refreshAll() {
     this.showToast('Atualizando dados...', 'primary');
     setTimeout(() => {
