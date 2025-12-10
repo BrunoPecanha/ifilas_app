@@ -9,6 +9,7 @@ import { NavegationHistoryService } from 'src/services/navegation-history.servic
 import { QueueService } from 'src/services/queue.service';
 import { ScheduleService } from 'src/services/schedule.service';
 import { SessionService } from 'src/services/session.service';
+import { ToastService } from 'src/services/toast.service';
 import { TokenService } from 'src/services/token.service';
 
 @Component({
@@ -46,7 +47,7 @@ export class QueuePage implements AfterViewInit  {
 
   constructor(
     private alertController: AlertController,
-    private toastController: ToastController,
+    private toastService: ToastService,
     private dashBoardService: DashBoardService,
     private sessionService: SessionService,
     private queueService: QueueService,
@@ -151,7 +152,7 @@ export class QueuePage implements AfterViewInit  {
       },
       error: (err) => {
         console.error('Erro ao buscar agendamentos para o dia:', err);
-        this.showToast('Erro ao carregar agendamentos do dia', 'danger');
+        this.toastService.show('Erro ao carregar agendamentos do dia', 'danger');
       },
       complete: () => this.isLoading = false
     });
@@ -369,21 +370,21 @@ export class QueuePage implements AfterViewInit  {
     this.activeSegment = 'agendamentos';
     this.expandedAppointmentId = appt.id;
     this.expandedQueueId = null;
-    this.showToast(`Indo para agendamento: ${appt.store.name}`, 'primary');
+    this.toastService.show(`Indo para agendamento: ${appt.store.name}`, 'success');
   }
 
   goToQueue(queue: QueueItem) {
     this.activeSegment = 'filas';
     this.expandedQueueId = queue.id;
     this.expandedAppointmentId = null;
-    this.showToast(`Indo para fila: ${queue.store.name}`, 'primary');
+    this.toastService.show(`Indo para fila: ${queue.store.name}`, 'success');
   }
 
   async refreshAll() {
-    this.showToast('Atualizando dados...', 'primary');
+    this.toastService.show('Atualizando dados...', 'success');
     setTimeout(() => {
       this.loadDashboardData(this.user.id);
-      this.showToast('Dados atualizados!', 'success');
+      this.toastService.show('Dados atualizados!', 'success');
     }, 800);
   }
 
@@ -398,12 +399,12 @@ export class QueuePage implements AfterViewInit  {
           handler: async () => {
             this.queueService.exitQueue(card.customerId, card.id).subscribe({
               next: async () => {
-                await this.showToast('Você saiu da fila com sucesso!', 'success');
+                await this.toastService.show('Você saiu da fila com sucesso!', 'success');
                 this.loadDashboardData(this.user.id);
               },
               error: async (err) => {
                 console.error('Erro ao sair da fila:', err);
-                await this.showToast('Ocorreu um erro ao sair da fila', 'danger');
+                await this.toastService.show('Ocorreu um erro ao sair da fila', 'danger');
               }
             });
           },
@@ -442,13 +443,13 @@ export class QueuePage implements AfterViewInit  {
                 this.myAppointments = this.myAppointments.filter(a => a.id !== card.id);
                 this.updateCrossInformation();
                 this.filterAppointmentsByDate();
-                this.showToast('Agendamento cancelado!', 'warning');
-                await this.showToast('Você saiu da fila com sucesso!', 'success');
+                this.toastService.show('Agendamento cancelado!', 'warning');
+                await this.toastService.show('Você saiu da fila com sucesso!', 'success');
                 this.loadDashboardData(this.user.id);
               },
               error: async (err) => {
                 console.error('Erro ao sair da fila:', err);
-                await this.showToast('Ocorreu um erro ao sair da fila', 'danger');
+                await this.toastService.show('Ocorreu um erro ao sair da fila', 'danger');
               }
             });
           },
@@ -466,15 +467,7 @@ export class QueuePage implements AfterViewInit  {
     return item.id;
   }
 
-  private async showToast(message: string, color: string) {
-    const toast = await this.toastController.create({
-      message,
-      color,
-      duration: 2000,
-      position: 'bottom',
-    });
-    await toast.present();
-  }
+  
 
   async generateQrCodeForAtendance(item: QueueItem | ScheduleItem) {
     this.isLoadingQr = true;
@@ -489,7 +482,7 @@ export class QueuePage implements AfterViewInit  {
         ? response
         : 'data:image/png;base64,' + response;
     } catch (err) {
-      this.showToast('Erro ao gerar QR Code', 'danger');
+      this.toastService.show('Erro ao gerar QR Code', 'danger');
       this.qrCodeDataUrl = '';
     } finally {
       this.isLoadingQr = false;
@@ -506,9 +499,9 @@ export class QueuePage implements AfterViewInit  {
   async copyQrCode() {
     try {
       await navigator.clipboard.writeText(this.qrCodeDataUrl);
-      this.showToast('QR Code copiado para a área de transferência', 'success');
+      this.toastService.show('QR Code copiado para a área de transferência', 'success');
     } catch {
-      this.showToast('Não foi possível copiar o QR Code', 'danger');
+      this.toastService.show('Não foi possível copiar o QR Code', 'danger');
     }
   }
 
@@ -532,7 +525,7 @@ export class QueuePage implements AfterViewInit  {
   }
 
   pauseInfo(queue: QueueItem) {
-    this.showToast(
+    this.toastService.show(
       queue.isPaused
         ? `Fila pausada: ${queue.pauseReason}`
         : 'Fila ativa',

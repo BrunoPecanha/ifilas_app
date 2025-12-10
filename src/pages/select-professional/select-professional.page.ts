@@ -169,7 +169,8 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
 
   private async initSignalRConnection() {
     try {
-      await this.signalRService.startQueueConnection();
+      await this.signalRService.startQueueConnection();      
+      await this.signalRService.startScheduleConnection();
 
       this.signalRGroup = this.storeId.toString();
 
