@@ -251,7 +251,7 @@
                       </div>
                     </div>
 
-                    <div class="info-item" *ngIf="queue.total">
+                    <div class="info-item" *ngIf="queue.totalString">
                       <ion-icon
                         name="pricetag-outline"
                         class="info-icon"
@@ -259,7 +259,7 @@
                       <div class="info-content">
                         <span class="info-label">Valor Total</span>
                         <span class="info-value highlight"
-                          >{{ queue.total | currency:'BRL' }}</span
+                          >{{ queue.totalString }}</span
                         >
                       </div>
                     </div>
@@ -521,7 +521,7 @@
                     </div>
                   </div>
 
-                  <div class="info-item" *ngIf="appt.total">
+                  <div class="info-item" *ngIf="appt.totalString">
                     <ion-icon
                       name="pricetag-outline"
                       class="info-icon"
@@ -529,7 +529,7 @@
                     <div class="info-content">
                       <span class="info-label">Valor Total</span>
                       <span class="info-value highlight"
-                        >{{ appt.total | currency:'BRL' }}</span
+                        >{{ appt.totalString }}</span
                       >
                     </div>
                   </div>
