@@ -77,7 +77,9 @@ export class OwnerSchedulePage implements OnInit {
 
   onContentScroll(ev: any) {
     const now = Date.now();
-    if (now - this.lastScrollCheck < 30) return;
+    if (now - this.lastScrollCheck < 30) 
+      return;
+    
     this.lastScrollCheck = now;
 
     const scrollTop = ev?.detail?.scrollTop ?? 0;
@@ -92,7 +94,7 @@ export class OwnerSchedulePage implements OnInit {
     return this.filteredTimeSlots.map(s => 'slot-' + s.time);
   }
 
-  private loadSchedulesForDate() {
+  private loadSchedulesForDate() {    
     this.isLoading = true;
     this.service.getOwnerAgendaForDate(this.store.id, this.user.id, this.selectedDate).subscribe({
       next: (response) => {
@@ -118,7 +120,9 @@ export class OwnerSchedulePage implements OnInit {
         data.customers?.forEach((customer: any) => {
           const slotStartFull = customer.customerSelectedSlots?.slotStart;
           const slotEndFull = customer.customerSelectedSlots?.slotEnd;
-          if (!slotStartFull || !slotEndFull) return;
+          
+          if (!slotStartFull || !slotEndFull) 
+            return;
 
           const slotStart = slotStartFull.substring(0, 5);
           const slotEnd = slotEndFull.substring(0, 5);
@@ -150,7 +154,6 @@ export class OwnerSchedulePage implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erro ao buscar agendamentos para o dia:', err);
         this.toastController.show('Erro ao carregar agendamentos do dia', 'danger');
         this.isLoading = false;
       }
@@ -282,7 +285,6 @@ export class OwnerSchedulePage implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erro ao atualizar agenda:', err);
         this.toastController.show('Falha ao atualizar o horário do cliente.', 'danger');
         this.isLoading = false;
 
@@ -301,7 +303,6 @@ export class OwnerSchedulePage implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erro ao atualizar agenda:', err);
         this.toastController.show('Erro ao remover atendimento', 'danger');
         this.isLoading = false;
         this.loadSchedulesForDate();
@@ -507,11 +508,7 @@ export class OwnerSchedulePage implements OnInit {
     }
 
     return grouped;
-  }
-
-  onEditCustomer(customer: any) {
-    debugger
-  }
+  }  
 
   applyFilters(): void {
     if (!this.selectedTimeSlots || this.selectedTimeSlots.length === 0) {
@@ -739,33 +736,17 @@ export class OwnerSchedulePage implements OnInit {
     this.applyFilters();
   }
 
-  // addAppointment(slot: any) {
-  //   const newCustomer = {
-  //     id: Date.now(),
-  //     name: 'Novo Cliente',
-  //     avatar: 'https://i.pravatar.cc/100?img=6',
-  //     totalSlots: 1,
-  //     status: 'pending',
-  //     slotStart: slot.time,
-  //     slotEnd: this.addMinutesToTime(slot.time, this.slotDuration),
-  //     durationMinutes: this.slotDuration,
-  //     services: [{ name: 'Corte', slots: 1, color: 'primary' }]
-  //   };
-  //   this.appointments.push(newCustomer);
-  //   this.recalculateSlots();
-  // }
-
   removeAppointment(customer: any) {
     this.appointments = this.appointments.filter(a => a.id !== customer.id);
     this.recalculateSlots();
   }
 
-  previousDay() {
+  previousDay() {    
     this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() - 1));
     this.loadSchedulesForDate();
   }
 
-  nextDay() {
+  nextDay() {    
     this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + 1));
     this.loadSchedulesForDate();
   }
@@ -777,13 +758,11 @@ export class OwnerSchedulePage implements OnInit {
 
   onDragStarted() {
     this.isDragging = true;
-    console.log('Drag iniciado');
   }
 
   onDragEnded() {
     this.isDragging = false;
     this.trashHover = false;
-    console.log('Drag finalizado');
   }
 
   private mapStatus(status: number): string {
@@ -800,7 +779,6 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   addAppointment(slot: any) {
-    // Armazena o slot selecionado para uso posterior
     this.preSelectedSlot = slot;
     this.openAddCustomerModal();
   }
@@ -885,8 +863,6 @@ export class OwnerSchedulePage implements OnInit {
       }
     });
 
-    // Limpa o slot pré-selecionado após uso
     this.preSelectedSlot = null;
   }
-
 }
