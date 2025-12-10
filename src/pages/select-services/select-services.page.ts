@@ -385,6 +385,7 @@ export class SelectServicesPage implements OnInit {
   private async initSignalRConnection() {
     try {
       await this.signalRService.startQueueConnection();
+      await this.signalRService.startScheduleConnection();
 
       const store = this.sessionService.getStore();
 

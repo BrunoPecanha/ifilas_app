@@ -134,6 +134,8 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
   private async initSignalRConnection() {
     try {
       await this.signalRService.startQueueConnection();
+      await this.signalRService.startScheduleConnection();
+      
       const store = this.sessionService.getStore();
 
       if (!store)
