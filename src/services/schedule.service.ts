@@ -77,6 +77,15 @@ export class ScheduleService {
     );
   }
 
+  removeMissingCustomer(customerId: number, removeReason: string): Observable<any> {
+    const command = {
+      customerId: customerId,
+      removeReason: removeReason
+    };
+
+    return this.http.put(`${this.apiUrl}/remove`, command);
+  }
+
   private toLocalDateTimeString(date: Date): string {
     const pad = (n: number) => n.toString().padStart(2, '0');
 

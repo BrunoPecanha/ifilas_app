@@ -28,6 +28,7 @@ export interface QueueItem {
   isPaused: boolean;
   pauseReason: string | null;
   total: number;
+  totalString: string | null;
 }
 
 export interface ScheduleItem {
@@ -42,7 +43,8 @@ export interface ScheduleItem {
   paymentMethod: PaymentMethod;
   notes: string;
   categoryIcon: string;
-  total: number;
+  total: number;  
+  totalString: string | null;
 }
 
 export interface PaymentMethod {

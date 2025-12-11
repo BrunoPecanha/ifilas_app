@@ -296,7 +296,7 @@ export class OwnerSchedulePage implements OnInit {
   onTrashDrop(event: CdkDragDrop<any[]>) {
     const customer = event.item.data;
 
-    this.service.leavaSchedule(customer.id).subscribe({
+    this.service.removeMissingCustomer(customer.id, "Removido pelo responsável pelo atendimento").subscribe({
       next: () => {
         this.toastController.show('Atendimento removido!', 'success');
         this.removeAppointment(customer);

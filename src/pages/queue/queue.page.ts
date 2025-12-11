@@ -5,7 +5,6 @@ import { firstValueFrom } from 'rxjs';
 import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response';
 import { UserModel } from 'src/models/user-model';
 import { DashBoardService } from 'src/services/dashboard.service';
-import { NavegationHistoryService } from 'src/services/navegation-history.service';
 import { QueueService } from 'src/services/queue.service';
 import { ScheduleService } from 'src/services/schedule.service';
 import { SessionService } from 'src/services/session.service';
@@ -323,7 +322,9 @@ export class QueuePage implements AfterViewInit  {
   }
 
   getQueueProgress(queue: QueueItem): number {
-    if (!queue.totalInQueue) return 0;
+    if (!queue.totalInQueue) 
+      return 0;
+
     return ((queue.totalInQueue - queue.position) / queue.totalInQueue) * 100;
   }
 
@@ -465,9 +466,7 @@ export class QueuePage implements AfterViewInit  {
 
   trackById(index: number, item: any): number {
     return item.id;
-  }
-
-  
+  }  
 
   async generateQrCodeForAtendance(item: QueueItem | ScheduleItem) {
     this.isLoadingQr = true;
@@ -494,7 +493,6 @@ export class QueuePage implements AfterViewInit  {
     this.qrCodeDataUrl = '';
     this.isLoadingQr = false;
   }
-
 
   async copyQrCode() {
     try {

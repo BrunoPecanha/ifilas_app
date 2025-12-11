@@ -398,6 +398,8 @@ export class SelectServicesPage implements OnInit {
       this.signalRService.onUpdateQueue((data) => {
       });
 
+        this.signalRService.onUpdateSchedule((data) => {
+      });
     } catch (error) {
       setTimeout(() => this.initSignalRConnection(), 5000);
     }
@@ -507,7 +509,8 @@ export class SelectServicesPage implements OnInit {
   }
 
   incrementServiceForUi(service: ServiceModel, event?: Event) {
-    if (event) event.stopPropagation();
+    if (event) 
+      event.stopPropagation();
 
     const idx = this.selectedServices.findIndex(s => s.id === service.id);
     if (idx >= 0) {
@@ -524,10 +527,12 @@ export class SelectServicesPage implements OnInit {
   }
 
   decrementServiceForUi(service: ServiceModel, event?: Event) {
-    if (event) event.stopPropagation();
+    if (event) 
+      event.stopPropagation();
 
     const idx = this.selectedServices.findIndex(s => s.id === service.id);
-    if (idx < 0) return;
+    if (idx < 0) 
+      return;
 
     const current = Number(this.selectedServices[idx].quantity) || 0;
     if (current > 1) {
