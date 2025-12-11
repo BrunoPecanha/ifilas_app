@@ -391,7 +391,8 @@ export class OwnerSchedulePage implements OnInit {
 
     const ensureSlotExists = (time: string): number => {
       let idx = baseSlots.findIndex(s => s.time === time);
-      if (idx !== -1) return idx;
+      if (idx !== -1) 
+        return idx;
 
       const tMinutes = this.toMinutes(time);
       idx = baseSlots.findIndex(s => this.toMinutes(s.time) > tMinutes);
@@ -576,7 +577,8 @@ export class OwnerSchedulePage implements OnInit {
 
         (customer.services || []).forEach((service: any) => {
           const serviceFilter = this.serviceFilters.find(f => f.name === service.name);
-          if (serviceFilter) serviceFilter.count++;
+          if (serviceFilter) 
+            serviceFilter.count++;
         });
       });
     });
@@ -832,7 +834,7 @@ export class OwnerSchedulePage implements OnInit {
     });
 
     modal.onDidDismiss().then((result) => {
-      if (result.data?.customerData) {
+      if (result.data?.customerData) {        
         this.createWalkInCustomer(result.data.customerData);
       }
     });
@@ -847,6 +849,7 @@ export class OwnerSchedulePage implements OnInit {
       phone: customerData.phone,
       email: customerData.email,
       isWalkIn: true,
+      useAgenda: true,
       avatar: 'assets/walkin-avatar.png'
     };
 

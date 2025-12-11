@@ -20,7 +20,7 @@ import { AddCustomerToScheduleRequest } from 'src/models/requests/add-customer-t
   styleUrls: ['./select-services.page.scss'],
 })
 export class SelectServicesPage implements OnInit {
-    
+
   @ViewChild(IonContent) content: IonContent = null as any;
 
   queueId: number = 0;
@@ -82,24 +82,70 @@ export class SelectServicesPage implements OnInit {
 
   ngOnInit() {
     this.getProfessionalAndStore();
-     this.setupScrollListener();
+    this.setupScrollListener();
   }
 
   trackByServiceId = (index: number, item: ServiceModel) => item?.id ?? index;
 
   getProfessionalAndStore() {
-    this.route.queryParams.subscribe(params => {
-      this.queueId = params['queueId'];
-      this.scheduleId = params['scheduleId'];
-      this.storeId = params['storeId'];
-      this.editingExistingAppointment = params['editingExistingAppointment'] === 'true';
-      this.professionalId = params['professionalId'];
-      this.professionalName = params['professionalName'];
-      this.useAgenda = params['useAgenda'] === 'true';
-      this.customerId = params['customerId'] ? Number(params['customerId']) : null;
-      this.looseCustomer = params['looseCustomer'] === 'true';
+    const navState = this.router.getCurrentNavigation()?.extras?.state || (history && (history.state ?? {})) || {};
+    const customerFromState = navState?.customer ?? null;
 
-      this.storeId = Number(this.storeId) || this.sessionService.getStore()?.id || 0;
+    this.route.queryParams.subscribe(params => {
+      this.queueId = params['queueId'] ?? navState['queueId'] ?? null;
+      this.scheduleId = params['scheduleId'] ?? navState['scheduleId'] ?? null;
+
+      const storeIdParam = params['storeId'];
+      const storeIdState = navState['storeId'];
+      this.storeId = (storeIdParam !== undefined && storeIdParam !== null)
+        ? Number(storeIdParam)
+        : (storeIdState !== undefined && storeIdState !== null)
+          ? Number(storeIdState)
+          : (this.sessionService.getStore()?.id ?? 0);
+
+      if (params['editingExistingAppointment'] !== undefined) {
+        this.editingExistingAppointment = params['editingExistingAppointment'] === 'true';
+      } else if (navState['editingExistingAppointment'] !== undefined) {
+        this.editingExistingAppointment = navState['editingExistingAppointment'] === true || navState['editingExistingAppointment'] === 'true';
+      } else {
+        this.editingExistingAppointment = false;
+      }
+
+      this.professionalId = params['professionalId'] ?? navState['professionalId'] ?? null;
+      this.professionalName = params['professionalName'] ?? navState['professionalName'] ?? null;
+
+      if (params['useAgenda'] !== undefined) {
+        this.useAgenda = params['useAgenda'] === 'true';
+      } else if (customerFromState?.useAgenda !== undefined) {
+        this.useAgenda = !!customerFromState.useAgenda;
+      } else if (navState['useAgenda'] !== undefined) { 
+        this.useAgenda = navState['useAgenda'] === true || navState['useAgenda'] === 'true';
+      } else {
+        this.useAgenda = false;
+      }
+
+      if (params['customerId'] !== undefined) {
+        this.customerId = params['customerId'] ? Number(params['customerId']) : null;
+      } else if (navState['customerId'] !== undefined) {
+        this.customerId = navState['customerId'] ? Number(navState['customerId']) : null;
+      } else if (customerFromState?.id) {
+        this.customerId = Number(customerFromState.id);
+      } else {
+        this.customerId = null;
+      }
+
+      if (params['looseCustomer'] !== undefined) {
+        this.looseCustomer = params['looseCustomer'] === 'true';
+      } else if (navState['looseCustomer'] !== undefined) {
+        this.looseCustomer = navState['looseCustomer'] === true || navState['looseCustomer'] === 'true';
+      } else {
+        this.looseCustomer = false;
+      }
+
+      if (customerFromState) {
+        debugger        
+        this.useAgenda = (params['useAgenda'] !== undefined) ? this.useAgenda : !!customerFromState.useAgenda;
+      }
 
       this.loadAvailablesServices();
 
@@ -312,7 +358,7 @@ export class SelectServicesPage implements OnInit {
         },
         {
           text: 'Confirmar',
-          handler: () => {
+          handler: () => {            
             if (this.useAgenda) {
               this.proceedToSchedule();
             } else
@@ -398,7 +444,7 @@ export class SelectServicesPage implements OnInit {
       this.signalRService.onUpdateQueue((data) => {
       });
 
-        this.signalRService.onUpdateSchedule((data) => {
+      this.signalRService.onUpdateSchedule((data) => {
       });
     } catch (error) {
       setTimeout(() => this.initSignalRConnection(), 5000);
@@ -491,7 +537,6 @@ export class SelectServicesPage implements OnInit {
     await alert.present();
   }
 
-
   getQuantity(service: ServiceModel): number {
     const s = this.selectedServices.find(x => x.id === service.id);
     return s ? (Number(s.quantity) || 0) : 0;
@@ -509,7 +554,7 @@ export class SelectServicesPage implements OnInit {
   }
 
   incrementServiceForUi(service: ServiceModel, event?: Event) {
-    if (event) 
+    if (event)
       event.stopPropagation();
 
     const idx = this.selectedServices.findIndex(s => s.id === service.id);
@@ -527,11 +572,11 @@ export class SelectServicesPage implements OnInit {
   }
 
   decrementServiceForUi(service: ServiceModel, event?: Event) {
-    if (event) 
+    if (event)
       event.stopPropagation();
 
     const idx = this.selectedServices.findIndex(s => s.id === service.id);
-    if (idx < 0) 
+    if (idx < 0)
       return;
 
     const current = Number(this.selectedServices[idx].quantity) || 0;

@@ -268,36 +268,24 @@ export class QueuePage implements AfterViewInit  {
     return statusColors[status] || 'medium';
   }
 
-  getQueueStatusText(status: number): string {
-    const statusTexts: { [key: number]: string } = {
-      6: 'Sua vez!',
-      2: 'Aguardando',
-      1: 'Em andamento',
-      3: 'Finalizado',
-      4: 'Ausente'
-    };
-    return statusTexts[status] || 'Desconhecido';
-  }
+  getStatusInfo(status: number): { text: string; color: string } {
+  const map: { [key: number]: { text: string; color: string } } = {
+    0: { text: 'Aguardando', color: 'warning' },           // Waiting
+    1: { text: 'Removido', color: 'medium' },              // Removed
+    2: { text: 'Em atendimento', color: 'primary' },       // InService
+    3: { text: 'Finalizado', color: 'medium' },            // Done
+    4: { text: 'Ausente', color: 'danger' },               // Absent
+    5: { text: 'Cancelado', color: 'danger' },             // Canceled
+    6: { text: 'Sua vez!', color: 'success' },             // Next
+    7: { text: 'Pendente', color: 'warning' },             // Pending
+    8: { text: 'Recusado', color: 'danger' },              // Rejected
+    9: { text: 'Confirmado', color: 'success' },           // Confirmed
+    10: { text: 'Agendado', color: 'tertiary' }            // Scheduled
+  };
 
-  getAppointmentStatusText(status: number): string {
-    const statusTexts: { [key: number]: string } = {
-      9: 'Confirmado',
-      1: 'Pendente',
-      2: 'Cancelado',
-      3: 'Finalizado'
-    };
-    return statusTexts[status] || 'Desconhecido';
-  }
+  return map[status] || { text: 'Desconhecido', color: 'medium' };
+}
 
-  getAppointmentStatusColor(status: number): string {
-    const statusColors: { [key: number]: string } = {
-      9: 'success',
-      1: 'warning',
-      2: 'danger',
-      3: 'medium'
-    };
-    return statusColors[status] || 'medium';
-  }
 
   getAppointmentColor(appt: ScheduleItem): string {
     if (appt.status === 9)
