@@ -340,8 +340,10 @@ export class SignalRService {
   }
 
   public async leaveScheduleGroup(groupName: string): Promise<void> {
-    if (!this.isScheduleConnected()) return;
-    if (!this.joinedGroupsSchedule.has(groupName)) return;
+    if (!this.isScheduleConnected()) 
+      return;
+    if (!this.joinedGroupsSchedule.has(groupName)) 
+      return;
 
     try {
       await this.hubConnectionSchedule?.invoke('LeaveGroup', groupName);
@@ -352,7 +354,9 @@ export class SignalRService {
   }
 
   public async leaveAllScheduleGroups(): Promise<void> {
-    if (!this.isScheduleConnected() || this.joinedGroupsSchedule.size === 0) return;
+    if (!this.isScheduleConnected() || this.joinedGroupsSchedule.size === 0) 
+      return;
+    
     await Promise.all(Array.from(this.joinedGroupsSchedule).map(group => this.leaveScheduleGroup(group)));
   }
 

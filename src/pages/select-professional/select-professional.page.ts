@@ -179,6 +179,11 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
       this.signalRService.onUpdateQueue(() => {
         this.loadStoreAndProfessionals(this.storeId);
       });
+
+        this.signalRService.onUpdateSchedule(() => {
+        this.loadStoreAndProfessionals(this.storeId);
+      });
+      
     } catch (error) {
       console.error('Erro SignalR (loja):', error);
       setTimeout(() => this.initSignalRConnection(), 5000);

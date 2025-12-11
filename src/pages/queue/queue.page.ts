@@ -322,7 +322,9 @@ export class QueuePage implements AfterViewInit  {
   }
 
   getQueueProgress(queue: QueueItem): number {
-    if (!queue.totalInQueue) return 0;
+    if (!queue.totalInQueue) 
+      return 0;
+
     return ((queue.totalInQueue - queue.position) / queue.totalInQueue) * 100;
   }
 
@@ -464,9 +466,7 @@ export class QueuePage implements AfterViewInit  {
 
   trackById(index: number, item: any): number {
     return item.id;
-  }
-
-  
+  }  
 
   async generateQrCodeForAtendance(item: QueueItem | ScheduleItem) {
     this.isLoadingQr = true;
@@ -493,7 +493,6 @@ export class QueuePage implements AfterViewInit  {
     this.qrCodeDataUrl = '';
     this.isLoadingQr = false;
   }
-
 
   async copyQrCode() {
     try {
