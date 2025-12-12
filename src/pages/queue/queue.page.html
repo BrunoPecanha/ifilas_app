@@ -170,7 +170,7 @@
                       [color]="getQueueStatusColor(queue.status)"
                       class="status-badge-below-name"
                     >
-                      {{ getQueueStatusText(queue.status) }}
+                      {{ getStatusInfo(queue.status).text }}
                     </ion-badge>
                   </div>
                 </div>
@@ -446,10 +446,10 @@
                     ></ion-icon>
                   </h3>
                   <ion-badge
-                    [color]="getAppointmentStatusColor(appt.status)"
+                    [color]="getStatusInfo(appt.status).color"
                     class="status-badge-below-name"
                   >
-                    {{ getAppointmentStatusText(appt.status) }}
+                    {{ getStatusInfo(appt.status).text }}
                   </ion-badge>
                 </div>
               </div>

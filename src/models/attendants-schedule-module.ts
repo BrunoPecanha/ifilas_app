@@ -5,4 +5,5 @@ export interface AttendantsScheduleModel {
   slots: SlotReducedModel[];
   customers?: CustomerModel[];
   slotDuration: number;
+  scheduleId: number;
 }
