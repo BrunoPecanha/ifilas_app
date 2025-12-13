@@ -11,5 +11,6 @@ export interface AddCustomerToScheduleRequest {
   date: Date;
   customerId: number;
   looseCustomer: boolean;
+  looseCustomerName: string;
   editingExistingAppointment?: boolean;
 }

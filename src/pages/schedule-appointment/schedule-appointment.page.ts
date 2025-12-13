@@ -29,10 +29,12 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
   notes: string = '';
   paymentMethod: number = 1;
   storeId: number = 0;
+  customerId: number = 0;
   professionalId: number = 0;
   selectedDate: Date | null = null;
   looseCustomer: boolean = false;
-  customer!: UserModel;
+  looseCustomerName: string = '';
+  customerOrProfessional!: UserModel;
 
   selectedTimeSlot: TimeSlotModel | null = null;
   currentWeekOffset: number = 0;
@@ -55,13 +57,23 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
       sessionStorage.removeItem('toastMessage');
     }
 
+    this.customerOrProfessional = this.sessionService.getUser();
+    this.customerId = this.sessionService.getGenericKey('customerId');
+
     this.selectedServices = this.sessionService.getGenericKey('selectedServices') || [];
     this.notes = this.sessionService.getGenericKey('notes') || '';
     this.paymentMethod = this.sessionService.getGenericKey('paymentMethod') || 1;
+    this.looseCustomerName = this.sessionService.getGenericKey('looseCustomerName') || '';
     this.storeId = this.sessionService.getGenericKey('storeId') || 0;
-    this.professionalId = this.sessionService.getGenericKey('professionalId') || 0;
+    this.professionalId = this.sessionService.getGenericKey('professionalId') || this.customerOrProfessional.id;
+    this.looseCustomer = this.sessionService.getGenericKey('looseCustomer') || this.sessionService.getGenericKey('isWalkIn') || false;
 
-    this.customer = this.sessionService.getUser();
+    if (!this.customerId) {
+      this.customerId = this.sessionService.getUser().id;
+    }
+    else
+      this.looseCustomer = false;
+
     this.loadStoreAgenda();
   }
 
@@ -201,7 +213,7 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
     return periods;
   }
 
-  async confirmAppointment() {    
+  async confirmAppointment() {
     if (!this.selectedDate || !this.selectedTimeSlot) {
       await this.toastService.show('Selecione uma data e horário', 'danger');
       return;
@@ -217,12 +229,12 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
         },
         {
           text: 'Confirmar',
-          handler: async () => {            
+          handler: async () => {
             if (!this.selectedDate) {
               await this.toastService.show('Data não selecionada', 'danger');
               return;
             }
-
+            
             const request: AddCustomerToScheduleRequest = {
               selectedServices: this.selectedServices,
               notes: this.notes ?? '',
@@ -232,8 +244,9 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
               professionalId: this.professionalId,
               time: this.selectedTimeSlot!.time,
               date: this.selectedDate,
-              customerId: this.customer.id,
-              looseCustomer: this.looseCustomer
+              customerId: this.customerId,
+              looseCustomer: this.looseCustomer,
+              looseCustomerName: this.looseCustomerName
             };
 
             this.service.addCustomerToSchedule(request).subscribe({
@@ -246,7 +259,7 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
                   await this.toastService.show(res.message || 'Erro ao agendar', 'danger');
                 }
               },
-              error: async (err) => {                
+              error: async (err) => {
                 sessionStorage.setItem('toastMessage', err.error || 'Erro ao agendar');
                 window.location.reload();
               }
@@ -265,6 +278,9 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
     this.sessionService.removeGenericKey('paymentMethod');
     this.sessionService.removeGenericKey('storeId');
     this.sessionService.removeGenericKey('professionalId');
+    this.sessionService.removeGenericKey('looseCustomer');
+    this.sessionService.removeGenericKey('looseCustomerName');
+    this.sessionService.removeGenericKey('customerId');
   }
 
   formatDate(date: Date): string {

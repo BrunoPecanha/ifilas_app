@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { CustomerModel } from 'src/models/customer-model';
 import { CustomerService } from 'src/services/customer.service';
+import { SessionService } from 'src/services/session.service';
 import { ToastService } from 'src/services/toast.service';
 
 @Component({
@@ -19,7 +19,8 @@ export class CpfSearchModalComponent {
   constructor(
     private modalController: ModalController,
     private customerService: CustomerService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private sessionStorage: SessionService
   ) { }
 
   async selectCustomer() {
@@ -33,6 +34,8 @@ export class CpfSearchModalComponent {
       this.modalController.dismiss({
         customer: this.customer
       });
+      
+      this.sessionStorage.setGenericKey(this.customer.id, "customerId", );
 
     } catch (error) {
       console.error('Erro ao selecionar cliente:', error);

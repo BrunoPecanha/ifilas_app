@@ -19,10 +19,7 @@ export class CustomerTypeModalComponent {
     this.isSelecting = true;
 
     try {
-      // Pequeno delay para feedback visual
       await new Promise(resolve => setTimeout(resolve, 300));
-
-      // Sua lógica de seleção
       this.modalController.dismiss(type);
 
     } catch (error) {
@@ -31,7 +28,6 @@ export class CustomerTypeModalComponent {
     }
   }
 
-  // No dismiss também
   dismiss() {
     if (!this.isSelecting) {
       this.modalController.dismiss();

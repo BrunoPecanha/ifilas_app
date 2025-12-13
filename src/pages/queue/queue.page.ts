@@ -16,7 +16,7 @@ import { TokenService } from 'src/services/token.service';
   templateUrl: './queue.page.html',
   styleUrls: ['./queue.page.scss'],
 })
-export class QueuePage implements AfterViewInit  {
+export class QueuePage implements AfterViewInit {
   @ViewChild(IonContent) content: IonContent = null as any;
   @ViewChild(IonContent, { static: false }) ionContent!: IonContent;
 
@@ -72,7 +72,7 @@ export class QueuePage implements AfterViewInit  {
         this.headerScrolled = event.detail.scrollTop > 10;
       });
     }
-  }  
+  }
 
   ionViewWillEnter() {
     this.activatedRoute.queryParams.subscribe(params => {
@@ -269,23 +269,22 @@ export class QueuePage implements AfterViewInit  {
   }
 
   getStatusInfo(status: number): { text: string; color: string } {
-  const map: { [key: number]: { text: string; color: string } } = {
-    0: { text: 'Aguardando', color: 'warning' },           // Waiting
-    1: { text: 'Removido', color: 'medium' },              // Removed
-    2: { text: 'Em atendimento', color: 'primary' },       // InService
-    3: { text: 'Finalizado', color: 'medium' },            // Done
-    4: { text: 'Ausente', color: 'danger' },               // Absent
-    5: { text: 'Cancelado', color: 'danger' },             // Canceled
-    6: { text: 'Sua vez!', color: 'success' },             // Next
-    7: { text: 'Pendente', color: 'warning' },             // Pending
-    8: { text: 'Recusado', color: 'danger' },              // Rejected
-    9: { text: 'Confirmado', color: 'success' },           // Confirmed
-    10: { text: 'Agendado', color: 'tertiary' }            // Scheduled
-  };
+    const map: { [key: number]: { text: string; color: string } } = {
+      0: { text: 'Aguardando', color: 'warning' },
+      1: { text: 'Removido', color: 'medium' },
+      2: { text: 'Em atendimento', color: 'primary' },
+      3: { text: 'Finalizado', color: 'medium' },
+      4: { text: 'Ausente', color: 'danger' },
+      5: { text: 'Cancelado', color: 'danger' },
+      6: { text: 'Sua vez!', color: 'success' },
+      7: { text: 'Pendente', color: 'warning' },
+      8: { text: 'Recusado', color: 'danger' },
+      9: { text: 'Confirmado', color: 'success' },
+      10: { text: 'Agendado', color: 'tertiary' }
+    };
 
-  return map[status] || { text: 'Desconhecido', color: 'medium' };
-}
-
+    return map[status] || { text: 'Desconhecido', color: 'medium' };
+  }
 
   getAppointmentColor(appt: ScheduleItem): string {
     if (appt.status === 9)
@@ -310,7 +309,7 @@ export class QueuePage implements AfterViewInit  {
   }
 
   getQueueProgress(queue: QueueItem): number {
-    if (!queue.totalInQueue) 
+    if (!queue.totalInQueue)
       return 0;
 
     return ((queue.totalInQueue - queue.position) / queue.totalInQueue) * 100;
@@ -454,7 +453,7 @@ export class QueuePage implements AfterViewInit  {
 
   trackById(index: number, item: any): number {
     return item.id;
-  }  
+  }
 
   async generateQrCodeForAtendance(item: QueueItem | ScheduleItem) {
     this.isLoadingQr = true;
