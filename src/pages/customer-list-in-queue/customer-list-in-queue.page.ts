@@ -523,7 +523,6 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     const scrollTop = event.detail?.scrollTop ?? 0;
     const delta = scrollTop - this.lastScrollTop;
 
-    // um pequeno deadzone para evitar flicker
     if (delta > 5 && scrollTop > 60) {
       this.hideHeader = true;
     } else if (delta < -5) {
@@ -532,7 +531,6 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
 
     this.lastScrollTop = scrollTop;
   }
-
 
   getWaitingClientsCount(): number {
     return this.clients?.filter(client => !client.inService).length || 0;
