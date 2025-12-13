@@ -2,11 +2,25 @@
   subtitle="AGENDA"
   [showStartButton]="false"
   [hideSubtitle]="subtitleHidden"
-  (onStartClick)="addAppointment($event)"
+  (onEndClick)="addAppointment($event)"
 >
 </app-custom-header>
 
-<ion-content class="ion-padding" [scrollEvents]="true" (ionScroll)="onContentScroll($event)">
+<ion-content
+  class="ion-padding"
+  [scrollEvents]="true"
+  (ionScroll)="onContentScroll($event)"
+>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-outline"
+      pullingText="Puxe para atualizar"
+      refreshingSpinner="circles"
+      refreshingText="Atualizando..."
+    >
+    </ion-refresher-content>
+  </ion-refresher>
+
   <div class="page-header">
     <div class="date-navigation-card">
       <div class="date-display">
@@ -248,12 +262,6 @@
                   <span class="duration"
                     >{{ customer.totalSlots }} slot(s)</span
                   >
-                  <!-- <ion-badge
-                    [color]="getStatusColor(customer.status)"
-                    class="status-badge"
-                  >
-                    {{ getStatusText(customer.status) }}
-                  </ion-badge> -->
                 </div>
                 <div class="services-tags">
                   <span
@@ -267,28 +275,11 @@
               </div>
             </div>
             <div class="customer-actions">
-              <!-- <ion-button
-                fill="clear"
-                size="small"
-                color="medium"
-                (click)="editAppointment(customer)"
-              >
-                <ion-icon name="create-outline"></ion-icon>
-              </ion-button> -->
-              <!-- <ion-button
-                fill="clear"
-                size="small"
+              <ion-badge
                 [color]="getStatusColor(customer.status)"
-                (click)="quickAction(customer, slot)"
-              >
-                <ion-icon [name]="getActionIcon(customer.status)"></ion-icon>
-              </ion-button> -->
-               <ion-badge
-                    [color]="getStatusColor(customer.status)"
-                    class="status-badge"
-                  >
-                    {{ getStatusText(customer.status) }}
-                  </ion-badge>
+                class="status-badge">              
+                {{ getStatusText(customer.status) }}
+              </ion-badge>
             </div>
           </div>
         </div>

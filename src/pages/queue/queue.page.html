@@ -9,6 +9,16 @@
 ></app-custom-header>
 
 <ion-content class="page-container">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-outline"
+      pullingText="Puxe para atualizar"
+      refreshingSpinner="circles"
+      refreshingText="Atualizando..."
+    >
+    </ion-refresher-content>
+  </ion-refresher>
+
   <ion-segment
     [(ngModel)]="activeSegment"
     mode="md"
