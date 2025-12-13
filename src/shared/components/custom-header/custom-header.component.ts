@@ -17,7 +17,7 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
   @Input() subtitle?: string;
 
   @Input() showStartButton: boolean = false;
-  @Input() startIconName: string = 'arrow-back';
+  @Input() startIconName: string = 'chevron-back-outline';
   @Input() startButtonClass: string = 'start-button';
   @Input() startDisabled: boolean = false;
   @Input() startLoading: boolean = false;
@@ -31,10 +31,9 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
   @Output() onEndClick = new EventEmitter<void>();
   @Input() hideSubtitle: boolean = false;
 
-  // Novas propriedades para controle do scroll
-  @Input() hideOnScroll: boolean = false; // Habilita comportamento de esconder no scroll
-  @Input() scrollThreshold: number = 50; // Quantidade de pixels para começar a esconder
-  @Input() autoHide: boolean = true; // Esconde automaticamente ao rolar
+  @Input() hideOnScroll: boolean = false;
+  @Input() scrollThreshold: number = 50;
+  @Input() autoHide: boolean = true;
 
   @Input() showPausePlayButton: boolean = false;
   @Input() isPaused: boolean = false;
@@ -60,8 +59,7 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
     private sessionService: SessionService,
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef,
-    private history: NavegationHistoryService,
-    private elementRef: ElementRef
+    private history: NavegationHistoryService
   ) {
     this.profile = this.sessionService.getProfile();
   }
@@ -86,40 +84,6 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Método para forçar mostrar/esconder programaticamente
-  showHeader(): void {
-    this.isHidden = false;
-    this.cdr.detectChanges();
-  }
-
-  hideHeader(): void {
-    if (this.hideOnScroll) {
-      this.isHidden = true;
-      this.cdr.detectChanges();
-    }
-  }
-
-  // Método para verificar se está visível (pode ser usado por outros componentes)
-  isHeaderVisible(): boolean {
-    return !this.isHidden;
-  }
-
-  // Resetar estado do header
-  resetHeader(): void {
-    this.isHidden = false;
-    this.lastScrollTop = 0;
-    this.cdr.detectChanges();
-  }
-
-  private ensureNotificationSubscriptionIfNeeded() {
-    if (this.notificationCount === undefined || this.notificationCount === null) {
-      this.notificationsSubscription = this.notificationService.notificacoesNaoLidas$
-        .subscribe((count: number) => {
-          this.notificationCount = count;
-          this.cdr.detectChanges();
-        });
-    }
-  }
 
   handleStartButtonClick() {
     if (this.isBackButton() && !this.startDisabled && !this.startLoading) {
