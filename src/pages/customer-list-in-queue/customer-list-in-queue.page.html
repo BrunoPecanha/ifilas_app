@@ -1,17 +1,21 @@
 <app-custom-header
-  [class.hidden]="hideHeader"
+  [title]="(currentDate | date:'dd/MM/yyyy') || ''"
   [subtitle]="'FILA ATUAL'"
-  [startIconName]="'arrow-back-outline'"
+  [showStartButton]="true"
+  [startIconName]="'add'"
+  [endIconName]="'play'"
+  [hideOnScroll]="true"
+  [scrollThreshold]="60"
+  [isHidden]="hideHeader"
   [endLoading]="isLoading"
-  (onEndClick)="addCustomerToQueue()"
-  [showPausePlayButton]="true"
-  (onPausePlayClick)="pauseQueue()"
-  [isPaused]="isPaused"
+  (onEndClick)="toggleQueuePause()"
+  [showNotificationBadge]="true"
 >
 </app-custom-header>
 
 <ion-content
-   class="ion-padding"
+  fullscreen
+  class="ion-padding"
   [class.content-paused]="isPaused"
   [class.header-hidden]="hideHeader"
   (ionScroll)="onContentScroll($event)"
@@ -26,43 +30,6 @@
     >
     </ion-refresher-content>
   </ion-refresher>
-
-  <div class="page-header">
-    <div class="date-navigation-card">
-      <div class="date-display">
-        <ion-button
-          fill="clear"
-          size="small"
-          (click)="goToToday()"
-          [disabled]="isToday()"
-          class="nav-button"
-        >
-          <!-- <ion-icon name="today-outline"></ion-icon> -->
-        </ion-button>
-
-        <div class="current-date">
-          <div class="date-main">
-            <ion-icon name="time-outline" class="date-icon"></ion-icon>
-            <span class="date-text">{{ currentDate | date:'dd/MM/yyyy' }}</span>
-            <ion-badge color="primary" *ngIf="isToday()" class="today-badge"
-              >Hoje</ion-badge
-            >
-          </div>
-          <div class="date-weekday">{{ getWeekdayName(currentDate) }}</div>
-        </div>
-
-        <ion-button
-          fill="clear"
-          size="small"
-          (click)="toggleQueuePause()"
-          class="pause-button"
-          [color]="isPaused ? 'success' : 'warning'"
-        >
-          <!-- <ion-icon [name]="isPaused ? 'play-outline' : 'pause-outline'"></ion-icon> -->
-        </ion-button>
-      </div>
-    </div>
-  </div>
 
   <div class="stats-section sticky-stats">
     <div class="stats-grid">

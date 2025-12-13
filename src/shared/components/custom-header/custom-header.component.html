@@ -1,4 +1,4 @@
-<ion-header class="floating-header" mode="ios">
+<ion-header  slot="fixed" class="floating-header" mode="ios" [class.header-hidden]="hideOnScroll && isHidden">
   <ion-toolbar class="floating-toolbar">
     <ion-buttons slot="start">
       <ion-button
@@ -52,10 +52,17 @@
           *ngIf="showNotificationBadge && hasNotifications()"
           aria-hidden="false"
           >{{ displayNotificationText() }}</span>       
-        
       </div>
 
       <ng-content select="[right-buttons]"></ng-content>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+<!-- Contadores flutuantes que aparecem quando o header é escondido -->
+<div *ngIf="hideOnScroll && isHidden && showNotificationBadge && hasNotifications()" 
+     class="floating-counters">
+  <div class="counter-badge">
+    {{ displayNotificationText() }}
+  </div>
+</div>

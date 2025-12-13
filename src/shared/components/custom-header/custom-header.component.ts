@@ -1,11 +1,10 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { Subscription, Observable } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 import { NotificationService } from 'src/services/notification.service';
 import { SessionService } from 'src/services/session.service';
-import { UserService } from 'src/services/user-service';
 import { NavegationHistoryService } from 'src/services/navegation-history.service';
 
 @Component({
@@ -32,6 +31,11 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
   @Output() onEndClick = new EventEmitter<void>();
   @Input() hideSubtitle: boolean = false;
 
+  // Novas propriedades para controle do scroll
+  @Input() hideOnScroll: boolean = false; // Habilita comportamento de esconder no scroll
+  @Input() scrollThreshold: number = 50; // Quantidade de pixels para começar a esconder
+  @Input() autoHide: boolean = true; // Esconde automaticamente ao rolar
+
   @Input() showPausePlayButton: boolean = false;
   @Input() isPaused: boolean = false;
   @Output() onPausePlayClick = new EventEmitter<void>();
@@ -39,11 +43,14 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
   @Input() routeLink: string = '';
   @Input() notificationCount?: number | null;
   @Input() showNotificationBadge: boolean = false;
+  @Input() isHidden: boolean = false;
 
   notificationCount$!: Observable<number>;
 
   profile: any;
   userFromSession: any;
+  lastScrollTop: number = 0;
+  scrollTimeout: any;
 
   private notificationsSubscription?: Subscription;
 
@@ -53,7 +60,8 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
     private sessionService: SessionService,
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef,
-    private history: NavegationHistoryService
+    private history: NavegationHistoryService,
+    private elementRef: ElementRef
   ) {
     this.profile = this.sessionService.getProfile();
   }
@@ -73,6 +81,34 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.notificationsSubscription?.unsubscribe();
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout);
+    }
+  }
+
+  // Método para forçar mostrar/esconder programaticamente
+  showHeader(): void {
+    this.isHidden = false;
+    this.cdr.detectChanges();
+  }
+
+  hideHeader(): void {
+    if (this.hideOnScroll) {
+      this.isHidden = true;
+      this.cdr.detectChanges();
+    }
+  }
+
+  // Método para verificar se está visível (pode ser usado por outros componentes)
+  isHeaderVisible(): boolean {
+    return !this.isHidden;
+  }
+
+  // Resetar estado do header
+  resetHeader(): void {
+    this.isHidden = false;
+    this.lastScrollTop = 0;
+    this.cdr.detectChanges();
   }
 
   private ensureNotificationSubscriptionIfNeeded() {

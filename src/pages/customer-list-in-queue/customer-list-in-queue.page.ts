@@ -43,10 +43,6 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
   currentClient: any = null;
   lastScrollTop = 0;
   hideHeader = false;
-
-  private scrollThreshold = 50; // Aumente o threshold para evitar oscilações
-
-
   private storeId: number;
   private signalRGroup: string;
 
@@ -114,6 +110,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
 
     return this.formatMinutesToHHMM(diffMin);
   }
+
 
   async openServiceConfig(client: any) {
     const servicesMapped = client.services
@@ -522,20 +519,21 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
       });
   }
 
- onContentScroll(event: any) {
-  const currentScrollTop = event.detail.scrollTop;
-  const scrollDirection = currentScrollTop > this.lastScrollTop;
-  
-  // Mostra/esconde header baseado na direção do scroll e posição
-  if (scrollDirection && currentScrollTop > this.scrollThreshold) {
-    this.hideHeader = true;
-  } else if (!scrollDirection) {
-    this.hideHeader = false;
+  onContentScroll(event: CustomEvent) {
+    const scrollTop = event.detail?.scrollTop ?? 0;
+    const delta = scrollTop - this.lastScrollTop;
+
+    // um pequeno deadzone para evitar flicker
+    if (delta > 5 && scrollTop > 60) {
+      this.hideHeader = true;
+    } else if (delta < -5) {
+      this.hideHeader = false;
+    }
+
+    this.lastScrollTop = scrollTop;
   }
-  
-  this.lastScrollTop = currentScrollTop;
-}
-  
+
+
   getWaitingClientsCount(): number {
     return this.clients?.filter(client => !client.inService).length || 0;
   }
