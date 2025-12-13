@@ -40,6 +40,7 @@ export class OwnerSchedulePage implements OnInit {
   user!: UserModel;
   store!: StoreModel;
   showFilters = false;
+  scheduleId: number = 0;
 
   appointments: any[] = [];
 
@@ -97,9 +98,10 @@ export class OwnerSchedulePage implements OnInit {
   private loadSchedulesForDate() {    
     this.isLoading = true;
     this.service.getOwnerAgendaForDate(this.store.id, this.user.id, this.selectedDate).subscribe({
-      next: (response) => {
+      next: (response) => {        
         const data = response.data;
         this.slotDuration = data?.slotDuration ?? 30;
+        this.scheduleId = data?.scheduleId ?? 0;
 
         if (!data) {
           this.toastController.show('Nenhum dado encontrado', 'warning');
@@ -842,7 +844,7 @@ export class OwnerSchedulePage implements OnInit {
     await modal.present();
   }
 
-  createWalkInCustomer(customerData: any) {
+  createWalkInCustomer(customerData: any) {    
     const walkInCustomer = {
       id: 'walkin_' + Date.now(),
       name: customerData.name,
@@ -850,7 +852,9 @@ export class OwnerSchedulePage implements OnInit {
       email: customerData.email,
       isWalkIn: true,
       useAgenda: true,
-      avatar: 'assets/walkin-avatar.png'
+      scheduleId: customerData.scheduleId,
+      avatar: 'assets/walkin-avatar.png',
+      looseCustomer: true
     };
 
     this.navigateToServiceSelection(walkInCustomer);
@@ -862,7 +866,10 @@ export class OwnerSchedulePage implements OnInit {
         customer: customer,
         selectedDate: this.selectedDate,
         preSelectedSlot: this.preSelectedSlot,
-        source: 'schedule'
+        scheduleId: this.scheduleId,
+        source: 'schedule',
+        looseCustomer: true,
+        looseCustomerName: customer.name
       }
     });
 

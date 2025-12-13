@@ -37,6 +37,7 @@ export class SelectServicesPage implements OnInit {
   user: UserModel = {} as UserModel;
   customerId: number | null = null;
   looseCustomer: boolean = false;
+  looseCustomerName: string = '';
   useAgenda: boolean = false;
   professionalId = 0;
   professionalName = '';
@@ -113,12 +114,12 @@ export class SelectServicesPage implements OnInit {
 
       this.professionalId = params['professionalId'] ?? navState['professionalId'] ?? null;
       this.professionalName = params['professionalName'] ?? navState['professionalName'] ?? null;
-
+      
       if (params['useAgenda'] !== undefined) {
         this.useAgenda = params['useAgenda'] === 'true';
       } else if (customerFromState?.useAgenda !== undefined) {
         this.useAgenda = !!customerFromState.useAgenda;
-      } else if (navState['useAgenda'] !== undefined) { 
+      } else if (navState['useAgenda'] !== undefined) {
         this.useAgenda = navState['useAgenda'] === true || navState['useAgenda'] === 'true';
       } else {
         this.useAgenda = false;
@@ -142,9 +143,17 @@ export class SelectServicesPage implements OnInit {
         this.looseCustomer = false;
       }
 
+      if (params['looseCustomerName'] !== undefined) {
+        this.looseCustomerName = params['looseCustomerName'];
+      } else if (navState['looseCustomerName'] !== undefined)
+        this.looseCustomerName = navState['looseCustomerName'];
+      
       if (customerFromState) {
-        debugger        
-        this.useAgenda = (params['useAgenda'] !== undefined) ? this.useAgenda : !!customerFromState.useAgenda;
+        this.useAgenda = true
+      }
+      
+      if (this.professionalId == null) {
+        this.professionalId = this.user.id;
       }
 
       this.loadAvailablesServices();
@@ -217,7 +226,6 @@ export class SelectServicesPage implements OnInit {
     }
   }
 
-
   addService(service: ServiceModel) {
     const existingServiceIndex = this.selectedServices.findIndex(s => s.id === service.id);
 
@@ -261,7 +269,7 @@ export class SelectServicesPage implements OnInit {
     }
   }
 
-  // abre detalhes do serviço (a implementar)
+  // preciso implementar o abrir detalhes do serviço 
   openServiceDetail(service: ServiceModel) {
     if (!service)
       return;
@@ -396,6 +404,7 @@ export class SelectServicesPage implements OnInit {
         scheduleId: this.scheduleId,
         customerId: this.user.id,
         looseCustomer: this.looseCustomer,
+        looseCustomerName: this.looseCustomerName,
         storeId: this.storeId,
         professionalId: this.professionalId,
         time: '',
@@ -480,10 +489,12 @@ export class SelectServicesPage implements OnInit {
 
   proceedToSchedule() {
     this.sessionService.setGenericKey(this.selectedServices, 'selectedServices');
-    this.sessionService.setGenericKey('notes', this.notes);
+    this.sessionService.setGenericKey(this.notes, 'notes');
     this.sessionService.setGenericKey(this.paymentMethod, 'paymentMethod');
     this.sessionService.setGenericKey(this.storeId, 'storeId');
     this.sessionService.setGenericKey(this.professionalId, 'professionalId');
+    this.sessionService.setGenericKey(this.looseCustomer, 'looseCustomer');
+    this.sessionService.setGenericKey(this.looseCustomerName, 'looseCustomerName');
 
     this.router.navigate(['/schedule-appointment']);
   }

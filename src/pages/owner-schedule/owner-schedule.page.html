@@ -247,12 +247,12 @@
                   <span class="duration"
                     >{{ customer.totalSlots }} slot(s)</span
                   >
-                  <ion-badge
+                  <!-- <ion-badge
                     [color]="getStatusColor(customer.status)"
                     class="status-badge"
                   >
                     {{ getStatusText(customer.status) }}
-                  </ion-badge>
+                  </ion-badge> -->
                 </div>
                 <div class="services-tags">
                   <span
@@ -266,22 +266,28 @@
               </div>
             </div>
             <div class="customer-actions">
-              <ion-button
+              <!-- <ion-button
                 fill="clear"
                 size="small"
                 color="medium"
                 (click)="editAppointment(customer)"
               >
                 <ion-icon name="create-outline"></ion-icon>
-              </ion-button>
-              <ion-button
+              </ion-button> -->
+              <!-- <ion-button
                 fill="clear"
                 size="small"
                 [color]="getStatusColor(customer.status)"
                 (click)="quickAction(customer, slot)"
               >
                 <ion-icon [name]="getActionIcon(customer.status)"></ion-icon>
-              </ion-button>
+              </ion-button> -->
+               <ion-badge
+                    [color]="getStatusColor(customer.status)"
+                    class="status-badge"
+                  >
+                    {{ getStatusText(customer.status) }}
+                  </ion-badge>
             </div>
           </div>
         </div>
