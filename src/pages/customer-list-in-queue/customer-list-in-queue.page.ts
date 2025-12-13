@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, ModalController, NavController } from '@ionic/angular';
+import { AlertController, IonContent, ModalController, NavController } from '@ionic/angular';
 import { CustomerInQueueForEmployeeModel } from 'src/models/customer-in-queue-for-employee-model';
 import { StatusQueueEnum } from 'src/models/enums/status-queue.enum';
 import { QueueModel } from 'src/models/queue-model';
@@ -22,6 +22,8 @@ import { isToday } from 'src/utils/date-utils';
   styleUrls: ['./customer-list-in-queue.page.scss'],
 })
 export class CustomerListInQueuePage implements OnInit, OnDestroy {
+  @ViewChild(IonContent) content: IonContent = null as any;
+
   clients: CustomerInQueueForEmployeeModel[] = [];
   currentDate = new Date();
   isLoading: boolean = false;
@@ -30,6 +32,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
   store: StoreModel = {} as StoreModel;
   employee!: UserModel;
   showScrollIndicator: boolean = true;
+  headerScrolled = false;
 
   editingNameMap: { [clientId: number]: boolean } = {};
   editedNames: { [clientId: number]: string } = {};
@@ -38,6 +41,11 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
   servicePrice: number | null = null;
   serviceTime: number | null = null;
   currentClient: any = null;
+  lastScrollTop = 0;
+  hideHeader = false;
+
+  private scrollThreshold = 50; // Aumente o threshold para evitar oscilações
+
 
   private storeId: number;
   private signalRGroup: string;
@@ -69,6 +77,22 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
   ionViewDidEnter() {
     this.loadInitialData();
     this.store = this.sessionService.getStore();
+  }
+
+  ngAfterViewInit() {
+    this.content.scrollEvents = true;
+    this.content.ionScroll.subscribe((event: any) => {
+      this.headerScrolled = event.detail.scrollTop > 10;
+    });
+  }
+
+  setupScrollListener() {
+    const content = document.querySelector('ion-content');
+    if (content) {
+      content.addEventListener('ionScroll', (event: any) => {
+        this.headerScrolled = event.detail.scrollTop > 10;
+      });
+    }
   }
 
   ngOnDestroy() {
@@ -135,7 +159,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
     try {
       await this.signalRService.startQueueConnection();
       await this.signalRService.startScheduleConnection();
-      
+
       const store = this.sessionService.getStore();
 
       if (!store)
@@ -498,16 +522,20 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy {
       });
   }
 
-  onContentScroll(event: any) {
-    const scrollTop = event.detail.scrollTop;
-    const scrollHeight = event.detail.scrollHeight;
-    const contentHeight = event.detail.contentHeight || document.documentElement.clientHeight;
-
-    const scrollPercentage = (scrollTop + contentHeight) / scrollHeight;
-    this.showScrollIndicator = scrollPercentage < 0.95;
+ onContentScroll(event: any) {
+  const currentScrollTop = event.detail.scrollTop;
+  const scrollDirection = currentScrollTop > this.lastScrollTop;
+  
+  // Mostra/esconde header baseado na direção do scroll e posição
+  if (scrollDirection && currentScrollTop > this.scrollThreshold) {
+    this.hideHeader = true;
+  } else if (!scrollDirection) {
+    this.hideHeader = false;
   }
-
-  // Métodos auxiliares para a interface
+  
+  this.lastScrollTop = currentScrollTop;
+}
+  
   getWaitingClientsCount(): number {
     return this.clients?.filter(client => !client.inService).length || 0;
   }

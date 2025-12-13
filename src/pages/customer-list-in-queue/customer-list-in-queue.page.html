@@ -1,19 +1,21 @@
 <app-custom-header
+  [class.hidden]="hideHeader"
   [subtitle]="'FILA ATUAL'"
-  [showStartButton]="true"
   [startIconName]="'arrow-back-outline'"
   [endLoading]="isLoading"
+  (onEndClick)="addCustomerToQueue()"
   [showPausePlayButton]="true"
   (onPausePlayClick)="pauseQueue()"
   [isPaused]="isPaused"
-  [showEndButton]="false"
 >
 </app-custom-header>
 
 <ion-content
-  class="ion-padding"
+   class="ion-padding"
   [class.content-paused]="isPaused"
+  [class.header-hidden]="hideHeader"
   (ionScroll)="onContentScroll($event)"
+  scrollEvents="true"
 >
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content
@@ -62,7 +64,7 @@
     </div>
   </div>
 
-  <div class="stats-section">
+  <div class="stats-section sticky-stats">
     <div class="stats-grid">
       <div class="stat-item total">
         <div class="stat-number">{{ clients.length || 0 }}</div>
@@ -125,14 +127,14 @@
         </div>
         <h3>Fila vazia</h3>
         <p>Não há clientes aguardando atendimento</p>
-        <ion-button
+        <!-- <ion-button
           fill="solid"
           color="primary"
           (click)="loadAllCustomersInQueueByEmployeeAndStoreId()"
         >
           <ion-icon name="refresh-outline" slot="start"></ion-icon>
           Recarregar
-        </ion-button>
+        </ion-button> -->
       </div>
     </div>
 
@@ -347,10 +349,10 @@
   </section>
 </ion-content>
 
-<ion-fab vertical="bottom" horizontal="end" slot="fixed" class="add-fab">
+<!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="add-fab">
   <ion-fab-button color="primary" (click)="addCustomerToQueue()">
     <ion-icon name="add-outline"></ion-icon>
   </ion-fab-button>
-</ion-fab>
+</ion-fab> -->
 
 <app-footer-menu></app-footer-menu>

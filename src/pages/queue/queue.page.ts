@@ -18,7 +18,6 @@ import { TokenService } from 'src/services/token.service';
 })
 export class QueuePage implements AfterViewInit {
   @ViewChild(IonContent) content: IonContent = null as any;
-  @ViewChild(IonContent, { static: false }) ionContent!: IonContent;
 
   currentDate = new Date();
   user!: UserModel;
