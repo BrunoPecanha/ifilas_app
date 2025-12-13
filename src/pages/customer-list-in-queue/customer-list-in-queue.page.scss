@@ -576,7 +576,7 @@ app-custom-header {
 
 :root {
   --header-height: 70px;
-  --stats-height: 80px; /* Altura aproximada da seção de stats */
+  --stats-height: 80px;
 }
 
 ion-content {
@@ -620,11 +620,14 @@ ion-content.header-hidden .sticky-stats {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Ajuste para garantir que o conteúdo não fique escondido */
 .queue-section {
   padding-top: calc(var(--stats-height) + 16px);
 }
 
 ion-content.header-hidden .queue-section {
   padding-top: 16px;
+}
+
+.footer-spacer {
+  height: 15px;
 }

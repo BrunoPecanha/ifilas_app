@@ -9,6 +9,7 @@
   [isHidden]="hideHeader"
   [endLoading]="isLoading"
   (onEndClick)="toggleQueuePause()"
+  (onStartClick)="addCustomerToQueue()"
   [showNotificationBadge]="true"
 >
 </app-custom-header>
@@ -316,10 +317,5 @@
   </section>
 </ion-content>
 
-<!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="add-fab">
-  <ion-fab-button color="primary" (click)="addCustomerToQueue()">
-    <ion-icon name="add-outline"></ion-icon>
-  </ion-fab-button>
-</ion-fab> -->
-
+<div class="footer-spacer"></div>
 <app-footer-menu></app-footer-menu>
