@@ -769,6 +769,14 @@ export class OwnerSchedulePage implements OnInit {
     this.trashHover = false;
   }
 
+    async handleRefresh(event: any) {
+    try {
+      await this.loadSchedulesForDate();
+    } finally {
+      event.target.complete();
+    }
+  }
+
   private mapStatus(status: number): string {
     const statusMap: { [key: number]: string } = {
       0: 'waiting', 1: 'removed', 2: 'inservice', 3: 'done', 4: 'absent',

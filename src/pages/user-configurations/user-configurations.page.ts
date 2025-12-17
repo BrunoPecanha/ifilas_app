@@ -27,6 +27,8 @@ export class UserConfigurationsPage {
   store: StoreModel = {} as StoreModel;
   searchingCep = false;
   serverErrors: { [key: string]: string } = {};
+  hideHeader = false;
+  lastScrollTop = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -38,7 +40,7 @@ export class UserConfigurationsPage {
     private geoLocateService: GeoLocateService,
     private loadingController: LoadingController) {
 
-    this.store = this.sessionService.getStore();  
+    this.store = this.sessionService.getStore();
     this.user = this.sessionService.getUser();
 
     this.cadastroForm = this.fb.group({
@@ -117,7 +119,7 @@ export class UserConfigurationsPage {
       acceptAwaysMinorQueue: this.user.acceptAwaysMinorQueue,
       useAgenda: this.user.useAgenda || false,
       employeeId: this.user.id || 0,
-      storeId:  this.store?.id || 0
+      storeId: this.store?.id || 0
     });
 
     if (this.user.imageUrl) {
@@ -142,6 +144,19 @@ export class UserConfigurationsPage {
     }
   }
 
+  onContentScroll(event: CustomEvent) {
+    const scrollTop = event.detail?.scrollTop ?? 0;
+    const delta = scrollTop - this.lastScrollTop;
+
+    if (delta > 5 && scrollTop > 60) {
+      this.hideHeader = true;
+    } else if (delta < -5) {
+      this.hideHeader = false;
+    }
+
+    this.lastScrollTop = scrollTop;
+  }
+
   onWallpaperSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
@@ -162,7 +177,7 @@ export class UserConfigurationsPage {
     this.wallpaperPreview = null;
     this.wallpaperInput.nativeElement.value = '';
   }
-  
+
   getErrorMessage(fieldName: string): string {
     const field = this.cadastroForm.get(fieldName);
 
@@ -212,7 +227,7 @@ export class UserConfigurationsPage {
     return !!field && field.invalid && (field.dirty || field.touched);
   }
 
-  async searchCep() {    
+  async searchCep() {
     const cepControl = this.cadastroForm.get('cep');
     if (!cepControl || cepControl.invalid) return;
 
@@ -229,7 +244,7 @@ export class UserConfigurationsPage {
       });
       await loading?.present();
 
-      
+
       this.geoLocateService.getAddressByCep(cep).subscribe({
         next: (response: addressResponse) => {
           if (loading) {
@@ -329,7 +344,7 @@ export class UserConfigurationsPage {
         const updatedUser = {
           ...this.user,
           ...userData,
-          neighborhood: formValue.neighborhood, 
+          neighborhood: formValue.neighborhood,
           imageUrl: response.data.imageUrl || this.user.imageUrl
         };
 

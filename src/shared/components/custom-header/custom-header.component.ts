@@ -1,11 +1,10 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { Subscription, Observable } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 import { NotificationService } from 'src/services/notification.service';
 import { SessionService } from 'src/services/session.service';
-import { UserService } from 'src/services/user-service';
 import { NavegationHistoryService } from 'src/services/navegation-history.service';
 
 @Component({
@@ -18,7 +17,7 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
   @Input() subtitle?: string;
 
   @Input() showStartButton: boolean = false;
-  @Input() startIconName: string = 'arrow-back';
+  @Input() startIconName: string = 'chevron-back-outline';
   @Input() startButtonClass: string = 'start-button';
   @Input() startDisabled: boolean = false;
   @Input() startLoading: boolean = false;
@@ -32,6 +31,10 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
   @Output() onEndClick = new EventEmitter<void>();
   @Input() hideSubtitle: boolean = false;
 
+  @Input() hideOnScroll: boolean = false;
+  @Input() scrollThreshold: number = 50;
+  @Input() autoHide: boolean = true;
+
   @Input() showPausePlayButton: boolean = false;
   @Input() isPaused: boolean = false;
   @Output() onPausePlayClick = new EventEmitter<void>();
@@ -39,11 +42,14 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
   @Input() routeLink: string = '';
   @Input() notificationCount?: number | null;
   @Input() showNotificationBadge: boolean = false;
+  @Input() isHidden: boolean = false;
 
   notificationCount$!: Observable<number>;
 
   profile: any;
   userFromSession: any;
+  lastScrollTop: number = 0;
+  scrollTimeout: any;
 
   private notificationsSubscription?: Subscription;
 
@@ -73,17 +79,11 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.notificationsSubscription?.unsubscribe();
-  }
-
-  private ensureNotificationSubscriptionIfNeeded() {
-    if (this.notificationCount === undefined || this.notificationCount === null) {
-      this.notificationsSubscription = this.notificationService.notificacoesNaoLidas$
-        .subscribe((count: number) => {
-          this.notificationCount = count;
-          this.cdr.detectChanges();
-        });
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout);
     }
   }
+
 
   handleStartButtonClick() {
     if (this.isBackButton() && !this.startDisabled && !this.startLoading) {

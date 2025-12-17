@@ -542,3 +542,92 @@ ion-content::part(scroll) {
   position: relative;
   z-index: 1;
 }
+
+app-custom-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: transparent !important;
+  transition: all 0.3s ease;
+  box-shadow: none !important;
+}
+
+app-custom-header.scrolled {
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+app-custom-header.scrolled ::ng-deep header,
+app-custom-header.scrolled ::ng-deep .header-container,
+app-custom-header.scrolled ::ng-deep ion-header {
+  background-color: #ffffff !important;
+}
+
+ion-content {
+  --padding-top: 80px;
+  --padding-bottom: 0px;
+}
+
+app-custom-header {
+  z-index: 1000;
+}
+
+:root {
+  --header-height: 70px;
+  --stats-height: 80px;
+}
+
+ion-content {
+  --padding-top: var(--header-height);
+  --padding-bottom: 0px;
+  transition: padding-top 0.3s ease;
+}
+
+ion-content.header-hidden {
+  --padding-top: 0px;
+}
+
+app-custom-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+app-custom-header.hidden {
+  transform: translateY(-100%);
+}
+
+.sticky-stats {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  background: #f8f9fa;
+  padding: 16px 0 8px 0;
+  margin-top: calc(-1 * var(--header-height));
+  transition: all 0.3s ease;
+}
+
+ion-content.header-hidden .sticky-stats {
+  margin-top: 0;
+  padding-top: 8px;
+  background: #f8f9fa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.queue-section {
+  padding-top: calc(var(--stats-height) + 16px);
+}
+
+ion-content.header-hidden .queue-section {
+  padding-top: 16px;
+}
+
+.footer-spacer {
+  height: 15px;
+}

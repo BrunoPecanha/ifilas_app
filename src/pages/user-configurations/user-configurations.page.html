@@ -6,12 +6,18 @@
   [showEndButton]="true"
   (onEndClick)="save()"
   endIconName="checkmark"
+  [hideOnScroll]="true"
+  [scrollThreshold]="60"
+  [isHidden]="hideHeader"
 ></app-custom-header>
 
 <ion-content
-  [fullscreen]="false"
+  fullscreen
   class="ion-padding"
   [formGroup]="cadastroForm"
+  [scrollEvents]="true"
+  [class.header-hidden]="hideHeader"
+  (ionScroll)="onContentScroll($event)"
 >
   <div class="profile-section">
     <div class="avatar-upload" (click)="selectImage()">

@@ -1,19 +1,26 @@
 <app-custom-header
+  [title]="(currentDate | date:'dd/MM/yyyy') || ''"
   [subtitle]="'FILA ATUAL'"
   [showStartButton]="true"
-  [startIconName]="'arrow-back-outline'"
+  [startIconName]="'add'"
+  [endIconName]="'play'"
+  [hideOnScroll]="true"
+  [scrollThreshold]="60"
+  [isHidden]="hideHeader"
   [endLoading]="isLoading"
-  [showPausePlayButton]="true"
-  (onPausePlayClick)="pauseQueue()"
-  [isPaused]="isPaused"
-  [showEndButton]="false"
+  (onEndClick)="toggleQueuePause()"
+  (onStartClick)="addCustomerToQueue()"
+  [showNotificationBadge]="true"
 >
 </app-custom-header>
 
 <ion-content
+  fullscreen
   class="ion-padding"
   [class.content-paused]="isPaused"
+  [class.header-hidden]="hideHeader"
   (ionScroll)="onContentScroll($event)"
+  scrollEvents="true"
 >
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content
@@ -25,44 +32,7 @@
     </ion-refresher-content>
   </ion-refresher>
 
-  <div class="page-header">
-    <div class="date-navigation-card">
-      <div class="date-display">
-        <ion-button
-          fill="clear"
-          size="small"
-          (click)="goToToday()"
-          [disabled]="isToday()"
-          class="nav-button"
-        >
-          <!-- <ion-icon name="today-outline"></ion-icon> -->
-        </ion-button>
-
-        <div class="current-date">
-          <div class="date-main">
-            <ion-icon name="time-outline" class="date-icon"></ion-icon>
-            <span class="date-text">{{ currentDate | date:'dd/MM/yyyy' }}</span>
-            <ion-badge color="primary" *ngIf="isToday()" class="today-badge"
-              >Hoje</ion-badge
-            >
-          </div>
-          <div class="date-weekday">{{ getWeekdayName(currentDate) }}</div>
-        </div>
-
-        <ion-button
-          fill="clear"
-          size="small"
-          (click)="toggleQueuePause()"
-          class="pause-button"
-          [color]="isPaused ? 'success' : 'warning'"
-        >
-          <!-- <ion-icon [name]="isPaused ? 'play-outline' : 'pause-outline'"></ion-icon> -->
-        </ion-button>
-      </div>
-    </div>
-  </div>
-
-  <div class="stats-section">
+  <div class="stats-section sticky-stats">
     <div class="stats-grid">
       <div class="stat-item total">
         <div class="stat-number">{{ clients.length || 0 }}</div>
@@ -125,14 +95,14 @@
         </div>
         <h3>Fila vazia</h3>
         <p>Não há clientes aguardando atendimento</p>
-        <ion-button
+        <!-- <ion-button
           fill="solid"
           color="primary"
           (click)="loadAllCustomersInQueueByEmployeeAndStoreId()"
         >
           <ion-icon name="refresh-outline" slot="start"></ion-icon>
           Recarregar
-        </ion-button>
+        </ion-button> -->
       </div>
     </div>
 
@@ -347,10 +317,5 @@
   </section>
 </ion-content>
 
-<ion-fab vertical="bottom" horizontal="end" slot="fixed" class="add-fab">
-  <ion-fab-button color="primary" (click)="addCustomerToQueue()">
-    <ion-icon name="add-outline"></ion-icon>
-  </ion-fab-button>
-</ion-fab>
-
+<div class="footer-spacer"></div>
 <app-footer-menu></app-footer-menu>

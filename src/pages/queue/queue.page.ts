@@ -18,7 +18,6 @@ import { TokenService } from 'src/services/token.service';
 })
 export class QueuePage implements AfterViewInit {
   @ViewChild(IonContent) content: IonContent = null as any;
-  @ViewChild(IonContent, { static: false }) ionContent!: IonContent;
 
   currentDate = new Date();
   user!: UserModel;
@@ -75,6 +74,10 @@ export class QueuePage implements AfterViewInit {
   }
 
   ionViewWillEnter() {
+    this.loadCustomersAppointments();
+  }
+
+  async loadCustomersAppointments() {
     this.activatedRoute.queryParams.subscribe(params => {
       this.editingExistingAppointment = params['editingExistingAppointment'] === 'true';
 
@@ -84,6 +87,14 @@ export class QueuePage implements AfterViewInit {
         this.loadSchedulesForDate();
       }
     });
+  }
+
+  async handleRefresh(event: any) {
+    try {
+      await this.loadCustomersAppointments();
+    } finally {
+      event.target.complete();
+    }
   }
 
   loadDashboardData(id: number) {
