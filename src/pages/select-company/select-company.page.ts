@@ -227,25 +227,9 @@ export class SelectCompanyPage implements OnInit {
   }
 
   getAgendaText(card: any): string {
-    if (!card.nextHourOnAgenda) return '';
-
-    const isTomorrow = this.isNextHourTomorrow(card.nextHourOnAgenda);
-    return isTomorrow
-      ? `Amanhã às ${card.nextHourOnAgenda}`
-      : `Hoje às ${card.nextHourOnAgenda}`;
+    return card.nextHourOnAgenda ?? '';
   }
-
-  private isNextHourTomorrow(hour: string): boolean {
-    const [h, m] = hour.split(':').map(Number);
-
-    const now = new Date();
-    const next = new Date();
-    next.setHours(h, m, 0, 0);
-
-    return next <= now;
-  }
-
-
+  
   clearFilters() {
     this.selectedFilter = null;
     this.selectedCategoryId = null;
@@ -258,9 +242,9 @@ export class SelectCompanyPage implements OnInit {
     this.headerHidden = false;
   }
 
-   getUserAddress() {
-    const user = this.session.getUser();    
-    return`${user?.address}, ${user?.number}` || 'Endereço não definido';   
+  getUserAddress() {
+    const user = this.session.getUser();
+    return `${user?.address}, ${user?.number}` || 'Endereço não definido';
   }
 
   hasActiveFilters(): boolean {
