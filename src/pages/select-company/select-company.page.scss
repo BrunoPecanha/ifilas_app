@@ -1645,11 +1645,6 @@ ion-content::part(scroll)::-webkit-scrollbar {
   grid-column: 2;
 }
 
-.store-details-grid:not(.has-agenda):not(.has-queue) .time-cell,
-.store-details-grid:not(.has-agenda):not(.has-queue) .rating-cell {
-  display: none;
-}
-
 .time-cell .detail-placeholder {
   display: flex;
   align-items: center;

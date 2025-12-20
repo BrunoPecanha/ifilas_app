@@ -262,7 +262,7 @@
 
                 <div class="detail-item time-cell">
                   <ng-container
-                    *ngIf="getQueueTimeText(card); else noQueueTime"
+                    *ngIf="hasQueue(card) && getQueueTimeText(card)"
                   >
                     <ion-icon
                       name="time-outline"
@@ -272,12 +272,7 @@
                       {{ getQueueTimeText(card) }}
                     </span>
                   </ng-container>
-                  <ng-template #noQueueTime>
-                    <div class="detail-placeholder">
-                      <ion-icon name="remove-circle-outline"></ion-icon>
-                      <span>Sem tempo</span>
-                    </div>
-                  </ng-template>
+                 
                 </div>
 
                 <div class="detail-item rating-cell">
@@ -306,7 +301,7 @@
                 >
                   <div class="detail-placeholder">
                     <ion-icon name="remove-circle-outline"></ion-icon>
-                    <span>Sem fila ou agenda</span>
+                    <span>Sem agenda</span>
                   </div>
                 </div>
               </div>
