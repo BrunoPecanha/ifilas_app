@@ -229,51 +229,84 @@
                 {{ card.isOpen ? 'Aberto' : 'Fechado' }}
               </div>
 
-              <div class="store-details-grid two-rows">
+              <div
+                class="store-details-grid"
+                [class.has-agenda]="hasAgenda(card) && card.nextHourOnAgenda"
+                [class.has-queue]="hasQueue(card)"
+              >
                 <div class="detail-item people-cell">
-                  <ion-icon
-                    name="people-outline"
-                    class="detail-icon"
-                  ></ion-icon>
-                  <div class="detail-content">
-                    <span class="detail-value"
-                      >{{ '6' }} pessoas na frente</span
-                    >
-                  </div>
+                  <ng-container *ngIf="hasQueue(card); else noQueue">
+                    <ion-icon
+                      name="people-outline"
+                      class="detail-icon"
+                    ></ion-icon>
+                    <span class="detail-value"> {{ getQueueText(card) }} </span>
+                  </ng-container>
+
+                  <ng-template #noQueue>
+                    <div class="detail-placeholder">
+                      <ion-icon name="remove-circle-outline"></ion-icon>
+                      <span>Sem fila</span>
+                    </div>
+                  </ng-template>
                 </div>
 
-                <div
-                  class="detail-item rating-cell"
-                  (click)="$event.stopPropagation()"
-                >
-                  <div class="rating-inline">
-                    <ion-icon name="star" class="rating-star"></ion-icon>
-                    <span class="rating-value"
-                      >{{ card.rating ? (card.rating | number:'1.1-1') : '0.0'
-                      }}</span
-                    >
+                <div class="detail-item distance-cell">
+                  <div class="distance-inline">
+                    <ion-icon name="location-outline"></ion-icon>
+                    <span class="distance-value">
+                      {{ card.distance || '0' }} m
+                    </span>
                   </div>
                 </div>
 
                 <div class="detail-item time-cell">
-                  <ion-icon name="time-outline" class="detail-icon"></ion-icon>
-                  <div class="detail-content">
-                    <span class="detail-value">{{ '12' }} min de espera</span>
+                  <ng-container
+                    *ngIf="getQueueTimeText(card); else noQueueTime"
+                  >
+                    <ion-icon
+                      name="time-outline"
+                      class="detail-icon"
+                    ></ion-icon>
+                    <span class="detail-value">
+                      {{ getQueueTimeText(card) }}
+                    </span>
+                  </ng-container>
+                  <ng-template #noQueueTime>
+                    <div class="detail-placeholder">
+                      <ion-icon name="remove-circle-outline"></ion-icon>
+                      <span>Sem tempo</span>
+                    </div>
+                  </ng-template>
+                </div>
+
+                <div class="detail-item rating-cell">
+                  <div class="rating-inline">
+                    <ion-icon name="star" class="rating-star"></ion-icon>
+                    <span class="rating-value">
+                      {{ card.rating ? (card.rating | number:'1.1-1') : '0.0' }}
+                    </span>
                   </div>
                 </div>
 
                 <div
-                  class="detail-item distance-cell"
-                  (click)="$event.stopPropagation()"
+                  class="detail-item agenda-cell"
+                  *ngIf="hasAgenda(card) && card.nextHourOnAgenda"
                 >
-                  <div class="distance-inline">
-                    <ion-icon
-                      name="location-outline"
-                      class="distance-icon"
-                    ></ion-icon>
-                    <span class="distance-value"
-                      >{{ card.distance || '500' }} m</span
-                    >
+                  <ion-icon
+                    name="calendar-outline"
+                    class="detail-icon"
+                  ></ion-icon>
+                  <span class="detail-value"> {{ getAgendaText(card) }} </span>
+                </div>
+
+                <div
+                  class="detail-item empty-cell"
+                  *ngIf="!hasQueue(card) && !(hasAgenda(card) && card.nextHourOnAgenda)"
+                >
+                  <div class="detail-placeholder">
+                    <ion-icon name="remove-circle-outline"></ion-icon>
+                    <span>Sem fila ou agenda</span>
                   </div>
                 </div>
               </div>
@@ -284,7 +317,7 @@
 
       <div *ngIf="loadingMore" class="loading-more">
         <ion-spinner name="crescent"></ion-spinner>
-        <span>Carregando mais...</span>
+        <span>Carregando...</span>
       </div>
     </div>
 
