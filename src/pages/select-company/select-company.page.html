@@ -12,7 +12,7 @@
       <ion-icon name="location-outline" class="location-icon"></ion-icon>
       <div class="location-text">
         <span class="location-label">Sua localização atual:</span>
-        <span class="location-address">Rua Amadeu Soares 44</span>
+        <span class="location-address">{{ getUserAddress() }}</span>
       </div>
     </div>
   </div>
@@ -272,7 +272,6 @@
                       {{ getQueueTimeText(card) }}
                     </span>
                   </ng-container>
-                 
                 </div>
 
                 <div class="detail-item rating-cell">

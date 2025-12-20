@@ -258,6 +258,11 @@ export class SelectCompanyPage implements OnInit {
     this.headerHidden = false;
   }
 
+   getUserAddress() {
+    const user = this.session.getUser();    
+    return`${user?.address}, ${user?.number}` || 'Endereço não definido';   
+  }
+
   hasActiveFilters(): boolean {
     return !!this.selectedFilter || !!this.selectedCategoryId || !!this.searchQuery;
   }
