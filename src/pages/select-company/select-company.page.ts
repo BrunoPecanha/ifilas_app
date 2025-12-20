@@ -200,6 +200,52 @@ export class SelectCompanyPage implements OnInit {
     }
   }
 
+  hasQueue(card: any): boolean {
+    return card.useQueue === true;
+  }
+
+  hasAgenda(card: any): boolean {
+    return card.useAgenda === true;
+  }
+
+  getQueueText(card: any): string {
+    if (!this.hasQueue(card)) {
+      return 'Sem filas abertas';
+    }
+
+    if (card.minorQueue > 0) {
+      return `${card.minorQueue} pessoa(s) na frente`;
+    }
+
+    return 'Sem ninguém na frente';
+  }
+
+  getQueueTimeText(card: any): string | null {
+    return card.timeForNextOnQueue
+      ? `${card.timeForNextOnQueue} de espera`
+      : 'Sua vez agora';
+  }
+
+  getAgendaText(card: any): string {
+    if (!card.nextHourOnAgenda) return '';
+
+    const isTomorrow = this.isNextHourTomorrow(card.nextHourOnAgenda);
+    return isTomorrow
+      ? `Amanhã às ${card.nextHourOnAgenda}`
+      : `Hoje às ${card.nextHourOnAgenda}`;
+  }
+
+  private isNextHourTomorrow(hour: string): boolean {
+    const [h, m] = hour.split(':').map(Number);
+
+    const now = new Date();
+    const next = new Date();
+    next.setHours(h, m, 0, 0);
+
+    return next <= now;
+  }
+
+
   clearFilters() {
     this.selectedFilter = null;
     this.selectedCategoryId = null;
