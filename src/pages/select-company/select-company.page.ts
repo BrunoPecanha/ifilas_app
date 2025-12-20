@@ -223,7 +223,7 @@ export class SelectCompanyPage implements OnInit {
   getQueueTimeText(card: any): string | null {
     return card.timeForNextOnQueue
       ? `${card.timeForNextOnQueue} de espera`
-      : null;
+      : 'Sua vez agora';
   }
 
   getAgendaText(card: any): string {
