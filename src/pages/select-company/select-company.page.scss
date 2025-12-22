@@ -1140,7 +1140,7 @@ ion-content::part(scroll)::-webkit-scrollbar {
 }
 
 .company-name .verified ion-icon {
-  color: #3b82f6; 
+  color: #3b82f6;
   font-size: 16px;
 }
 
@@ -1261,7 +1261,7 @@ ion-content::part(scroll)::-webkit-scrollbar {
 
 .store-details-grid.two-rows {
   display: grid;
-  grid-template-columns: 1fr auto; 
+  grid-template-columns: 1fr auto;
   gap: 8px 12px;
   align-items: center;
 }
@@ -1333,13 +1333,18 @@ ion-content::part(scroll)::-webkit-scrollbar {
   .store-details-grid.two-rows {
     gap: 6px 8px;
   }
-  .rating-inline, .distance-inline {
+  .rating-inline,
+  .distance-inline {
     padding: 3px 5px;
   }
-  .rating-star, .distance-icon {
+  .rating-star,
+  .distance-icon {
     font-size: 12px;
   }
-  .rating-value, .distance-value, .people-cell .detail-value, .time-cell .detail-value {
+  .rating-value,
+  .distance-value,
+  .people-cell .detail-value,
+  .time-cell .detail-value {
     font-size: 11px;
   }
 }
@@ -1350,7 +1355,6 @@ ion-content::part(scroll)::-webkit-scrollbar {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 
 .modern-content.content-collapsed .inner-scroll {
   padding-top: 0 !important;
@@ -1449,7 +1453,6 @@ ion-content::part(scroll)::-webkit-scrollbar {
   gap: 6px;
 }
 
-
 .store-details-grid.has-agenda:not(.has-queue) .distance-cell {
   grid-row: 2;
   grid-column: 1 / span 2;
@@ -1467,7 +1470,7 @@ ion-content::part(scroll)::-webkit-scrollbar {
   .store-details-grid {
     gap: 6px 8px;
   }
-  
+
   .agenda-cell {
     padding-top: 3px;
     margin-top: 3px;
@@ -1737,25 +1740,58 @@ ion-content::part(scroll)::-webkit-scrollbar {
   .store-details-grid {
     gap: 2px 8px;
   }
-  
+
   .agenda-cell {
     padding-top: 0px;
     margin-top: 2px;
   }
-  
+
   .detail-value,
   .detail-placeholder {
     font-size: 11px;
   }
-  
+
   .rating-inline,
   .distance-inline {
     padding: 3px 5px;
   }
-  
+
   .rating-star,
   .distance-inline ion-icon,
   .detail-icon {
     font-size: 12px;
   }
+}
+
+.banner-card {
+  flex: 0 0 auto;
+  width: calc(100vw - 48px);
+  height: calc((100vw - 48px) / 2); 
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  scroll-snap-align: start;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.banner-image-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: block;
+}
+
+.banner-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover !important; 
+  object-position: center center !important; 
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
