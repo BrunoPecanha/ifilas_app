@@ -35,6 +35,7 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
   looseCustomer: boolean = false;
   looseCustomerName: string = '';
   customerOrProfessional!: UserModel;
+  redirectToCustomerDashBoard: boolean = true;
 
   selectedTimeSlot: TimeSlotModel | null = null;
   currentWeekOffset: number = 0;
@@ -55,7 +56,7 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
     if (msg) {
       this.toastService.show(msg, 'danger');
       sessionStorage.removeItem('toastMessage');
-    }
+    }    
 
     this.customerOrProfessional = this.sessionService.getUser();
     this.customerId = this.sessionService.getGenericKey('customerId');
@@ -67,12 +68,13 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
     this.storeId = this.sessionService.getGenericKey('storeId') || 0;
     this.professionalId = this.sessionService.getGenericKey('professionalId') || this.customerOrProfessional.id;
     this.looseCustomer = this.sessionService.getGenericKey('looseCustomer') || this.sessionService.getGenericKey('isWalkIn') || false;
-
+    this.redirectToCustomerDashBoard = this.looseCustomer ? true : false;
+    
     if (!this.customerId) {
       this.customerId = this.sessionService.getUser().id;
     }
     else
-      this.looseCustomer = false;
+      this.looseCustomer = false;    
 
     this.loadStoreAgenda();
   }
@@ -253,8 +255,14 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
               next: async (res) => {
                 if (res.valid) {
                   await this.toastService.show('Agendamento realizado com sucesso!', 'success');
-                  this.clearSessionDate();
-                  this.router.navigate(['/queue']);
+                  this.clearSessionDate();                  
+                  
+                  if (this.redirectToCustomerDashBoard) {
+                    this.router.navigate(['/owner-schedule']);
+                  }
+                  else
+                    this.router.navigate(['/queue']);
+
                 } else {
                   await this.toastService.show(res.message || 'Erro ao agendar', 'danger');
                 }
