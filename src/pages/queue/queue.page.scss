@@ -1134,3 +1134,8 @@ app-footer-menu {
 .scrolling-active * {
   pointer-events: none;
 }
+
+.disabled-option {
+  pointer-events: none;
+  opacity: 0.4;
+}
