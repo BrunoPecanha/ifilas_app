@@ -66,7 +66,8 @@ export class OwnerSchedulePage implements OnInit {
     private sessionService: SessionService,
     private toastController: ToastService,
     private modalController: ModalController,
-    private router: Router
+    private router: Router,
+    private toast: ToastService
   ) {
     this.user = this.sessionService.getUser();
     this.store = this.sessionService.getStore();
@@ -78,9 +79,9 @@ export class OwnerSchedulePage implements OnInit {
 
   onContentScroll(ev: any) {
     const now = Date.now();
-    if (now - this.lastScrollCheck < 30) 
+    if (now - this.lastScrollCheck < 30)
       return;
-    
+
     this.lastScrollCheck = now;
 
     const scrollTop = ev?.detail?.scrollTop ?? 0;
@@ -95,7 +96,7 @@ export class OwnerSchedulePage implements OnInit {
     return this.filteredTimeSlots.map(s => 'slot-' + s.time);
   }
 
-  private loadSchedulesForDate() {    
+  private loadSchedulesForDate() {
     this.isLoading = true;
     this.service.getOwnerAgendaForDate(this.store.id, this.user.id, this.selectedDate).subscribe({
       next: (response) => {        
@@ -122,8 +123,8 @@ export class OwnerSchedulePage implements OnInit {
         data.customers?.forEach((customer: any) => {
           const slotStartFull = customer.customerSelectedSlots?.slotStart;
           const slotEndFull = customer.customerSelectedSlots?.slotEnd;
-          
-          if (!slotStartFull || !slotEndFull) 
+
+          if (!slotStartFull || !slotEndFull)
             return;
 
           const slotStart = slotStartFull.substring(0, 5);
@@ -160,6 +161,10 @@ export class OwnerSchedulePage implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  canDrag(customer: any): boolean {
+    return customer.status === 3;
   }
 
   private toMinutes(time: string): number {
@@ -393,7 +398,7 @@ export class OwnerSchedulePage implements OnInit {
 
     const ensureSlotExists = (time: string): number => {
       let idx = baseSlots.findIndex(s => s.time === time);
-      if (idx !== -1) 
+      if (idx !== -1)
         return idx;
 
       const tMinutes = this.toMinutes(time);
@@ -511,7 +516,7 @@ export class OwnerSchedulePage implements OnInit {
     }
 
     return grouped;
-  }  
+  }
 
   applyFilters(): void {
     if (!this.selectedTimeSlots || this.selectedTimeSlots.length === 0) {
@@ -579,7 +584,7 @@ export class OwnerSchedulePage implements OnInit {
 
         (customer.services || []).forEach((service: any) => {
           const serviceFilter = this.serviceFilters.find(f => f.name === service.name);
-          if (serviceFilter) 
+          if (serviceFilter)
             serviceFilter.count++;
         });
       });
@@ -740,17 +745,30 @@ export class OwnerSchedulePage implements OnInit {
     this.applyFilters();
   }
 
+  startCustomerService(customer: any) {
+    this.service.startCustomerService(customer.id, this.user?.id || 0).subscribe({
+      next: () => {
+        this.toast.show('Atendimento iniciado com sucesso', 'success');
+        customer.status = 'inservice';
+        this.applyFilters();
+      },
+      error: (err) => {
+        this.toast.show('Erro ao iniciar atendimento', 'danger');
+      }
+    });
+  }
+
   removeAppointment(customer: any) {
     this.appointments = this.appointments.filter(a => a.id !== customer.id);
     this.recalculateSlots();
   }
 
-  previousDay() {    
+  previousDay() {
     this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() - 1));
     this.loadSchedulesForDate();
   }
 
-  nextDay() {    
+  nextDay() {
     this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + 1));
     this.loadSchedulesForDate();
   }
@@ -769,7 +787,7 @@ export class OwnerSchedulePage implements OnInit {
     this.trashHover = false;
   }
 
-    async handleRefresh(event: any) {
+  async handleRefresh(event: any) {
     try {
       await this.loadSchedulesForDate();
     } finally {
@@ -844,7 +862,7 @@ export class OwnerSchedulePage implements OnInit {
     });
 
     modal.onDidDismiss().then((result) => {
-      if (result.data?.customerData) {        
+      if (result.data?.customerData) {
         this.createWalkInCustomer(result.data.customerData);
       }
     });
@@ -852,7 +870,7 @@ export class OwnerSchedulePage implements OnInit {
     await modal.present();
   }
 
-  createWalkInCustomer(customerData: any) {    
+  createWalkInCustomer(customerData: any) {
     const walkInCustomer = {
       id: 'walkin_' + Date.now(),
       name: customerData.name,

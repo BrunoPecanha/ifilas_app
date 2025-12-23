@@ -229,9 +229,9 @@
           <ion-button
             fill="clear"
             size="small"
-            [color]="isSlotPassed(slot.time) ? 'danger' : 'success'"
+            [color]="isSlotPassed(slot.time) || !slot.available ? 'danger' : 'success'"
             (click)="!isSlotPassed(slot.time) && addAppointment(slot)"
-            [disabled]="isSlotPassed(slot.time)"
+            [disabled]="isSlotPassed(slot.time) || !slot.available"
             class="add-btn"
             [ngClass]="{ 'disabled-btn': isSlotPassed(slot.time) }"
           >
@@ -248,6 +248,7 @@
             [class]="customer.status"
             cdkDrag
             [cdkDragData]="customer"
+            [cdkDragDisabled]="!canDrag(customer)"
             (cdkDragStarted)="onDragStarted()"
             (cdkDragEnded)="onDragEnded()"
           >
@@ -277,7 +278,8 @@
             <div class="customer-actions">
               <ion-badge
                 [color]="getStatusColor(customer.status)"
-                class="status-badge">              
+                class="status-badge"
+              >
                 {{ getStatusText(customer.status) }}
               </ion-badge>
             </div>
@@ -347,14 +349,17 @@
             <ion-button
               fill="clear"
               size="small"
-              (click)="quickAction(customer)"
+              (click)="startCustomerService(customer)"
             >
               <ion-icon [name]="getActionIcon(customer.status)"></ion-icon>
             </ion-button>
           </div>
         </ion-item>
-        <ion-item-options side="end">
-          <ion-item-option color="primary" (click)="quickAction(customer)">
+        <ion-item-options side="end" *ngIf="canDrag(customer)">
+          <ion-item-option
+            color="primary"
+            (click)="startCustomerService(customer)"
+          >
             <ion-icon
               slot="icon-only"
               [name]="getActionIcon(customer.status)"
