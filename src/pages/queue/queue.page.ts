@@ -297,6 +297,10 @@ export class QueuePage implements AfterViewInit {
     return map[status] || { text: 'Desconhecido', color: 'medium' };
   }
 
+  isQueueReadOnly(status: number): boolean {    
+    return [2, 3, 5, 8].includes(status);
+  }
+
   getAppointmentColor(appt: ScheduleItem): string {
     if (appt.status === 9)
       return 'var(--ion-color-success)';

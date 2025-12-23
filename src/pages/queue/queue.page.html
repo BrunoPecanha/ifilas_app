@@ -123,6 +123,7 @@
             color="primary"
             (click)="generateQrCodeForAtendance(queue)"
             class="action-option compact"
+            [class.disabled-option]="isQueueReadOnly(queue.status)"
             *ngIf="queue.store.endServiceWithQRCode || queue.store.startServiceWithQRCode"
           >
             <ion-icon name="qr-code-outline" slot="icon-only"></ion-icon>
@@ -131,6 +132,7 @@
           <ion-item-option
             color="warning"
             (click)="editQueueServices(queue)"
+            [class.disabled-option]="isQueueReadOnly(queue.status)"
             class="action-option compact"
           >
             <ion-icon name="create-outline" slot="icon-only"></ion-icon>
@@ -139,6 +141,7 @@
           <ion-item-option
             color="danger"
             (click)="leaveQueue(queue)"
+            [class.disabled-option]="isQueueReadOnly(queue.status)"
             class="action-option compact"
           >
             <ion-icon name="exit-outline" slot="icon-only"></ion-icon>
@@ -314,13 +317,14 @@
 
                   <div class="your-turn-banner" *ngIf="queue.position === 1">
                     <ion-icon name="trophy-outline"></ion-icon>
-                    <span>🎉 É a sua vez! Dirija-se ao estabelecimento</span>
+                    <span>🎉 É a sua vez! Pode ir para o estabelecimento</span>
                   </div>
 
                   <div class="expanded-actions">
                     <ion-button
                       fill="outline"
                       color="warning"
+                      [disabled]="isQueueReadOnly(queue.status)"
                       size="small"
                       (click)="editQueueServices(queue); $event.stopPropagation()"
                     >
@@ -330,6 +334,7 @@
                     <ion-button
                       fill="outline"
                       color="danger"
+                      [disabled]="isQueueReadOnly(queue.status)"
                       size="small"
                       (click)="leaveQueue(queue); $event.stopPropagation()"
                     >
@@ -406,12 +411,14 @@
             color="primary"
             (click)="generateQrCodeForAtendance(appt)"
             class="action-option compact"
+            [class.disabled-option]="isQueueReadOnly(appt.status)"
             *ngIf="appt.store.endServiceWithQRCode || appt.store.startServiceWithQRCode"
           >
             <ion-icon name="qr-code-outline" slot="icon-only"></ion-icon>
           </ion-item-option>
           <ion-item-option
             color="warning"
+            [class.disabled-option]="isQueueReadOnly(appt.status)"
             (click)="editAppointmentServices(appt)"
             class="action-option compact"
           >
@@ -419,6 +426,7 @@
           </ion-item-option>
           <ion-item-option
             color="danger"
+            [class.disabled-option]="isQueueReadOnly(appt.status)"
             (click)="cancelAppointment(appt)"
             class="action-option compact"
           >
@@ -582,6 +590,7 @@
                     fill="outline"
                     color="warning"
                     size="small"
+                    [disabled]="isQueueReadOnly(appt.status)"
                     (click)="editAppointmentServices(appt); $event.stopPropagation()"
                   >
                     <ion-icon name="create-outline" slot="start"></ion-icon>
@@ -591,6 +600,7 @@
                     fill="outline"
                     color="danger"
                     size="small"
+                    [disabled]="isQueueReadOnly(appt.status)"
                     (click)="cancelAppointment(appt); $event.stopPropagation()"
                   >
                     <ion-icon name="trash-outline" slot="start"></ion-icon>

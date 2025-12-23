@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { CategoryModel } from 'src/models/category-model';
@@ -12,10 +12,11 @@ import { SessionService } from 'src/services/session.service';
   templateUrl: './select-company.page.html',
   styleUrls: ['./select-company.page.scss'],
 })
-export class SelectCompanyPage implements OnInit {
+export class SelectCompanyPage implements OnInit, OnDestroy {
 
   @ViewChild('filtersScroll') filtersScroll: any;
   @ViewChild('searchInput', { read: ElementRef }) searchInput!: ElementRef;
+  @ViewChild('bannersScroll') bannersScroll!: ElementRef;
 
   canScrollRight = true;
   isLoading = false;
@@ -40,17 +41,20 @@ export class SelectCompanyPage implements OnInit {
   contentHidden = false;
   lastScrollTop = 0;
   private isScrolling = false;
+  activeBannerIndex = 0;
+  autoScrollInterval: any;
 
   constructor(
     private router: Router,
     private service: SelectCompanyService,
     private navCtrl: NavController,
     private session: SessionService,
-    private favoriteService: FavoriteService,
-    private cdr: ChangeDetectorRef
+    private favoriteService: FavoriteService
   ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.startAutoScroll();
+  }
 
   ionViewWillEnter() {
     this.resetPagination();
@@ -61,6 +65,10 @@ export class SelectCompanyPage implements OnInit {
   private loadData() {
     this.loadCategories();
     this.loadStores();
+  }
+
+  ngOnDestroy() {
+    this.stopAutoScroll();
   }
 
   private loadStores() {
@@ -227,24 +235,8 @@ export class SelectCompanyPage implements OnInit {
   }
 
   getAgendaText(card: any): string {
-    if (!card.nextHourOnAgenda) return '';
-
-    const isTomorrow = this.isNextHourTomorrow(card.nextHourOnAgenda);
-    return isTomorrow
-      ? `Amanhã às ${card.nextHourOnAgenda}`
-      : `Hoje às ${card.nextHourOnAgenda}`;
+    return card.nextHourOnAgenda ?? '';
   }
-
-  private isNextHourTomorrow(hour: string): boolean {
-    const [h, m] = hour.split(':').map(Number);
-
-    const now = new Date();
-    const next = new Date();
-    next.setHours(h, m, 0, 0);
-
-    return next <= now;
-  }
-
 
   clearFilters() {
     this.selectedFilter = null;
@@ -258,6 +250,11 @@ export class SelectCompanyPage implements OnInit {
     this.headerHidden = false;
   }
 
+  getUserAddress() {
+    const user = this.session.getUser();
+    return `${user?.address}, ${user?.number}` || 'Endereço não definido';
+  }
+
   hasActiveFilters(): boolean {
     return !!this.selectedFilter || !!this.selectedCategoryId || !!this.searchQuery;
   }
@@ -268,6 +265,73 @@ export class SelectCompanyPage implements OnInit {
     if (this.selectedCategoryId) count++;
     if (this.searchQuery) count++;
     return count;
+  }
+
+  banners = [
+    {
+      id: 1,
+      title: 'Evite filas',
+      image: 'assets/images/banner/banner_promo.png',
+      action: 'about'
+    },
+    {
+      id: 2,
+      title: 'Favoritos',
+      image: 'assets/images/banner/banner_promo2.jpg',
+      action: 'favorites'
+    },
+    {
+      id: 3,
+      title: 'Chegue na hora certa',
+      image: 'assets/banners/banner-previsao.png',
+      action: 'how-it-works'
+    }
+  ];
+
+  onBannerClick(banner: any) {
+    switch (banner.action) {
+      case 'about':
+        break;
+      case 'favorites':
+        break;
+    }
+  }
+
+  onBannerScroll() {
+    const scrollElement = this.bannersScroll.nativeElement;
+    const scrollLeft = scrollElement.scrollLeft;
+    const bannerWidth = scrollElement.clientWidth; 
+
+    this.activeBannerIndex = Math.round(scrollLeft / bannerWidth);
+  }
+
+  goToBanner(index: number) {
+    this.activeBannerIndex = index;
+    const scrollElement = this.bannersScroll.nativeElement;
+    const bannerWidth = scrollElement.clientWidth;
+
+    scrollElement.scrollTo({
+      left: index * bannerWidth,
+      behavior: 'smooth'
+    });
+  }
+
+  startAutoScroll() {
+    this.autoScrollInterval = setInterval(() => {
+      const nextIndex = (this.activeBannerIndex + 1) % this.banners.length;
+      this.goToBanner(nextIndex);
+    }, 6000);
+  }
+
+  stopAutoScroll() {
+    if (this.autoScrollInterval) {
+      clearInterval(this.autoScrollInterval);
+    }
+  }
+
+  pauseAutoScroll() {
+    this.stopAutoScroll();
+    setTimeout(() => this.startAutoScroll(), 10000);
   }
 
   applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
