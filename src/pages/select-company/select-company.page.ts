@@ -271,19 +271,19 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     {
       id: 1,
       title: 'Evite filas',
-      image: 'assets/images/banner/banner_promo.jpeg',
+      image: 'assets/images/banner/banner_promo.jpg',
       action: 'about'
     },
     {
       id: 2,
       title: 'Favoritos',
-      image: 'assets/images/banner/banner_promo2.jpeg',
+      image: 'assets/images/banner/banner_promo2.png',
       action: 'favorites'
     },
     {
       id: 3,
       title: 'Chegue na hora certa',
-      image: 'assets/images/banner/banner_promo3.png',
+      image: 'assets/images/banner/banner_promo3.jpg',
       action: 'how-it-works'
     }
   ];
