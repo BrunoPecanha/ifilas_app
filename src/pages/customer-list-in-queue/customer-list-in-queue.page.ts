@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, IonContent, ModalController, NavController } from '@ionic/angular';
 import { CustomerInQueueForEmployeeModel } from 'src/models/customer-in-queue-for-employee-model';
@@ -21,7 +21,7 @@ import { isToday } from 'src/utils/date-utils';
   templateUrl: './customer-list-in-queue.page.html',
   styleUrls: ['./customer-list-in-queue.page.scss'],
 })
-export class CustomerListInQueuePage implements OnInit, OnDestroy {
+export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content: IonContent = null as any;
 
   clients: CustomerInQueueForEmployeeModel[] = [];

@@ -71,9 +71,11 @@
           <ion-label>Configurações Conta</ion-label>
         </ion-item>
 
-        <ion-item (click)="navigateTo('/client-history')" detail="false">
+        <ion-item (click)="navigateTo('/client-history')" detail="false"
+        class="menu-item-with-badge disabled-item">
           <ion-icon name="time" slot="start"></ion-icon>
           <ion-label>Histórico</ion-label>
+          <span class="menu-badge-soon">EM BREVE</span>
         </ion-item>
 
         <ion-item
@@ -181,9 +183,11 @@
         <ion-item
           (click)="navigateTo('/associated-professional')"
           detail="false"
+          class="menu-item-with-badge disabled-item"
         >
           <ion-icon name="person" slot="start"></ion-icon>
           <ion-label>Colaboradores</ion-label>
+          <span class="menu-badge-soon">EM BREVE</span>
         </ion-item>
 
         <ion-item (click)="navigateTo('service-registration')" detail="false">
@@ -235,9 +239,11 @@
         *ngIf="profile === 1 || profile === 0"
         (click)="navigateTo('/associated-professional')"
         detail="false"
+        class="menu-item-with-badge disabled-item"
       >
         <ion-icon name="briefcase" slot="start"></ion-icon>
         <ion-label>Trabalhos</ion-label>
+        <span class="menu-badge-soon">EM BREVE</span>
       </ion-item>
 
       <ion-item (click)="logout()">

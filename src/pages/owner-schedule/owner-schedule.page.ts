@@ -1,4 +1,4 @@
-import { Component, OnInit, QueryList, ViewChildren } from "@angular/core";
+import { AfterViewInit, Component, OnInit, QueryList, ViewChildren } from "@angular/core";
 import { ScheduleService } from "src/services/schedule.service";
 import { CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserModel } from "src/models/user-model";
@@ -6,10 +6,12 @@ import { SessionService } from "src/services/session.service";
 import { StoreModel } from "src/models/store-model";
 import { ToastService } from "src/services/toast.service";
 import { Router } from "@angular/router";
-import { ModalController } from "@ionic/angular";
+import { AlertController, ModalController } from "@ionic/angular";
 import { CpfSearchModalComponent } from "./modals/cpf-search-modal/cpf-search-modal.component";
 import { CustomerTypeModalComponent } from "./modals/customer-type-modal/customer-type-modal.component";
 import { WalkInCustomerModalComponent } from "./modals/walk-in-customer-modal/walk-in-customer-modal.component";
+import { ServiceConfigModalComponent } from "src/shared/components/service-config-modal-component/service-config-modal.component";
+import { CustomerService } from "src/services/customer.service";
 
 @Component({
   selector: "app-owner-schedule",
@@ -42,6 +44,10 @@ export class OwnerSchedulePage implements OnInit {
   showFilters = false;
   scheduleId: number = 0;
 
+  selectedServices: any[] = [];
+  modalMode: 'qrcode' | 'services' | 'summary' = 'summary';
+  isModalOpen = false;
+
   appointments: any[] = [];
 
   slotDuration = 30;
@@ -66,7 +72,9 @@ export class OwnerSchedulePage implements OnInit {
     private sessionService: SessionService,
     private toastController: ToastService,
     private modalController: ModalController,
-    private router: Router
+    private router: Router,
+    private alertController: AlertController,
+    private customerService: CustomerService
   ) {
     this.user = this.sessionService.getUser();
     this.store = this.sessionService.getStore();
@@ -76,11 +84,15 @@ export class OwnerSchedulePage implements OnInit {
     this.loadSchedulesForDate();
   }
 
+  ionViewWillEnter() {
+    this.loadSchedulesForDate();
+  }
+
   onContentScroll(ev: any) {
     const now = Date.now();
-    if (now - this.lastScrollCheck < 30) 
+    if (now - this.lastScrollCheck < 30)
       return;
-    
+
     this.lastScrollCheck = now;
 
     const scrollTop = ev?.detail?.scrollTop ?? 0;
@@ -95,10 +107,10 @@ export class OwnerSchedulePage implements OnInit {
     return this.filteredTimeSlots.map(s => 'slot-' + s.time);
   }
 
-  private loadSchedulesForDate() {    
+  private loadSchedulesForDate() {
     this.isLoading = true;
     this.service.getOwnerAgendaForDate(this.store.id, this.user.id, this.selectedDate).subscribe({
-      next: (response) => {        
+      next: (response) => {
         const data = response.data;
         this.slotDuration = data?.slotDuration ?? 30;
         this.scheduleId = data?.scheduleId ?? 0;
@@ -122,8 +134,8 @@ export class OwnerSchedulePage implements OnInit {
         data.customers?.forEach((customer: any) => {
           const slotStartFull = customer.customerSelectedSlots?.slotStart;
           const slotEndFull = customer.customerSelectedSlots?.slotEnd;
-          
-          if (!slotStartFull || !slotEndFull) 
+
+          if (!slotStartFull || !slotEndFull)
             return;
 
           const slotStart = slotStartFull.substring(0, 5);
@@ -144,6 +156,12 @@ export class OwnerSchedulePage implements OnInit {
             services: (customer.services || []).map((s: any) => ({
               name: s.name,
               slots: s.quantity || 1,
+              finalPrice: s.finalPrice || 0,
+              finalDuration: s.finalDuration || 0,
+              variablePrice: s.variablePrice || false,
+              variableTime: s.variableTime || false,
+              quantity: s.quantity || 1,
+              serviceId: s.serviceId,
               color: this.getRandomServiceColor()
             }))
           });
@@ -160,6 +178,16 @@ export class OwnerSchedulePage implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  openServicesSummary(customer: any) {
+    this.selectedServices = customer.services;
+    this.modalMode = 'summary';
+    this.isModalOpen = true;
+  }
+
+  canDrag(customer: any): boolean {
+    return customer.status !== 'done' && customer.status !== 'cancelled' && customer.status !== 'absent';
   }
 
   private toMinutes(time: string): number {
@@ -393,7 +421,7 @@ export class OwnerSchedulePage implements OnInit {
 
     const ensureSlotExists = (time: string): number => {
       let idx = baseSlots.findIndex(s => s.time === time);
-      if (idx !== -1) 
+      if (idx !== -1)
         return idx;
 
       const tMinutes = this.toMinutes(time);
@@ -511,7 +539,7 @@ export class OwnerSchedulePage implements OnInit {
     }
 
     return grouped;
-  }  
+  }
 
   applyFilters(): void {
     if (!this.selectedTimeSlots || this.selectedTimeSlots.length === 0) {
@@ -579,7 +607,7 @@ export class OwnerSchedulePage implements OnInit {
 
         (customer.services || []).forEach((service: any) => {
           const serviceFilter = this.serviceFilters.find(f => f.name === service.name);
-          if (serviceFilter) 
+          if (serviceFilter)
             serviceFilter.count++;
         });
       });
@@ -726,8 +754,83 @@ export class OwnerSchedulePage implements OnInit {
     return colorMap[colorName] || '#666';
   }
 
-  editAppointment(customer: any) {
-    console.log('Abrir edição para', customer);
+  async editAppointment(customer: any) {    
+    const servicesMapped = customer.services
+      .filter((s: any) => s.variablePrice || s.variableTime)
+      .map((s: any) => ({
+        id: s.serviceId,
+        name: s.name,
+        finalPrice: s.finalPrice,
+        finalDuration: s.finalDuration,
+        variablePrice: s.variablePrice,
+        variableTime: s.variableTime,
+        quantity: s.quantity || 1
+      }));
+
+    if (!servicesMapped.length) {
+      this.toastController.show('Este atendimento não possui serviços configuráveis', 'medium');
+      return;
+    }
+
+    const modal = await this.modalController.create({
+      component: ServiceConfigModalComponent,
+      componentProps: {
+        customerId: customer.id,
+        services: servicesMapped
+      }
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+
+    if (data) {
+      this.saveAppointmentServices(customer, data);
+    }
+  }
+
+  recalculateCustomer(customer: any) {
+    customer.totalSlots = customer.services.reduce(
+      (sum: number, s: any) => sum + (s.finalDuration || 0),
+      0
+    );
+
+    customer.totalPrice = customer.services.reduce(
+      (sum: number, s: any) => sum + (s.finalPrice || 0),
+      0
+    );
+  }
+
+  saveAppointmentServices(customer: any, servicesUpdate: any) {
+    this.customerService
+      .updatePriceAndTimeForVariableServiceAsync(servicesUpdate)
+      .subscribe({
+        next: () => {
+          this.toastController.show('Serviços atualizados com sucesso', 'success');
+
+          servicesUpdate.services.forEach((updated: any) => {
+            const original = customer.services.find(
+              (s: any) => s.serviceId === updated.id
+            );
+
+            if (original) {
+              original.finalPrice = updated.finalPrice;
+              original.finalDuration = updated.finalDuration;
+              original.quantity = updated.quantity;
+            }
+          });
+
+          this.recalculateCustomer(customer);
+          this.applyFilters();
+        },
+        error: () => {
+          this.toastController.show('Erro ao atualizar serviços', 'danger');
+        }
+      });
+  }
+
+  canEditAppointment(customer: any): boolean {
+    return ['pending', 'confirmed'].includes(customer.status);
   }
 
   quickAction(customer: any, slot?: any) {
@@ -740,17 +843,53 @@ export class OwnerSchedulePage implements OnInit {
     this.applyFilters();
   }
 
+  startCustomerService(customer: any) {
+    this.service.startCustomerService(customer.id, this.user?.id || 0).subscribe({
+      next: () => {
+        this.toastController.show('Atendimento iniciado com sucesso', 'success');
+        customer.status = 'inservice';
+        this.applyFilters();
+      },
+      error: (err) => {
+        this.toastController.show('Erro ao iniciar atendimento', 'danger');
+      }
+    });
+  }
+
+  async confirmStartCustomerService(customer: any) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar ação',
+      message: `Deseja realmente alterar o atendimento de ${customer.name}?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'alert-cancel'
+        },
+        {
+          text: 'Confirmar',
+          cssClass: 'alert-confirm',
+          handler: () => {
+            this.startCustomerService(customer);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   removeAppointment(customer: any) {
     this.appointments = this.appointments.filter(a => a.id !== customer.id);
     this.recalculateSlots();
   }
 
-  previousDay() {    
+  previousDay() {
     this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() - 1));
     this.loadSchedulesForDate();
   }
 
-  nextDay() {    
+  nextDay() {
     this.selectedDate = new Date(this.selectedDate.setDate(this.selectedDate.getDate() + 1));
     this.loadSchedulesForDate();
   }
@@ -769,7 +908,7 @@ export class OwnerSchedulePage implements OnInit {
     this.trashHover = false;
   }
 
-    async handleRefresh(event: any) {
+  async handleRefresh(event: any) {
     try {
       await this.loadSchedulesForDate();
     } finally {
@@ -844,7 +983,7 @@ export class OwnerSchedulePage implements OnInit {
     });
 
     modal.onDidDismiss().then((result) => {
-      if (result.data?.customerData) {        
+      if (result.data?.customerData) {
         this.createWalkInCustomer(result.data.customerData);
       }
     });
@@ -852,7 +991,7 @@ export class OwnerSchedulePage implements OnInit {
     await modal.present();
   }
 
-  createWalkInCustomer(customerData: any) {    
+  createWalkInCustomer(customerData: any) {
     const walkInCustomer = {
       id: 'walkin_' + Date.now(),
       name: customerData.name,

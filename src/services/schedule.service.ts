@@ -68,6 +68,10 @@ export class ScheduleService {
     return this.http.get<ScheduleDateResponse>(`${this.apiUrl}/agenda/${employeeId}/${storeId}/${date.toISOString()}`);
   }
 
+  startCustomerService(customerId: number, employeeAttendantId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/start-service/${customerId}/${employeeAttendantId}`);
+  }
+
   getOwnerAgendaForDate(storeId: number, employeeId: number, date: Date): Observable<AttendantsScheduleResponse> {
     const localDateTime = this.toLocalDateTimeString(date);
     const encodedDate = encodeURIComponent(localDateTime);
