@@ -1,4 +1,4 @@
-import { Component, OnInit, QueryList, ViewChildren } from "@angular/core";
+import { AfterViewInit, Component, OnInit, QueryList, ViewChildren } from "@angular/core";
 import { ScheduleService } from "src/services/schedule.service";
 import { CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserModel } from "src/models/user-model";
@@ -78,6 +78,10 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   ngOnInit() {
+    this.loadSchedulesForDate();
+  }
+
+  ionViewWillEnter() {
     this.loadSchedulesForDate();
   }
 
