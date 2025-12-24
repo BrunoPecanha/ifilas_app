@@ -7,6 +7,7 @@ import { SessionService } from 'src/services/session.service';
 import { StoreListResponse } from 'src/models/responses/store-list-response';
 import { UserModel } from 'src/models/user-model';
 import { SignalRService } from 'src/services/seignalr.service';
+import { PushNotificationService } from 'src/services/push-notification.service';
 
 
 @Component({
@@ -25,8 +26,8 @@ export class LoginPage {
     private authService: AuthService,
     private sessionService: SessionService,
     private alertController: AlertController,
-    private loadingController: LoadingController,
-    private signalRService: SignalRService
+    private loadingController: LoadingController,    
+    private pushService: PushNotificationService
   ) { }
 
   ngOnInit() {
@@ -52,6 +53,7 @@ export class LoginPage {
           this.sessionService.setToken(response?.data.token);
           this.sessionService.setUser(response?.data.user);
 
+          await this.pushService.init();
           this.router.navigate(['/role-registration']);
         }
       }
