@@ -10,6 +10,8 @@ import { AlertController, ModalController } from "@ionic/angular";
 import { CpfSearchModalComponent } from "./modals/cpf-search-modal/cpf-search-modal.component";
 import { CustomerTypeModalComponent } from "./modals/customer-type-modal/customer-type-modal.component";
 import { WalkInCustomerModalComponent } from "./modals/walk-in-customer-modal/walk-in-customer-modal.component";
+import { ServiceConfigModalComponent } from "src/shared/components/service-config-modal-component/service-config-modal.component";
+import { CustomerService } from "src/services/customer.service";
 
 @Component({
   selector: "app-owner-schedule",
@@ -71,7 +73,8 @@ export class OwnerSchedulePage implements OnInit {
     private toastController: ToastService,
     private modalController: ModalController,
     private router: Router,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private customerService: CustomerService
   ) {
     this.user = this.sessionService.getUser();
     this.store = this.sessionService.getStore();
@@ -155,7 +158,10 @@ export class OwnerSchedulePage implements OnInit {
               slots: s.quantity || 1,
               finalPrice: s.finalPrice || 0,
               finalDuration: s.finalDuration || 0,
+              variablePrice: s.variablePrice || false,
+              variableTime: s.variableTime || false,
               quantity: s.quantity || 1,
+              serviceId: s.serviceId,
               color: this.getRandomServiceColor()
             }))
           });
@@ -748,8 +754,83 @@ export class OwnerSchedulePage implements OnInit {
     return colorMap[colorName] || '#666';
   }
 
-  editAppointment(customer: any) {
-    console.log('Abrir edição para', customer);
+  async editAppointment(customer: any) {    
+    const servicesMapped = customer.services
+      .filter((s: any) => s.variablePrice || s.variableTime)
+      .map((s: any) => ({
+        id: s.serviceId,
+        name: s.name,
+        finalPrice: s.finalPrice,
+        finalDuration: s.finalDuration,
+        variablePrice: s.variablePrice,
+        variableTime: s.variableTime,
+        quantity: s.quantity || 1
+      }));
+
+    if (!servicesMapped.length) {
+      this.toastController.show('Este atendimento não possui serviços configuráveis', 'medium');
+      return;
+    }
+
+    const modal = await this.modalController.create({
+      component: ServiceConfigModalComponent,
+      componentProps: {
+        customerId: customer.id,
+        services: servicesMapped
+      }
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+
+    if (data) {
+      this.saveAppointmentServices(customer, data);
+    }
+  }
+
+  recalculateCustomer(customer: any) {
+    customer.totalSlots = customer.services.reduce(
+      (sum: number, s: any) => sum + (s.finalDuration || 0),
+      0
+    );
+
+    customer.totalPrice = customer.services.reduce(
+      (sum: number, s: any) => sum + (s.finalPrice || 0),
+      0
+    );
+  }
+
+  saveAppointmentServices(customer: any, servicesUpdate: any) {
+    this.customerService
+      .updatePriceAndTimeForVariableServiceAsync(servicesUpdate)
+      .subscribe({
+        next: () => {
+          this.toastController.show('Serviços atualizados com sucesso', 'success');
+
+          servicesUpdate.services.forEach((updated: any) => {
+            const original = customer.services.find(
+              (s: any) => s.serviceId === updated.id
+            );
+
+            if (original) {
+              original.finalPrice = updated.finalPrice;
+              original.finalDuration = updated.finalDuration;
+              original.quantity = updated.quantity;
+            }
+          });
+
+          this.recalculateCustomer(customer);
+          this.applyFilters();
+        },
+        error: () => {
+          this.toastController.show('Erro ao atualizar serviços', 'danger');
+        }
+      });
+  }
+
+  canEditAppointment(customer: any): boolean {
+    return ['pending', 'confirmed'].includes(customer.status);
   }
 
   quickAction(customer: any, slot?: any) {

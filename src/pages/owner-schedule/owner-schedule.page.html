@@ -366,7 +366,11 @@
               [name]="getActionIcon(customer.status)"
             ></ion-icon>
           </ion-item-option>
-          <ion-item-option color="tertiary" (click)="editAppointment(customer)">
+          <ion-item-option
+            color="tertiary"
+            [disabled]="!canEditAppointment(customer)"
+            (click)="editAppointment(customer)"
+          >
             <ion-icon slot="icon-only" name="create-outline"></ion-icon>
           </ion-item-option>
         </ion-item-options>
