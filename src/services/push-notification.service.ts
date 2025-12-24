@@ -1,18 +1,30 @@
 import { Injectable } from '@angular/core';
-import { PushNotifications, Token, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
+import { PushNotifications, Token } from '@capacitor/push-notifications';
 import { DeviceService } from './device.service';
 import { PlatformEnum } from 'src/models/enums/platform.enum';
 import { SessionService } from './session.service';
+import { UserModel } from 'src/models/user-model';
 
 @Injectable({ providedIn: 'root' })
 export class PushNotificationService {
-  constructor(private deviceService: DeviceService, sessionStorage: SessionService) { }
+
+  user: UserModel = {} as UserModel;
+  
+  constructor(
+    private deviceService: DeviceService,
+    private sessionStorage: SessionService
+  ) {
+
+    this.user = this.sessionStorage.getUser() as UserModel;
+  }
 
   async init() {
     let permStatus = await PushNotifications.checkPermissions();
+
     if (permStatus.receive !== 'granted') {
       permStatus = await PushNotifications.requestPermissions();
     }
+
     if (permStatus.receive !== 'granted') {
       console.warn('Permissão de push negada');
       return;
@@ -21,31 +33,39 @@ export class PushNotificationService {
     await PushNotifications.register();
 
     PushNotifications.addListener('registration', (token: Token) => {
-      sessionStorage.setItem('fcmToken', token.value);
-      this.deviceService.register(token.value, PlatformEnum.android).subscribe();
+      const savedToken = this.sessionStorage.getGenericKey('fcmToken');
+
+      if (savedToken === token.value) return;
+
+      this.sessionStorage.setGenericKey('fcmToken', token.value);
+
+      this.deviceService
+        .register(token.value, PlatformEnum.android)
+        .subscribe();
     });
 
-    PushNotifications.addListener('registrationError', (err) => {
+    PushNotifications.addListener('registrationError', err => {
       console.error('Erro ao registrar push:', err);
     });
 
-    PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
+    PushNotifications.addListener('pushNotificationReceived', notification => {
       console.log('Notificação recebida (foreground):', notification);
     });
 
-    PushNotifications.addListener('pushNotificationActionPerformed', (action: ActionPerformed) => {
+    PushNotifications.addListener('pushNotificationActionPerformed', action => {
       console.log('Ação da notificação:', action);
     });
   }
 
-  async clearTokenOnLogout() {
-    const token = sessionStorage.getItem('fcmToken');
-    if (token) {
-      this.deviceService.unregister(token).subscribe({
-        next: () => console.log('Token removido do backend'),
-        error: (err) => console.error('Erro ao remover token do backend', err)
-      });
-      sessionStorage.removeItem('fcmToken');   
-    }
+  clearTokenOnLogout() {
+    const token = this.sessionStorage.getGenericKey('fcmToken');
+    if (!token) return;
+
+    this.deviceService.unregister(token, this.user.id).subscribe({
+      next: () => console.log('Token removido do backend'),
+      error: err => console.error('Erro ao remover token', err)
+    });
+
+    this.sessionStorage.removeGenericKey('fcmToken');
   }
 }
