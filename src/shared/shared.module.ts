@@ -11,6 +11,7 @@ import { AdBannerComponent } from './components/ad-banner/ad-banner.component';
 import { DatePickerModalComponent } from './components/date-picker-modal/date-picker-modal.component';
 import { PeriodPickerModalComponent } from './components/period-picker-modal/period-picker-modal.component';
 import { PriceFormatPipe } from 'src/pipes/price-format.pipe';
+import { QuickModalComponent } from './components/quick-modal-mode/quick-modal.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { PriceFormatPipe } from 'src/pipes/price-format.pipe';
     AdBannerComponent,
     DatePickerModalComponent,
     PeriodPickerModalComponent,
-    PriceFormatPipe
+    PriceFormatPipe,
+    QuickModalComponent
 
   ],
   imports: [
@@ -41,7 +43,8 @@ import { PriceFormatPipe } from 'src/pipes/price-format.pipe';
     FormsModule,
     DatePickerModalComponent,
     PeriodPickerModalComponent,
-    PriceFormatPipe
+    PriceFormatPipe,
+    QuickModalComponent
   ]
 })
 export class SharedModule { }

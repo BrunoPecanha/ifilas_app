@@ -6,7 +6,7 @@ import { SessionService } from "src/services/session.service";
 import { StoreModel } from "src/models/store-model";
 import { ToastService } from "src/services/toast.service";
 import { Router } from "@angular/router";
-import { ModalController } from "@ionic/angular";
+import { AlertController, ModalController } from "@ionic/angular";
 import { CpfSearchModalComponent } from "./modals/cpf-search-modal/cpf-search-modal.component";
 import { CustomerTypeModalComponent } from "./modals/customer-type-modal/customer-type-modal.component";
 import { WalkInCustomerModalComponent } from "./modals/walk-in-customer-modal/walk-in-customer-modal.component";
@@ -42,6 +42,10 @@ export class OwnerSchedulePage implements OnInit {
   showFilters = false;
   scheduleId: number = 0;
 
+  selectedServices: any[] = [];
+  modalMode: 'qrcode' | 'services' | 'summary' = 'summary';
+  isModalOpen = false;
+
   appointments: any[] = [];
 
   slotDuration = 30;
@@ -67,7 +71,7 @@ export class OwnerSchedulePage implements OnInit {
     private toastController: ToastService,
     private modalController: ModalController,
     private router: Router,
-    private toast: ToastService
+    private alertController: AlertController
   ) {
     this.user = this.sessionService.getUser();
     this.store = this.sessionService.getStore();
@@ -99,7 +103,7 @@ export class OwnerSchedulePage implements OnInit {
   private loadSchedulesForDate() {
     this.isLoading = true;
     this.service.getOwnerAgendaForDate(this.store.id, this.user.id, this.selectedDate).subscribe({
-      next: (response) => {        
+      next: (response) => {
         const data = response.data;
         this.slotDuration = data?.slotDuration ?? 30;
         this.scheduleId = data?.scheduleId ?? 0;
@@ -145,6 +149,9 @@ export class OwnerSchedulePage implements OnInit {
             services: (customer.services || []).map((s: any) => ({
               name: s.name,
               slots: s.quantity || 1,
+              finalPrice: s.finalPrice || 0,
+              finalDuration: s.finalDuration || 0,
+              quantity: s.quantity || 1,
               color: this.getRandomServiceColor()
             }))
           });
@@ -163,8 +170,14 @@ export class OwnerSchedulePage implements OnInit {
     });
   }
 
+  openServicesSummary(customer: any) {
+    this.selectedServices = customer.services;
+    this.modalMode = 'summary';
+    this.isModalOpen = true;
+  }
+
   canDrag(customer: any): boolean {
-    return customer.status === 3;
+    return customer.status !== 'done' && customer.status !== 'cancelled' && customer.status !== 'absent';
   }
 
   private toMinutes(time: string): number {
@@ -748,14 +761,37 @@ export class OwnerSchedulePage implements OnInit {
   startCustomerService(customer: any) {
     this.service.startCustomerService(customer.id, this.user?.id || 0).subscribe({
       next: () => {
-        this.toast.show('Atendimento iniciado com sucesso', 'success');
+        this.toastController.show('Atendimento iniciado com sucesso', 'success');
         customer.status = 'inservice';
         this.applyFilters();
       },
       error: (err) => {
-        this.toast.show('Erro ao iniciar atendimento', 'danger');
+        this.toastController.show('Erro ao iniciar atendimento', 'danger');
       }
     });
+  }
+
+  async confirmStartCustomerService(customer: any) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar ação',
+      message: `Deseja realmente alterar o atendimento de ${customer.name}?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'alert-cancel'
+        },
+        {
+          text: 'Confirmar',
+          cssClass: 'alert-confirm',
+          handler: () => {
+            this.startCustomerService(customer);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   removeAppointment(customer: any) {

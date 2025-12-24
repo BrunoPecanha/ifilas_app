@@ -248,6 +248,7 @@
             [class]="customer.status"
             cdkDrag
             [cdkDragData]="customer"
+            (click)="openServicesSummary(customer)"
             [cdkDragDisabled]="!canDrag(customer)"
             (cdkDragStarted)="onDragStarted()"
             (cdkDragEnded)="onDragEnded()"
@@ -349,7 +350,7 @@
             <ion-button
               fill="clear"
               size="small"
-              (click)="startCustomerService(customer)"
+              (click)="confirmStartCustomerService(customer)"
             >
               <ion-icon [name]="getActionIcon(customer.status)"></ion-icon>
             </ion-button>
@@ -358,7 +359,7 @@
         <ion-item-options side="end" *ngIf="canDrag(customer)">
           <ion-item-option
             color="primary"
-            (click)="startCustomerService(customer)"
+            (click)="confirmStartCustomerService(customer)"
           >
             <ion-icon
               slot="icon-only"
@@ -377,5 +378,12 @@
       <p>Tente ajustar os filtros ou buscar por outros termos</p>
     </div>
   </section>
+  <app-quick-modal
+    [isOpen]="isModalOpen"
+    [mode]="modalMode"
+    [services]="selectedServices"
+    (close)="isModalOpen = false"
+  ></app-quick-modal>
 </ion-content>
+
 <app-footer-menu></app-footer-menu>

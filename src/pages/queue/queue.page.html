@@ -626,54 +626,13 @@
     </ng-template>
   </ng-container>
 
-  <ion-modal
+  <app-quick-modal
     [isOpen]="showQrModal"
-    (didDismiss)="closeQrModal()"
-    class="qr-code-modal"
-  >
-    <ng-template>
-      <div class="qr-modal-content">
-        <div class="qr-modal-header">
-          <h2 class="qr-modal-title"></h2>
-          <ion-button
-            fill="clear"
-            size="small"
-            (click)="closeQrModal()"
-            class="close-button"
-          >
-            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-        </div>
-
-        <div class="qr-code-container">
-          <div *ngIf="isLoadingQr" class="loading-spinner">
-            <ion-spinner name="crescent"></ion-spinner>
-            <p>Gerando QR Code...</p>
-          </div>
-
-          <div *ngIf="!isLoadingQr && qrCodeDataUrl" class="qr-code-display">
-            <img
-              [src]="qrCodeDataUrl"
-              alt="QR Code de Atendimento"
-              class="qr-image"
-            />
-            <p class="qr-instruction">
-              Mostre este QR Code no estabelecimento para o funcionário
-              responsável pelo seu atendimento.
-            </p>
-          </div>
-
-          <div *ngIf="!isLoadingQr && !qrCodeDataUrl" class="qr-error">
-            <ion-icon name="alert-circle-outline" class="error-icon"></ion-icon>
-            <p>Erro ao gerar QR Code</p>
-            <ion-button fill="solid" color="primary" (click)="closeQrModal()">
-              Fechar
-            </ion-button>
-          </div>
-        </div>
-      </div>
-    </ng-template>
-  </ion-modal>
+    mode="qrcode"
+    [qrCodeDataUrl]="qrCodeDataUrl"
+    [isLoading]="isLoadingQr"
+    (close)="closeQrModal()"
+  ></app-quick-modal>
 </ion-content>
 
 <app-footer-menu></app-footer-menu>

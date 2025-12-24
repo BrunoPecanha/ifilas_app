@@ -1,0 +1,85 @@
+<ion-modal
+  class="app-modal qr-code-modal"
+  [isOpen]="isOpen"
+  (didDismiss)="close.emit()"
+  class="qr-code-modal"
+>
+  <ng-template>
+    <div class="qr-modal-content">
+      <div class="qr-modal-header">
+        <h2 class="qr-modal-title">
+          {{
+            mode === "qrcode"
+              ? "QRCode de Atendimento"
+              : "Serviços do Atendimento"
+          }}
+        </h2>
+
+        <ion-button fill="clear" size="small" (click)="close.emit()">
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      <div class="qr-code-container">
+        <ng-container *ngIf="mode === 'qrcode'">
+          <div *ngIf="isLoading" class="loading-spinner">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p>Gerando QR Code...</p>
+          </div>
+
+          <div *ngIf="!isLoading && qrCodeDataUrl" class="qr-code-display">
+            <img [src]="qrCodeDataUrl" class="qr-image" />
+            <p class="qr-instruction">
+              Mostre este QR Code no estabelecimento.
+            </p>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="mode === 'summary'">
+          <div class="services-summary">
+            <div class="service-item" *ngFor="let service of services">
+              <div class="service-left">
+                <ion-icon name="cut-outline" class="service-icon"></ion-icon>
+
+                <div class="service-info">
+                  <span class="service-name">{{ service.name }}</span>
+
+                  <div class="service-meta">
+                    <span class="service-duration">
+                      {{ service.finalDuration }} min
+                    </span>
+                    <span class="service-quantity">
+                      {{ service.quantity }}x
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-right">
+                <span class="service-price">
+                  {{ service.finalPrice | currency : "BRL" }}
+                </span>
+              </div>
+            </div>
+
+            <div class="services-total">
+              <span>Total</span>
+              <strong>{{ getTotalPrice() | currency : "BRL" }}</strong>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="mode === 'services'">
+          <div class="services-list-modal">
+            <ion-list>
+              <ion-item *ngFor="let service of services">
+                <ion-icon name="pricetag-outline" slot="start"></ion-icon>
+                <ion-label>{{ service.name }}</ion-label>
+              </ion-item>
+            </ion-list>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
