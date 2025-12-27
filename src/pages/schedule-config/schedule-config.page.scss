@@ -1,4 +1,5 @@
 .segment-container {
+  margin-top: 25px;  
   background: var(--ion-color-light);
   border-radius: 12px;
   padding: 8px;
@@ -13,7 +14,7 @@ ion-segment-button {
   --indicator-color: var(--ion-color-primary);
   --indicator-height: 3px;
   --border-radius: 8px;
-  min-height: 40px;
+  min-height: 50px;
 }
 
 ion-segment-button ion-icon {
@@ -602,10 +603,3 @@ ion-item-option ion-icon {
   box-shadow: var(--ion-box-shadow, 0 2px 6px rgba(0,0,0,0.1));
 }
 
-.ion-padding {
-  --background: #f8f9fa;
-  --padding-top: calc(70px + env(safe-area-inset-top));
-  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
-  position: relative;
-  z-index: 1;
-}

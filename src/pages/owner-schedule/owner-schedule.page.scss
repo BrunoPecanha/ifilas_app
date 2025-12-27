@@ -1,4 +1,5 @@
 .page-header {
+  margin-top: 25px;
   margin-bottom: 16px;
 }
 
@@ -608,13 +609,6 @@
   .active-chips {
     width: 100%;
   }
-}
-
-.ion-padding {
-  --padding-top: calc(70px + env(safe-area-inset-top));
-  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
-  position: relative;
-  z-index: 1;
 }
 
 ion-content::part(scroll) {
