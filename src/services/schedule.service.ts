@@ -72,12 +72,12 @@ export class ScheduleService {
     return this.http.get(`${this.apiUrl}/start-service/${customerId}/${employeeAttendantId}`);
   }
 
-  getOwnerAgendaForDate(storeId: number, employeeId: number, date: Date): Observable<AttendantsScheduleResponse> {
-    const localDateTime = this.toLocalDateTimeString(date);
-    const encodedDate = encodeURIComponent(localDateTime);
+  getOwnerAgendaForDate(storeId: number, employeeId: number, date: string): Observable<AttendantsScheduleResponse> {
+    // const localDateTime = this.toLocalDateTimeString(date);
+    // const encodedDate = encodeURIComponent(localDateTime);
 
     return this.http.get<AttendantsScheduleResponse>(
-      `${this.apiUrl}/owner-agenda/${employeeId}/${storeId}/${encodedDate}`
+      `${this.apiUrl}/owner-agenda/${employeeId}/${storeId}/${date}`
     );
   }
 

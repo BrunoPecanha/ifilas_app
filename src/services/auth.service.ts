@@ -70,8 +70,8 @@ export class AuthService {
   }
 
   private async clearSession() {
-    localStorage.removeItem('refresh_token');
-    await this.pushService.clearTokenOnLogout();
+     localStorage.removeItem('refresh_token');
+    // await this.pushService.clearTokenOnLogout();
   }
 
   public isLoggedIn(): boolean {
