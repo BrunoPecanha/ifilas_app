@@ -333,3 +333,11 @@ ion-content {
 .header-hidden + ion-content {
   --offset-top: env(safe-area-inset-top) !important;
 }
+
+app-custom-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--ion-background-color, #ffffff);
+  width: 100%;
+}

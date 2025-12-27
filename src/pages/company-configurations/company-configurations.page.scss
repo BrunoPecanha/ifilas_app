@@ -18,13 +18,13 @@
   --card-spacing: 12px;
 }
 
-.compact-content {
-  --background: var(--ion-background-color);
-  --padding-start: var(--card-spacing);
-  --padding-end: var(--card-spacing);
-  --padding-top: var(--card-spacing);
-  --padding-bottom: calc(var(--card-spacing) + 60px);
-}
+// .compact-content {
+//   --background: var(--ion-background-color);
+//   --padding-start: var(--card-spacing);
+//   --padding-end: var(--card-spacing);
+//   --padding-top: var(--card-spacing);
+//   --padding-bottom: calc(var(--card-spacing) + 60px);
+// }
 
 .form-grid-container {
   display: flex;
@@ -54,7 +54,7 @@
 }
 
 .compact-header {
-  padding: 12px 16px 8px;
+  padding: 25px 16px 8px;
 
   .section-title {
     font-size: 1rem;
@@ -382,10 +382,10 @@ ion-input[readonly] {
   --background: #f9f9f9;
 }
 
-.compact-content {
-  --background: #f8f9fa;
-  --padding-top: calc(70px + env(safe-area-inset-top));
-  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
-  position: relative;
-  z-index: 1;
-}
+// .compact-content {
+//   --background: #f8f9fa;
+//   --padding-top: calc(70px + env(safe-area-inset-top));
+//   --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
+//   position: relative;
+//   z-index: 1;
+// }

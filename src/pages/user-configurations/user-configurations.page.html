@@ -8,14 +8,12 @@
   endIconName="checkmark"
   [hideOnScroll]="true"
   [scrollThreshold]="60"
-  [isHidden]="hideHeader"
 ></app-custom-header>
 
 <ion-content
   class="page-with-custom-header"  
   [formGroup]="cadastroForm"
   [scrollEvents]="true"
-  [class.header-hidden]="hideHeader"
   (ionScroll)="onContentScroll($event)"
 >
   <div class="profile-section">
