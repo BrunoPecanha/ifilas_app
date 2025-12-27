@@ -326,11 +326,3 @@ ion-content::part(scroll) {
 ion-content::part(scroll)::-webkit-scrollbar {
   display: none;
 }
-
-.ion-padding {
-  --background: #f8f9fa;
-  --padding-top: 30px;
-  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
-  position: relative;
-  z-index: 1;
-}
