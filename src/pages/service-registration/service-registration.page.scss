@@ -7,7 +7,6 @@
 }
 
 .search-section {
-  padding: 25px;
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   margin-bottom: 8px;
@@ -409,6 +408,7 @@ ion-item ion-label {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 100px;
   gap: 16px;
 }
 
