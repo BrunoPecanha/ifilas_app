@@ -522,9 +522,10 @@ ion-header.hidden {
 .favorite-store-card {
   flex: 0 0 auto;
   width: 150px;
+  height: 180px;
   background: white;
   border-radius: 16px;
-  padding: 12px;
+  padding: 7px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease;
 }
