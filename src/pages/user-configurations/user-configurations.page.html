@@ -8,15 +8,12 @@
   endIconName="checkmark"
   [hideOnScroll]="true"
   [scrollThreshold]="60"
-  [isHidden]="hideHeader"
 ></app-custom-header>
 
 <ion-content
-  fullscreen
-  class="ion-padding"
+  class="page-with-custom-header"  
   [formGroup]="cadastroForm"
   [scrollEvents]="true"
-  [class.header-hidden]="hideHeader"
   (ionScroll)="onContentScroll($event)"
 >
   <div class="profile-section">
@@ -224,7 +221,7 @@
       <ion-input formControlName="subtitle"></ion-input>
     </ion-item>
 
-    <ion-item fill="solid" class="form-item"  *ngIf="user.profile > 0">
+    <ion-item fill="solid" class="form-item" *ngIf="user.profile > 0">
       <ion-label position="floating">Serviços prestados</ion-label>
       <ion-input formControlName="servicesProvided"></ion-input>
     </ion-item>
@@ -280,7 +277,7 @@
   </div>
 
   <ion-item fill="solid" class="toggle-item delete-account-item">
-     <ion-icon name="trash-outline" slot="start"></ion-icon>
+    <ion-icon name="trash-outline" slot="start"></ion-icon>
     <ion-toggle
       formControlName="deleteAccount"
       (ionChange)="onDeleteAccountToggle($event)"

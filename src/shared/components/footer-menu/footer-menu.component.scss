@@ -275,6 +275,11 @@
   pointer-events: none;
 }
 
-// .footer-container {
-//   background: rgba(255, 255, 255, 0.5);
-// }
+.footer-container {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  border-radius: 30px;
+}

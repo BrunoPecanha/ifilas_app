@@ -308,3 +308,36 @@ ion-spinner {
   width: 16px;
   height: 16px;
 }
+
+.floating-header {
+  position: fixed !important; 
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  
+  padding-top: constant(safe-area-inset-top, 20px) !important;
+  padding-top: env(safe-area-inset-top, 20px) !important;
+  
+  padding-top: max( env(safe-area-inset-top, 20px), 44px ) !important;
+  
+  background: transparent !important;
+  --background: transparent !important;
+}
+
+ion-content {
+  --offset-top: calc(60px + env(safe-area-inset-top)) !important;
+}
+
+.header-hidden + ion-content {
+  --offset-top: env(safe-area-inset-top) !important;
+}
+
+app-custom-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--ion-background-color, #ffffff);
+  width: 100%;
+}

@@ -1,28 +1,26 @@
 .menu-content {
-  --background: #ffffff;
+  --background: transparent;
   height: 100vh;
   display: flex;
   flex-direction: column;
   padding: 0;
-  background: #ffffff;
+  background: transparent;
+  padding-top: env(safe-area-inset-top) !important;
+  padding-top: constant(safe-area-inset-top) !important;
+  padding-top: max(env(safe-area-inset-top), 44px) !important;
 }
-
 
 .menu-header-box {
   background: #3b95f0;
   padding: 24px 18px 28px;
-  
   margin: 0;
-
   width: 100%;
   border-radius: 0;
-
   border-bottom-left-radius: 22px;
   border-bottom-right-radius: 22px;
-
   color: #fff;
+  margin-top: 0 !important;
 }
-
 
 .user-info-header {
   display: flex;
@@ -34,7 +32,7 @@
   height: 60px;
   border-radius: 50%;
   overflow: hidden;
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,9 +66,8 @@
 .queue-status-header {
   margin-top: 6px;
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.95);
+  color: rgba(255, 255, 255, 0.95);
 }
-
 
 .menu-header-box .profile-badge {
   display: none;
@@ -110,9 +107,8 @@
 }
 
 .menu-list ion-item:hover {
-  background: transparent; 
+  background: transparent;
 }
-
 
 .disabled-item {
   --background: transparent;
@@ -134,7 +130,7 @@
   right: 18px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #f32121; 
+  background-color: #f32121;
   color: #fff;
   border-radius: 10px;
   font-size: 10px;
@@ -177,7 +173,6 @@
     box-shadow: 0 0 0 0 rgba(243, 33, 33, 0);
   }
 }
-
 
 .company-info {
   display: flex;
@@ -229,8 +224,8 @@
   --inner-padding-end: 18px;
   --min-height: 56px;
   --background: transparent;
-  --border-width: 0; 
-  --border-style: none; 
+  --border-width: 0;
+  --border-style: none;
   --inner-border-width: 0;
 }
 

@@ -1,5 +1,5 @@
 <app-custom-header
-  [subtitle]="'SELECIONA A LOJA'"
+  [subtitle]="'SELECIONE A LOJA'"
   [showStartButton]="true"
   [showEndButton]="false"
   [startIconName]="'arrow-back-outline'"
@@ -7,14 +7,10 @@
   (onStartClick)="getBack()">
 </app-custom-header>
 
-<ion-content class="establishment-content" (ionScroll)="onContentScroll($event)" [scrollEvents]="true">
-  <div class="content-wrapper">  
+<ion-content class="establishment-content page-with-custom-header" (ionScroll)="onContentScroll($event)" [scrollEvents]="true">
+  <div class="content-wrapper after-custom-header">  
 
     <div class="companies-section">
-      <div class="section-header">
-        <span class="companies-count">{{filteredEstablishments.length}} loja(s) disponível(s)</span>
-      </div>
-
       <div class="companies-grid">
         <ion-card
           class="company-card"

@@ -9,7 +9,7 @@
   [endLoading]="isSaving"
 ></app-custom-header>
 
-<ion-content class="services-management-content">
+<ion-content class="page-with-custom-header">
   <div class="search-section">
     <ion-searchbar
       [(ngModel)]="searchTerm"
@@ -149,7 +149,6 @@
 
         <ion-content class="form-content">
           <form [formGroup]="serviceForm" class="service-form">
-            <!-- Seção de Imagem com Destaque -->
             <div class="hero-section">
               <div class="image-upload-hero">
                 <div class="image-preview-large" (click)="fileInput.click()">
@@ -201,7 +200,6 @@
               </div>
             </div>
 
-            <!-- Informações Básicas -->
             <ion-card class="form-section">
               <ion-card-header class="section-header">
                 <ion-card-title>
@@ -274,7 +272,6 @@
               </ion-card-content>
             </ion-card>
 
-            <!-- Preço e Duração -->
             <ion-card class="form-section">
               <ion-card-header class="section-header">
                 <ion-card-title>
@@ -382,8 +379,7 @@
               </ion-card-content>
             </ion-card>
 
-            <!-- Botão de Salvar Fixo -->
-            <div class="sticky-actions">
+            <!-- <div class="sticky-actions">
               <ion-button
                 expand="block"
                 color="primary"
@@ -404,7 +400,7 @@
                 ></ion-spinner>
                 {{ editingService ? 'ATUALIZAR' : 'CADASTRAR' }} SERVIÇO
               </ion-button>
-            </div>
+            </div> -->
           </form>
         </ion-content>
       </div>

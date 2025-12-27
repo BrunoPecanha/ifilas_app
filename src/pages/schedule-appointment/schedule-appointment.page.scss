@@ -739,6 +739,7 @@ ion-chip.selected {
 
 .cards-container {
   display: flex;
+  padding-top: 35px;
   flex-direction: column;
   gap: 20px;
   align-items: stretch; 
@@ -759,7 +760,6 @@ ion-content::part(scroll) {
 
 .ion-padding {
   --background: #f8f9fa;
-  --padding-top: calc(70px + env(safe-area-inset-top));
   --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
   position: relative;
   z-index: 1;

@@ -27,7 +27,6 @@ export class UserConfigurationsPage {
   store: StoreModel = {} as StoreModel;
   searchingCep = false;
   serverErrors: { [key: string]: string } = {};
-  hideHeader = false;
   lastScrollTop = 0;
 
   constructor(
@@ -145,15 +144,7 @@ export class UserConfigurationsPage {
   }
 
   onContentScroll(event: CustomEvent) {
-    const scrollTop = event.detail?.scrollTop ?? 0;
-    const delta = scrollTop - this.lastScrollTop;
-
-    if (delta > 5 && scrollTop > 60) {
-      this.hideHeader = true;
-    } else if (delta < -5) {
-      this.hideHeader = false;
-    }
-
+    const scrollTop = event.detail?.scrollTop ?? 0; 
     this.lastScrollTop = scrollTop;
   }
 

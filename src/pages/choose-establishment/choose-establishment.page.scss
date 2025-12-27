@@ -15,14 +15,10 @@
     }
   }
 
-  .content-wrapper {
-    padding: 0 13px 80px;
-  }
-
-  .companies-section {
+   .companies-section {
     .section-header {
       margin-bottom: 8px;
-      margin-top: 8px;
+      margin-top: 15px;
       padding: 0 0px;
 
       .companies-count {
@@ -266,7 +262,6 @@
   }
 }
 
-/* Animações */
 @keyframes bounce {
   0%, 20%, 50%, 80%, 100% {
     transform: translateY(0);
@@ -298,7 +293,7 @@ ion-content::part(scroll) {
 @media (max-width: 480px) {
   .establishment-content {
     .content-wrapper {
-      padding: 0 12px 15px;
+      padding: 25px 12px 15px;
     }
     
     .company-card {
@@ -323,10 +318,3 @@ ion-content::part(scroll) {
   }
 }
 
-.establishment-content {
-  --background: #f8f9fa;
-  --padding-top: calc(70px + env(safe-area-inset-top));
-  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
-  position: relative;
-  z-index: 1;
-}

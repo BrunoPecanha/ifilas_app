@@ -109,7 +109,15 @@ export class OwnerSchedulePage implements OnInit {
 
   private loadSchedulesForDate() {
     this.isLoading = true;
-    this.service.getOwnerAgendaForDate(this.store.id, this.user.id, this.selectedDate).subscribe({
+
+    const date =
+      typeof this.selectedDate === 'string'
+        ? this.selectedDate
+        : this.selectedDate.toISOString().substring(0, 10);
+
+    console.log('selectedDate:', date);
+
+    this.service.getOwnerAgendaForDate(this.store.id, this.user.id, date).subscribe({
       next: (response) => {
         const data = response.data;
         this.slotDuration = data?.slotDuration ?? 30;
@@ -754,7 +762,7 @@ export class OwnerSchedulePage implements OnInit {
     return colorMap[colorName] || '#666';
   }
 
-  async editAppointment(customer: any) {    
+  async editAppointment(customer: any) {
     const servicesMapped = customer.services
       .filter((s: any) => s.variablePrice || s.variableTime)
       .map((s: any) => ({
