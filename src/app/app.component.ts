@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
-import { StatusBar } from '@capacitor/status-bar';
-import { SignalRService } from 'src/services/seignalr.service';
-import { PushNotificationService } from 'src/services/push-notification.service';
-import { SessionService } from 'src/services/session.service';
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { Capacitor } from '@capacitor/core';
+import { LoadingService } from 'src/services/loading.service';
+
 
 @Component({
   selector: 'app-root',
@@ -11,28 +11,47 @@ import { SessionService } from 'src/services/session.service';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  constructor(
-    private platform: Platform,
-    private signalRService: SignalRService,
-    private pushService: PushNotificationService,
-    private session: SessionService
-  ) {
+  loading$ = this.loadingService.isLoading$;
+
+  constructor(private platform: Platform, private loadingService: LoadingService) {
     this.initializeApp();
   }
 
-  initializeApp() {
-    this.signalRService.startNotificationConnection();
+  async initializeApp() {
+    await this.platform.ready();
 
-    this.platform.ready().then(() => {
-      document.body.classList.remove('dark');
+    // this.configureIonicSafeArea();
+    await this.configureStatusBar();
+  }
 
-      StatusBar.setOverlaysWebView({ overlay: false });
-      StatusBar.setBackgroundColor({ color: '#f5f5f5' });
-    });
-    
-    const isLoggedIn = !!this.session.getToken();
-    if (isLoggedIn) {
-      this.pushService.init();
+  // private configureIonicSafeArea() {
+  //   document.documentElement.style.setProperty('--ion-safe-area-top', 'var(--ion-statusbar-padding)');
+  //   document.documentElement.style.setProperty('--ion-safe-area-bottom', 'var(--ion-safe-area-bottom, 0px)');
+  // }
+
+  async onMenuOpen() {
+    await StatusBar.setStyle({ style: Style.Dark });
+  }
+
+  async onMenuClose() {
+    await StatusBar.setStyle({ style: Style.Light });
+  }
+
+  private async configureStatusBar() {
+    if (!Capacitor.isPluginAvailable('StatusBar')) {
+      return;
+    }
+
+    const platform = Capacitor.getPlatform();
+
+    if (platform === 'android') {
+      await StatusBar.setOverlaysWebView({ overlay: true });
+      await StatusBar.setBackgroundColor({ color: '#ffffff' });
+      await StatusBar.setStyle({ style: Style.Dark });
+
+    } else if (platform === 'ios') {
+      await StatusBar.setOverlaysWebView({ overlay: true });
+      await StatusBar.setStyle({ style: Style.Default });
     }
   }
 }

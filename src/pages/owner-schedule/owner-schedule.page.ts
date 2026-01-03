@@ -113,9 +113,7 @@ export class OwnerSchedulePage implements OnInit {
     const date =
       typeof this.selectedDate === 'string'
         ? this.selectedDate
-        : this.selectedDate.toISOString().substring(0, 10);
-
-    console.log('selectedDate:', date);
+        : this.selectedDate.toISOString().substring(0, 10);  
 
     this.service.getOwnerAgendaForDate(this.store.id, this.user.id, date).subscribe({
       next: (response) => {
@@ -155,7 +153,7 @@ export class OwnerSchedulePage implements OnInit {
           this.appointments.push({
             id: customer.id,
             name: customer.name,
-            avatar: customer.imageUrl || 'assets/default-avatar.png',
+            avatar: customer.imageUrl || null,
             totalSlots,
             slotStart,
             slotEnd,

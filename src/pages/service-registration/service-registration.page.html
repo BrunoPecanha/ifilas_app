@@ -9,7 +9,8 @@
   [endLoading]="isSaving"
 ></app-custom-header>
 
-<ion-content class="page-with-custom-header">
+<ion-content class="ion-padding"
+  [fullscreen]="true">
   <div class="search-section">
     <ion-searchbar
       [(ngModel)]="searchTerm"

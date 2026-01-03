@@ -1,5 +1,5 @@
 .page-header {
-  margin-top: 25px;  
+  margin-top: 1px;  
   margin-bottom: 16px;
 }
 
@@ -819,4 +819,20 @@ ion-content::part(scroll) {
 .add-btn[disabled] {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.page-container {
+  padding: 16px;
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+.default-avatar {
+  font-size: 36px;
+  color: var(--ion-color-medium);
+  width: 36px;
+  height: 36px;
+}
+
+ion-content::part(scroll) {
+  overscroll-behavior-y: contain;
 }

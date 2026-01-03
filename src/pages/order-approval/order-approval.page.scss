@@ -10,7 +10,7 @@ ion-content {
   ion-toolbar {
     --background: transparent;
     --border-width: 0;
-    padding: 8px 16px;
+    padding: 0px 16px;
 
     ion-segment {
       --background: #fff;
@@ -325,7 +325,6 @@ ion-content::part(scroll) {
 
 .ion-padding {
   --background: #f8f9fa;
-  --padding-top: calc(70px + env(safe-area-inset-top));
   --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
   position: relative;
   z-index: 1;

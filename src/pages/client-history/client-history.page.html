@@ -8,7 +8,7 @@
   [subtitle]="(startDate | date:'dd/MM/yyyy') + ' até ' + (endDate | date:'dd/MM/yyyy')"
 ></app-custom-header>
 
-<ion-content class="list-history page-with-custom-header">
+<ion-content [fullscreen]="true" class="list-history">
   <div class="history-wrapper">
     <div class="history-list scroll-area">
       <ion-list *ngIf="history.length > 0; else noResults">

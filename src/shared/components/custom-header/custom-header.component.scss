@@ -6,7 +6,6 @@
   background: transparent !important;
   --background: transparent !important;
   z-index: 999;
-  padding-top: env(safe-area-inset-top);
   pointer-events: none;
 }
 
@@ -215,10 +214,8 @@ ion-buttons {
   pointer-events: none;
 }
 
-
 .floating-counters {
   position: fixed;
-  top: calc(env(safe-area-inset-top) + 16px);
   right: 16px;
   z-index: 1001;
   pointer-events: none;
@@ -270,15 +267,6 @@ ion-buttons {
   height: calc(60px + env(safe-area-inset-top));
 }
 
-.floating-header + ion-content {
-  --offset-top: calc(60px + env(safe-area-inset-top)) !important;
-}
-
-.floating-header.header-hidden + ion-content {
-  --offset-top: env(safe-area-inset-top) !important;
-  transition: --offset-top 0.3s ease;
-}
-
 .floating-header {
   transition: transform 0.25s ease, opacity 0.2s ease;
 }
@@ -310,29 +298,33 @@ ion-spinner {
 }
 
 .floating-header {
-  position: fixed !important; 
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  z-index: 1000;
-  
-  padding-top: constant(safe-area-inset-top, 20px) !important;
-  padding-top: env(safe-area-inset-top, 20px) !important;
-  
-  padding-top: max( env(safe-area-inset-top, 20px), 44px ) !important;
-  
+  position: relative;
   background: transparent !important;
   --background: transparent !important;
+  --border-width: 0 !important;
+  --border-style: none !important;
 }
 
-ion-content {
-  --offset-top: calc(60px + env(safe-area-inset-top)) !important;
+.floating-toolbar {
+  --background: transparent !important;
+  background: transparent !important;
+  --border-width: 0 !important;
+  --border-style: none !important;
+  padding: 10px 12px;
+  min-height: 44px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  overflow: hidden;
 }
 
-.header-hidden + ion-content {
-  --offset-top: env(safe-area-inset-top) !important;
+.floating-counters {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1001;
 }
+
+
 
 app-custom-header {
   position: sticky;
@@ -341,3 +333,29 @@ app-custom-header {
   background: var(--ion-background-color, #ffffff);
   width: 100%;
 }
+
+.floating-toolbar {
+  --border-width: 0 !important;
+  --border-style: none !important;
+
+  --background: #ffffff !important;
+  background: #ffffff !important;
+
+  border-radius: 0 0 24px 24px;
+
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+
+  overflow: hidden;
+
+  padding: 12px 16px;
+  min-height: 64px;
+}
+
+.floating-counters {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1002;
+}
+
+

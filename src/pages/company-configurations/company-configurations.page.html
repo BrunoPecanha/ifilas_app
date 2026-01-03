@@ -9,7 +9,7 @@
   [subtitle]="'CONFIGURAÇÕES DA LOJA'"
 ></app-custom-header>
 
-<ion-content class="compact-content page-with-custom-header" [formGroup]="cadastroForm">
+<ion-content class="ion-padding" [fullscreen]="true" [formGroup]="cadastroForm">
   <div class="form-grid-container">
     <div class="form-row">
       <ion-card class="compact-card image-section">
@@ -457,6 +457,12 @@
               <ion-icon name="share-social-outline" slot="start"></ion-icon>
               <ion-label>Compartilhar Fila </ion-label>
               <ion-toggle formControlName="shareQueue"></ion-toggle>
+            </ion-item>
+
+            <ion-item class="compact-setting-item" lines="none">
+              <ion-icon name="swap-horizontal-outline" slot="start"></ion-icon>
+              <ion-label>Ocultar valores ao transferir clientes</ion-label>
+              <ion-toggle formControlName="hideAmountsWhenTransferringCustomers"></ion-toggle>
             </ion-item>
 
             <ion-item class="compact-setting-item" lines="none">

@@ -56,7 +56,7 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
     if (msg) {
       this.toastService.show(msg, 'danger');
       sessionStorage.removeItem('toastMessage');
-    }    
+    }
 
     this.customerOrProfessional = this.sessionService.getUser();
     this.customerId = this.sessionService.getGenericKey('customerId');
@@ -69,12 +69,12 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
     this.professionalId = this.sessionService.getGenericKey('professionalId') || this.customerOrProfessional.id;
     this.looseCustomer = this.sessionService.getGenericKey('looseCustomer') || this.sessionService.getGenericKey('isWalkIn') || false;
     this.redirectToCustomerDashBoard = this.looseCustomer ? true : false;
-    
+
     if (!this.customerId) {
       this.customerId = this.sessionService.getUser().id;
     }
     else
-      this.looseCustomer = false;    
+      this.looseCustomer = false;
 
     this.loadStoreAgenda();
   }
@@ -87,14 +87,17 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
   }
 
   loadStoreAgenda() {
-    this.service.getEmployeeAgendaForCostumers(this.storeId, this.professionalId, new Date()).subscribe(res => {
+    this.service.getEmployeeAgendaForCostumers(this.storeId, this.professionalId, new Date().toISOString().substring(0, 10)).subscribe(res => {
       this.selectedStore = res.data.store;
       this.daysWindow = res.data.daysWindow;
-      this.availableDates = res.data.availableDates.map(d => ({
-        ...d,
-        date: new Date(d.date)
-      }));
+      this.availableDates = res.data.availableDates.map((d: any) => {
+        const [year, month, day] = d.date.split('T')[0].split('-').map(Number);
 
+        return {
+          ...d,
+          date: new Date(year, month - 1, day)
+        };
+      });
       this.updateVisibleDates();
     });
   }
@@ -236,7 +239,7 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
               await this.toastService.show('Data não selecionada', 'danger');
               return;
             }
-            
+
             const request: AddCustomerToScheduleRequest = {
               selectedServices: this.selectedServices,
               notes: this.notes ?? '',
@@ -255,8 +258,8 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
               next: async (res) => {
                 if (res.valid) {
                   await this.toastService.show('Agendamento realizado com sucesso!', 'success');
-                  this.clearSessionDate();                  
-                  
+                  this.clearSessionDate();
+
                   if (this.redirectToCustomerDashBoard) {
                     this.router.navigate(['/owner-schedule']);
                   }

@@ -5,7 +5,8 @@
   [subtitle]="(queueInfo?.businessName + ' -  Sua posição: ' + queueInfo?.position)"
 ></app-custom-header>
 
-<ion-content #chatContainer class="ion-padding">
+<ion-content #chatContainer class="ion-padding" 
+  [fullscreen]="true">
   <div class="chat-messages">
     <div
       *ngFor="let message of messages"

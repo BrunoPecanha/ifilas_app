@@ -225,3 +225,8 @@ ion-content::part(scroll) {
   position: relative;
   z-index: 1;
 }
+
+.page-container {
+  padding: 16px;
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}

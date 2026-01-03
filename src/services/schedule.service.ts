@@ -64,8 +64,8 @@ export class ScheduleService {
     return this.http.get<ScheduleResponse>(`${this.apiUrl}/${storeId}/${employeeId}`);
   }
 
-  getEmployeeAgendaForCostumers(storeId: number, employeeId: number, date: Date): Observable<ScheduleDateResponse> {
-    return this.http.get<ScheduleDateResponse>(`${this.apiUrl}/agenda/${employeeId}/${storeId}/${date.toISOString()}`);
+  getEmployeeAgendaForCostumers(storeId: number, employeeId: number, date: string): Observable<ScheduleDateResponse> {
+    return this.http.get<ScheduleDateResponse>(`${this.apiUrl}/agenda/${employeeId}/${storeId}/${date}`);
   }
 
   startCustomerService(customerId: number, employeeAttendantId: number): Observable<any> {

@@ -1,86 +1,95 @@
 .menu-content {
-    --background: #f9f9f9;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 0;
-  }
-  
-  .menu-header {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    background-color: #3b95f0;
-    color: white;
-  }  
+  --background: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+}
 
-  .logo {
-    width: 50px;
-    height: 40px;
-    margin-left: 6.5rem;
-  }
-  
-  .app-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    font-family: 'Poppins', sans-serif;
-  }
-  
-  .user-info {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    background-color: #ffffff;
-    border-bottom: 1px solid #e0e0e0;
-  }
-  
-  .user-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    margin-right: 12px;
-    object-fit: cover;
-  }
-  
-  .user-name {
-    font-weight: 600;
-    font-size: 1rem;
-  }
-  
-  .user-email {
-    font-size: 0.8rem;
-    color: #888;
-  }
-  
-  ion-item {
-    --padding-start: 16px;
-    --inner-padding-end: 16px;
-    --min-height: 48px;
-  }
-  
-  .menu-footer {
-    margin-top: auto;
-    padding: 1rem;
-    text-align: center;
-    font-size: 0.75rem;
-    color: #999;
-    border-top: 1px solid #eaeaea;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.5rem;
-  }
-  
-  .footer-logo {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding-top: 0.5rem;
-  }
-  
-  .footer-logo img {
-    width: 60px;
-    height: auto;
-    opacity: 0.7;
-  }
+.menu-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: #3b95f0;
+  color: white;
+}
+
+.logo {
+  width: 50px;
+  height: 40px;
+  margin-left: 6.5rem;
+}
+
+.app-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.user-email {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+ion-item {
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  --min-height: 48px;
+}
+
+.menu-footer {
+  margin-top: auto;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #999;
+  border-top: 1px solid #eaeaea;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.footer-logo {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+.footer-logo img {
+  width: 60px;
+  height: auto;
+  opacity: 0.7;
+}
+
+.menu-header-box {
+  background: #3b95f0;
+  padding: 16px 14px 20px;
+  padding-top: calc(var(--ion-safe-area-top) + 16px);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  color: #fff;
+}

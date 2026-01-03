@@ -1,27 +1,40 @@
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, switchMap, throwError } from 'rxjs';
+import {
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+  HttpErrorResponse
+} from '@angular/common/http';
+import { Observable, catchError, finalize, switchMap, throwError } from 'rxjs';
 import { AuthService } from 'src/services/auth.service';
 import { SessionService } from 'src/services/session.service';
+import { LoadingService } from 'src/services/loading.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private authService: AuthService, private sessionService: SessionService) { }
+  constructor(
+    private authService: AuthService,
+    private sessionService: SessionService,
+    private loadingService: LoadingService
+  ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (req.url.includes('/auth/refresh-token')) {
-      return next.handle(req);
+    const skipLoading = req.url.includes('/auth/refresh-token');
+
+    if (!skipLoading) {
+      this.loadingService.show();
     }
 
     const token = this.authService.getToken();
 
     const authReq = token
       ? req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+          setHeaders: {
+            Authorization: `Bearer ${token}`
+          }
+        })
       : req;
 
     return next.handle(authReq).pipe(
@@ -31,7 +44,7 @@ export class AuthInterceptor implements HttpInterceptor {
             switchMap((newTokenResponse) => {
               const newToken = newTokenResponse?.data?.token;
               if (!newToken) {
-                throw new Error("Novo token ausente");
+                throw new Error('Novo token ausente');
               }
 
               this.sessionService.setToken(newToken);
@@ -46,6 +59,7 @@ export class AuthInterceptor implements HttpInterceptor {
               return next.handle(newReq);
             }),
             catchError((err) => {
+              this.loadingService.reset();
               this.authService.logout();
               return throwError(() => err);
             })
@@ -53,6 +67,11 @@ export class AuthInterceptor implements HttpInterceptor {
         }
 
         return throwError(() => error);
+      }),
+      finalize(() => {
+        if (!skipLoading) {
+          this.loadingService.hide();
+        }
       })
     );
   }

@@ -7,7 +7,8 @@
 >
 </app-custom-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" 
+  [fullscreen]="true">
   <app-ad-banner [ad]="activeAd"></app-ad-banner>
 
   <div class="promotions-list">
@@ -18,7 +19,6 @@
     >
     </app-promotion-card>
   </div>
-
   
   <div class="empty-state" *ngIf="promotions.length === 0">
     <ion-icon name="pricetags-outline" class="empty-icon"></ion-icon>

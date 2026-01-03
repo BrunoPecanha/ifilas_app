@@ -12,7 +12,7 @@ export class PushNotificationService {
   constructor(
     private deviceService: DeviceService,
     private sessionStorage: SessionService
-  ) {}
+  ) { }
 
   async init() {
     if (this.initialized) return;
@@ -28,15 +28,16 @@ export class PushNotificationService {
       }
     }
 
-    await PushNotifications.register();
-
     PushNotifications.addListener('registration', (token: Token) => {
+      console.log('🔥 FCM TOKEN:', token.value);
       this.handleToken(token.value);
     });
 
     PushNotifications.addListener('registrationError', err => {
-      console.error('Erro ao registrar push:', err);
+      console.error('❌ ERRO PUSH:', JSON.stringify(err));
     });
+
+    await PushNotifications.register();
   }
 
   private handleToken(token: string) {

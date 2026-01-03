@@ -1,156 +1,73 @@
-.qr-modal-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 16px;
-}
-
-.qr-code-container {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.qr-code-display {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+.services-summary {
   width: 100%;
-}
-
-.qr-image {
-  width: 100%;
-  max-width: 260px; // 👈 controle de tamanho
-  height: auto;
-  aspect-ratio: 1 / 1;
-  object-fit: contain;
-
-  border-radius: 12px;
-  background: #fff;
-  padding: 12px;
-}
-
-.qr-instruction {
-  font-size: 14px;
-  color: var(--ion-color-medium);
-  margin: 0;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: center;
-  padding-top: 12px;
-}
-
-.qr-image {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-}
-
-
-/* ============================
-   QR CODE MODAL
-============================ */
-
-.qr-code-modal {
-  --width: 90%;
-  --max-width: 380px;
-  --height: fit-content;
-  --border-radius: 16px;
-}
-
-.qr-modal-content {
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  background: #ffffff;
+  gap: 7px;
 }
 
-/* Header */
-.qr-modal-header {
+.service-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f8f9fa;
 }
 
-.qr-modal-title {
-  margin: 0;
-  font-size: 1.1rem;
+.service-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.service-icon {
+  font-size: 22px;
+  color: var(--ion-color-primary);
+}
+
+.service-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.service-name {
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--ion-color-dark);
 }
 
-.close-button {
-  --padding-start: 6px;
-  --padding-end: 6px;
-  margin: 0;
-}
-
-/* Conteúdo */
-.qr-code-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 220px;
-  text-align: center;
-}
-
-/* Loading */
-.loading-spinner {
-  text-align: center;
-}
-
-.loading-spinner ion-spinner {
-  margin-bottom: 12px;
-}
-
-.loading-spinner p {
-  margin: 0;
-  font-size: 0.85rem;
+.service-meta {
+  font-size: 0.8rem;
   color: var(--ion-color-medium);
 }
 
-/* QR exibido */
-.qr-code-display {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+.service-price {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  white-space: nowrap;
 }
 
-/* IMAGEM DO QR */
-.qr-image {
-  width: 220px;
-  height: 220px;
-  object-fit: contain;
-  background: #ffffff;
+.services-divider {
+  height: 1px;
+  background: #e9ecef;
+  margin: 6px 0;
+}
+
+.services-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 12px;
   border-radius: 12px;
-  border: 1px solid #e9ecef;
+  background: #f1f3f5;
+  font-size: 1rem;
 }
 
-/* Texto */
-.qr-instruction {
-  font-size: 0.85rem;
-  color: var(--ion-color-medium);
-  margin: 0;
-  line-height: 1.4;
-}
-
-/* Mobile menor */
-@media (max-width: 360px) {
-  .qr-image {
-    width: 200px;
-    height: 200px;
-  }
-}
-
-.qr-image {
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+.services-total strong {
+  font-size: 1.1rem;
+  color: var(--ion-color-primary);
 }
 
 .qr-modal-header {
@@ -158,16 +75,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 44px; 
   margin-bottom: 16px;
-  min-height: 40px;
 }
 
 .qr-modal-title {
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1rem;       
+  font-weight: 700;    
+  line-height: 1.2;    
   color: var(--ion-color-dark);
   text-align: center;
+  padding: 0 36px;   
 }
 
 .qr-modal-header ion-button {
