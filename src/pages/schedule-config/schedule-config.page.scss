@@ -1,8 +1,6 @@
 .segment-container {
-  margin-top: 25px;  
   background: var(--ion-color-light);
   border-radius: 12px;
-  padding: 8px;
   margin-bottom: 16px;
 }
 
@@ -603,3 +601,9 @@ ion-item-option ion-icon {
   box-shadow: var(--ion-box-shadow, 0 2px 6px rgba(0,0,0,0.1));
 }
 
+.ion-padding {
+  --background: #f8f9fa;
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
+  position: relative;
+  z-index: 1;
+}

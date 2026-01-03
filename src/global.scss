@@ -36,48 +36,25 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 // @import "@ionic/angular/css/palettes/dark.system.css";
 
-:root {
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  /* Força para claro */
-  :root {
-    --ion-background-color: #ffffff;
-    --ion-text-color: #000000;
-    /* Ajuste outras variáveis se precisar */
-  }
-}
-
-/* Garante sempre claro, mesmo se o sistema estiver no modo escuro */
+/* DEIXE O IONIC CONTROLAR AS SAFE AREAS AUTOMATICAMENTE */
 :root {
   color-scheme: light;
 
-  /* Ajuste de cores padrão */
-  --ion-background-color: #ffffff;
-  --ion-background-color-rgb: 255, 255, 255;
-  --ion-text-color: #000000;
-  --ion-text-color-rgb: 0, 0, 0;
-
-  /* Inputs */
-  --ion-item-background: #ffffff;
-  --ion-placeholder-color: #666666;
+  /* O Ionic já define estas variáveis automaticamente */
+  /* Não defina --ion-safe-area-* manualmente */
 }
 
+/* Forçar modo claro sempre */
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: light;
 
     --ion-background-color: #ffffff;
-    --ion-background-color-rgb: 255, 255, 255;
     --ion-text-color: #000000;
-    --ion-text-color-rgb: 0, 0, 0;
-
-    --ion-item-background: #ffffff;
-    --ion-placeholder-color: #666666;
   }
 }
 
+/* Configurações de cores (mantenha estas) */
 :root {
   color-scheme: light;
 
@@ -167,3 +144,165 @@
     --ion-card-background: #ffffff;
   }
 }
+
+.floating-header {
+  background: transparent !important;
+  --background: transparent !important;
+  z-index: 1000;
+}
+
+.floating-toolbar {
+  background: white !important;
+  --background: white !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  .icon-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+ion-content.with-custom-header {
+}
+
+ion-modal.qr-code-modal {
+  --width: 90%;
+  --max-width: 380px;
+  --height: fit-content;
+  --border-radius: 16px;
+}
+
+.qr-modal-content {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: #ffffff;
+}
+
+ion-header {
+  contain: none !important;
+}
+
+@media (max-width: 768px) {
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+ion-app {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+ion-header app-custom-header {
+  display: block;
+  width: 100%;
+}
+
+
+ion-content.fullscreen-with-header {
+    contain: size style;
+}
+
+.android-native ion-header {
+  
+}
+
+.ios-native ion-header {
+
+}
+
+.pwa-mode ion-header {
+}
+
+ion-header {
+  contain: none;
+}
+
+.floating-header {
+}
+
+html,
+body,
+ion-app,
+ion-content {
+  background: var(--ion-background-color);
+}
+
+ion-content::before {
+  content: '';
+  left: 0;
+  right: 0;
+  background: var(--ion-background-color);
+  z-index: 998;
+  pointer-events: none;
+}
+
+.global-spinner-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(2px);
+  pointer-events: all; 
+  touch-action: none; 
+  color: var(--ion-color-primary);
+}
+
+.global-spinner-backdrop ion-spinner {
+  width: 48px;
+  height: 48px;
+}
+
+
+// /* Configuração global da status bar */
+// @media (prefers-color-scheme: light) {
+//   :root {
+//     /* Forçar status bar com texto escuro */
+//     --ion-statusbar-padding: 20px;
+//   }
+  
+//   /* Se estiver usando capacitor */
+//   .capacitor-ios .ion-page {
+//     padding-top: constant(safe-area-inset-top);
+//     padding-top: env(safe-area-inset-top);
+//   }
+// }
+
+// /* Ajuste específico para o menu */
+// ion-menu {
+//   .menu-content {
+//     .menu-header-box {
+//       /* Adicionar padding apenas se necessário */
+//       padding-top: max(16px, env(safe-area-inset-top));
+//       background: #3b95f0;
+      
+//       /* Garantir que o texto seja visível */
+//       color: white;
+//     }
+//   }
+// }
+
+// /* Sobrescrever qualquer estilo do Ionic que possa estar interferindo */
+// ion-header {
+//   ion-toolbar {
+//     --background: #3b95f0;
+//     --color: white;
+    
+//     /* Garantir padding correto */
+//     --padding-top: env(safe-area-inset-top);
+//     padding-top: env(safe-area-inset-top);
+//     min-height: calc(56px + env(safe-area-inset-top));
+//   }
+// }

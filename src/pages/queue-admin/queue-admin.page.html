@@ -8,7 +8,8 @@
   (onEndClick)="openAddQueuePage()"
 ></app-custom-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" 
+  [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-outline"

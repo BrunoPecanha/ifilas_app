@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "404975429805",
+    "project_id": "nextu-23159",
+    "storage_bucket": "nextu-23159.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:404975429805:android:8d8d8d944d59318e17fe24",
+        "android_client_info": {
+          "package_name": "com.bmp.ifilas.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCS5V-4ob6i2648sxqit7VaGdt8_jTWksc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

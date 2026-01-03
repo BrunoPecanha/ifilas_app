@@ -7,8 +7,8 @@
   (onStartClick)="getBack()">
 </app-custom-header>
 
-<ion-content class="establishment-content page-with-custom-header" (ionScroll)="onContentScroll($event)" [scrollEvents]="true">
-  <div class="content-wrapper after-custom-header">  
+<ion-content class="establishment-content" [fullscreen]="true" (ionScroll)="onContentScroll($event)" [scrollEvents]="true">
+  <div class="content-wrapper">  
 
     <div class="companies-section">
       <div class="companies-grid">

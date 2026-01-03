@@ -1,9 +1,14 @@
-<ion-app>    
-    <ion-menu contentId="main-content" side="start" menuId="first">
-      <app-side-menu></app-side-menu> 
-    </ion-menu>
+<ion-app>
+  <ion-menu contentId="main-content" side="start" menuId="first"
+    (ionDidOpen)="onMenuOpen()"
+    (ionDidClose)="onMenuClose()">
+    <app-side-menu></app-side-menu>
+  </ion-menu>
 
-    <div class="ion-page" id="main-content">
-      <ion-router-outlet></ion-router-outlet>
+  <div class="ion-page" id="main-content">
+    <div class="global-spinner-backdrop" *ngIf="loading$ | async">
+      <ion-spinner name="crescent"></ion-spinner>
     </div>
-  </ion-app>
+    <ion-router-outlet></ion-router-outlet>
+  </div>
+</ion-app>

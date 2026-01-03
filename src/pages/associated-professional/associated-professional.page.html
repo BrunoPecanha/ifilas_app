@@ -6,136 +6,141 @@
   (onEndClick)="openInviteModal()"
 ></app-custom-header>
 
-<ion-content class="management-content page-with-custom-header">
-  <ng-container *ngIf="userRole === 2">
-    <div class="team-section" *ngIf="professionals.length > 0">
-      <div class="section-header">
-        <h2 class="section-title">EQUIPE ({{ professionals.length }})</h2>
-      </div>
-      <div class="team-list">
-        <div class="team-member" *ngFor="let prof of professionals">
-          <ion-avatar class="member-avatar">
-            <ion-icon name="person-circle-outline"></ion-icon>
-          </ion-avatar>
-          <div class="member-info">
-            <h3 class="member-name">{{ prof.employeeName }}</h3>
-            <p class="member-detail">Desde {{ prof.associatedSince }}</p>
+<ion-content [fullscreen]="true">
+  <div class="page-container">
+    <ng-container *ngIf="userRole === 2">
+      <div class="team-section" *ngIf="professionals.length > 0">
+        <div class="section-header">
+          <h2 class="section-title">EQUIPE ({{ professionals.length }})</h2>
+        </div>
+        <div class="team-list">
+          <div class="team-member" *ngFor="let prof of professionals">
+            <ion-avatar class="member-avatar">
+              <ion-icon name="person-circle-outline"></ion-icon>
+            </ion-avatar>
+            <div class="member-info">
+              <h3 class="member-name">{{ prof.employeeName }}</h3>
+              <p class="member-detail">Desde {{ prof.associatedSince }}</p>
+            </div>
+            <ion-button
+              fill="clear"
+              color="danger"
+              class="action-button"
+              (click)="confirmProfessionalRemoval(prof.employeeId)"
+            >
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
           </div>
-          <ion-button
-            fill="clear"
-            color="danger"
-            class="action-button"
-            (click)="confirmProfessionalRemoval(prof.employeeId)"
-          >
-            <ion-icon name="trash-outline"></ion-icon>
-          </ion-button>
         </div>
       </div>
-    </div>
 
-    <div class="invites-section" *ngIf="sentInvites.length > 0">
-      <div class="section-header">
+      <div class="invites-section" *ngIf="sentInvites.length > 0">
+        <div class="section-header">
+          <h2 class="section-title">
+            CONVITES PENDENTES ({{ sentInvites.length }})
+          </h2>
+        </div>
+        <div class="invites-list">
+          <div class="invite-item" *ngFor="let invite of sentInvites">
+            <ion-avatar class="invite-avatar">
+              <ion-icon name="hourglass-outline"></ion-icon>
+            </ion-avatar>
+            <div class="invite-info">
+              <h3 class="invite-name">{{ invite.employeeName }}</h3>
+              <p class="invite-status">Aguardando resposta</p>
+              <p class="invite-status">
+                Convite enviado em {{ invite.associatedSince }}
+              </p>
+            </div>
+            <ion-button
+              fill="clear"
+              color="danger"
+              class="action-button"
+              (click)="confirmCancellationInvitation(invite.employeeId)"
+            >
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="userRole !== 2">
+      <div
+        class="associated-section"
+        *ngIf="associatedEstablishments.length > 0"
+      >
+        <h2 class="section-title">EMPRESAS ASSOCIADAS</h2>
+        <div class="establishments-list">
+          <div
+            class="establishment-item"
+            *ngFor="let establishment of associatedEstablishments"
+          >
+            <ion-avatar class="establishment-avatar">
+              <ion-icon name="business-outline"></ion-icon>
+            </ion-avatar>
+            <div class="establishment-info">
+              <h3 class="establishment-name">{{ establishment.storeName }}</h3>
+              <p class="establishment-detail">
+                Associado desde {{ establishment.associatedSince }}
+              </p>
+            </div>
+            <ion-button
+              fill="clear"
+              color="danger"
+              class="leave-button"
+              (click)="confirmEstablishmentExit(establishment.storeId)"
+            >
+              <ion-icon name="exit-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </div>
+
+      <div class="invites-section" *ngIf="pendingInvites.length > 0">
         <h2 class="section-title">
-          CONVITES PENDENTES ({{ sentInvites.length }})
+          CONVITES PENDENTES ({{ pendingInvites.length }})
         </h2>
-      </div>
-      <div class="invites-list">
-        <div class="invite-item" *ngFor="let invite of sentInvites">
-          <ion-avatar class="invite-avatar">
-            <ion-icon name="hourglass-outline"></ion-icon>
-          </ion-avatar>
-          <div class="invite-info">
-            <h3 class="invite-name">{{ invite.employeeName }}</h3>
-            <p class="invite-status">Aguardando resposta</p>
-            <p class="invite-status">
-              Convite enviado em {{ invite.associatedSince }}
-            </p>
-          </div>
-          <ion-button
-            fill="clear"
-            color="danger"
-            class="action-button"
-            (click)="confirmCancellationInvitation(invite.employeeId)"
-          >
-            <ion-icon name="trash-outline"></ion-icon>
-          </ion-button>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="userRole !== 2">
-    <div class="associated-section" *ngIf="associatedEstablishments.length > 0">
-      <h2 class="section-title">EMPRESAS ASSOCIADAS</h2>
-      <div class="establishments-list">
-        <div
-          class="establishment-item"
-          *ngFor="let establishment of associatedEstablishments"
-        >
-          <ion-avatar class="establishment-avatar">
-            <ion-icon name="business-outline"></ion-icon>
-          </ion-avatar>
-          <div class="establishment-info">
-            <h3 class="establishment-name">{{ establishment.storeName }}</h3>
-            <p class="establishment-detail">
-              Associado desde {{ establishment.associatedSince }}
-            </p>
-          </div>
-          <ion-button
-            fill="clear"
-            color="danger"
-            class="leave-button"
-            (click)="confirmEstablishmentExit(establishment.storeId)"
-          >
-            <ion-icon name="exit-outline"></ion-icon>
-          </ion-button>
-        </div>
-      </div>
-    </div>
-
-    <div class="invites-section" *ngIf="pendingInvites.length > 0">
-      <h2 class="section-title">
-        CONVITES PENDENTES ({{ pendingInvites.length }})
-      </h2>
-      <div class="invites-list">
-        <div class="invite-item" *ngFor="let invite of pendingInvites">
-          <ion-avatar class="invite-avatar">
-            <ion-icon name="mail-unread-outline"></ion-icon>
-          </ion-avatar>
-          <div class="invite-info">
-            <h3 class="invite-name">{{ invite.storeName }}</h3>
-            <p class="invite-status">Convite recebido</p>
-          </div>
-          <div class="invite-actions">
-            <ion-button
-              fill="clear"
-              color="success"
-              class="action-button"
-              (click)="processInvite(invite.storeId)"
-            >
-              <ion-icon name="checkmark-circle-outline"></ion-icon>
-            </ion-button>
-            <ion-button
-              fill="clear"
-              color="medium"
-              class="action-button"
-              (click)="denyInvite(invite.storeId)"
-            >
-              <ion-icon name="close-circle-outline"></ion-icon>
-            </ion-button>
+        <div class="invites-list">
+          <div class="invite-item" *ngFor="let invite of pendingInvites">
+            <ion-avatar class="invite-avatar">
+              <ion-icon name="mail-unread-outline"></ion-icon>
+            </ion-avatar>
+            <div class="invite-info">
+              <h3 class="invite-name">{{ invite.storeName }}</h3>
+              <p class="invite-status">Convite recebido</p>
+            </div>
+            <div class="invite-actions">
+              <ion-button
+                fill="clear"
+                color="success"
+                class="action-button"
+                (click)="processInvite(invite.storeId)"
+              >
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+              </ion-button>
+              <ion-button
+                fill="clear"
+                color="medium"
+                class="action-button"
+                (click)="denyInvite(invite.storeId)"
+              >
+                <ion-icon name="close-circle-outline"></ion-icon>
+              </ion-button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div
-      class="empty-state"
-      *ngIf="associatedEstablishments.length === 0 && pendingInvites.length === 0"
-    >
-      <ion-icon name="people-outline" class="empty-icon"></ion-icon>
-      <h3>Nenhum vínculo ativo</h3>
-      <p>Você não está associado a nenhuma empresa no momento</p>
-    </div>
-  </ng-container>
+      <div
+        class="empty-state"
+        *ngIf="associatedEstablishments.length === 0 && pendingInvites.length === 0"
+      >
+        <ion-icon name="people-outline" class="empty-icon"></ion-icon>
+        <h3>Nenhum vínculo ativo</h3>
+        <p>Você não está associado a nenhuma empresa no momento</p>
+      </div>
+    </ng-container>
+  </div>
 </ion-content>
 <app-footer-menu></app-footer-menu>

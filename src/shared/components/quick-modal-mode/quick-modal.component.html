@@ -44,23 +44,18 @@
                 <div class="service-info">
                   <span class="service-name">{{ service.name }}</span>
 
-                  <div class="service-meta">
-                    <span class="service-duration">
-                      {{ service.finalDuration }} min
-                    </span>
-                    <span class="service-quantity">
-                      {{ service.quantity }}x
-                    </span>
-                  </div>
+                  <span class="service-meta">
+                    {{ service.finalDuration }} min • {{ service.quantity }}x
+                  </span>
                 </div>
               </div>
 
-              <div class="service-right">
-                <span class="service-price">
-                  {{ service.finalPrice | currency : "BRL" }}
-                </span>
-              </div>
+              <span class="service-price">
+                {{ service.finalPrice | currency : "BRL" }}
+              </span>
             </div>
+
+            <div class="services-divider"></div>
 
             <div class="services-total">
               <span>Total</span>

@@ -57,4 +57,5 @@ export interface StoreModel extends To {
   nextHourOnAgenda: string;
   isOpen: boolean;
   likesCount?: number;
+  hideAmountsWhenTransferringCustomers?: boolean;
 }

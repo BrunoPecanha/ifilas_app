@@ -739,7 +739,7 @@ ion-chip.selected {
 
 .cards-container {
   display: flex;
-  padding-top: 35px;
+  padding-top: 0px;
   flex-direction: column;
   gap: 20px;
   align-items: stretch; 
@@ -763,40 +763,4 @@ ion-content::part(scroll) {
   --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
   position: relative;
   z-index: 1;
-}
-
-/* Estilo padrão do header (transparente) */
-app-custom-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  background-color: transparent !important;
-  transition: all 0.3s ease;
-  box-shadow: none !important;
-}
-
-/* Header quando scrolled */
-app-custom-header.scrolled {
-  background-color: #ffffff !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Se o app-custom-header tiver um elemento interno que precisa do background */
-app-custom-header.scrolled ::ng-deep header,
-app-custom-header.scrolled ::ng-deep .header-container,
-app-custom-header.scrolled ::ng-deep ion-header {
-  background-color: #ffffff !important;
-}
-
-/* Ajuste o conteúdo para começar abaixo do header */
-ion-content {
-  --padding-top: 80px;
-  --padding-bottom: 0px;
-}
-
-/* Garanta que o z-index esteja correto */
-app-custom-header {
-  z-index: 1000;
 }

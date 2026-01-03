@@ -269,13 +269,20 @@ export class QueuePage implements AfterViewInit {
   }
 
   getQueueStatusColor(status: number): string {
-    const statusColors: { [key: number]: string } = {
-      6: 'success',
-      2: 'warning',
+    const statusColors: Record<number, string> = {
+      0: 'warning',
       1: 'medium',
-      3: 'primary',
-      4: 'danger'
+      2: 'primary',
+      3: 'medium',
+      4: 'danger',
+      5: 'danger',
+      6: 'warning',
+      7: 'danger',
+      8: 'success',
+      9: 'success',
+      10: 'tertiary'
     };
+
     return statusColors[status] || 'medium';
   }
 
@@ -287,9 +294,9 @@ export class QueuePage implements AfterViewInit {
       3: { text: 'Finalizado', color: 'medium' },
       4: { text: 'Ausente', color: 'danger' },
       5: { text: 'Cancelado', color: 'danger' },
-      6: { text: 'Sua vez!', color: 'success' },
-      7: { text: 'Pendente', color: 'warning' },
-      8: { text: 'Recusado', color: 'danger' },
+      6: { text: 'Pendente', color: 'warning' },
+      7: { text: 'Recusado', color: 'danger' },
+      8: { text: 'Próximo', color: 'success' },
       9: { text: 'Confirmado', color: 'success' },
       10: { text: 'Agendado', color: 'tertiary' }
     };
@@ -297,7 +304,7 @@ export class QueuePage implements AfterViewInit {
     return map[status] || { text: 'Desconhecido', color: 'medium' };
   }
 
-  isQueueReadOnly(status: number): boolean {    
+  isQueueReadOnly(status: number): boolean {
     return [2, 3, 5, 8].includes(status);
   }
 
@@ -531,5 +538,270 @@ export class QueuePage implements AfterViewInit {
         : 'Fila ativa',
       'medium'
     );
+  }
+
+  // Adicione estes métodos à sua classe QueuePage:
+
+  /**
+   * Método para navegar para agendamentos (usado no botão do empty state)
+   */
+  goToScheduling(): void {
+    this.router.navigate(['/scheduling'], {
+      queryParams: {
+        storeId: null,
+        returnTo: '/queue'
+      }
+    });
+  }
+
+  /**
+   * Método para selecionar data (usado no date picker)
+   */
+  async selectDate(): Promise<void> {
+    const alert = await this.alertController.create({
+      header: 'Selecionar Data',
+      inputs: [
+        {
+          name: 'selectedDate',
+          type: 'date',
+          value: this.selectedDate.toISOString().split('T')[0],
+          min: new Date().toISOString().split('T')[0],
+          max: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Confirmar',
+          handler: (data) => {
+            if (data.selectedDate) {
+              const newDate = new Date(data.selectedDate);
+              this.selectedDate = newDate;
+
+              const hasAppointment = this.myAppointments.some(appt =>
+                this.isSameDay(new Date(appt.date), newDate)
+              );
+
+              if (hasAppointment) {
+                this.loadSchedulesForDate();
+              } else {
+                this.loadDashboardData(this.user.id);
+              }
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  /**
+   * Método para navegar para busca de estabelecimentos (usado no empty state)
+   */
+  findStores(): void {
+    this.router.navigate(['/stores']);
+  }
+
+  /**
+   * Método para lidar com o scroll do conteúdo (opcional - já tem similar)
+   */
+  onContentScroll(event: any): void {
+    this.headerScrolled = event.detail.scrollTop > 50;
+  }
+
+  /**
+   * Método para formatar data no formato iOS (MMM uppercase)
+   * Usado no header
+   */
+  getMonthAbbreviation(date: Date): string {
+    const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+    return months[date.getMonth()];
+  }
+
+  /**
+   * Método para retornar o dia da semana abreviado
+   */
+  getShortDayOfWeek(date: Date): string {
+    const days = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+    return days[date.getDay()];
+  }
+
+  /**
+   * Método para verificar se é hora de pico (para mostrar informações adicionais)
+   */
+  isPeakHour(time: string): boolean {
+    const hour = parseInt(time.split(':')[0]);
+    return (hour >= 12 && hour <= 14) || (hour >= 18 && hour <= 20);
+  }
+
+  /**
+   * Método para obter ícone baseado na categoria do serviço
+   */
+  getServiceIcon(category: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Barbearia': 'cut-outline',
+      'Salão': 'cut-outline',
+      'Restaurante': 'restaurant-outline',
+      'Consultório': 'medical-outline',
+      'Academia': 'barbell-outline',
+      'Padaria': 'cafe-outline',
+      'Supermercado': 'cart-outline',
+      'Farmácia': 'medical-outline',
+      'Oficina': 'construct-outline',
+      'Default': 'storefront-outline'
+    };
+
+    return iconMap[category] || iconMap['Default'];
+  }
+
+  /**
+   * Método para calcular quanto tempo falta para o agendamento (formato amigável)
+   */
+  getFriendlyTimeUntil(appt: ScheduleItem): string {
+    const now = new Date();
+    const appointmentDate = this.getLocalAppointmentDate(appt);
+    const timeDiff = appointmentDate.getTime() - now.getTime();
+
+    if (timeDiff <= 0) return 'Agora';
+
+    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (hours >= 24) {
+      const days = Math.floor(hours / 24);
+      return `${days} ${days === 1 ? 'dia' : 'dias'}`;
+    } else if (hours > 0) {
+      return `${hours}h`;
+    } else if (minutes > 0) {
+      return `${minutes}min`;
+    }
+
+    return 'Em breve';
+  }
+
+  /**
+   * Método para formatar moeda no estilo iOS
+   */
+  formatCurrency(value: number | string): string {
+    if (!value) return 'R$ 0,00';
+
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2
+    }).format(numValue);
+  }
+
+  /**
+   * Método para gerar cor gradiente baseada na posição da fila
+   */
+  getGradientColor(position: number): string {
+    if (position === 1) return 'linear-gradient(135deg, #4cd964, #5ac8fa)';
+    if (position <= 3) return 'linear-gradient(135deg, #ff9500, #ffcc00)';
+    if (position <= 10) return 'linear-gradient(135deg, #007aff, #5856d6)';
+    return 'linear-gradient(135deg, #8e8e93, #c7c7cc)';
+  }
+
+  /**
+   * Método para obter emoji baseado na posição da fila
+   */
+  getPositionEmoji(position: number): string {
+    if (position === 1) return '👑';
+    if (position <= 3) return '🔥';
+    if (position <= 10) return '⚡';
+    return '⏳';
+  }
+
+  /**
+   * Método para verificar se deve mostrar o card de destaque
+   */
+  shouldShowHighlightCard(): boolean {
+    if (this.activeSegment === 'filas') {
+      return !!this.nextAppointment;
+    } else {
+      return !!this.nextQueue;
+    }
+  }
+
+  /**
+   * Método para alternar entre filas e agendamentos com animação
+   */
+  async switchSegment(segment: 'filas' | 'agendamentos'): Promise<void> {
+    if (this.activeSegment === segment) return;
+
+    // Fechar card expandido atual
+    this.collapseAll();
+
+    // Mudar segmento
+    this.activeSegment = segment;
+
+    // Pequeno delay para animação
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Scroll para topo
+    this.content.scrollToTop(200);
+  }
+
+  /**
+   * Método para lidar com toque longo no card (opcional)
+   */
+  onCardLongPress(item: any, type: 'queue' | 'appointment'): void {
+    // Implementar ações rápidas no futuro
+    console.log('Long press on', type, item.id);
+  }
+
+  /**
+   * Método para abrir mapa com localização do estabelecimento
+   */
+  async openStoreLocation(store: any): Promise<void> {
+    // Verificar se o estabelecimento tem coordenadas
+    if (store.latitude && store.longitude) {
+      const url = `https://maps.google.com/?q=${store.latitude},${store.longitude}`;
+      window.open(url, '_blank');
+    } else {
+      this.toastService.show('Localização não disponível', 'warning');
+    }
+  }
+
+  /**
+   * Método para compartilhar fila/agendamento
+   */
+  async shareItem(item: any, type: 'queue' | 'appointment'): Promise<void> {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: type === 'queue' ? 'Minha posição na fila' : 'Meu agendamento',
+          text: `Estou ${type === 'queue' ? 'na fila do' : 'com agendamento no'} ${item.store.name}`,
+          url: window.location.href
+        });
+      } catch (error) {
+        console.log('Compartilhamento cancelado');
+      }
+    } else {
+      this.toastService.show('Compartilhamento não suportado no seu dispositivo', 'warning');
+    }
+  }
+
+  getAverageWaitTime(queue: QueueItem): string {
+    if (!queue.waitingTime) return 'Indisponível';
+
+    const timeStr = queue.waitingTime.slice(0, 5);
+    const [hours, minutes] = timeStr.split(':').map(Number);
+
+    const totalMinutes = hours * 60 + minutes;
+
+    if (totalMinutes < 60) {
+      return `${totalMinutes} min`;
+    } else if (hours === 1) {
+      return `1h ${minutes}min`;
+    } else {
+      return `${hours}h ${minutes}min`;
+    }
   }
 }

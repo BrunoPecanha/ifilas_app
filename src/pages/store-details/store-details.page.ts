@@ -24,6 +24,7 @@ export class StoreDetailsPage implements OnInit {
   isLoading: boolean = true;
   selectedTab: string = 'services';
   liked: boolean = false;
+  canAccess: boolean = false; 
 
   constructor(
     private route: ActivatedRoute,
@@ -60,13 +61,13 @@ export class StoreDetailsPage implements OnInit {
 
   checkLiked() {
     const user = this.session.getUser();
-    if (!this.storeId || !user?.id) 
+    if (!this.storeId || !user?.id)
       return;
 
     this.favoriteService.likedStore(this.storeId, user.id)
       .subscribe({
-        next: (response) => {          
-          this.liked = response.data; 
+        next: (response) => {
+          this.liked = response.data;
         },
         error: (err) => console.error('Erro ao buscar like', err)
       });
@@ -197,7 +198,7 @@ export class StoreDetailsPage implements OnInit {
     const heart = event.target as HTMLElement;
     const user = this.session.getUser();
 
-    const previousLikeState = this.liked; 
+    const previousLikeState = this.liked;
 
     this.liked = !this.liked;
     store.votes += this.liked ? 1 : -1;
@@ -213,7 +214,7 @@ export class StoreDetailsPage implements OnInit {
     likeOperation.subscribe({
       next: (response) => {
         if (!response.valid) {
-          this.liked = previousLikeState; 
+          this.liked = previousLikeState;
           store.votes += this.liked ? 1 : -1;
           this.toastService.show('Erro ao processar sua ação.', 'danger');
         }
@@ -267,5 +268,9 @@ export class StoreDetailsPage implements OnInit {
 
   openGallery(index: number) {
     console.log('Abrir galeria no índice:', index);
+  }
+
+  showComingSoon() {
+    this.toastService.show('Em breve disponível');
   }
 }

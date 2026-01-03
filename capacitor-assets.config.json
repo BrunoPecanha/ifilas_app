@@ -1,0 +1,18 @@
+{
+  "logo": "assets/icon.png",
+  "logoSplash": "assets/splash.png",
+  "ios": {
+    "logo": "assets/icon.png",
+    "backgroundColor": "#ffffff",
+    "logoWidth": 150
+  },
+  "android": {
+    "logo": "assets/icon.png",
+    "backgroundColor": "#ffffff",
+    "logoWidth": 150
+  },
+  "pwa": {
+    "logo": "assets/icon.png",
+    "backgroundColor": "#ffffff"
+  }
+}

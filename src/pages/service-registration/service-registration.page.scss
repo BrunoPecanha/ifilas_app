@@ -7,6 +7,7 @@
 }
 
 .search-section {
+  padding-top: 26px;
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   margin-bottom: 8px;
@@ -756,4 +757,11 @@ ion-item ion-label {
   .sticky-actions {
     padding: 20px 40px;
   }
+}
+
+.ion-padding {
+  --background: #f8f9fa;
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
+  position: relative;
+  z-index: 1;
 }

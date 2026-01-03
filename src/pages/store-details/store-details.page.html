@@ -4,6 +4,7 @@
   RouterLink="/select-professional"
   startIconName="close-outline"
   [showEndButton]="true"
+  [subtitle]="'DETALHES DA LOJA'"
   endIconName="information-circle-outline"
   (onEndClick)="openInfoModal()"
 ></app-custom-header>
@@ -87,7 +88,7 @@
           <button
             class="filter-btn"
             [class.active]="selectedTab === 'products'"
-            (click)="selectedTab = 'products'"
+            (click)="!canAccess ? showComingSoon() : selectedTab = 'products'"
           >
             <ion-icon name="cube-outline"></ion-icon>
             <span>Produtos</span>
@@ -96,7 +97,7 @@
           <button
             class="filter-btn"
             [class.active]="selectedTab === 'gallery'"
-            (click)="selectedTab = 'gallery'"
+            (click)="!canAccess ? showComingSoon() : selectedTab = 'gallery'"
           >
             <ion-icon name="images-outline"></ion-icon>
             <span>Galeria</span>

@@ -7,7 +7,7 @@
 >
 </app-custom-header>
 
-<ion-content class="ion-padding page-with-custom-header">
+<ion-content [fullscreen]="true" class="ion-padding">
   <!-- <app-ad-banner [ad]="activeAd" class="tall-ad-notifications"></app-ad-banner> -->
   <ion-refresher  (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content

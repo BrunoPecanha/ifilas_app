@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\pages",
+    "\\src\\pages\\select-company",
+    "\\src\\services",
+    "\\src\\shared",
+    "\\src\\shared\\components",
+    "\\src\\shared\\components\\custom-header"
+  ],
+  "SelectedNode": "\\src\\pages\\select-company\\select-company.page.scss",
+  "PreviewInSolutionExplorer": false
+}

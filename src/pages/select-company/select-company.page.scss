@@ -1793,35 +1793,226 @@ ion-content::part(scroll)::-webkit-scrollbar {
 
 .modern-content {
   --background: #f8f9fa;
-  --padding-top: calc(var(--custom-header-height, 96px) + env(safe-area-inset-top)) !important;
   --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
   position: relative;
   z-index: 1;
 }
 
-.modern-content.page-with-custom-header {
-  --padding-top: calc(var(--custom-header-height, 96px) + env(safe-area-inset-top)) !important;
+
+
+
+/* 🔥 quando colapsado */
+.modern-content.content-collapsed .always-visible-content {
+  transform: translateY(-120%);
+  opacity: 0;
+  pointer-events: none;
 }
 
-.always-visible-content {
-  background: white;
+.top-compact-bar {
+  position: sticky;
+  top: env(safe-area-inset-top);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+}
 
-  position: fixed;
-  top: calc(var(--custom-header-height, 96px) + env(safe-area-inset-top));
-  left: 0;
-  right: 0;
-  z-index: 50;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+/* ENDEREÇO */
+.address-area {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.address-area ion-icon {
+  font-size: 18px;
+  color: #667eea;
+}
+
+.address-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2d3748;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* LUPA */
+.search-toggle {
+  background: none;
+  border: none;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-toggle ion-icon {
+  font-size: 22px;
+  color: #667eea;
+}
+
+/* SEARCH OPEN */
+.search-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.search-area ion-icon {
+  font-size: 18px;
+  color: #a0aec0;
+}
+
+.search-area input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.close-search {
+  background: none;
+  border: none;
+  padding: 4px;
+}
+
+.close-search ion-icon {
+  font-size: 20px;
+  color: #718096;
+}
+
+
+.top-compact-bar {
+  position: sticky;
+  top: env(safe-area-inset-top);
+  z-index: 1000;
+  height: 44px;
+
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* REMOVE a linha */
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.address-area {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 70%;
+}
+
+.address-area ion-icon {
+  font-size: 16px;
+  color: #667eea;
+}
+
+.address-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2d3748;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-toggle ion-icon {
+  font-size: 22px;
+  color: #667eea;
+}
+
+.top-compact-bar {
+  backdrop-filter: saturate(180%) blur(12px);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.collapsible-content {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.collapsible-content.hidden {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.search-active .collapsible-content:not(.always-visible) {
+  display: none;
+}
+
+.search-section.always-visible {
+  display: block !important;
+}
+
+.top-compact-bar {
+  position: sticky;
+  top: 0;
+  padding-top: env(safe-area-inset-top, 20px); 
+  padding-bottom: 10px;
+  background: #fff;
+  z-index: 1000;
+  height: auto;
+  min-height: 44px;
 }
 
 .modern-content {
-  --padding-top: calc(
-    var(--custom-header-height, 96px) + 
-    env(safe-area-inset-top) + 
-    120px 
-  ) !important;
-  
-  .inner-scroll {
-    margin-top: 120px;
+  --background: #f8f9fa;
+  --padding-top: 0;
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.content-container {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+ion-app {
+  padding-top: env(safe-area-inset-top, 0);
+  background: #fff;
+}
+
+.top-compact-bar {
+  padding-top: env(safe-area-inset-top, 20px) !important;
+  min-height: calc(44px + env(safe-area-inset-top, 20px)) !important;
+}
+
+.modern-content {
+  --padding-top: 0 !important;
+}
+
+@supports (padding: max(0px)) {
+  .top-compact-bar {
+    padding-top: max(env(safe-area-inset-top), 20px);
+    padding-left: max(env(safe-area-inset-left), 16px);
+    padding-right: max(env(safe-area-inset-right), 16px);
   }
 }

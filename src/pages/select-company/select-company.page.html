@@ -1,49 +1,31 @@
-<app-custom-header
-  [showEndButton]="true"
-  [endIconName]="'notifications-outline'"
-  (onEndClick)="goToNotifications()"
-  [showNotificationBadge]="true"
->
-</app-custom-header>
-
-<div class="always-visible-content">
-  <div class="location-section">
-    <div class="location-content">
-      <ion-icon name="location-outline" class="location-icon"></ion-icon>
-      <div class="location-text">
-        <span class="location-label">Sua localização atual:</span>
-        <span class="location-address">{{ getUserAddress() }}</span>
-      </div>
-    </div>
+<div class="top-compact-bar" [class.search-open]="searching">
+  <div class="address-area" *ngIf="!searching">
+    <ion-icon name="location-outline"></ion-icon>
+    <span class="address-text">{{ getUserAddress() }}</span>
+  </div>
+  
+  <div class="search-area" *ngIf="searching">
+    <ion-icon name="search-outline"></ion-icon>
+    <input
+      type="text"
+      placeholder="Buscar lojas ou serviços"
+      [(ngModel)]="searchQuery"
+      (input)="onSearch($event)"
+      autofocus
+    />
+    <button class="close-search" (click)="closeSearch()">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
   </div>
 
-  <div class="search-section">
-    <div class="search-container">
-      <div class="search-input-wrapper">
-        <ion-icon name="search-outline" class="search-icon"></ion-icon>
-        <input
-          type="text"
-          class="custom-searchbar"
-          placeholder="Buscar lojas ou serviços próximos"
-          [(ngModel)]="searchQuery"
-          (input)="onSearch($event)"
-          #searchInput
-        />
-        <button
-          class="clear-search-btn"
-          *ngIf="searchQuery"
-          (click)="clearFilters()"
-        >
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-      </div>
-    </div>
-  </div>
+  <button class="search-toggle" *ngIf="!searching" (click)="openSearch()">
+    <ion-icon name="search-outline"></ion-icon>
+  </button>
 </div>
 
 <ion-content 
   class="modern-content"
-  [class.content-collapsed]="contentHidden"
+  [class.hidden]="searching || contentHidden"
   (ionScroll)="onContentScroll($event)"
   [scrollEvents]="true"
 >
@@ -56,7 +38,7 @@
     ></ion-refresher-content>
   </ion-refresher>
 
-  <div class="collapsible-content">
+  <div class="collapsible-content"  [class.hidden]="searching || searchQuery.trim() !== ''">
     <div class="banners-section">
       <div
         class="banners-scroll"
@@ -109,7 +91,7 @@
       </div>
     </div>
 
-    <div class="favorite-stores-section" *ngIf="shouldShowFavorites">
+    <div class="favorite-stores-section" *ngIf="shouldShowFavorites && !searching">
       <div class="section-header">
         <h3 class="section-title">Seus favoritos</h3>
       </div>

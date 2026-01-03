@@ -98,6 +98,27 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     });
   }
 
+  banners = [
+    {
+      id: 1,
+      title: 'Evite filas',
+      image: 'assets/images/banner/banner_promo.jpg',
+      action: 'about'
+    },
+    {
+      id: 2,
+      title: 'Favoritos',
+      image: 'assets/images/banner/banner_promo2.png',
+      action: 'favorites'
+    },
+    {
+      id: 3,
+      title: 'Chegue na hora certa',
+      image: 'assets/images/banner/banner_promo3.jpg',
+      action: 'how-it-works'
+    }
+  ];
+
   private loadFilteredStores(userId: number) {
     this.isLoading = true;
     this.isEmptyResult = false;
@@ -189,8 +210,11 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     const searchValue = event.detail?.value || event.target?.value || '';
     this.searchQuery = searchValue;
 
-    if (searchValue.trim() !== '') {
+
+    if (this.searchQuery.trim() !== '') {
       this.contentHidden = true;
+    } else {
+      this.contentHidden = false;
     }
   }
 
@@ -261,32 +285,16 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
 
   getActiveFiltersCount(): number {
     let count = 0;
-    if (this.selectedFilter) count++;
-    if (this.selectedCategoryId) count++;
-    if (this.searchQuery) count++;
+    if (this.selectedFilter)
+      count++;
+    if (this.selectedCategoryId)
+      count++;
+    if (this.searchQuery)
+      count++;
     return count;
   }
 
-  banners = [
-    {
-      id: 1,
-      title: 'Evite filas',
-      image: 'assets/images/banner/banner_promo.jpg',
-      action: 'about'
-    },
-    {
-      id: 2,
-      title: 'Favoritos',
-      image: 'assets/images/banner/banner_promo2.png',
-      action: 'favorites'
-    },
-    {
-      id: 3,
-      title: 'Chegue na hora certa',
-      image: 'assets/images/banner/banner_promo3.jpg',
-      action: 'how-it-works'
-    }
-  ];
+
 
   onBannerClick(banner: any) {
     switch (banner.action) {
@@ -300,7 +308,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
   onBannerScroll() {
     const scrollElement = this.bannersScroll.nativeElement;
     const scrollLeft = scrollElement.scrollLeft;
-    const bannerWidth = scrollElement.clientWidth; 
+    const bannerWidth = scrollElement.clientWidth;
 
     this.activeBannerIndex = Math.round(scrollLeft / bannerWidth);
   }
@@ -382,7 +390,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
       this.loadMoreData();
     }
 
-    if (!this.searchQuery || this.searchQuery.trim() === '') {
+    if (!this.searching) {
       const isScrollingDown = scrollTop > this.lastScrollTop;
       const scrollDelta = Math.abs(scrollTop - this.lastScrollTop);
 
@@ -563,7 +571,8 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
 
   get shouldShowFavorites(): boolean {
     return this.favoriteStores.length > 0 &&
-      (!this.searchQuery || this.searchQuery.trim() === '');
+      (!this.searchQuery || this.searchQuery.trim() === '') &&
+      !this.searching;
   }
 
   goToNotifications() {
@@ -582,5 +591,22 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
 
   hideContent() {
     this.contentHidden = true;
+  }
+
+  openSearch() {
+    this.searching = true;
+    this.contentHidden = false;
+
+    setTimeout(() => {
+      if (this.searchInput && this.searchInput.nativeElement) {
+        this.searchInput.nativeElement.focus();
+      }
+    }, 100);
+  }
+
+  closeSearch() {
+    this.searching = false;
+    this.searchQuery = '';
+    this.contentHidden = false;
   }
 }
