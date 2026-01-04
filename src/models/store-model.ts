@@ -34,7 +34,7 @@ export interface StoreModel extends To {
   openingHours?: OpeningHoursModel[];
   highLights: HighLightModel[];
   ownerId: number;
-  owner?: UserModel;
+  owner?: UserModel;  
   status: StatusEnum;
   liked: boolean;
   createdAt?: Date | any;

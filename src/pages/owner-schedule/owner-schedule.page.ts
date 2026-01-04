@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, QueryList, ViewChildren } from "@angular/core";
+import { Component, OnInit, QueryList, ViewChildren } from "@angular/core";
 import { ScheduleService } from "src/services/schedule.service";
 import { CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserModel } from "src/models/user-model";
@@ -43,8 +43,9 @@ export class OwnerSchedulePage implements OnInit {
   store!: StoreModel;
   showFilters = false;
   scheduleId: number = 0;
+  employeeCanSeeAmount = true;
 
-  selectedServices: any[] = [];
+  selectedCustomer: any = {};
   modalMode: 'qrcode' | 'services' | 'summary' = 'summary';
   isModalOpen = false;
 
@@ -88,6 +89,17 @@ export class OwnerSchedulePage implements OnInit {
     this.loadSchedulesForDate();
   }
 
+  get canShowPaymentDetails(): boolean {
+    if (!this.store?.hideAmountsWhenTransferringCustomers)
+      return true;
+
+    if (!this.selectedCustomer?.isTransfered) {
+      return true;
+    }   
+
+    return this.store.ownerId === this.user.id;
+  }
+
   onContentScroll(ev: any) {
     const now = Date.now();
     if (now - this.lastScrollCheck < 30)
@@ -110,13 +122,16 @@ export class OwnerSchedulePage implements OnInit {
   private loadSchedulesForDate() {
     this.isLoading = true;
 
-    const date =
-      typeof this.selectedDate === 'string'
-        ? this.selectedDate
-        : this.selectedDate.toISOString().substring(0, 10);  
+    const d = this.selectedDate;
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+
+    const date = `${year}-${month}-${day}`;
 
     this.service.getOwnerAgendaForDate(this.store.id, this.user.id, date).subscribe({
-      next: (response) => {
+      next: (response) => {        
         const data = response.data;
         this.slotDuration = data?.slotDuration ?? 30;
         this.scheduleId = data?.scheduleId ?? 0;
@@ -155,6 +170,7 @@ export class OwnerSchedulePage implements OnInit {
             name: customer.name,
             avatar: customer.imageUrl || null,
             totalSlots,
+            isTransfered: customer.isTransfered || false,
             slotStart,
             slotEnd,
             durationMinutes,
@@ -187,7 +203,7 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   openServicesSummary(customer: any) {
-    this.selectedServices = customer.services;
+    this.selectedCustomer = customer;
     this.modalMode = 'summary';
     this.isModalOpen = true;
   }
@@ -199,6 +215,66 @@ export class OwnerSchedulePage implements OnInit {
   private toMinutes(time: string): number {
     const [h, m] = time.substring(0, 5).split(':').map(Number);
     return h * 60 + m;
+  }
+
+  async beginCustomerTransfer(customer: any) {
+    const alert = await this.alertController.create({
+      header: 'Transferir cliente',
+      message: 'Informe a agenda de destino',
+      inputs: [
+        {
+          name: 'nextSchedule',
+          type: 'number',
+          placeholder: 'ID da agenda de destino'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Transferir',
+          handler: (data) => {
+            if (!data.nextSchedule) {
+              this.toastController.show('Agenda de destino inválida', 'warning');
+              return false;
+            }
+
+            this.executarTransferencia(customer, Number(data.nextSchedule));
+            return true;
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private executarTransferencia(customer: any, nextScheduleId: number) {
+    const payload = {
+      customerId: customer.id,
+      currentSchedule: this.scheduleId,
+      nextSchedule: nextScheduleId
+    };
+
+    this.isLoading = true;
+
+    this.service.transferCustomer(payload).subscribe({
+      next: () => {
+        this.toastController.show('Cliente transferido com sucesso', 'success');
+
+        this.removeAppointment(customer);
+
+        this.loadSchedulesForDate();
+
+        this.isLoading = false;
+      },
+      error: () => {
+        this.toastController.show('Erro ao transferir cliente', 'danger');
+        this.isLoading = false;
+      }
+    });
   }
 
   private formatMinutes(totalMinutes: number): string {

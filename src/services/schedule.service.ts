@@ -90,6 +90,17 @@ export class ScheduleService {
     return this.http.put(`${this.apiUrl}/remove`, command);
   }
 
+  transferCustomer(payload: {
+    customerId: number;
+    currentSchedule: number;
+    nextSchedule: number;
+  }) {
+    return this.http.put(
+      `${this.apiUrl}/transfer-customer`,
+      payload
+    );
+  }
+
   private toLocalDateTimeString(date: Date): string {
     const pad = (n: number) => n.toString().padStart(2, '0');
 

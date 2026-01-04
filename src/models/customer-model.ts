@@ -10,6 +10,7 @@ export interface CustomerModel {
   total: number;
   paymentIcon: string;
   status: number;
+  isTransfered: boolean;
   paymentMethodId: number;
   paymentMethod: string;
   notes: string;

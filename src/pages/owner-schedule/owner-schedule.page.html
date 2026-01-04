@@ -1,14 +1,12 @@
 <app-custom-header
   subtitle="AGENDA"
   [showStartButton]="false"
-  (onEndClick)="addAppointment($event)">
+  (onEndClick)="addAppointment($event)"
+>
 </app-custom-header>
 
-<ion-content
-  [scrollEvents]="true"
-  (ionScroll)="onContentScroll($event)"
->
-  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)"> 
+<ion-content [scrollEvents]="true" (ionScroll)="onContentScroll($event)">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
   </ion-refresher>
 
   <div class="page-container">
@@ -372,7 +370,7 @@
               </ion-button>
             </div>
           </ion-item>
-          <ion-item-options side="end" *ngIf="canDrag(customer)">           
+          <ion-item-options side="end" *ngIf="canDrag(customer)">
             <ion-item-option
               color="primary"
               (click)="confirmStartCustomerService(customer)"
@@ -382,22 +380,19 @@
                 [name]="getActionIcon(customer.status)"
               ></ion-icon>
             </ion-item-option>
-             <ion-item-option
+            <ion-item-option
               color="tertiary"
-              [disabled]="!canEditAppointment(customer)"
+              [disabled]="!canEditAppointment(customer) || !canShowPaymentDetails"
               (click)="editAppointment(customer)"
             >
               <ion-icon slot="icon-only" name="create-outline"></ion-icon>
             </ion-item-option>
-             <ion-item-option
+            <ion-item-option
               color="warning"
-              (click)="confirmStartCustomerService(customer)"
+              (click)="beginCustomerTransfer(customer)"
             >
-              <ion-icon
-                slot="icon-only"
-                [name]="'swap-horizontal'"
-              ></ion-icon>
-            </ion-item-option>           
+              <ion-icon slot="icon-only" [name]="'swap-horizontal'"></ion-icon>
+            </ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
       </ion-list>
@@ -407,12 +402,14 @@
         <p>Tente ajustar os filtros ou buscar por outros termos</p>
       </div>
     </section>
-    <app-quick-modal
-      [isOpen]="isModalOpen"
-      [mode]="modalMode"
-      [services]="selectedServices"
-      (close)="isModalOpen = false"
-    ></app-quick-modal>
+    <span *ngIf="canShowPaymentDetails">
+      <app-quick-modal
+        [isOpen]="isModalOpen"
+        [mode]="modalMode"
+        [services]="selectedCustomer.services"
+        (close)="isModalOpen = false"
+      ></app-quick-modal>
+    </span>
   </div>
 </ion-content>
 
