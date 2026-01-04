@@ -138,21 +138,19 @@ export class ChooseEstablishmentPage implements OnInit {
   handleCompanyClick(est: StoreModel) {
     this.loadingCompanyId = est.id;
     this.updateEmployeeConfig(this.user.id, this.loadingCompanyId);
+        
+    this.session.setStore(est);
 
-    setTimeout(() => {
-      this.session.setStore(est);
-
-      this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, est.id)
-        .subscribe((isQueueOpenToday: boolean) => {
-          this.loadingCompanyId = null;
-          this.navigateToDestination(isQueueOpenToday);
-        });
-    }, 1000);
+    this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, est.id)
+      .subscribe((isQueueOpenToday: boolean) => {
+        this.loadingCompanyId = null;
+        this.navigateToDestination(isQueueOpenToday);
+      });
   }
 
-  updateEmployeeConfig(id: number, storeId: number) {    
+  updateEmployeeConfig(id: number, storeId: number) {
     this.employeeStoreService.useAgenda(id, storeId).subscribe({
-      next: (response) => {        
+      next: (response) => {
         this.user.useAgenda = response.data;
         this.session.setUser(this.user);
       }

@@ -192,6 +192,28 @@
         <ion-label>Trabalhos</ion-label>
       </ion-item>
 
+      <div class="company-info-section" *ngIf="profile > 0 && companyName">
+        <div class="company-info-header">
+          <ion-icon name="business" class="company-icon"></ion-icon>
+          <span class="company-info-label">Você está logado em:</span>
+        </div>
+        <div class="current-company">
+          <div class="company-logo-small" *ngIf="companyLogoPath">
+            <img [src]="companyLogoPath" alt="Logo da empresa" />
+          </div>
+          <div class="company-logo-small default" *ngIf="!companyLogoPath">
+            <ion-icon name="storefront"></ion-icon>
+          </div>
+          <div class="company-details">
+            <div class="company-name-small">{{ companyName }}</div>
+            <button class="change-company-btn" (click)="navigateTo('/choose-establishment')">
+              <ion-icon name="swap-horizontal"></ion-icon>
+              Trocar
+            </button>
+          </div>
+        </div>
+      </div>
+
       <ion-item (click)="logout()" lines="none" class="menu-item-compact logout-item">
         <ion-icon name="log-out" slot="start"></ion-icon>
         <ion-label>Sair</ion-label>
