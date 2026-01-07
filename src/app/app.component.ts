@@ -19,37 +19,22 @@ export class AppComponent {
 
   async initializeApp() {
     await this.platform.ready();
-
-    // this.configureIonicSafeArea();
     await this.configureStatusBar();
   }
 
-  // private configureIonicSafeArea() {
-  //   document.documentElement.style.setProperty('--ion-safe-area-top', 'var(--ion-statusbar-padding)');
-  //   document.documentElement.style.setProperty('--ion-safe-area-bottom', 'var(--ion-safe-area-bottom, 0px)');
-  // }
-
-  async onMenuOpen() {
-    await StatusBar.setStyle({ style: Style.Dark });
-  }
-
-  async onMenuClose() {
-    await StatusBar.setStyle({ style: Style.Light });
-  }
-
   private async configureStatusBar() {
-    if (!Capacitor.isPluginAvailable('StatusBar')) {
-      return;
-    }
+    if (!Capacitor.isPluginAvailable('StatusBar')) return;
 
     const platform = Capacitor.getPlatform();
 
     if (platform === 'android') {
-      await StatusBar.setOverlaysWebView({ overlay: true });
+      await StatusBar.show();    
       await StatusBar.setBackgroundColor({ color: '#ffffff' });
-      await StatusBar.setStyle({ style: Style.Dark });
+      await StatusBar.setOverlaysWebView({ overlay: false });
+      await StatusBar.setStyle({ style: Style.Default });
+    }
 
-    } else if (platform === 'ios') {
+    if (platform === 'ios') {
       await StatusBar.setOverlaysWebView({ overlay: true });
       await StatusBar.setStyle({ style: Style.Default });
     }
