@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from 'src/services/auth.service';
 import { SessionService } from 'src/services/session.service';
 import { StoreListResponse } from 'src/models/responses/store-list-response';
+import { PushNotificationService } from 'src/services/push-notification.service';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +23,8 @@ export class LoginPage {
     private authService: AuthService,
     private sessionService: SessionService,
     private alertController: AlertController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private pushService: PushNotificationService
   ) { }
 
   ngOnInit() {
@@ -48,7 +50,7 @@ export class LoginPage {
           this.sessionService.setToken(response?.data.token);
           this.sessionService.setUser(response?.data.user);
 
-          //await this.pushService.init();
+          await this.pushService.init();
           this.router.navigate(['/role-registration']);
         }
       }

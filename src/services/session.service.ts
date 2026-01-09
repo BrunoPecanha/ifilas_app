@@ -33,6 +33,10 @@ export class SessionService {
     return storeJson ? JSON.parse(storeJson) : null;
   }
 
+  isLogged(): boolean {
+    return !!this.getToken() && !!this.getUser();
+  }
+
   getProfile(): any | null {
     const profile = sessionStorage.getItem(this.PROFILE_KEY);
     return profile ? JSON.parse(profile) : -1;
@@ -92,7 +96,7 @@ export class SessionService {
     return localStorage.getItem(this.REFRESH_TOKEN);
   }
 
-  logout(): void {    
+  logout(): void {
     this.clearSessionData();
     this.clearRefreshToken();
     this.router.navigate(['/splash']);
