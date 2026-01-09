@@ -3,7 +3,8 @@ import { Platform } from '@ionic/angular';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
 import { LoadingService } from 'src/services/loading.service';
-
+import { PushNotificationService } from 'src/services/push-notification.service';
+import { SessionService } from 'src/services/session.service';
 
 @Component({
   selector: 'app-root',
@@ -11,14 +12,25 @@ import { LoadingService } from 'src/services/loading.service';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
+
   loading$ = this.loadingService.isLoading$;
 
-  constructor(private platform: Platform, private loadingService: LoadingService) {
+  constructor(
+    private platform: Platform,
+    private loadingService: LoadingService,
+    private pushService: PushNotificationService,
+    private sessionService: SessionService
+  ) {
     this.initializeApp();
   }
 
   async initializeApp() {
     await this.platform.ready();
+
+    if (this.sessionService.isLogged()) {
+      await this.pushService.init();
+    }
+
     await this.configureStatusBar();
   }
 
@@ -28,7 +40,7 @@ export class AppComponent {
     const platform = Capacitor.getPlatform();
 
     if (platform === 'android') {
-      await StatusBar.show();    
+      await StatusBar.show();
       await StatusBar.setBackgroundColor({ color: '#ffffff' });
       await StatusBar.setOverlaysWebView({ overlay: false });
       await StatusBar.setStyle({ style: Style.Default });
