@@ -4,54 +4,53 @@
   --padding-bottom: 80px;
 }
 
-/* Header iOS Style */
 .ios-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: calc(env(safe-area-inset-top) + 16px) 20px 20px;
   border-radius: 0 0 24px 24px;
   box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
-  
+
   .header-content {
     .date-display {
       display: flex;
       align-items: center;
       margin-bottom: 12px;
-      
+
       .date-day {
         font-size: 32px;
         font-weight: 700;
         margin-right: 8px;
       }
-      
+
       .date-right {
         display: flex;
         flex-direction: column;
-        
+
         .date-month {
           font-size: 14px;
           font-weight: 600;
           opacity: 0.9;
         }
-        
+
         .date-year {
           font-size: 12px;
           opacity: 0.7;
         }
       }
     }
-    
+
     .header-title {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       h1 {
         margin: 0;
         font-size: 28px;
         font-weight: 700;
       }
-      
+
       .header-actions {
         .icon-button {
           --color: white;
@@ -59,7 +58,7 @@
           --border-radius: 10px;
           width: 40px;
           height: 40px;
-          
+
           ion-icon {
             font-size: 20px;
           }
@@ -69,10 +68,9 @@
   }
 }
 
-/* Highlight Cards */
 .highlight-cards {
   padding: 20px;
-  
+
   .highlight-card {
     background: white;
     border-radius: 18px;
@@ -81,24 +79,24 @@
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    
+
     &:active {
       transform: scale(0.98);
     }
-    
+
     &.next-appointment {
       border-left: 5px solid #4cd964;
     }
-    
+
     &.next-queue {
       border-left: 5px solid #ff9500;
     }
-    
+
     .card-content {
       display: flex;
       align-items: center;
       gap: 16px;
-      
+
       .card-icon {
         width: 48px;
         height: 48px;
@@ -106,21 +104,21 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        
+
         .appointment-icon {
           font-size: 24px;
           color: #4cd964;
         }
-        
+
         .queue-icon {
           font-size: 24px;
           color: #ff9500;
         }
       }
-      
+
       .card-details {
         flex: 1;
-        
+
         .card-label {
           font-size: 12px;
           color: #8e8e93;
@@ -128,7 +126,7 @@
           display: block;
           margin-bottom: 4px;
         }
-        
+
         .card-title {
           font-size: 17px;
           font-weight: 600;
@@ -136,21 +134,22 @@
           margin: 0 0 6px 0;
           line-height: 1.2;
         }
-        
-        .card-time, .card-position {
+
+        .card-time,
+        .card-position {
           font-size: 14px;
           color: #666;
           display: flex;
           align-items: center;
           gap: 4px;
           margin: 0;
-          
+
           ion-icon {
             font-size: 14px;
           }
         }
       }
-      
+
       .chevron-icon {
         font-size: 20px;
         color: #c7c7cc;
@@ -159,11 +158,10 @@
   }
 }
 
-/* iOS Tabs */
 .ios-tabs {
   padding: 0 20px;
   margin-bottom: 20px;
-  
+
   .tabs-container {
     display: flex;
     background: rgba(255, 255, 255, 0.9);
@@ -171,7 +169,7 @@
     border-radius: 14px;
     padding: 4px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    
+
     .tab-item {
       flex: 1;
       padding: 12px;
@@ -179,39 +177,39 @@
       border-radius: 10px;
       cursor: pointer;
       transition: all 0.3s ease;
-      
+
       &.active {
         background: white;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        
+
         .tab-icon {
           color: #007aff;
         }
-        
+
         .tab-text {
           color: #007aff;
           font-weight: 600;
         }
       }
-      
+
       .tab-content {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 4px;
         position: relative;
-        
+
         .tab-icon {
           font-size: 20px;
           color: #8e8e93;
         }
-        
+
         .tab-text {
           font-size: 13px;
           font-weight: 500;
           color: #8e8e93;
         }
-        
+
         .tab-badge {
           position: absolute;
           top: -6px;
@@ -229,23 +227,22 @@
   }
 }
 
-/* Content Section */
 .content-section {
   padding: 0 20px;
-  
+
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    
+
     .section-title {
       font-size: 22px;
       font-weight: 700;
       color: #1d1d1f;
       margin: 0;
     }
-    
+
     .section-count {
       font-size: 14px;
       font-weight: 600;
@@ -257,7 +254,6 @@
   }
 }
 
-/* iOS Cards */
 .ios-card {
   background: white;
   border-radius: 18px;
@@ -265,43 +261,51 @@
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   &.expanded {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     margin-bottom: 24px;
   }
-  
+
   &.is-your-turn {
     border: 2px solid #4cd964;
-    
+
     .card-header {
-      background: linear-gradient(90deg, rgba(76, 217, 100, 0.1) 0%, transparent 100%);
+      background: linear-gradient(
+        90deg,
+        rgba(76, 217, 100, 0.1) 0%,
+        transparent 100%
+      );
     }
   }
-  
+
   &.is-paused {
     .card-header {
-      background: linear-gradient(90deg, rgba(255, 149, 0, 0.1) 0%, transparent 100%);
+      background: linear-gradient(
+        90deg,
+        rgba(255, 149, 0, 0.1) 0%,
+        transparent 100%
+      );
     }
   }
-  
+
   &.upcoming {
     border: 2px solid #ff9500;
   }
-  
+
   .card-header {
     padding: 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    
+
     .store-info {
       display: flex;
       align-items: center;
       gap: 12px;
       flex: 1;
-      
+
       .store-logo {
         width: 50px;
         height: 50px;
@@ -309,14 +313,14 @@
         object-fit: cover;
         background: #f2f2f7;
       }
-      
+
       .store-details {
         .store-name-row {
           display: flex;
           align-items: center;
           gap: 4px;
           margin-bottom: 6px;
-          
+
           .store-name {
             font-size: 17px;
             font-weight: 600;
@@ -324,13 +328,13 @@
             margin: 0;
             line-height: 1.2;
           }
-          
+
           .verified-badge {
             font-size: 16px;
             color: #007aff;
           }
         }
-        
+
         .status-badge {
           font-size: 11px;
           padding: 3px 8px;
@@ -339,71 +343,75 @@
         }
       }
     }
-    
-    .queue-status, .appointment-time {
+
+    .queue-status,
+    .appointment-time {
       display: flex;
       align-items: center;
       gap: 12px;
-      
-      .position-display, .time-display {
+
+      .position-display,
+      .time-display {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        
-        .position-number, .time-hour {
+
+        .position-number,
+        .time-hour {
           font-size: 20px;
           font-weight: 700;
           color: #007aff;
         }
-        
-        .position-label, .time-label {
+
+        .position-label,
+        .time-label {
           font-size: 11px;
           color: #8e8e93;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
       }
-      
+
       .expand-icon {
         font-size: 20px;
         color: #c7c7cc;
         transition: transform 0.3s ease;
-        
+
         &.rotated {
           transform: rotate(180deg);
         }
       }
     }
   }
-  
+
   .card-body {
     padding: 18px;
-    
+
     .info-row {
       display: flex;
       gap: 16px;
-      
+
       .info-item {
         flex: 1;
         display: flex;
         align-items: center;
         gap: 8px;
-        
+
         .info-icon {
           font-size: 16px;
           color: #8e8e93;
         }
-        
+
         .info-content {
           display: flex;
           flex-direction: column;
-          
+
           .info-label {
             font-size: 12px;
             color: #8e8e93;
             font-weight: 500;
           }
-          
+
           .info-value {
             font-size: 14px;
             font-weight: 600;
@@ -412,7 +420,7 @@
         }
       }
     }
-    
+
     .paused-banner {
       display: flex;
       align-items: center;
@@ -421,21 +429,21 @@
       border-radius: 10px;
       padding: 10px;
       margin-top: 12px;
-      
+
       .pause-icon {
         font-size: 20px;
         color: #ff9500;
       }
-      
+
       .pause-text {
         display: flex;
         flex-direction: column;
-        
+
         strong {
           font-size: 13px;
           color: #ff9500;
         }
-        
+
         span {
           font-size: 12px;
           color: #ff9500;
@@ -443,7 +451,7 @@
         }
       }
     }
-    
+
     .your-turn-banner {
       display: flex;
       align-items: center;
@@ -452,19 +460,19 @@
       border-radius: 10px;
       padding: 10px;
       margin-top: 12px;
-      
+
       .trophy-icon {
         font-size: 20px;
         color: #4cd964;
       }
-      
+
       span {
         font-size: 13px;
         font-weight: 600;
         color: #4cd964;
       }
     }
-    
+
     .countdown-banner {
       display: flex;
       align-items: center;
@@ -473,12 +481,12 @@
       border-radius: 10px;
       padding: 10px;
       margin-top: 12px;
-      
+
       .alarm-icon {
         font-size: 20px;
         color: #ff9500;
       }
-      
+
       span {
         font-size: 13px;
         font-weight: 600;
@@ -486,17 +494,17 @@
       }
     }
   }
-  
+
   .expanded-content {
     background: #f8f9ff;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
-    
+
     .expanded-body {
       padding: 18px;
-      
+
       .queue-progress {
         margin-bottom: 20px;
-        
+
         .progress-header {
           display: flex;
           justify-content: space-between;
@@ -505,13 +513,13 @@
           margin-bottom: 8px;
           font-weight: 500;
         }
-        
+
         .progress-bar {
           height: 6px;
           background: rgba(0, 0, 0, 0.1);
           border-radius: 3px;
           overflow: hidden;
-          
+
           .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #007aff, #00c6ff);
@@ -520,33 +528,33 @@
           }
         }
       }
-      
+
       .services-section {
         margin-bottom: 20px;
-        
+
         .services-title {
           font-size: 15px;
           font-weight: 600;
           color: #1d1d1f;
           margin: 0 0 12px 0;
         }
-        
+
         .services-list {
           display: flex;
           flex-direction: column;
           gap: 8px;
-          
+
           .service-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            
+
             .service-icon {
               font-size: 16px;
               color: #007aff;
               flex-shrink: 0;
             }
-            
+
             span {
               font-size: 14px;
               color: #1d1d1f;
@@ -555,25 +563,25 @@
           }
         }
       }
-      
+
       .additional-info {
         display: flex;
         flex-direction: column;
         gap: 12px;
         margin-bottom: 20px;
-        
+
         .info-item {
           display: flex;
           align-items: center;
           gap: 8px;
-          
+
           &.full-width {
             .info-content {
               display: flex;
               justify-content: space-between;
               align-items: center;
               width: 100%;
-              
+
               .info-value {
                 &.total-value {
                   font-size: 16px;
@@ -583,23 +591,23 @@
               }
             }
           }
-          
+
           .info-icon {
             font-size: 16px;
             color: #8e8e93;
           }
-          
+
           .info-content {
             display: flex;
             flex-direction: column;
             flex: 1;
-            
+
             .info-label {
               font-size: 12px;
               color: #8e8e93;
               font-weight: 500;
             }
-            
+
             .info-value {
               font-size: 14px;
               font-weight: 600;
@@ -608,12 +616,12 @@
           }
         }
       }
-      
+
       .card-actions {
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
-        
+
         .action-button {
           flex: 1;
           min-width: calc(33.333% - 8px);
@@ -622,22 +630,23 @@
           --padding-bottom: 10px;
           font-size: 13px;
           font-weight: 500;
-          
+
           &.edit {
             --color: #ff9500;
             --border-color: #ff9500;
           }
-          
+
           &.qr {
             --color: #007aff;
             --border-color: #007aff;
           }
-          
-          &.leave, &.cancel {
+
+          &.leave,
+          &.cancel {
             --color: #ff3b30;
             --border-color: #ff3b30;
           }
-          
+
           &:disabled {
             opacity: 0.4;
             pointer-events: none;
@@ -648,7 +657,6 @@
   }
 }
 
-/* Date Navigation - CORRIGIDO */
 .date-navigation {
   display: flex;
   align-items: center;
@@ -660,7 +668,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);
   min-height: 70px;
-  
+
   .nav-button {
     min-width: 44px;
     min-height: 44px;
@@ -674,15 +682,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     &.prev {
       margin-right: 12px;
     }
-    
+
     &.next {
       margin-left: 12px;
     }
-    
+
     ion-icon {
       font-size: 22px;
       font-weight: bold;
@@ -691,7 +699,7 @@
       visibility: visible !important;
     }
   }
-  
+
   .current-date {
     display: flex;
     flex-direction: column;
@@ -703,11 +711,11 @@
     border-radius: 12px;
     transition: background-color 0.2s ease;
     min-width: 0;
-    
+
     &:active {
       background-color: #f8f9ff;
     }
-    
+
     .date-day {
       font-size: 16px;
       font-weight: 700;
@@ -719,7 +727,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
+
     .date-full {
       font-size: 14px;
       color: #8e8e93;
@@ -730,7 +738,6 @@
   }
 }
 
-/* Garantir que os ícones apareçam */
 ion-icon[name="chevron-back"],
 ion-icon[name="chevron-forward"] {
   display: inline-block !important;
@@ -740,19 +747,17 @@ ion-icon[name="chevron-forward"] {
   height: 22px !important;
 }
 
-/* Remover qualquer estilo que esconda os botões */
 ion-button[fill="clear"] {
   --opacity: 1;
   --display: flex;
   opacity: 1 !important;
 }
 
-/* Debug visual (remova depois de testar) */
 .date-navigation .nav-button {
   border: 1px solid #007aff20 !important;
   background: #f8f9ff !important;
 }
-/* Empty States */
+
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -760,7 +765,7 @@ ion-button[fill="clear"] {
   justify-content: center;
   padding: 60px 20px;
   text-align: center;
-  
+
   .empty-icon {
     width: 80px;
     height: 80px;
@@ -770,27 +775,27 @@ ion-button[fill="clear"] {
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
-    
+
     .empty-state-icon {
       font-size: 36px;
       color: #8e8e93;
     }
   }
-  
+
   .empty-title {
     font-size: 20px;
     font-weight: 700;
     color: #1d1d1f;
     margin: 0 0 8px 0;
   }
-  
+
   .empty-message {
     font-size: 15px;
     color: #8e8e93;
     margin: 0 0 24px 0;
     line-height: 1.4;
   }
-  
+
   .empty-button {
     --background: linear-gradient(135deg, #007aff, #00c6ff);
     --border-radius: 12px;
@@ -798,14 +803,13 @@ ion-button[fill="clear"] {
     --padding-bottom: 14px;
     font-weight: 600;
     height: 48px;
-    
+
     ion-icon {
       font-size: 18px;
     }
   }
 }
 
-/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -821,85 +825,81 @@ ion-button[fill="clear"] {
   animation: fadeIn 0.3s ease;
 }
 
-/* Responsive */
 @media (max-width: 480px) {
   .ios-header {
     padding: calc(env(safe-area-inset-top) + 12px) 16px 16px;
-    
+
     .header-content {
       .date-display {
         .date-day {
           font-size: 28px;
         }
       }
-      
+
       .header-title h1 {
         font-size: 24px;
       }
     }
   }
-  
+
   .highlight-cards,
   .ios-tabs,
   .content-section {
     padding: 0 16px;
   }
-  
+
   .ios-card .card-actions .action-button {
     min-width: calc(50% - 8px);
   }
 }
 
-/* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   .page-container {
     --background: #000000;
   }
-  
+
   .ios-header {
     background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
   }
-  
+
   .highlight-card,
   .ios-card,
   .date-navigation {
     background: #1c1c1e;
     color: white;
-    
+
     .card-title,
     .store-name,
     .info-value,
     .empty-title {
       color: #ffffff;
     }
-    
+
     .card-label,
     .info-label,
     .empty-message {
       color: #98989d;
     }
   }
-  
+
   .ios-tabs .tabs-container {
     background: rgba(28, 28, 30, 0.9);
-    
+
     .tab-item.active {
       background: #2c2c2e;
     }
   }
-  
+
   .expanded-content {
     background: #2c2c2e;
   }
 }
 
-/* Safe Area Support */
 .page-container {
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Scrollbar Styling */
 ion-content::part(scroll) {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -909,8 +909,13 @@ ion-content::-webkit-scrollbar {
   display: none;
 }
 
-/* Smooth Transitions */
 * {
   transition: background-color 0.3s ease;
 }
 
+.ion-padding {
+  --background: #f8f9fa;
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
+  position: relative;
+  z-index: 1;
+}

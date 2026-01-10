@@ -143,11 +143,12 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
 
   private loadFavoriteStores(userId: number) {
     this.service.getAllLikedStoresByUserId(userId).subscribe({
-      next: (response) => {
+      next: (response) => {        
         this.favoriteStores = response.data.map((store: StoreModel) => ({
           ...store,
           isNew: this.checkIfNew(store.createdAt),
           liked: true,
+          isOpen: store.isOpen,
           minorQueue: store.minorQueue || false,
           distance: store.distance || this.calculateRandomDistance()
         } as StoreModel));

@@ -18,7 +18,7 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
   profile = 0;
   store: StoreModel | null = null;
   userFromSession: any;
-  total: number = 0;  
+  total: number = 0;
   activeButton: string = 'home';
   private notificationsSubscription!: Subscription;
   private routerSubscription!: Subscription;
@@ -40,6 +40,18 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
     this.initializeNotifications();
     this.setActiveBasedOnRoute();
     this.setupRouterListener();
+
+    this.sessionService.user$.subscribe(user => {
+      this.userFromSession = user;
+    });
+
+    this.sessionService.profile$.subscribe(profile => {
+      this.profile = profile;
+    });
+
+    this.sessionService.store$.subscribe(store => {
+      this.store = store;
+    });
   }
 
   ngOnDestroy() {
@@ -62,23 +74,23 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
 
   setActiveBasedOnRoute() {
     const currentUrl = this.router.url;
-    
+
     if (currentUrl.includes('/notification')) {
       this.activeButton = 'notifications';
-    } else if (currentUrl.includes('/select-company') || currentUrl.includes('/queue') || 
-               currentUrl.includes('/order-approval') || currentUrl.includes('/customer-list-in-queue') || 
-               currentUrl.includes('/owner-schedule') || currentUrl.includes('/queue-list-for-owner')) {
+    } else if (currentUrl.includes('/select-company') || currentUrl.includes('/queue') ||
+      currentUrl.includes('/order-approval') || currentUrl.includes('/customer-list-in-queue') ||
+      currentUrl.includes('/owner-schedule') || currentUrl.includes('/queue-list-for-owner')) {
       this.activeButton = 'home';
     } else if (currentUrl.includes('/promotions')) {
       this.activeButton = 'cart';
     } else {
-      this.activeButton = 'home'; 
+      this.activeButton = 'home';
     }
   }
 
   initializeNotifications() {
     this.notificationsCount$ = this.notificationService.notificacoesNaoLidas$;
-    
+
     this.notificationsSubscription = this.notificationsCount$.subscribe(() => {
       this.cdr.detectChanges();
     });
