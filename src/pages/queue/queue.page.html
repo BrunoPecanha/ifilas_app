@@ -8,8 +8,7 @@
   [class.scrolled]="headerScrolled"
 ></app-custom-header>
 
-<ion-content  [fullscreen]="true">
-  <!-- Swipe Refresh -->
+<ion-content  [fullscreen]="true" class="ion-padding">  
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-circle-outline"
@@ -19,7 +18,6 @@
     ></ion-refresher-content>
   </ion-refresher>
 
-  <!-- Cards de Destaque -->
   <div class="highlight-cards">
     <div class="highlight-card next-appointment" 
          *ngIf="nextAppointment && activeSegment === 'filas'"
@@ -41,7 +39,6 @@
     </div>    
   </div>
 
-  <!-- Navegação por Tabs -->
   <div class="ios-tabs">
     <div class="tabs-container">
       <div class="tab-item" 
@@ -70,7 +67,6 @@
     </div>
   </div>
 
-  <!-- Conteúdo das Filas -->
   <ng-container *ngIf="activeSegment === 'filas'">
     <div class="content-section">
       <div class="section-header">
@@ -86,7 +82,6 @@
              [class.is-paused]="queue.isPaused"
              (click)="toggleQueueExpansion(queue.id)">
           
-          <!-- Header do Card -->
           <div class="card-header">
             <div class="store-info">
               <img [src]="queue.store.logoPath || ''" 
@@ -117,7 +112,6 @@
             </div>
           </div>
 
-          <!-- Conteúdo Principal -->
           <div class="card-body">
             <div class="info-row">
               <div class="info-item">
@@ -137,7 +131,6 @@
               </div>
             </div>
 
-            <!-- Banner de Pausa -->
             <div class="paused-banner" *ngIf="queue.isPaused">
               <ion-icon name="pause-circle" class="pause-icon"></ion-icon>
               <div class="pause-text">
@@ -146,17 +139,14 @@
               </div>
             </div>
 
-            <!-- Seu Turno -->
             <div class="your-turn-banner" *ngIf="queue.position === 1">
               <ion-icon name="trophy" class="trophy-icon"></ion-icon>
               <span>É sua vez! Dirija-se ao estabelecimento</span>
             </div>
           </div>
 
-          <!-- Conteúdo Expandido -->
           <div class="expanded-content" *ngIf="expandedQueueId === queue.id">
             <div class="expanded-body">
-              <!-- Progresso da Fila -->
               <div class="queue-progress" *ngIf="queue.position > 1 && queue.totalInQueue">
                 <div class="progress-header">
                   <span>Progresso na fila</span>
@@ -168,7 +158,6 @@
                 </div>
               </div>
 
-              <!-- Serviços -->
               <div class="services-section">
                 <h4 class="services-title">Serviços Selecionados</h4>
                 <div class="services-list">
@@ -179,7 +168,6 @@
                 </div>
               </div>
 
-              <!-- Informações Adicionais -->
               <div class="additional-info">
                 <div class="info-item full-width">
                   <ion-icon name="cash-outline" class="info-icon"></ion-icon>
@@ -206,7 +194,6 @@
                 </div>
               </div>
 
-              <!-- Ações -->
               <div class="card-actions">
                 <ion-button fill="outline" class="action-button edit" 
                            [disabled]="isQueueReadOnly(queue.status)"
@@ -246,10 +233,8 @@
     </div>
   </ng-container>
 
-  <!-- Conteúdo dos Agendamentos -->
   <ng-container *ngIf="activeSegment === 'agendamentos'">
     <div class="content-section">
-      <!-- Navegação de Data -->
       <div class="date-navigation">
         <ion-button fill="clear" class="nav-button prev" (click)="previousDay()">
           <ion-icon name="chevron-back"></ion-icon>
@@ -277,7 +262,6 @@
              [class.upcoming]="isUpcomingAppointment(appt)"
              (click)="toggleAppointmentExpansion(appt.id)">
           
-          <!-- Header do Card -->
           <div class="card-header">
             <div class="store-info">
               <img [src]="appt.store.logoPath || ''" 
@@ -308,7 +292,6 @@
             </div>
           </div>
 
-          <!-- Conteúdo Principal -->
           <div class="card-body">
             <div class="info-row">
               <div class="info-item">
@@ -328,17 +311,14 @@
               </div>
             </div>
 
-            <!-- Countdown para Agendamentos Futuros -->
             <div class="countdown-banner" *ngIf="isUpcomingAppointment(appt)">
               <ion-icon name="alarm" class="alarm-icon"></ion-icon>
               <span>Começa em {{ getTimeUntilAppointment(appt) }}</span>
             </div>
           </div>
 
-          <!-- Conteúdo Expandido -->
           <div class="expanded-content" *ngIf="expandedAppointmentId === appt.id">
             <div class="expanded-body">
-              <!-- Serviços -->
               <div class="services-section">
                 <h4 class="services-title">Serviços Agendados</h4>
                 <div class="services-list">
@@ -349,7 +329,6 @@
                 </div>
               </div>
 
-              <!-- Informações Adicionais -->
               <div class="additional-info">
                 <div class="info-item full-width" *ngIf="appt.totalString">
                   <ion-icon name="pricetag-outline" class="info-icon"></ion-icon>
@@ -368,7 +347,6 @@
                 </div>
               </div>
 
-              <!-- Ações -->
               <div class="card-actions">
                 <ion-button fill="outline" class="action-button edit" 
                            [disabled]="isQueueReadOnly(appt.status)"
