@@ -4,6 +4,8 @@ import { AuthService } from 'src/services/auth.service';
 import { SessionService } from 'src/services/session.service';
 import { ToastService } from 'src/services/toast.service';
 import { UserService } from 'src/services/user-service';
+import { ViewChildren, QueryList } from '@angular/core';
+import { IonInput } from '@ionic/angular';
 
 @Component({
   selector: 'app-validate-code',
@@ -15,19 +17,34 @@ export class ValidateCodePage {
   isCodeValid = false;
   newPassword = "";
   confirmPassword = "";
+  @ViewChildren('codeInput') codeInputs!: QueryList<IonInput>;
 
   constructor(private authService: AuthService,
     private toastService: ToastService,
     private sessionService: SessionService,
     private router: Router,
     private userService: UserService) {
-
   }
 
-  nextInput(event: any, index: number) {
-    if (event.target.value && index < 5) {
-      const next = document.querySelectorAll("ion-input")[index + 1] as any;
-      next.setFocus();
+  onInput(event: any, index: number) {
+    const value: string = event.detail.value || '';
+
+    if (value.length > 1) {
+      const chars = value.replace(/\D/g, '').split('');
+
+      chars.slice(0, this.code.length).forEach((char, i) => {
+        this.code[i] = char;
+      });
+
+      const lastIndex = Math.min(chars.length, this.code.length) - 1;
+      this.codeInputs.toArray()[lastIndex]?.setFocus();
+      return;
+    }
+
+    this.code[index] = value;
+
+    if (value && index < this.codeInputs.length - 1) {
+      this.codeInputs.toArray()[index + 1].setFocus();
     }
   }
 
@@ -75,12 +92,21 @@ export class ValidateCodePage {
     });
   }
 
+  onKeyDown(event: any, index: number) {    
+    if (event.key === 'Backspace') {
+      if (!this.code[index] && index > 0) {
+        const prevInput = this.codeInputs.toArray()[index - 1];
+        prevInput.setFocus();
+      }
+    }
+  }
+
   updatePassword() {
     if (this.newPassword !== this.confirmPassword) {
       this.toastService.show('As senhas não conferem', 'danger');
       return;
     }
-        
+
     const email = this.sessionService.getGenericKey('pendingUser')?.email;
 
     this.userService.setNewPassword(email, this.newPassword).subscribe({
