@@ -12,7 +12,7 @@ export class PushNotificationService {
   constructor(
     private deviceService: DeviceService,
     private sessionStorage: SessionService
-  ) {}
+  ) { }
 
   async init(): Promise<void> {
     if (this.initialized) return;
@@ -34,8 +34,8 @@ export class PushNotificationService {
       }
     }
 
-    PushNotifications.addListener('registration', (token: Token) => {      
-      this.handleToken(token.value);
+    PushNotifications.addListener('registration', (token: Token) => {
+      this.handleToken(token.value, user.id);
     });
 
     PushNotifications.addListener('registrationError', err => {
@@ -48,21 +48,23 @@ export class PushNotificationService {
   /**
    * Registra token no backend
    */
-  private handleToken(token: string): void {
+  private handleToken(token: string, userId: number): void {
+    const savedToken = this.sessionStorage.getString('fcmToken');
 
-    const savedToken = this.sessionStorage.getGenericKey('fcmToken');
     if (savedToken === token) {
       return;
     }
 
-    this.sessionStorage.setGenericKey('fcmToken', token);
+    this.sessionStorage.setString('fcmToken', token);
 
     this.deviceService
-      .register(token, PlatformEnum.android)
+      .register(token, PlatformEnum.android, userId)
       .subscribe({
-        next: () => console.log('✅ Device registrado com sucesso'),
+        next: () => {
+          console.log('Device registrado com sucesso');
+        },
         error: err => {
-          console.error('❌ Erro ao registrar device', err);
+          console.error('Erro ao registrar device', err);
 
           this.sessionStorage.removeGenericKey('fcmToken');
         }

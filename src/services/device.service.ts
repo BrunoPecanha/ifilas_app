@@ -10,10 +10,10 @@ export class DeviceService {
   constructor(private http: HttpClient) {
   }
 
-  register(token: string, platform: PlatformEnum): Observable<void> {
+  register(token: string, platform: PlatformEnum, userId: number): Observable<void> {
     return this.http.post<void>(
       `${environment.apiUrl}/device/register`,
-      { token, platform }
+      { userId, token, platform }
     );
   }
 

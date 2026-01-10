@@ -4,7 +4,10 @@ const config: CapacitorConfig = {
   appId: 'com.bmp.ifilas.app',
   appName: 'iFilas',
   webDir: 'www',
-  
+  server: {
+    cleartext: true,
+    androidScheme: 'http'
+  },  
   plugins: {
     SplashScreen: {
       launchShowDuration: 3000, 

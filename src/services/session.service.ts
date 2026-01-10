@@ -71,6 +71,24 @@ export class SessionService {
     return item ? JSON.parse(item) : null;
   }
 
+  getString(key: string): string | null {
+    return sessionStorage.getItem(key);
+  }
+
+  setString(key: string, value: string): void {
+    sessionStorage.setItem(key, value);
+  }
+
+  getObject<T>(key: string): T | null {
+    const item = sessionStorage.getItem(key);
+    return item ? JSON.parse(item) as T : null;
+  }
+
+  setObject(key: string, value: any): void {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  }
+
+
   removeGenericKey(key: string) {
     sessionStorage.removeItem(key);
   }

@@ -39,7 +39,7 @@ export class LoginPage {
           message: 'Verificando suas credenciais...',
           spinner: 'crescent',
         });
-        await loading.present();
+        
 
         const response = await firstValueFrom(this.authService.login({
           email: this.email,
@@ -58,7 +58,7 @@ export class LoginPage {
         console.error('Erro no login', error);
         await this.showAlert('Erro ao tentar fazer login. Verifique seus dados.');
       } finally {
-        loading?.dismiss();
+        
       }
     } else {
       await this.showAlert('Email e senha são obrigatórios.');
