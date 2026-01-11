@@ -63,12 +63,12 @@ export class SessionService {
 
   setProfile(profile: number): void {
     sessionStorage.setItem(this.PROFILE_KEY, profile.toString());
-    this.profileSubject.next(profile); // 🔥
+    this.profileSubject.next(profile); 
   }
 
   setStore(store: any): void {
     sessionStorage.setItem(this.STORES_KEY, JSON.stringify(store));
-    this.storeSubject.next(store); // 🔥
+    this.storeSubject.next(store); 
   }
 
   setCustomer(customer: number) {

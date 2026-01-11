@@ -673,8 +673,10 @@ export class CompanyConfigurationsPage implements OnDestroy {
               ? 'Loja atualizada com sucesso!'
               : 'Loja cadastrada com sucesso!';
 
-            if (!storeId) {
-              this.navCtrl.navigateForward(`/company-configurations`);
+            const updatedStoreId = storeId ?? response.data?.id;
+
+            if (updatedStoreId) {
+              this.refreshStoreSession(updatedStoreId);
             }
           } else {
             this.errorMessage = response.message || 'Falha ao salvar loja. Por favor, tente novamente.';
@@ -700,6 +702,19 @@ export class CompanyConfigurationsPage implements OnDestroy {
       this.cadastroForm.get('city')?.disable();
       this.cadastroForm.get('state')?.disable();
     }
+  }
+
+  private refreshStoreSession(storeId: number) {
+    this.storeService.getStoreById(storeId).subscribe({
+      next: (response) => {
+        if (response.valid && response.data) {
+          this.sessionService.setStore(response.data);
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao atualizar session da loja', err);
+      }
+    });
   }
 
   async validateForm(formGroup: FormGroup) {
