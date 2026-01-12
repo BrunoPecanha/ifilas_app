@@ -43,7 +43,7 @@
         </div>
       </div>
 
-      <div class="input-group" [class.invalid]="isFieldInvalid('cpf')">
+      <!-- <div class="input-group" [class.invalid]="isFieldInvalid('cpf')">
         <ion-icon name="id-card-outline" class="input-icon"></ion-icon>
         <ion-input
           type="tel"
@@ -55,7 +55,7 @@
         <div class="error-message" *ngIf="isFieldInvalid('cpf')">
           {{ getErrorMessage('cpf') }}
         </div>
-      </div>
+      </div> -->
 
       <div class="input-group" [class.invalid]="isFieldInvalid('email')">
         <ion-icon name="mail-outline" class="input-icon"></ion-icon>
@@ -113,7 +113,7 @@
           {{ getErrorMessage('address') }}
         </div>
       </div>
-
+<!-- 
       <div class="input-group" [class.invalid]="isFieldInvalid('number')">
         <ion-icon name="business-outline" class="input-icon"></ion-icon>
         <ion-input
@@ -124,7 +124,7 @@
         <div class="error-message" *ngIf="isFieldInvalid('number')">
           {{ getErrorMessage('number') }}
         </div>
-      </div>
+      </div> -->
 
       <div
         class="input-group"

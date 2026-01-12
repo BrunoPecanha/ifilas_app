@@ -38,12 +38,12 @@ export class CreateAccountPage implements OnInit {
     return this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       lastname: ['', [Validators.required, Validators.minLength(2)]],
-      cpf: ['', [Validators.required, this.cpfValidator()]],
+      cpf: [''],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.minLength(14)]],
       cep: ['', [Validators.required, this.cepValidator()]],
       address: ['', [Validators.required]],
-      number: ['', [Validators.required]],
+      number: [''],
       neighborhood: ['', [Validators.required]],
       city: ['', [Validators.required]],
       state: ['', [Validators.required]],
@@ -126,7 +126,8 @@ export class CreateAccountPage implements OnInit {
   getErrorMessage(fieldName: string): string {
     const field = this.registerForm.get(fieldName);
 
-    if (!field || !field.errors) return '';
+    if (!field || !field.errors) 
+      return '';
 
     if (this.serverErrors[fieldName]) {
       return this.serverErrors[fieldName];

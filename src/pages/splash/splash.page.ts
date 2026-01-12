@@ -9,24 +9,30 @@ import { AuthService } from 'src/services/auth.service';
   styleUrls: ['./splash.page.scss']
 })
 export class SplashPage {
-  private triedAutoLogin = false;
 
+  phase = 0;
+  private triedAutoLogin = false;
 
   constructor(
     private router: Router,
     private sessionService: SessionService,
     private authService: AuthService,
     private ngZone: NgZone
-  ) { }
+  ) {}
 
   ionViewDidEnter() {
+    this.phase = 1;
+
+    setTimeout(() => {
+      this.phase = 2;
+    }, 500);
+
     if (!this.triedAutoLogin) {
       this.triedAutoLogin = true;
 
       setTimeout(() => {
         this.tryAutoLogin();
-      }, 5000);
-
+      }, 2000);
     } else {
       this.clearSessionAndLogout();
     }
@@ -34,10 +40,14 @@ export class SplashPage {
 
   async tryAutoLogin() {
     try {
-
       const response = await this.authService.refreshToken().toPromise();
 
-      if (response && response.valid && response?.data.token && response.data?.user) {
+      if (
+        response &&
+        response.valid &&
+        response?.data?.token &&
+        response?.data?.user
+      ) {
         this.sessionService.setToken(response.data.token);
         this.sessionService.setUser(response.data.user);
         this.sessionService.setRefreshToken(response.data.refreshToken);

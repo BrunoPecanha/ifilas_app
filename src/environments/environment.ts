@@ -1,7 +1,7 @@
 export const environment = {
-  production: false, 
-  apiUrl: 'https://nextu-queue-eudgevd9byfnccdw.brazilsouth-01.azurewebsites.net/api',
-  queueHub: 'https://nextu-queue-eudgevd9byfnccdw.brazilsouth-01.azurewebsites.net/queueHub',
-  scheduleHub: 'https://nextu-queue-eudgevd9byfnccdw.brazilsouth-01.azurewebsites.net/scheduleHub',
-  notificationHub: 'https://nextu-queue-eudgevd9byfnccdw.brazilsouth-01.azurewebsites.net/notificationHub'
+  production: false,
+  apiUrl: 'http://localhost:5000/api',
+  queueHub: 'http://localhost:5000/queueHub',
+  scheduleHub: 'http://localhost:5000/scheduleHub',
+  notificationHub: 'http://localhost:5000/notificationHub'
 };

@@ -1,58 +1,92 @@
-<ion-content class="ion-padding login-screen page-with-custom-header" scroll="false">
-  <div class="curved-header animated-slide-down">
-    <div class="logo-wrapper animated-bounce-in">
-      <img src="assets/images/login/logo.png" alt="Logo" />
+<ion-content class="ion-padding login-screen" scroll-y="true">
+  <div class="header-section">
+    <div class="decorative-element">
+      <ion-icon name="lock-closed-outline" class="decorative-icon"></ion-icon>
     </div>
   </div>
 
-  <div class="login-container animated-fade-in">
-    <h1>Entrar</h1>
-    <p class="subtitle">Acesse sua conta para continuar</p>
+  <div class="form-container animated-slide-up">
+    <div class="form-header">
+      <h1 class="greeting">Bem-vindo de volta</h1>
+      <p class="instruction">Entre com suas credenciais para continuar</p>
+    </div>
 
     <form (submit)="login()" class="login-form">
-      <ion-item lines="none" class="input-field">
-        <ion-icon slot="start" name="mail-outline"></ion-icon>
-        <ion-input
-          type="email"
-          placeholder="E-mail ou celular"
-          [(ngModel)]="email"
-          name="email"
-          required
-        ></ion-input>
-      </ion-item>
+      <div class="input-group">
+        <div class="input-label">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <label>E-mail ou celular</label>
+        </div>
+        <ion-item lines="none" class="input-item">
+          <ion-input
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            required
+            placeholder="seu@email.com"
+            class="custom-input"
+          ></ion-input>
+        </ion-item>
+      </div>
 
-      <ion-item lines="none" class="input-field">
-        <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
-        <ion-input
-          type="password"
-          placeholder="Senha"
-          [(ngModel)]="password"
-          name="password"
-          required
-        ></ion-input>
-      </ion-item>
+      <div class="input-group">
+        <div class="input-label">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+          <label>Senha</label>
+        </div>
+        <ion-item lines="none" class="input-item">
+          <ion-input
+            [type]="showPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            name="password"
+            required
+            placeholder="Digite sua senha"
+            class="custom-input"
+          ></ion-input>
+          <ion-icon 
+            slot="end" 
+            [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+          ></ion-icon>
+        </ion-item>
+        <a routerLink="/generate-password" class="forgot-link">
+          Esqueceu a senha?
+        </a>
+      </div>
 
-      <ion-loading
-        [isOpen]="isLoading"
-        message="Carregando..."
-        spinner="crescent"
+      <ion-button 
+        expand="block" 
+        type="submit" 
+        class="login-button"
+        [disabled]="isLoading"
       >
-      </ion-loading>
-
-      <ion-button expand="block" type="submit" class="login-btn">
-        Entrar
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        <span *ngIf="!isLoading">Entrar</span>
       </ion-button>
+
+      <div class="divider">
+        <span class="divider-line"></span>
+        <span class="divider-text">ou</span>
+        <span class="divider-line"></span>
+      </div>
+
+      <div class="action-links">
+        <a routerLink="/create-account" class="action-link">
+          <ion-icon name="person-add-outline"></ion-icon>
+          Criar nova conta
+        </a>
+        <a routerLink="/validate-code" class="action-link secondary">
+          <ion-icon name="key-outline"></ion-icon>
+          Validar conta com código
+        </a>
+      </div>
+
+      <div class="footer-credits">
+        <div class="developed-by-container">
+          <p class="version">Versão {{ appVersion }}</p>
+        </div>
+      </div>
     </form>
-
-    <a routerLink="/generate-password" class="forgot-password"
-      >Esqueceu sua senha?</a
-    >
-
-    <div class="register-link">
-       <span>Não tem conta?</span>
-      <a routerLink="/create-account">Cadastre-se</a><br>
-      <span>Validar conta?</span>
-      <a routerLink="/validate-code">Informar código</a>  
-    </div>
   </div>
 </ion-content>

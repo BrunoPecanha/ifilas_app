@@ -1,9 +1,15 @@
-<div class="splash-screen">
-  <div class="animated-background"></div>
+<div class="splash-root" [class.phase-logo]="phase >= 2">
 
-  <div class="logo-section fade-in">
-    <img src="assets/images/utils/logo.png" alt="Logo startup" />    
-  </div>  
+  <div class="dot"
+       [class.expand]="phase >= 1"
+       [class.to-logo]="phase >= 2">
+  </div>
 
-  <div class="version fade-in-late">Versão 1.0.0</div>
+  <div class="final-content" *ngIf="phase >= 2">
+    <img src="assets/images/utils/splash.png" class="logo" />
+    <div class="spinner"></div>
+  </div>
+
+  <div class="version">Versão 1.0.0</div>
+
 </div>
