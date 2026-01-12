@@ -31,27 +31,31 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
     private sessionService: SessionService,
     private cdr: ChangeDetectorRef
   ) {
-    this.profile = this.sessionService.getProfile();
-    this.store = this.sessionService.getStore();
+    // this.profile = this.sessionService.getProfile();
+    // this.store = this.sessionService.getStore();
   }
 
   ngOnInit() {
-    this.loadUserQueInfo();
     this.initializeNotifications();
     this.setActiveBasedOnRoute();
     this.setupRouterListener();
 
     this.sessionService.user$.subscribe(user => {
       this.userFromSession = user;
+      this.cdr.detectChanges();
     });
 
     this.sessionService.profile$.subscribe(profile => {
       this.profile = profile;
+      this.cdr.detectChanges();
     });
 
     this.sessionService.store$.subscribe(store => {
       this.store = store;
+      this.cdr.detectChanges();
     });
+
+    this.loadUserQueInfo();
   }
 
   ngOnDestroy() {
@@ -148,21 +152,18 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
   }
 
   loadUserQueInfo() {
-    this.userFromSession = this.sessionService.getUser();
+    if (!this.userFromSession) return;
 
-    if (this.userFromSession) {
-      const userId = this.userFromSession.id;
-      this.profile = this.sessionService.getProfile();
+    const userId = this.userFromSession.id;
 
-      this.userService.getUserInfoById(userId, this.profile).subscribe({
-        next: (value) => {
-          this.total = value.data;
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          console.error('Erro ao buscar info do usuário:', error);
-        }
-      });
-    }
+    this.userService.getUserInfoById(userId, this.profile).subscribe({
+      next: (value) => {
+        this.total = value.data;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Erro ao buscar info do usuário:', error);
+      }
+    });
   }
 }

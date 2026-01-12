@@ -68,7 +68,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
   }
 
   loadPendingOrdersCount() {
-    this.customerService.getPendingOrdersCount(this.companyFromSession.id).subscribe({
+    this.customerService.getPendingOrdersCount(this.companyFromSession.id, this.userFromSession.id).subscribe({
       next: (count) => {
         this.pendingOrdersCount = count.data;
       },

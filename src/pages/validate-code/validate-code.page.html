@@ -14,7 +14,7 @@
         />
       </a>
     </div>
-    
+
     <div
       class="animated-container"
       [class.show]="!isCodeValid"
@@ -25,40 +25,63 @@
 
       <div class="code-inputs">
         <ion-input
+          #codeInput
           maxlength="1"
           type="tel"
+          inputmode="numeric"
           [(ngModel)]="code[0]"
-          (ionInput)="nextInput($event,0)"
+          (ionInput)="onInput($event, 0)"
+          (keydown)="onKeyDown($event, 0)"
         ></ion-input>
+
         <ion-input
+          #codeInput
           maxlength="1"
           type="tel"
+          inputmode="numeric"
           [(ngModel)]="code[1]"
-          (ionInput)="nextInput($event,1)"
+          (ionInput)="onInput($event, 1)"
+          (keydown)="onKeyDown($event, 1)"
         ></ion-input>
+
         <ion-input
+          #codeInput
           maxlength="1"
           type="tel"
+          inputmode="numeric"
           [(ngModel)]="code[2]"
-          (ionInput)="nextInput($event,2)"
+          (ionInput)="onInput($event, 2)"
+          (keydown)="onKeyDown($event, 2)"
         ></ion-input>
+
         <ion-input
+          #codeInput
           maxlength="1"
           type="tel"
+          inputmode="numeric"
           [(ngModel)]="code[3]"
-          (ionInput)="nextInput($event,3)"
+          (ionInput)="onInput($event, 3)"
+          (keydown)="onKeyDown($event, 3)"
         ></ion-input>
+
         <ion-input
+          #codeInput
           maxlength="1"
           type="tel"
+          inputmode="numeric"
           [(ngModel)]="code[4]"
-          (ionInput)="nextInput($event,4)"
+          (ionInput)="onInput($event, 4)"
+          (keydown)="onKeyDown($event, 4)"
         ></ion-input>
+
         <ion-input
+          #codeInput
           maxlength="1"
           type="tel"
+          inputmode="numeric"
           [(ngModel)]="code[5]"
-          (ionInput)="nextInput($event,5)"
+          (ionInput)="onInput($event, 5)"
+          (keydown)="onKeyDown($event, 5)"
         ></ion-input>
       </div>
 
@@ -77,8 +100,7 @@
       class="animated-container"
       [class.show]="isCodeValid"
       [class.hide]="!isCodeValid"
-    >      
-
+    >
       <h1>Definir Nova Senha</h1>
       <p class="subtitle">Escolha uma senha forte para proteger sua conta</p>
 

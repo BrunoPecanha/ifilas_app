@@ -21,8 +21,8 @@ export class CustomerService {
     return this.http.get<CustomerResponse>(`${this.apiUrl}/customer/add-schedule/${cpf}`);
   }
 
-  getPendingOrdersCount(storeId: number): Observable<PendingResponse> {
-    return this.http.get<PendingResponse>(`${this.apiUrl}/customer/pending/${storeId}`);
+  getPendingOrdersCount(storeId: number, userId: number): Observable<PendingResponse> {
+    return this.http.get<PendingResponse>(`${this.apiUrl}/customer/pending/${storeId}/${userId}`);
   }
 
   updatePriceAndTimeForVariableServiceAsync(customerServicesUpdate: any): Observable<any> {

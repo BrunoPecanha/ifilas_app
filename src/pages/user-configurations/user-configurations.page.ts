@@ -144,7 +144,7 @@ export class UserConfigurationsPage {
   }
 
   onContentScroll(event: CustomEvent) {
-    const scrollTop = event.detail?.scrollTop ?? 0; 
+    const scrollTop = event.detail?.scrollTop ?? 0;
     this.lastScrollTop = scrollTop;
   }
 
@@ -371,6 +371,19 @@ export class UserConfigurationsPage {
       this.enviando = false;
       this.userService.notifyProfileUpdate();
     }
+  }
+
+  private refreshUserSession(userId: number) {
+    this.userService.getUserById(userId).subscribe({
+      next: (response) => {
+        if (response.valid && response.data) {
+          this.sessionService.setUser(response.data);
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao atualizar session do usuário', err);
+      }
+    });
   }
 
   private async showSuccessToast(message: string) {

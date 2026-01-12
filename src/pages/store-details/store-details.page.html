@@ -147,8 +147,11 @@
                     </div>
 
                     <div class="price-section">
-                      <span class="price"
-                        >R$ {{ service.price | number: '1.2-2' }}</span
+                      <span class="price" *ngIf="!service.variablePrice">
+                        R$ {{ service.price | number: '1.2-2' }}</span
+                      >
+                      <span class="price" *ngIf="service.variablePrice">
+                        a combinar</span
                       >
                     </div>
                   </div>
@@ -161,7 +164,8 @@
                     <div class="service-meta">
                       <span class="duration">
                         <ion-icon name="time-outline"></ion-icon>
-                        {{ getServiceDuration(service) }}
+                         <span *ngIf="!service.variableTime">{{ getServiceDuration(service) }}</span>
+                         <span *ngIf="service.variableTime">a estimar</span>                        
                       </span>
                     </div>
 

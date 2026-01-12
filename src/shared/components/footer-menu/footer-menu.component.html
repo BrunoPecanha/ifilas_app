@@ -16,23 +16,25 @@
       <div class="feirinha-wrapper">
         <div class="coming-soon-banner">Em breve</div>
         <ion-icon name="cart-outline"></ion-icon>
-        <span *ngIf="activeButton !== 'cart'"
-          >Feirinha <br/>do Bairro 
-         </span
-        >
+        <span *ngIf="activeButton !== 'cart'">Feirinha <br />do Bairro </span>
       </div>
     </div>
 
     <div class="footer-button central" (click)="goToHome()">
       <div class="central-icon fila-notification-wrapper">
-        <ion-icon
-          *ngIf="profile === 0 || !userFromSession?.useAgenda"
-          name="people-outline"
-        ></ion-icon>
-        <ion-icon
-          *ngIf="profile > 0 && userFromSession?.useAgenda"
-          name="calendar-outline"
-        ></ion-icon>
+        <ng-container *ngIf="userFromSession as user">
+          <ion-icon
+            *ngIf="profile === 0 || !user.useAgenda"
+            name="people-outline"
+          >
+          </ion-icon>
+
+          <ion-icon
+            *ngIf="profile > 0 && user.useAgenda"
+            name="calendar-outline"
+          >
+          </ion-icon>
+        </ng-container>
         <span class="notification-badge" *ngIf="total > 0">{{ total }}</span>
       </div>
       <div class="central-labels">
