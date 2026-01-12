@@ -8,7 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 16px;
+  padding: 10px;
 }
 
 .form-container {
@@ -28,6 +28,7 @@
 .form-header {
   text-align: center;
   margin-bottom: 20px;
+  margin-top: 40px;
 
   .greeting {
     font-size: 1.8rem;

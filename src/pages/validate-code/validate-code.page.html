@@ -1,132 +1,199 @@
-<ion-content class="ion-padding login-screen" scroll="false">
-  <div class="curved-header">
-    <div class="logo-wrapper">
-      <img src="assets/images/login/logo.png" alt="Logo" />
-    </div>
-  </div>
-
-  <div class="form-container">
-    <div class="go-back">
-      <a routerLink="/login">
-        <img
-          src="assets/images/create-account/icon-go-back.svg"
-          alt="Icon go back"
-        />
-      </a>
-    </div>
-
-    <div
-      class="animated-container"
-      [class.show]="!isCodeValid"
-      [class.hide]="isCodeValid"
-    >
-      <h1>Validar Conta</h1>
-      <p class="subtitle">Digite o código enviado para seu e-mail</p>
-
-      <div class="code-inputs">
-        <ion-input
-          #codeInput
-          maxlength="1"
-          type="tel"
-          inputmode="numeric"
-          [(ngModel)]="code[0]"
-          (ionInput)="onInput($event, 0)"
-          (keydown)="onKeyDown($event, 0)"
-        ></ion-input>
-
-        <ion-input
-          #codeInput
-          maxlength="1"
-          type="tel"
-          inputmode="numeric"
-          [(ngModel)]="code[1]"
-          (ionInput)="onInput($event, 1)"
-          (keydown)="onKeyDown($event, 1)"
-        ></ion-input>
-
-        <ion-input
-          #codeInput
-          maxlength="1"
-          type="tel"
-          inputmode="numeric"
-          [(ngModel)]="code[2]"
-          (ionInput)="onInput($event, 2)"
-          (keydown)="onKeyDown($event, 2)"
-        ></ion-input>
-
-        <ion-input
-          #codeInput
-          maxlength="1"
-          type="tel"
-          inputmode="numeric"
-          [(ngModel)]="code[3]"
-          (ionInput)="onInput($event, 3)"
-          (keydown)="onKeyDown($event, 3)"
-        ></ion-input>
-
-        <ion-input
-          #codeInput
-          maxlength="1"
-          type="tel"
-          inputmode="numeric"
-          [(ngModel)]="code[4]"
-          (ionInput)="onInput($event, 4)"
-          (keydown)="onKeyDown($event, 4)"
-        ></ion-input>
-
-        <ion-input
-          #codeInput
-          maxlength="1"
-          type="tel"
-          inputmode="numeric"
-          [(ngModel)]="code[5]"
-          (ionInput)="onInput($event, 5)"
-          (keydown)="onKeyDown($event, 5)"
-        ></ion-input>
+<ion-content fullscreen class="auth-content">
+  <div class="page-wrapper">
+    <div class="form-container">
+      <div class="go-back">
+        <a routerLink="/login">
+          <img
+            src="assets/images/create-account/icon-go-back.svg"
+            alt="Voltar"
+          />
+        </a>
       </div>
 
-      <ion-button expand="block" class="primary-btn" (click)="validateCode()"
-        >Validar Código</ion-button
+      <div
+        class="form-section"
+        [class.show]="!isCodeValid"
+        [class.hide]="isCodeValid"
       >
-      <ion-button expand="block" class="secondary-btn" routerLink="/login">
-        Cancelar
-      </ion-button>
-      <a routerLink="/generate-password" class="resend-link"
-        >Não recebeu o código? <strong>Reenviar</strong></a
+        <div class="form-header">
+          <div class="security-icon">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+          </div>
+
+          <h1 class="greeting">Validar Conta</h1>
+          <p class="instruction">Digite o código enviado para seu e-mail</p>
+        </div>
+
+          <div class="input-group">
+            <div class="input-label">
+              <ion-icon name="key-outline" class="input-icon"></ion-icon>
+              <label>Código de Verificação</label>
+            </div>
+
+            <div class="code-inputs">
+              <ion-input
+                #codeInput
+                maxlength="1"
+                type="tel"
+                inputmode="numeric"
+                [(ngModel)]="code[0]"
+                (ionInput)="onInput($event, 0)"
+                (keydown)="onKeyDown($event, 0)"
+                class="code-input"
+              ></ion-input>
+
+              <ion-input
+                #codeInput
+                maxlength="1"
+                type="tel"
+                inputmode="numeric"
+                [(ngModel)]="code[1]"
+                (ionInput)="onInput($event, 1)"
+                (keydown)="onKeyDown($event, 1)"
+                class="code-input"
+              ></ion-input>
+
+              <ion-input
+                #codeInput
+                maxlength="1"
+                type="tel"
+                inputmode="numeric"
+                [(ngModel)]="code[2]"
+                (ionInput)="onInput($event, 2)"
+                (keydown)="onKeyDown($event, 2)"
+                class="code-input"
+              ></ion-input>
+
+              <ion-input
+                #codeInput
+                maxlength="1"
+                type="tel"
+                inputmode="numeric"
+                [(ngModel)]="code[3]"
+                (ionInput)="onInput($event, 3)"
+                (keydown)="onKeyDown($event, 3)"
+                class="code-input"
+              ></ion-input>
+
+              <ion-input
+                #codeInput
+                maxlength="1"
+                type="tel"
+                inputmode="numeric"
+                [(ngModel)]="code[4]"
+                (ionInput)="onInput($event, 4)"
+                (keydown)="onKeyDown($event, 4)"
+                class="code-input"
+              ></ion-input>
+
+              <ion-input
+                #codeInput
+                maxlength="1"
+                type="tel"
+                inputmode="numeric"
+                [(ngModel)]="code[5]"
+                (ionInput)="onInput($event, 5)"
+                (keydown)="onKeyDown($event, 5)"
+                class="code-input"
+              ></ion-input>
+            </div>
+          </div>
+
+          <div class="button-group">
+            <ion-button
+              expand="block"
+              class="login-button primary-btn"
+              (click)="validateCode()"
+            >
+              Validar Código
+            </ion-button>
+
+            <ion-button
+              expand="block"
+              class="secondary-btn"
+              routerLink="/login"
+              fill="outline"
+            >
+              Cancelar
+            </ion-button>
+          </div>
+
+          <div class="resend-link">
+            <a routerLink="/generate-password">
+              Não recebeu o código? <strong>Reenviar</strong>
+            </a>
+          </div>
+      </div>
+
+      <div
+        class="form-section"
+        [class.show]="isCodeValid"
+        [class.hide]="!isCodeValid"
       >
-    </div>
+        <div class="form-header">
+          <div class="security-icon">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+          </div>
 
-    <div
-      class="animated-container"
-      [class.show]="isCodeValid"
-      [class.hide]="!isCodeValid"
-    >
-      <h1>Definir Nova Senha</h1>
-      <p class="subtitle">Escolha uma senha forte para proteger sua conta</p>
+          <h1 class="greeting">Definir Nova Senha</h1>
+          <p class="instruction">
+            Escolha uma senha forte para proteger sua conta
+          </p>
+        </div>
 
-      <ion-item lines="none" class="input-field">
-        <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
-        <ion-input
-          type="password"
-          placeholder="Nova senha"
-          [(ngModel)]="newPassword"
-          required
-        ></ion-input>
-      </ion-item>
+        <form class="login-form">
+          <div class="input-group">
+            <div class="input-label">
+              <ion-icon
+                name="lock-closed-outline"
+                class="input-icon"
+              ></ion-icon>
+              <label>Nova Senha</label>
+            </div>
 
-      <ion-item lines="none" class="input-field">
-        <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
-        <ion-input
-          type="password"
-          placeholder="Confirmar nova senha"
-          [(ngModel)]="confirmPassword"
-          required
-        ></ion-input>
-      </ion-item>
+            <ion-item lines="none" class="input-item">
+              <ion-input
+                type="password"
+                placeholder="Digite a nova senha"
+                [(ngModel)]="newPassword"
+                name="newPassword"
+                required
+                class="custom-input"
+              ></ion-input>
+            </ion-item>
+          </div>
 
-      <ion-button expand="block" class="primary-btn" (click)="updatePassword()"
-        >Atualizar Senha</ion-button
-      >
+          <div class="input-group">
+            <div class="input-label">
+              <ion-icon
+                name="lock-closed-outline"
+                class="input-icon"
+              ></ion-icon>
+              <label>Confirmar Nova Senha</label>
+            </div>
+
+            <ion-item lines="none" class="input-item">
+              <ion-input
+                type="password"
+                placeholder="Confirme a nova senha"
+                [(ngModel)]="confirmPassword"
+                name="confirmPassword"
+                required
+                class="custom-input"
+              ></ion-input>
+            </ion-item>
+          </div>
+          <div class="button-group">
+            <ion-button
+              expand="block"
+              class="login-button primary-btn"
+              (click)="updatePassword()"
+            >
+              Atualizar Senha
+            </ion-button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </ion-content>

@@ -15,7 +15,9 @@
   max-width: 400px;
   border-radius: 22px;
   padding: 28px 24px;
-  margin: 20px auto;
+  margin-bottom: 20px;
+  margin-top: 40px;
+
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
   display: flex;
@@ -62,6 +64,7 @@
 .form-header {
   text-align: center;
   margin-bottom: 20px;
+  margin-top: 40px;
 }
 
 .security-icon {
