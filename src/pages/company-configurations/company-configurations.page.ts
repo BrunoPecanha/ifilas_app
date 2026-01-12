@@ -88,10 +88,10 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.cadastroForm = this.fb.group({
       ownerId: this.user?.id,
       logo: [null],
-      cnpj: ['', Validators.required],
+      cnpj: [''],
       name: ['', Validators.required],
       address: ['', Validators.required],
-      number: ['', Validators.required],
+      number: [''],
       city: ['', Validators.required],
       state: ['', Validators.required],
       categoryId: [null, Validators.required],
