@@ -5,11 +5,7 @@
 
   <div class="ion-page" id="main-content">
     <div class="global-spinner-backdrop" *ngIf="loading$ | async">
-      <div class="queue-spinner">
-        <div class="person p1"></div>
-        <div class="person p2"></div>
-        <div class="person p3"></div>
-      </div>
+      <div class="global-spinner"></div>
     </div>
     <ion-router-outlet></ion-router-outlet>
   </div>

@@ -1,92 +1,93 @@
-<ion-content class="ion-padding login-screen" scroll-y="true">
-  <div class="header-section">
-    <div class="decorative-element">
-      <ion-icon name="lock-closed-outline" class="decorative-icon"></ion-icon>
-    </div>
-  </div>
-
-  <div class="form-container animated-slide-up">
-    <div class="form-header">
-      <h1 class="greeting">Bem-vindo de volta</h1>
-      <p class="instruction">Entre com suas credenciais para continuar</p>
-    </div>
-
-    <form (submit)="login()" class="login-form">
-      <div class="input-group">
-        <div class="input-label">
-          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
-          <label>E-mail ou celular</label>
+<ion-content class="login-screen" scroll-y="false">
+  <div class="page-wrapper">
+    <div class="form-container animated-slide-up">
+      <div class="form-header">
+        <div class="security-icon">
+          <ion-icon name="lock-closed"></ion-icon>
         </div>
-        <ion-item lines="none" class="input-item">
-          <ion-input
-            type="email"
-            [(ngModel)]="email"
-            name="email"
-            required
-            placeholder="seu@email.com"
-            class="custom-input"
-          ></ion-input>
-        </ion-item>
+
+        <h1 class="greeting">Bem-vindo de volta</h1>
+        <p class="instruction">Entre com suas credenciais para continuar</p>
       </div>
 
-      <div class="input-group">
-        <div class="input-label">
-          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
-          <label>Senha</label>
+      <form class="login-form" (ngSubmit)="login()" [formGroup]="loginForm">
+        <div class="input-group">
+          <div class="input-label">
+            <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+            <label>E-mail ou celular</label>
+          </div>
+
+          <ion-item lines="none" class="input-item">
+            <ion-input
+              type="email"
+              formControlName="email"
+              name="email"
+              required
+              placeholder="seu@email.com"
+              class="custom-input"
+            ></ion-input>
+          </ion-item>
         </div>
-        <ion-item lines="none" class="input-item">
-          <ion-input
-            [type]="showPassword ? 'text' : 'password'"
-            [(ngModel)]="password"
-            name="password"
-            required
-            placeholder="Digite sua senha"
-            class="custom-input"
-          ></ion-input>
-          <ion-icon 
-            slot="end" 
-            [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
-            class="toggle-password"
-            (click)="togglePasswordVisibility()"
-          ></ion-icon>
-        </ion-item>
-        <a routerLink="/generate-password" class="forgot-link">
-          Esqueceu a senha?
-        </a>
-      </div>
 
-      <ion-button 
-        expand="block" 
-        type="submit" 
-        class="login-button"
-        [disabled]="isLoading"
-      >
-        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
-        <span *ngIf="!isLoading">Entrar</span>
-      </ion-button>
+        <div class="input-group">
+          <div class="input-label">
+            <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+            <label>Senha</label>
+          </div>
 
-      <div class="divider">
-        <span class="divider-line"></span>
-        <span class="divider-text">ou</span>
-        <span class="divider-line"></span>
-      </div>
+          <ion-item lines="none" class="input-item">
+            <ion-input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Digite sua senha"
+              class="custom-input"
+            ></ion-input>
 
-      <div class="action-links">
-        <a routerLink="/create-account" class="action-link">
-          <ion-icon name="person-add-outline"></ion-icon>
-          Criar nova conta
-        </a>
-        <a routerLink="/validate-code" class="action-link secondary">
-          <ion-icon name="key-outline"></ion-icon>
-          Validar conta com código
-        </a>
-      </div>
+            <ion-icon
+              slot="end"
+              [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+              class="toggle-password"
+              (click)="togglePasswordVisibility()"
+            ></ion-icon>
+          </ion-item>
 
-      <div class="footer-credits">
-        <div class="developed-by-container">
+          <a routerLink="/generate-password" class="forgot-link">
+            Esqueceu a senha?
+          </a>
+        </div>
+
+        <ion-button
+          expand="block"
+          type="submit"
+          class="login-button"
+          [disabled]="loginForm.invalid || isLoading"
+        >
+          <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+          <span *ngIf="!isLoading">Entrar</span>
+        </ion-button>
+
+        <div class="divider">
+          <span></span>
+          <p>ou</p>
+          <span></span>
+        </div>
+
+        <div class="action-links">
+          <a routerLink="/create-account" class="action-link">
+            <ion-icon name="person-add-outline"></ion-icon>
+            Criar nova conta
+          </a>
+
+          <a routerLink="/validate-code" class="action-link secondary">
+            <ion-icon name="key-outline"></ion-icon>
+            Validar conta com código
+          </a>
+        </div>
+
+        <div class="footer-credits">
           <p class="version">Versão {{ appVersion }}</p>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </ion-content>

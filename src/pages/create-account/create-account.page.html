@@ -1,11 +1,7 @@
-<ion-content class="ion-padding register-page" scroll="false">
-  <div class="curved-header">
-    <div class="logo-wrapper">
-      <img src="assets/images/login/logo.png" class="logo" />
-    </div>
-  </div>
+<ion-content fullscreen class="auth-content">
+  <div class="form-container auth-card">
 
-  <div class="form-container">
+    <!-- Botão Voltar -->
     <div class="go-back">
       <a routerLink="/login">
         <img
@@ -15,224 +11,185 @@
       </a>
     </div>
 
-    <h1 class="title">Criar Nova Conta</h1>
-    <p class="subtitle">Preencha os dados para continuar</p>
+    <!-- HEADER -->
+    <div class="form-header">
+      <div class="security-icon">
+        <ion-icon name="person-add"></ion-icon>
+      </div>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit($event)">
-      <div class="input-group" [class.invalid]="isFieldInvalid('name')">
-        <ion-icon name="person-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="text"
-          placeholder="Nome *"
-          formControlName="name"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('name')">
+      <h1 class="greeting">Criar nova conta</h1>
+      <p class="instruction">Preencha os dados para continuar</p>
+    </div>
+
+    <!-- FORM -->
+    <form
+      class="login-form"
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit($event)"
+    >
+      <!-- NOME -->
+      <div class="input-group">
+        <div class="input-label">
+          <ion-icon name="person-outline" class="input-icon"></ion-icon>
+          <label>Nome</label>
+        </div>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input
+            type="text"
+            placeholder="Seu nome"
+            formControlName="name"
+            class="custom-input"
+          ></ion-input>
+        </ion-item>
+
+        <small class="error-text" *ngIf="isFieldInvalid('name')">
           {{ getErrorMessage('name') }}
-        </div>
+        </small>
       </div>
 
-      <div class="input-group" [class.invalid]="isFieldInvalid('lastname')">
-        <ion-icon name="people-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="text"
-          placeholder="Sobrenome *"
-          formControlName="lastname"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('lastname')">
+      <!-- SOBRENOME -->
+      <div class="input-group">
+        <div class="input-label">
+          <ion-icon name="people-outline" class="input-icon"></ion-icon>
+          <label>Sobrenome</label>
+        </div>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input
+            type="text"
+            placeholder="Seu sobrenome"
+            formControlName="lastname"
+            class="custom-input"
+          ></ion-input>
+        </ion-item>
+
+        <small class="error-text" *ngIf="isFieldInvalid('lastname')">
           {{ getErrorMessage('lastname') }}
-        </div>
+        </small>
       </div>
 
-      <!-- <div class="input-group" [class.invalid]="isFieldInvalid('cpf')">
-        <ion-icon name="id-card-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="tel"
-          placeholder="CPF *"
-          formControlName="cpf"
-          (ionInput)="formatCPF($event)"
-          maxlength="14"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('cpf')">
-          {{ getErrorMessage('cpf') }}
+      <!-- EMAIL -->
+      <div class="input-group">
+        <div class="input-label">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <label>E-mail</label>
         </div>
-      </div> -->
 
-      <div class="input-group" [class.invalid]="isFieldInvalid('email')">
-        <ion-icon name="mail-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="email"
-          placeholder="E-mail *"
-          formControlName="email"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('email')">
+        <ion-item lines="none" class="input-item">
+          <ion-input
+            type="email"
+            placeholder="seu@email.com"
+            formControlName="email"
+            class="custom-input"
+          ></ion-input>
+        </ion-item>
+
+        <small class="error-text" *ngIf="isFieldInvalid('email')">
           {{ getErrorMessage('email') }}
-        </div>
+        </small>
       </div>
 
-      <div class="input-group" [class.invalid]="isFieldInvalid('phone')">
-        <ion-icon name="call-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="tel"
-          placeholder="Telefone * (DDD + Número)"
-          formControlName="phone"
-          (ionBlur)="formatPhone($event)"
-          maxlength="15"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('phone')">
+      <!-- TELEFONE -->
+      <div class="input-group">
+        <div class="input-label">
+          <ion-icon name="call-outline" class="input-icon"></ion-icon>
+          <label>Telefone</label>
+        </div>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input
+            type="tel"
+            placeholder="DDD + número"
+            formControlName="phone"
+            class="custom-input"
+          ></ion-input>
+        </ion-item>
+
+        <small class="error-text" *ngIf="isFieldInvalid('phone')">
           {{ getErrorMessage('phone') }}
-        </div>
+        </small>
       </div>
 
-      <div class="input-group" [class.invalid]="isFieldInvalid('cep')">
-        <ion-icon name="location-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="text"
-          placeholder="CEP *"
-          formControlName="cep"
-          (ionBlur)="searchCep()"
-          maxlength="9"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('cep')">
-          {{ getErrorMessage('cep') }}
+      <!-- SENHA -->
+      <div class="input-group">
+        <div class="input-label">
+          <ion-icon
+            name="lock-closed-outline"
+            class="input-icon"
+          ></ion-icon>
+          <label>Senha</label>
         </div>
-        <div class="cep-loading" *ngIf="searchingCep">
-          <ion-spinner name="crescent" color="primary"></ion-spinner>
-          Buscando endereço...
-        </div>
-      </div>
 
-      <div class="input-group" [class.invalid]="isFieldInvalid('address')">
-        <ion-icon name="home-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="text"
-          placeholder="Endereço *"
-          formControlName="address"
-          [readonly]="true"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('address')">
-          {{ getErrorMessage('address') }}
-        </div>
-      </div>
-<!-- 
-      <div class="input-group" [class.invalid]="isFieldInvalid('number')">
-        <ion-icon name="business-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="text"
-          placeholder="Número *"
-          formControlName="number"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('number')">
-          {{ getErrorMessage('number') }}
-        </div>
-      </div> -->
+        <ion-item lines="none" class="input-item">
+          <ion-input
+            type="password"
+            placeholder="Digite sua senha"
+            formControlName="password"
+            class="custom-input"
+          ></ion-input>
+        </ion-item>
 
-      <div
-        class="input-group"
-        [class.invalid]="isFieldInvalid('neighborhood')"
-      >
-        <ion-icon name="navigate-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="text"
-          placeholder="Bairro *"
-          formControlName="neighborhood"
-          [readonly]="true"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('neighborhood')">
-          {{ getErrorMessage('neighborhood') }}
-        </div>
-      </div>
-
-      <div class="input-group" [class.invalid]="isFieldInvalid('city')">
-        <ion-icon name="business-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="text"
-          placeholder="Cidade *"
-          formControlName="city"
-          [readonly]="true"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('city')">
-          {{ getErrorMessage('city') }}
-        </div>
-      </div>
-
-      <div class="input-group" [class.invalid]="isFieldInvalid('state')">
-        <ion-icon name="flag-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="text"
-          placeholder="Estado *"
-          formControlName="state"
-          [readonly]="true"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('state')">
-          {{ getErrorMessage('state') }}
-        </div>
-      </div>
-
-      <div class="input-group" [class.invalid]="isFieldInvalid('password')">
-        <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="password"
-          placeholder="Senha *"
-          formControlName="password"
-        ></ion-input>
-        <div class="error-message" *ngIf="isFieldInvalid('password')">
+        <small class="error-text" *ngIf="isFieldInvalid('password')">
           {{ getErrorMessage('password') }}
-        </div>
+        </small>
       </div>
 
-      <div
-        class="input-group"
-        [class.invalid]="isFieldInvalid('confirmPassword') || registerForm.hasError('mismatch')"
-      >
-        <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
-        <ion-input
-          type="password"
-          placeholder="Confirmar senha *"
-          formControlName="confirmPassword"
-        ></ion-input>
-        <div class="error-message" *ngIf="registerForm.hasError('mismatch')">
+      <!-- CONFIRMAR SENHA -->
+      <div class="input-group">
+        <div class="input-label">
+          <ion-icon
+            name="lock-closed-outline"
+            class="input-icon"
+          ></ion-icon>
+          <label>Confirmar senha</label>
+        </div>
+
+        <ion-item lines="none" class="input-item">
+          <ion-input
+            type="password"
+            placeholder="Confirme sua senha"
+            formControlName="confirmPassword"
+            class="custom-input"
+          ></ion-input>
+        </ion-item>
+
+        <small class="error-text" *ngIf="registerForm.hasError('mismatch')">
           As senhas não coincidem
-        </div>
-        <div
-          class="error-message"
-          *ngIf="isFieldInvalid('confirmPassword') && !registerForm.hasError('mismatch')"
-        >
-          {{ getErrorMessage('confirmPassword') }}
-        </div>
+        </small>
       </div>
 
+      <!-- TERMOS -->
       <div
-        class="input-check-validation"
+        class="terms-wrapper"
         [class.invalid]="isFieldInvalid('termsAccepted')"
       >
-        <ion-checkbox
-          slot="start"
-          formControlName="termsAccepted"
-        ></ion-checkbox>
-        <label
-          >Li e aceito a
-          <a href="#" class="terms-link">Política de Privacidade</a> e
-          <a href="#" class="terms-link">Termos de Uso</a></label
-        >
-        <div class="error-message" *ngIf="isFieldInvalid('termsAccepted')">
-          {{ getErrorMessage('termsAccepted') }}
-        </div>
+        <ion-checkbox formControlName="termsAccepted"></ion-checkbox>
+        <label>
+          Li e aceito os
+          <a href="#">Termos de Uso</a> e
+          <a href="#">Política de Privacidade</a>
+        </label>
       </div>
 
-      <div class="submit-button">
-        <ion-button
-          expand="full"
-          type="submit"
-          [disabled]="registerForm.invalid && registerForm.touched"
-          class="primary-btn"
-        >
-          <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
-          <span *ngIf="!loading">Cadastrar</span>
-        </ion-button>
-      </div>
+      <small class="error-text" *ngIf="isFieldInvalid('termsAccepted')">
+        {{ getErrorMessage('termsAccepted') }}
+      </small>
 
+      <!-- BOTÃO -->
+      <ion-button
+        expand="block"
+        type="submit"
+        class="login-button"
+        [disabled]="registerForm.invalid || loading"
+      >
+        <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+        <span *ngIf="!loading">Cadastrar</span>
+      </ion-button>
+
+      <!-- VOLTAR -->
       <div class="back-to-login">
-        <a routerLink="/login">Já tem conta? <strong>Entrar</strong></a>
+        <a routerLink="/login"> Já tem conta? <strong>Entrar</strong> </a>
       </div>
     </form>
   </div>

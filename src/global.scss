@@ -201,17 +201,14 @@ ion-header app-custom-header {
   width: 100%;
 }
 
-
 ion-content.fullscreen-with-header {
-    contain: size style;
+  contain: size style;
 }
 
 .android-native ion-header {
-  
 }
 
 .ios-native ion-header {
-
 }
 
 .pwa-mode ion-header {
@@ -231,7 +228,6 @@ ion-content {
   background: var(--ion-background-color);
 }
 
-
 .global-spinner-backdrop {
   position: fixed;
   inset: 0;
@@ -240,79 +236,21 @@ ion-content {
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(2px);
-  pointer-events: all; 
-  touch-action: none; 
-  color: var(--ion-color-primary);
+  pointer-events: all;
+  touch-action: none;
 }
 
-.global-spinner-backdrop ion-spinner {
-  width: 48px;
-  height: 48px;
-}
-
-.queue-spinner {
-  display: flex;
-  gap: 18px;
-  margin-bottom: 12px;
-  align-items: flex-end;
-}
-
-.person {
-  width: 12px;
-  height: 12px;
+.global-spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid #dfe5ff;
+  border-top-color: var(--ion-color-primary);
   border-radius: 50%;
-  background: var(--ion-color-primary);
-  position: relative;
-  animation: jump 1.2s infinite ease-in-out;
-  opacity: 0.5;
-  will-change: transform;
+  animation: globalSpin 0.9s linear infinite;
 }
 
-.person::after {
-  content: '';
-  position: absolute;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 16px;
-  height: 18px;
-  background: var(--ion-color-primary);
-
-  clip-path: polygon(
-    50% 0%,
-    90% 100%,
-    10% 100%
-  );
-
-  border-radius: 6px;
-}
-
-.p1 { animation-delay: 0s; }
-.p2 { animation-delay: .2s; }
-.p3 { animation-delay: .4s; }
-
-@keyframes jump {
-  0% {
-    transform: translateY(0);
-    opacity: 0.5;
-  }
-
-  30% {
-    transform: translateY(-8px);
-    opacity: 1;
-  }
-
-  50% {
-    transform: translateY(0);
-  }
-
-  70% {
-    transform: translateY(-4px);
-  }
-
-  100% {
-    transform: translateY(0);
-    opacity: 0.5;
+@keyframes globalSpin {
+  to {
+    transform: rotate(360deg);
   }
 }
