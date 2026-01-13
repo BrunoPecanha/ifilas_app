@@ -6,7 +6,7 @@ import { ModalController } from '@ionic/angular';
   template: `
     <ion-content [fullscreen]="true" class="custom-content">
       <app-custom-header
-        title="SELECIONE O PERÍODO"
+        [subtitle]="'PERÍODO'"
         [showStartButton]="true"
         (onStartClick)="close()"
         startIconName="close-outline"

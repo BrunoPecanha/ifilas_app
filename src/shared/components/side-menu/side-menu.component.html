@@ -71,10 +71,10 @@
           <ion-label>Configurações Conta</ion-label>
         </ion-item>
 
-        <ion-item (click)="navigateTo('/client-history')" detail="false" lines="none" class="menu-item-compact disabled-item">
+        <ion-item (click)="navigateTo('/client-history')" detail="false" lines="none" class="menu-item-compact">
           <ion-icon name="time" slot="start"></ion-icon>
           <ion-label>Histórico</ion-label>
-          <span class="badge-soon">EM BREVE</span>
+          <!-- <span class="badge-soon">EM BREVE</span> -->
         </ion-item>
 
         <ion-item (click)="navigateTo('/role-registration')" detail="false" lines="none" class="menu-item-compact disabled-item">
@@ -175,10 +175,10 @@
         <ion-label>Crie sua empresa</ion-label>
       </ion-item>
 
-      <ion-item (click)="navigateTo('/reports')" detail="false" lines="none" class="menu-item-compact disabled-item">
+       <ion-item  *ngIf="profile === 1 || profile === 2" (click)="navigateTo('/reports')" detail="false" lines="none" class="menu-item-compact">
         <ion-icon name="bar-chart" slot="start"></ion-icon>
         <ion-label>Relatórios</ion-label>
-        <span class="badge-soon">EM BREVE</span>
+         <!-- <span class="badge-soon">EM BREVE</span>  -->
       </ion-item>
 
       <ion-item

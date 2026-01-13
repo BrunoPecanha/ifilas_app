@@ -95,7 +95,7 @@ export class OwnerSchedulePage implements OnInit {
 
     if (!this.selectedCustomer?.isTransfered) {
       return true;
-    }   
+    }
 
     return this.store.ownerId === this.user.id;
   }
@@ -131,7 +131,7 @@ export class OwnerSchedulePage implements OnInit {
     const date = `${year}-${month}-${day}`;
 
     this.service.getOwnerAgendaForDate(this.store.id, this.user.id, date).subscribe({
-      next: (response) => {        
+      next: (response) => {
         const data = response.data;
         this.slotDuration = data?.slotDuration ?? 30;
         this.scheduleId = data?.scheduleId ?? 0;
@@ -818,6 +818,7 @@ export class OwnerSchedulePage implements OnInit {
       'waiting': 'Aguardando', 'pending': 'Pendente', 'confirmed': 'Confirmado', 'inservice': 'Em Atendimento', 'done': 'Realizado',
       'absent': 'Ausente', 'cancelled': 'Cancelado', 'next': 'Próximo', 'rejected': 'Rejeitado', 'scheduled': 'Agendado'
     };
+
     return textMap[status] || status;
   }
 
@@ -1000,10 +1001,20 @@ export class OwnerSchedulePage implements OnInit {
 
   private mapStatus(status: number): string {
     const statusMap: { [key: number]: string } = {
-      0: 'waiting', 1: 'removed', 2: 'inservice', 3: 'done', 4: 'absent',
-      5: 'cancelled', 6: 'next', 7: 'pending', 8: 'rejected', 9: 'confirmed'
+      0: 'waiting',
+      1: 'removed',
+      2: 'inservice',
+      3: 'done',
+      4: 'absent',
+      5: 'cancelled',
+      6: 'pending',
+      7: 'rejected',
+      8: 'pending',
+      9: 'confirmed',
+      10: 'scheduled'
     };
-    return statusMap[status] || 'pending';
+
+    return statusMap[status] || 'unknown';
   }
 
   private getRandomServiceColor(): string {
