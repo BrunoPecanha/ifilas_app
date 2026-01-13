@@ -32,7 +32,7 @@ export class SplashPage {
 
       setTimeout(() => {
         this.tryAutoLogin();
-      }, 2000);
+      }, 8000);
     } else {
       this.clearSessionAndLogout();
     }
