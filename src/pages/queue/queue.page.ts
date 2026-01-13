@@ -296,7 +296,7 @@ export class QueuePage implements AfterViewInit {
       5: { text: 'Cancelado', color: 'danger' },
       6: { text: 'Pendente', color: 'warning' },
       7: { text: 'Recusado', color: 'danger' },
-      8: { text: 'Próximo', color: 'success' },
+      8: { text: 'Pendente', color: 'warning' },
       9: { text: 'Confirmado', color: 'success' },
       10: { text: 'Agendado', color: 'tertiary' }
     };
@@ -540,11 +540,7 @@ export class QueuePage implements AfterViewInit {
     );
   }
 
-  // Adicione estes métodos à sua classe QueuePage:
 
-  /**
-   * Método para navegar para agendamentos (usado no botão do empty state)
-   */
   goToScheduling(): void {
     this.router.navigate(['/scheduling'], {
       queryParams: {
@@ -554,9 +550,7 @@ export class QueuePage implements AfterViewInit {
     });
   }
 
-  /**
-   * Método para selecionar data (usado no date picker)
-   */
+
   async selectDate(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Selecionar Data',
@@ -599,48 +593,32 @@ export class QueuePage implements AfterViewInit {
     await alert.present();
   }
 
-  /**
-   * Método para navegar para busca de estabelecimentos (usado no empty state)
-   */
+
   findStores(): void {
     this.router.navigate(['/stores']);
   }
 
-  /**
-   * Método para lidar com o scroll do conteúdo (opcional - já tem similar)
-   */
   onContentScroll(event: any): void {
     this.headerScrolled = event.detail.scrollTop > 50;
   }
 
-  /**
-   * Método para formatar data no formato iOS (MMM uppercase)
-   * Usado no header
-   */
+
   getMonthAbbreviation(date: Date): string {
     const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
     return months[date.getMonth()];
   }
 
-  /**
-   * Método para retornar o dia da semana abreviado
-   */
+
   getShortDayOfWeek(date: Date): string {
     const days = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
     return days[date.getDay()];
   }
 
-  /**
-   * Método para verificar se é hora de pico (para mostrar informações adicionais)
-   */
   isPeakHour(time: string): boolean {
     const hour = parseInt(time.split(':')[0]);
     return (hour >= 12 && hour <= 14) || (hour >= 18 && hour <= 20);
   }
 
-  /**
-   * Método para obter ícone baseado na categoria do serviço
-   */
   getServiceIcon(category: string): string {
     const iconMap: { [key: string]: string } = {
       'Barbearia': 'cut-outline',
@@ -658,9 +636,7 @@ export class QueuePage implements AfterViewInit {
     return iconMap[category] || iconMap['Default'];
   }
 
-  /**
-   * Método para calcular quanto tempo falta para o agendamento (formato amigável)
-   */
+
   getFriendlyTimeUntil(appt: ScheduleItem): string {
     const now = new Date();
     const appointmentDate = this.getLocalAppointmentDate(appt);
@@ -683,9 +659,7 @@ export class QueuePage implements AfterViewInit {
     return 'Em breve';
   }
 
-  /**
-   * Método para formatar moeda no estilo iOS
-   */
+
   formatCurrency(value: number | string): string {
     if (!value) return 'R$ 0,00';
 
@@ -698,9 +672,7 @@ export class QueuePage implements AfterViewInit {
     }).format(numValue);
   }
 
-  /**
-   * Método para gerar cor gradiente baseada na posição da fila
-   */
+
   getGradientColor(position: number): string {
     if (position === 1) return 'linear-gradient(135deg, #4cd964, #5ac8fa)';
     if (position <= 3) return 'linear-gradient(135deg, #ff9500, #ffcc00)';
@@ -708,9 +680,6 @@ export class QueuePage implements AfterViewInit {
     return 'linear-gradient(135deg, #8e8e93, #c7c7cc)';
   }
 
-  /**
-   * Método para obter emoji baseado na posição da fila
-   */
   getPositionEmoji(position: number): string {
     if (position === 1) return '👑';
     if (position <= 3) return '🔥';
@@ -718,9 +687,7 @@ export class QueuePage implements AfterViewInit {
     return '⏳';
   }
 
-  /**
-   * Método para verificar se deve mostrar o card de destaque
-   */
+
   shouldShowHighlightCard(): boolean {
     if (this.activeSegment === 'filas') {
       return !!this.nextAppointment;
@@ -729,38 +696,26 @@ export class QueuePage implements AfterViewInit {
     }
   }
 
-  /**
-   * Método para alternar entre filas e agendamentos com animação
-   */
+
   async switchSegment(segment: 'filas' | 'agendamentos'): Promise<void> {
     if (this.activeSegment === segment) return;
 
-    // Fechar card expandido atual
     this.collapseAll();
 
-    // Mudar segmento
     this.activeSegment = segment;
 
-    // Pequeno delay para animação
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    // Scroll para topo
     this.content.scrollToTop(200);
   }
 
-  /**
-   * Método para lidar com toque longo no card (opcional)
-   */
+
   onCardLongPress(item: any, type: 'queue' | 'appointment'): void {
-    // Implementar ações rápidas no futuro
     console.log('Long press on', type, item.id);
   }
 
-  /**
-   * Método para abrir mapa com localização do estabelecimento
-   */
+
   async openStoreLocation(store: any): Promise<void> {
-    // Verificar se o estabelecimento tem coordenadas
     if (store.latitude && store.longitude) {
       const url = `https://maps.google.com/?q=${store.latitude},${store.longitude}`;
       window.open(url, '_blank');
@@ -769,9 +724,6 @@ export class QueuePage implements AfterViewInit {
     }
   }
 
-  /**
-   * Método para compartilhar fila/agendamento
-   */
   async shareItem(item: any, type: 'queue' | 'appointment'): Promise<void> {
     if (navigator.share) {
       try {

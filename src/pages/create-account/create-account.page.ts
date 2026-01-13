@@ -82,8 +82,7 @@ export class CreateAccountPage implements OnInit {
     try {
       this.geLocation.getAddressByCep(cep).subscribe({
         next: (response: any) => {
-          if (response.valid && response.data) {
-            debugger
+          if (response.valid && response.data) {            
             this.registerForm.patchValue({
               address: response.data.lagradouro,
               neighborhood: response.data.bairro,

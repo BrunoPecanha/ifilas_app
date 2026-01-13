@@ -43,6 +43,7 @@ export class UserConfigurationsPage {
     this.user = this.sessionService.getUser();
 
     this.cadastroForm = this.fb.group({
+      id: `#${this.user.id}`,
       cpf: ['', [Validators.required, Validators.minLength(11)]],
       name: ['', [Validators.required]],
       lastName: ['', [Validators.required]],

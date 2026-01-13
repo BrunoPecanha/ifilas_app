@@ -11,7 +11,7 @@
 ></app-custom-header>
 
 <ion-content
-  class="ion-padding"  
+  class="ion-padding"
   [formGroup]="cadastroForm"
   [scrollEvents]="true"
   (ionScroll)="onContentScroll($event)"
@@ -284,6 +284,15 @@
       slot="end"
     ></ion-toggle>
     <ion-label class="delete-label">Deletar minha conta</ion-label>
+  </ion-item>
+
+  <ion-item
+    disabled="true"
+    fill="solid"
+    class="form-item"
+  >
+    <ion-label position="floating">Identificador</ion-label>
+    <ion-input formControlName="id" [readonly]="true"></ion-input>    
   </ion-item>
 </ion-content>
 

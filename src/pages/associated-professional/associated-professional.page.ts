@@ -7,6 +7,7 @@ import { EmployeeStoreService } from 'src/services/employee.store.service';
 import { SessionService } from 'src/services/session.service';
 import { UserModel } from 'src/models/user-model';
 import { StoreModel } from 'src/models/store-model';
+import { ToastService } from 'src/services/toast.service';
 
 @Component({
   selector: 'app-associated-professional',
@@ -27,7 +28,8 @@ export class AssociatedProfessionalPage implements OnInit {
     private alertController: AlertController,
     private loadingController: LoadingController,
     private employeeStoreService: EmployeeStoreService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private toastService: ToastService
   ) { }
 
   async ngOnInit() {
@@ -55,11 +57,11 @@ export class AssociatedProfessionalPage implements OnInit {
         if (response.valid) {
           this.processStoreInvites(response.data.employeeStoreAssociations);
         } else {
-          this.presentAlert(response.message, 'Erro ao carregar convites');
+          this.toastService.show(response.message, 'danger');
         }
       },
       error: (error) => {
-        this.presentAlert('Erro ao carregar convites do estabelecimento', 'Erro');
+        this.toastService.show('Erro ao carregar convites do estabelecimento', 'danger');
       }
     });
   }
@@ -70,11 +72,11 @@ export class AssociatedProfessionalPage implements OnInit {
         if (response.valid) {
           this.processEmployeeInvites(response.data.employeeStoreAssociations);
         } else {
-          this.presentAlert(response.message, 'Erro ao carregar convites');
+          this.toastService.show(response.message, 'danger');
         }
       },
       error: (error) => {
-        this.presentAlert('Erro ao carregar seus convites', 'Erro');
+        this.toastService.show('Erro ao carregar seus convites', 'danger');
       }
     });
   }
@@ -87,15 +89,6 @@ export class AssociatedProfessionalPage implements OnInit {
   processEmployeeInvites(invites: EmployeeStoreItemModel[]) {
     this.associatedEstablishments = invites.filter(i => !i.inviteIsPending);
     this.pendingInvites = invites.filter(i => i.inviteIsPending);
-  }
-
-  async presentAlert(message: string, header: string = 'Aviso') {
-    const alert = await this.alertController.create({
-      header,
-      message,
-      buttons: ['OK']
-    });
-    await alert.present();
   }
 
   async presentLoading(message: string = 'Processando...'): Promise<HTMLIonLoadingElement> {
@@ -141,15 +134,15 @@ export class AssociatedProfessionalPage implements OnInit {
       next: (response) => {
         loading.dismiss();
         if (response.valid) {
-          this.presentAlert(`Colaborador removido do estabelecimento.`, 'Removido com Sucesso');
+          this.toastService.show(`Colaborador removido do estabelecimento.`, 'success');
           this.loadStoreInvites();
         } else {
-          this.presentAlert(response.message, 'Erro ao remover colaborador');
+          this.toastService.show(response.message, 'danger');
         }
       },
       error: (error) => {
         loading.dismiss();
-        this.presentAlert('Erro ao remover colaborador', 'Erro');
+        this.toastService.show('Erro ao remover colaborador', 'danger');
       }
     });
   }
@@ -170,7 +163,7 @@ export class AssociatedProfessionalPage implements OnInit {
           text: 'Sim, cancelar',
           role: 'destructive',
           handler: () => {
-            this.cancelarConvite(employeeId, invite.storeId);
+            this.cancelInvite(employeeId, invite.storeId);
           }
         }
       ]
@@ -178,7 +171,7 @@ export class AssociatedProfessionalPage implements OnInit {
     await alert.present();
   }
 
-  async cancelarConvite(employeeId: number, storeId: number): Promise<void> {
+  async cancelInvite(employeeId: number, storeId: number): Promise<void> {
     const loading = await this.presentLoading('Cancelando convite...');
 
     const request: EmployeeStoreRespondInviteRequest = {
@@ -191,52 +184,41 @@ export class AssociatedProfessionalPage implements OnInit {
       next: (response) => {
         loading.dismiss();
         if (response.valid) {
-          this.presentAlert('Convite cancelado com sucesso.', 'Convite Cancelado');
+          this.toastService.show('Convite cancelado com sucesso.', 'success');
           this.loadStoreInvites();
         } else {
-          this.presentAlert(response.message, 'Erro ao cancelar convite');
+          this.toastService.show(response.message, 'danger');
         }
       },
       error: (error) => {
         loading.dismiss();
-        this.presentAlert('Erro ao cancelar convite', 'Erro');
+        this.toastService.show('Erro ao cancelar convite', 'danger');
       }
     });
   }
 
-  async sendInvite(cpf: string) {
-    const cpfNumerico = cpf.replace(/\D/g, '');
-
-    if (!cpfNumerico) {
-      this.presentAlert('Por favor, informe o CPF do profissional.', 'CPF Inválido');
+  async sendInvite(userCode: number) {
+    if (!userCode) {
+      this.toastService.show('Código inválido.', 'warning');
       return;
     }
-
-    if (!this.isCpfValid(cpfNumerico)) {
-      this.presentAlert('Por favor, informe um CPF válido com 11 dígitos.', 'CPF Inválido');
-      return;
-    }
-
-    const loading = await this.presentLoading('Enviando convite...');
 
     const request: EmployeeStoreSendInviteRequest = {
       storeId: this.store.id,
-      cpf: cpfNumerico
+      userCode: userCode
     };
 
     this.employeeStoreService.sendInviteToEmployee(request).subscribe({
       next: (response) => {
-        loading.dismiss();
         if (response.valid) {
-          this.presentAlert(`Convite enviado para CPF ${this.formatCPF(cpfNumerico)}`, 'Convite Enviado');
+          this.toastService.show(`Convite enviado!`, 'success');
           this.loadStoreInvites();
         } else {
-          this.presentAlert(response.message, 'Erro ao enviar convite');
+          this.toastService.show(response.message, 'danger');
         }
       },
       error: (error) => {
-        loading.dismiss();
-        this.presentAlert('Erro ao enviar convite', 'Erro');
+        this.toastService.show('Erro ao enviar convite', 'danger');
       }
     });
   }
@@ -254,15 +236,15 @@ export class AssociatedProfessionalPage implements OnInit {
       next: (response) => {
         loading.dismiss();
         if (response.valid) {
-          this.presentAlert(`Você agora está associado ao estabelecimento!`, 'Associação Confirmada');
+          this.toastService.show(`Você agora está associado ao estabelecimento!`, 'success');
           this.loadEmployeeInvites();
         } else {
-          this.presentAlert(response.message, 'Erro ao aceitar convite');
+          this.toastService.show(response.message, 'danger');
         }
       },
       error: (error) => {
         loading.dismiss();
-        this.presentAlert('Erro ao aceitar convite', 'Erro');
+        this.toastService.show('Erro ao aceitar convite', 'danger');
       }
     });
   }
@@ -304,15 +286,15 @@ export class AssociatedProfessionalPage implements OnInit {
       next: (response) => {
         loading.dismiss();
         if (response.valid) {
-          this.presentAlert(`Convite recusado`, 'Resposta a Convite');
+          this.toastService.show(`Convite recusado`, 'warning');
           this.loadEmployeeInvites();
         } else {
-          this.presentAlert(response.message, 'Erro ao recusar convite');
+          this.toastService.show(response.message, 'danger');
         }
       },
       error: (error) => {
         loading.dismiss();
-        this.presentAlert('Erro ao recusar convite', 'Erro');
+        this.toastService.show('Erro ao recusar convite', 'danger');
       }
     });
   }
@@ -320,7 +302,7 @@ export class AssociatedProfessionalPage implements OnInit {
   async confirmEstablishmentExit(storeId: number) {
     const establishment = this.associatedEstablishments.find(e => e.storeId === storeId);
 
-    if (!establishment) 
+    if (!establishment)
       return;
 
     const alert = await this.alertController.create({
@@ -356,43 +338,30 @@ export class AssociatedProfessionalPage implements OnInit {
       next: (response) => {
         loading.dismiss();
         if (response.valid) {
-          this.presentAlert(`Você não está mais associado ao estabelecimento`, 'Associação Encerrada');
+          this.toastService.show(`Você não está mais associado ao estabelecimento`, 'warning');
           this.loadEmployeeInvites();
         } else {
-          this.presentAlert(response.message, 'Erro ao sair do estabelecimento');
+          this.toastService.show(response.message, 'danger');
         }
       },
       error: (error) => {
         loading.dismiss();
-        this.presentAlert('Erro ao sair do estabelecimento', 'Erro');
+        this.toastService.show('Erro ao sair do estabelecimento', 'danger');
       }
     });
-  }
-
-  isCpfValid(cpf: string): boolean {
-    return /^\d{11}$/.test(cpf) && !/(\d)\1{10}/.test(cpf);
-  }
-
-  formatCPF(cpf: string): string {
-    cpf = cpf.replace(/\D/g, '');
-    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
 
   async openInviteModal() {
     const alert = await this.alertController.create({
       header: 'Enviar Convite',
-      subHeader: 'Informe o CPF do profissional',
+      subHeader: 'Informe o código do profissional',
       inputs: [
         {
-          name: 'cpf',
+          name: 'userCode',
           type: 'text',
-          placeholder: 'Só números',
+          placeholder: 'Código interno',
           attributes: {
-            maxlength: 14
-          },
-          handler: (input) => {
-            input.value = this.formatCPF(input.value);
-            return input;
+            maxlength: 50
           }
         }
       ],
@@ -404,14 +373,18 @@ export class AssociatedProfessionalPage implements OnInit {
         {
           text: 'Enviar',
           handler: (data) => {
-            const cpfLimpo = data.cpf.replace(/\D/g, '');
-            if (cpfLimpo.length === 11 && this.isCpfValid(cpfLimpo)) {
-              this.sendInvite(cpfLimpo);
-              return true;
-            } else {
-              this.presentAlert('Por favor, informe um CPF válido com 11 dígitos.', 'CPF Inválido');
+            const userCode = data.userCode?.trim();
+
+            if (!userCode) {
+              this.toastService.show(
+                'Código inválido.Por favor, informe o código do profissional.',
+                'warning'
+              );
               return false;
             }
+
+            this.sendInvite(userCode);
+            return true;
           }
         }
       ]
