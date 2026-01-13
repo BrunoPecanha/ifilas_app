@@ -3,73 +3,95 @@
   [showStartButton]="true"
   [showEndButton]="false"
   [startIconName]="'arrow-back-outline'"
-  [endIconName]="'refresh-outline'"
   (onStartClick)="getBack()">
 </app-custom-header>
 
-<ion-content class="establishment-content" [fullscreen]="true" (ionScroll)="onContentScroll($event)" [scrollEvents]="true">
-  <div class="content-wrapper">  
+<ion-content
+  class="establishment-ios-content"
+  [fullscreen]="true"
+  (ionScroll)="onContentScroll($event)"
+  [scrollEvents]="true">
 
-    <div class="companies-section">
-      <div class="companies-grid">
-        <ion-card
-          class="company-card"
-          *ngFor="let est of filteredEstablishments"
-          (click)="handleCompanyClick(est)"
-          [class.loading]="loadingCompanyId === est.id">
-          
-          <div class="category-indicator" [style.background]="getCategoryColor(est.category)"></div>
-          
-          <ion-card-content>
-            <div class="company-header">
-              <div class="company-logo">
-                <ng-container *ngIf="est.logoPath; else defaultCompanyLogo">
-                  <ion-img
-                    [src]="est.logoPath"
-                    class="company-logo-img"
-                    (ionError)="handleImageError($event)">
-                  </ion-img>
-                </ng-container>
-                <ng-template #defaultCompanyLogo>
-                  <div class="default-company-logo" [style.background]="getCategoryColor(est.category)">
-                    <ion-icon name="storefront"></ion-icon>
-                  </div>
-                </ng-template>
-              </div>
+  <div class="content-section">
 
-              <div class="company-info">
-                <h3 class="company-name">{{ est.name }}</h3>
-                <div class="company-meta">
-                  <span class="company-category">{{ est.category }}</span>
-                  <span class="company-status" [class.open]="est.isOpen" [class.closed]="!est.isOpen">
-                    {{ est.isOpen ? 'Aberta' : 'Fechada' }}
-                  </span>
-                </div>
-                
-                <div class="company-location" *ngIf="est.city">
-                  <ion-icon name="location-outline"></ion-icon>
-                  <span>{{ est.city }}, {{ est.state }}</span>
-                </div>
-              </div>
-            </div>
+    <div class="cards-grid">
+      <div
+        class="ios-card establishment-card"
+        *ngFor="let est of filteredEstablishments"
+        (click)="handleCompanyClick(est)"
+        [class.loading]="loadingCompanyId === est.id">
 
-            <div class="loading-overlay" *ngIf="loadingCompanyId === est.id">
-              <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
-              <span>Conectando...</span>
-            </div>
-          </ion-card-content>
-        </ion-card>
+      <div
+        class="side-indicator"
+        [class.open]="est.isOpen"
+        [class.closed]="!est.isOpen">
       </div>
 
-      <div class="empty-state" *ngIf="filteredEstablishments.length === 0">
-        <ion-icon name="business-outline"></ion-icon>
-        <h3>Nenhuma loja encontrada</h3>
-        <p>Tente fechar e abrir o app</p>
+        <div class="card-header">
+          <div class="store-info">
+            <div class="store-logo">
+              <ng-container *ngIf="est.logoPath; else defaultLogo">
+                <img
+                  [src]="est.logoPath"
+                  (error)="handleImageError($event)" />
+              </ng-container>
+
+              <ng-template #defaultLogo>
+                <div
+                  class="default-logo"
+                  [style.background]="getCategoryColor(est.category)">
+                  <ion-icon name="storefront-outline"></ion-icon>
+                </div>
+              </ng-template>
+            </div>
+
+            <div class="store-details">
+              <h3 class="store-name">{{ est.name }}</h3>
+
+              <div class="store-meta">
+                <span class="store-category">
+                  {{ est.category }}
+                </span>
+
+                <span
+                  class="store-status"
+                  [class.open]="est.isOpen"
+                  [class.closed]="!est.isOpen">
+                  {{ est.isOpen ? 'Aberta' : 'Fechada' }}
+                </span>
+              </div>
+
+              <div class="store-location" *ngIf="est.city">
+                <ion-icon name="location-outline"></ion-icon>
+                <span>{{ est.city }}, {{ est.state }}</span>
+              </div>
+            </div>
+          </div>
+
+          <ion-icon
+            name="chevron-forward"
+            class="chevron-icon">
+          </ion-icon>
+        </div>
+
+        <div class="loading-overlay" *ngIf="loadingCompanyId === est.id">
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Conectando…</span>
+        </div>
       </div>
     </div>
+
+    <div class="empty-state" *ngIf="filteredEstablishments.length === 0">
+      <div class="empty-icon">
+        <ion-icon name="business-outline"></ion-icon>
+      </div>
+      <h3>Nenhuma loja encontrada</h3>
+      <p>Tente fechar e abrir o app</p>
+    </div>
+
   </div>
 
-  <div class="scroll-indicator" [class.hidden]="!showScrollIndicator">
+  <!-- <div class="scroll-indicator" [class.hidden]="!showScrollIndicator">
     <ion-icon name="chevron-down-outline"></ion-icon>
-  </div>
+  </div> -->
 </ion-content>
