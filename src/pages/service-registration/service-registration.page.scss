@@ -765,3 +765,8 @@ ion-item ion-label {
   position: relative;
   z-index: 1;
 }
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
