@@ -221,7 +221,7 @@
               fill="clear"
               size="small"
               [color]="isSlotPassed(slot.time) || !slot.available ? 'danger' : 'success'"
-              (click)="!isSlotPassed(slot.time) && addAppointment(slot)"
+              (click)="addAppointment(slot)"
               [disabled]="isSlotPassed(slot.time) || !slot.available"
               class="add-btn"
               [ngClass]="{ 'disabled-btn': isSlotPassed(slot.time) }"

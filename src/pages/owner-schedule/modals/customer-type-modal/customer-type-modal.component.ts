@@ -14,7 +14,8 @@ export class CustomerTypeModalComponent {
   }
 
   async selectType(type: 'app' | 'walkin') {
-    if (this.isSelecting) return;
+    if (this.isSelecting) 
+      return;
 
     this.isSelecting = true;
 

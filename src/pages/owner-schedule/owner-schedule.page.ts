@@ -1052,11 +1052,16 @@ export class OwnerSchedulePage implements OnInit {
 
   async openCpfSearch() {
     const modal = await this.modalController.create({
-      component: CpfSearchModalComponent,
-      componentProps: {
-        selectedDate: this.selectedDate
-      }
+      component: CpfSearchModalComponent
     });
+
+    this.sessionService.setGenericKey(
+      {
+        preSelectedSlot: this.preSelectedSlot,
+        selectedDate: this.selectedDate
+      },
+      'customerSelection'
+    );
 
     modal.onDidDismiss().then((result) => {
       if (result.data?.customer) {
@@ -1074,6 +1079,14 @@ export class OwnerSchedulePage implements OnInit {
         selectedDate: this.selectedDate
       }
     });
+
+     this.sessionService.setGenericKey(
+      {
+        preSelectedSlot: this.preSelectedSlot,
+        selectedDate: this.selectedDate
+      },
+      'customerSelection'
+    );
 
     modal.onDidDismiss().then((result) => {
       if (result.data?.customerData) {

@@ -48,6 +48,9 @@ export class SelectServicesPage implements OnInit {
   fixedTimeTotal: number = 0;
   fixedPriceTotal: number = 0;
 
+  preSelectedTimeSlot: any = null;
+  preSelectedDate: Date | null = null;
+
   animatingAdd: { [id: number]: boolean } = {};
   headerScrolled = false;
 
@@ -161,7 +164,17 @@ export class SelectServicesPage implements OnInit {
       if (this.customerId) {
         this.loadSelectedServicesByCustomer(this.customerId);
       }
+
+      var preSelectedDateAndTime = this.sessionService.getGenericKey('customerSelection');
+      if (preSelectedDateAndTime) {
+        this.preSelectedDate = preSelectedDateAndTime.selectedDate || null;
+        this.preSelectedTimeSlot = preSelectedDateAndTime.preSelectedSlot || null;
+      }
     });
+  }
+
+  get isPreScheduled(): boolean {    
+    return !!this.preSelectedDate && !!this.preSelectedTimeSlot;
   }
 
   getBack() {
@@ -177,10 +190,10 @@ export class SelectServicesPage implements OnInit {
   loadSelectedServicesByCustomer(customerId: number) {
     this.customerService.loadCustomerInfo(customerId).subscribe({
       next: (response) => {
-        const services = response.data.services || [];
+        const services = response.data?.services || [];
 
-        this.paymentMethod = response.data.paymentMethodId || 1;
-        this.notes = response.data.notes || '';
+        this.paymentMethod = response.data?.paymentMethodId || 1;
+        this.notes = response.data?.notes || '';
 
         this.serviceService.loadServiceById(this.storeId).subscribe({
           next: (serviceResponse) => {
@@ -496,7 +509,40 @@ export class SelectServicesPage implements OnInit {
     this.sessionService.setGenericKey(this.looseCustomer, 'looseCustomer');
     this.sessionService.setGenericKey(this.looseCustomerName, 'looseCustomerName');
 
-    this.router.navigate(['/schedule-appointment']);
+    if (this.isPreScheduled) {
+      this.addCustomerToScheduleAndNavigate();
+    } else {
+      this.router.navigate(['/schedule-appointment']);
+    }    
+  }
+
+  addCustomerToScheduleAndNavigate() {
+    const servicesToSend: AddServiceRequest[] = this.selectedServices.map(s => ({
+      id: s.id,
+      quantity: s.quantity
+    }));
+
+    const command: AddCustomerToScheduleRequest = {
+      scheduleId: this.scheduleId,
+      selectedServices: servicesToSend,
+      notes: this.notes,
+      paymentMethod: this.paymentMethod,
+      professionalId: this.professionalId,
+      storeId: this.storeId,
+      customerId: 0,
+      looseCustomer: this.looseCustomer,
+      looseCustomerName: this.looseCustomerName,
+      time: this.preSelectedTimeSlot.time,
+      date: this.preSelectedDate!
+    };
+
+    this.scheduleService.addCustomerToSchedule(command).subscribe({
+      next: () => {
+        this.sessionService.removeGenericKey('customerSelection');        
+        this.router.navigate(['/owner-schedule']);
+      },
+      error: err => console.error(err)
+    });
   }
 
   addCustomerToQueueAndNavigate() {
