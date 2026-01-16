@@ -129,7 +129,7 @@
                   </ion-item>
                 </div>
 
-                <div *ngIf="order.status !== 6" class="final-status">
+                <!-- <div *ngIf="order.status !== 6" class="final-status">
                   <ion-item lines="none">
                     <ion-icon
                       [name]="order.status === 7 ? 'close-circle' : 'checkmark-circle'"
@@ -142,7 +142,7 @@
                       {{ getStatusLabel(order.status) }}
                     </ion-label>
                   </ion-item>
-                </div>
+                </div> -->
 
                 <div class="actions" *ngIf="order.status === 6">
                   <ion-button

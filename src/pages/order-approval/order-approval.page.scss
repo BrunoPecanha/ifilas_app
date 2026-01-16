@@ -7,13 +7,18 @@ ion-content {
     height: 100%;
   }
 
+  ion-list {
+    background: transparent !important;
+  }
+
   ion-toolbar {
     --background: transparent;
     --border-width: 0;
-    padding: 0px 16px;
+    padding: 0px 0px;
 
     ion-segment {
       --background: #fff;
+      width: 100%;
       border-radius: 8px;
       padding: 4px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -29,9 +34,13 @@ ion-content {
   }
 
   .scroll-area {
-    flex: 1;
     overflow-y: auto;
-    padding: 0 16px 16px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scroll-area::-webkit-scrollbar {
+    display: none;
   }
 
   .order-card {
@@ -41,6 +50,9 @@ ion-content {
     transition: transform 0.2s ease;
     animation: fadeIn 0.3s ease-out forwards;
     opacity: 0;
+    width: 100%;
+    margin-left: 2px;
+    margin-right: 2px;
 
     @for $i from 1 through 10 {
       &:nth-child(#{$i}) {
@@ -281,19 +293,6 @@ ion-content {
   margin-left: 8px;
 }
 
-.processed-card {
-  opacity: 0.9;
-  border-left: 4px solid var(--ion-color-medium);
-
-  &.approved-card {
-    border-left-color: var(--ion-color-success);
-  }
-
-  &.rejected-card {
-    border-left-color: var(--ion-color-danger);
-  }
-}
-
 .rejection-reason {
   background: rgba(var(--ion-color-danger-rgb), 0.1);
   border-radius: 8px;
@@ -317,12 +316,6 @@ ion-content {
   }
 }
 
-ion-content::part(scroll) {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-
 .ion-padding {
   --background: #f8f9fa;
   --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
@@ -344,4 +337,25 @@ ion-toolbar {
     width: 100%;
     min-width: 0;
   }
+}
+
+@media (min-width: 768px) {
+  .approval-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+}
+
+.processed-card {
+  opacity: 0.85;
+  filter: grayscale(0.15);
+  border-left: none !important;
+}
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+}
+
+ion-content::part(scroll)::-webkit-scrollbar {
+  display: none;
 }
