@@ -197,18 +197,18 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-.stat-item.confirmed {
-  border-left: 4px solid var(--ion-color-success);
-}
-.stat-item.pending {
-  border-left: 4px solid var(--ion-color-warning);
-}
-.stat-item.completed {
-  border-left: 4px solid var(--ion-color-primary);
-}
-.stat-item.total {
-  border-left: 4px solid var(--ion-color-tertiary);
-}
+// .stat-item.confirmed {
+//   border-left: 4px solid var(--ion-color-success);
+// }
+// .stat-item.pending {
+//   border-left: 4px solid var(--ion-color-warning);
+// }
+// .stat-item.completed {
+//   border-left: 4px solid var(--ion-color-primary);
+// }
+// .stat-item.total {
+//   border-left: 4px solid var(--ion-color-tertiary);
+// }
 
 .stat-number {
   font-size: 1.3rem;
