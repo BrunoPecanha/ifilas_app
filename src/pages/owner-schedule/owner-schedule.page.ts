@@ -851,7 +851,10 @@ export class OwnerSchedulePage implements OnInit {
       }));
 
     if (!servicesMapped.length) {
-      this.toastController.show('Este atendimento não possui serviços configuráveis', 'medium');
+      this.toastController.show(
+        'Este atendimento não possui serviços configuráveis',
+        'medium'
+      );
       return;
     }
 
@@ -866,10 +869,55 @@ export class OwnerSchedulePage implements OnInit {
     await modal.present();
 
     const { data } = await modal.onDidDismiss();
+    if (!data) 
+      return;
 
-    if (data) {
-      this.saveAppointmentServices(customer, data);
-    }
+    this.customerService
+      .hasScheduleOverlapAsync(data)
+      .subscribe({
+        next: async (hasOverlap) => {
+
+          if (hasOverlap) {
+            const confirm = await this.confirmOverlap();
+
+            if (!confirm) {
+              return;
+            }
+          }
+
+          this.saveAppointmentServices(customer, data);
+        },
+        error: () => {
+          this.toastController.show(
+            'Erro ao validar conflito de horário',
+            'danger'
+          );
+        }
+      });
+  }
+
+  private async confirmOverlap(): Promise<boolean> {
+    return new Promise(async (resolve) => {
+      const alert = await this.alertController.create({
+        header: 'Conflito de horário',
+        message:
+          'Este atendimento vai se sobrepor a outro agendamento. Deseja continuar mesmo assim?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            handler: () => resolve(false)
+          },
+          {
+            text: 'Continuar',
+            role: 'confirm',
+            handler: () => resolve(true)
+          }
+        ]
+      });
+
+      await alert.present();
+    });
   }
 
   recalculateCustomer(customer: any) {
@@ -1052,11 +1100,16 @@ export class OwnerSchedulePage implements OnInit {
 
   async openCpfSearch() {
     const modal = await this.modalController.create({
-      component: CpfSearchModalComponent,
-      componentProps: {
-        selectedDate: this.selectedDate
-      }
+      component: CpfSearchModalComponent
     });
+
+    this.sessionService.setGenericKey(
+      {
+        preSelectedSlot: this.preSelectedSlot,
+        selectedDate: this.selectedDate
+      },
+      'customerSelection'
+    );
 
     modal.onDidDismiss().then((result) => {
       if (result.data?.customer) {
@@ -1074,6 +1127,14 @@ export class OwnerSchedulePage implements OnInit {
         selectedDate: this.selectedDate
       }
     });
+
+    this.sessionService.setGenericKey(
+      {
+        preSelectedSlot: this.preSelectedSlot,
+        selectedDate: this.selectedDate
+      },
+      'customerSelection'
+    );
 
     modal.onDidDismiss().then((result) => {
       if (result.data?.customerData) {

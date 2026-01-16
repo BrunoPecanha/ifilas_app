@@ -25,7 +25,7 @@ export class OrderApprovalPage implements OnInit {
   selectedOrder: OrderModel | null = null;
   rejectReason: string = '';
   isLoading: boolean = false;
-  filter: string = 'all';
+  filter: string = 'pending';
   store!: StoreModel;
   user!: UserModel;
 
@@ -54,22 +54,11 @@ export class OrderApprovalPage implements OnInit {
       const response = await firstValueFrom(
         this.orderService.getOrdersWatingApprovmentByEmployee(this.store.id, this.user.id)
       );
-
+      
       if (response.valid && response.data) {
-        this.activeOrders = response.data.map((o: any) => ({
+        const orders = response.data.map((o: any) => ({
           orderNumber: o.orderNumber,
-          items: o.items.map((item: any) => ({
-            serviceId: item.serviceId,
-            queueId: item.queueId,
-            name: item.name,
-            icon: item.icon,
-            price: item.price,
-            finalDuration: item.finalDuration,
-            finalPrice: item.finalPrice,
-            quantity: item.quantity,
-            variablePrice: item.variablePrice,
-            variableTime: item.variableTime,
-          })),
+          items: o.items,
           name: o.name,
           total: o.total,
           paymentMethodId: o.paymentMethodId,
@@ -82,6 +71,9 @@ export class OrderApprovalPage implements OnInit {
           processedByName: o.processedByName,
           rejectionReason: o.rejectionReason,
         }));
+
+        this.activeOrders = orders.filter(o => o.status === 6);
+        this.processedOrders = orders.filter(o => o.status !== 6);
       }
     } catch (error) {
       this.toastService.show('Erro ao carregar pedidos', 'danger');
@@ -93,15 +85,36 @@ export class OrderApprovalPage implements OnInit {
 
   get filteredOrders() {
     if (this.filter === 'pending') {
-      return this.activeOrders.filter(order => order.status === 6);
-    } else if (this.filter === 'highPriority') {
-      return this.activeOrders.filter(order => order.priority === 0);
-    } else if (this.filter === 'history') {
-      return [...this.processedOrders]
-        //   .sort((a, b) => (b.processedAt) - (a.processedAt || 0))
-        .slice(0, 5);
+      return this.activeOrders;
     }
-    return this.activeOrders;
+
+    if (this.filter === 'history') {
+      return [...this.processedOrders]
+        .sort((a, b) =>
+          new Date(b.processedAt || 0).getTime() -
+          new Date(a.processedAt || 0).getTime()
+        );
+    }
+
+    return [];
+  }
+
+  getStatusLabel(status: number): string {
+    if (status === 6) 
+      return 'Pendente';
+    if (status === 7) 
+      return 'Rejeitado';
+
+    return 'Aprovado';
+  }
+
+  getStatusColor(status: number): string {
+    if (status === 6) 
+      return 'warning';
+    if (status === 7) 
+      return 'danger';
+
+    return 'success';
   }
 
   getServiceIcon(serviceName: string): string {
@@ -126,7 +139,7 @@ export class OrderApprovalPage implements OnInit {
     }
   }
 
-  async approveOrder(order: OrderModel) {    
+  async approveOrder(order: OrderModel) {
     const confirm = await this.alertController.create({
       header: 'Confirmar Aprovação',
       message: `Deseja aprovar o pedido #${order.orderNumber} de ${order.name}?`,
@@ -163,7 +176,7 @@ export class OrderApprovalPage implements OnInit {
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Rejeitar',
-          handler: async (data) => {            
+          handler: async (data) => {
             const reason = data.reason?.trim();
             if (!reason) {
               this.toastService.show('Informe o motivo da rejeição.', 'danger');
@@ -183,7 +196,7 @@ export class OrderApprovalPage implements OnInit {
     status: number,
     successMessage: string,
     rejectReason: string = ''
-  ) {    
+  ) {
     try {
       this.isLoading = true;
 
