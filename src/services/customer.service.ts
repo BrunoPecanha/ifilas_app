@@ -31,4 +31,11 @@ export class CustomerService {
       customerServicesUpdate
     );
   }
+
+  hasScheduleOverlapAsync(customerServicesUpdate: any): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/customer/schedule-overlap`,
+      customerServicesUpdate
+    );
+  }
 }
