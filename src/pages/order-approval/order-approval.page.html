@@ -4,8 +4,7 @@
   [showEndButton]="false"
 ></app-custom-header>
 
-<ion-content 
-  [fullscreen]="true" class="ion-padding">
+<ion-content [fullscreen]="true" class="ion-padding">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-outline"
@@ -19,17 +18,17 @@
   <div class="approval-wrapper">
     <ion-toolbar>
       <ion-segment [(ngModel)]="filter" value="all">
-        <ion-segment-button value="all">
+        <!-- <ion-segment-button value="all">
           <ion-label>Todos</ion-label>
-        </ion-segment-button>
+        </ion-segment-button> -->
         <ion-segment-button value="pending">
           <ion-label>Pendentes</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="highPriority">
+        <!-- <ion-segment-button value="highPriority">
           <ion-label>Urgentes</ion-label>
-        </ion-segment-button>
+        </ion-segment-button> -->
         <ion-segment-button value="history">
-          <ion-label>Histórico</ion-label>
+          <ion-label>Concluídos</ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
@@ -58,12 +57,10 @@
                 <span class="order-number">#{{ order.orderNumber }}</span>
 
                 <ion-badge
-                  [color]="order.status === 6 ? 'warning' : 
-                          (order.status === 0 ? 'success' : 'danger')"
+                  [color]="getStatusColor(order.status)"
                   class="status-badge"
                 >
-                  {{ order.status === 6 ? 'Pendente' : (order.status === 0 ?
-                  'Aprovado' : 'Rejeitado') }}
+                  {{ getStatusLabel(order.status) }}
                 </ion-badge>
               </ion-card-title>
 
@@ -114,7 +111,7 @@
                 </div>
 
                 <div
-                  *ngIf="order.status === 8 && order.rejectionReason"
+                  *ngIf="order.status === 7 && order.rejectionReason"
                   class="rejection-reason"
                 >
                   <ion-item lines="none">
@@ -128,6 +125,21 @@
                         <strong>Motivo da rejeição:</strong> {{
                         order.rejectionReason }}
                       </p>
+                    </ion-label>
+                  </ion-item>
+                </div>
+
+                <div *ngIf="order.status !== 6" class="final-status">
+                  <ion-item lines="none">
+                    <ion-icon
+                      [name]="order.status === 7 ? 'close-circle' : 'checkmark-circle'"
+                      [color]="order.status === 7 ? 'danger' : 'success'"
+                      slot="start"
+                    ></ion-icon>
+
+                    <ion-label>
+                      <strong>Status final:</strong>
+                      {{ getStatusLabel(order.status) }}
                     </ion-label>
                   </ion-item>
                 </div>

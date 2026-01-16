@@ -329,3 +329,19 @@ ion-content::part(scroll) {
   position: relative;
   z-index: 1;
 }
+
+ion-toolbar {
+  width: 100%;
+
+  ion-segment {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+  }
+
+  ion-segment-button {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+  }
+}
