@@ -296,7 +296,7 @@ export class QueuePage implements AfterViewInit {
       5: { text: 'Cancelado', color: 'danger' },
       6: { text: 'Pendente', color: 'warning' },
       7: { text: 'Recusado', color: 'danger' },
-      8: { text: 'Pendente', color: 'warning' },
+      8: { text: 'Próximo', color: 'warning' },
       9: { text: 'Confirmado', color: 'success' },
       10: { text: 'Agendado', color: 'tertiary' }
     };
@@ -304,8 +304,8 @@ export class QueuePage implements AfterViewInit {
     return map[status] || { text: 'Desconhecido', color: 'medium' };
   }
 
-  isQueueReadOnly(status: number): boolean {
-    return [2, 3, 5, 8].includes(status);
+  isQueueReadOnly(status: number): boolean {    
+    return [2, 3, 5].includes(status);
   }
 
   getAppointmentColor(appt: ScheduleItem): string {
