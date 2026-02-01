@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PushNotifications, Token } from '@capacitor/push-notifications';
+import { Capacitor } from '@capacitor/core';
 import { DeviceService } from './device.service';
 import { PlatformEnum } from 'src/models/enums/platform.enum';
 import { SessionService } from './session.service';
@@ -12,17 +12,23 @@ export class PushNotificationService {
   constructor(
     private deviceService: DeviceService,
     private sessionStorage: SessionService
-  ) { }
+  ) {}
 
   async init(): Promise<void> {
     if (this.initialized) return;
-    this.initialized = true;
+
+    if (!Capacitor.isNativePlatform()) {
+      console.log('Push ignorado (web)');
+      return;
+    }
 
     const user = this.sessionStorage.getUser();
     if (!user) {
       console.warn('Push não iniciado: usuário não logado');
       return;
     }
+
+    const { PushNotifications } = await import('@capacitor/push-notifications');
 
     const permStatus = await PushNotifications.checkPermissions();
 
@@ -34,7 +40,7 @@ export class PushNotificationService {
       }
     }
 
-    PushNotifications.addListener('registration', (token: Token) => {
+    PushNotifications.addListener('registration', token => {
       this.handleToken(token.value, user.id);
     });
 
@@ -43,11 +49,10 @@ export class PushNotificationService {
     });
 
     await PushNotifications.register();
+
+    this.initialized = true;
   }
 
-  /**
-   * Registra token no backend
-   */
   private handleToken(token: string, userId: number): void {
     const savedToken = this.sessionStorage.getString('fcmToken');
 
@@ -60,12 +65,9 @@ export class PushNotificationService {
     this.deviceService
       .register(token, PlatformEnum.android, userId)
       .subscribe({
-        next: () => {
-          console.log('Device registrado com sucesso');
-        },
+        next: () => console.log('Device registrado com sucesso'),
         error: err => {
           console.error('Erro ao registrar device', err);
-
           this.sessionStorage.removeGenericKey('fcmToken');
         }
       });
