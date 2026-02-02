@@ -5,6 +5,8 @@ import { Capacitor } from '@capacitor/core';
 import { LoadingService } from 'src/services/loading.service';
 import { PushNotificationService } from 'src/services/push-notification.service';
 import { SessionService } from 'src/services/session.service';
+import { filter } from 'rxjs';
+import { NotificationService } from 'src/services/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +21,8 @@ export class AppComponent {
     private platform: Platform,
     private loadingService: LoadingService,
     private pushService: PushNotificationService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private notificationService: NotificationService
   ) {
     this.initializeApp();
   }
@@ -29,6 +32,12 @@ export class AppComponent {
 
     if (this.sessionService.isLogged()) {
       await this.pushService.init();
+
+      this.sessionService.user$
+        .pipe(filter(user => !!user?.id))
+        .subscribe(user => {
+           this.notificationService.getUserNotifications(user.id).subscribe();
+        });
     }
 
     await this.configureStatusBar();

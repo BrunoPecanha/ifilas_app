@@ -12,6 +12,8 @@ import { CustomerTypeModalComponent } from "./modals/customer-type-modal/custome
 import { WalkInCustomerModalComponent } from "./modals/walk-in-customer-modal/walk-in-customer-modal.component";
 import { ServiceConfigModalComponent } from "src/shared/components/service-config-modal-component/service-config-modal.component";
 import { CustomerService } from "src/services/customer.service";
+import { SignalRService } from "src/services/seignalr.service";
+import { Subject, Subscription } from "rxjs";
 
 @Component({
   selector: "app-owner-schedule",
@@ -48,6 +50,7 @@ export class OwnerSchedulePage implements OnInit {
   selectedCustomer: any = {};
   modalMode: 'qrcode' | 'services' | 'summary' = 'summary';
   isModalOpen = false;
+  private signalRSub?: Subscription;
 
   appointments: any[] = [];
 
@@ -75,7 +78,8 @@ export class OwnerSchedulePage implements OnInit {
     private modalController: ModalController,
     private router: Router,
     private alertController: AlertController,
-    private customerService: CustomerService
+    private customerService: CustomerService,
+    private signalRService: SignalRService
   ) {
     this.user = this.sessionService.getUser();
     this.store = this.sessionService.getStore();
@@ -87,7 +91,18 @@ export class OwnerSchedulePage implements OnInit {
 
   ionViewWillEnter() {
     this.loadSchedulesForDate();
+    this.initSignalRConnection();
+
+    this.signalRSub = this.signalRService
+      .onScheduleUpdated$()
+      .subscribe(() => {
+        this.loadSchedulesForDate();
+      });
   }
+
+  ionViewWillLeave() {
+    this.signalRSub?.unsubscribe();
+  } 
 
   get canShowPaymentDetails(): boolean {
     if (!this.store?.hideAmountsWhenTransferringCustomers)
@@ -117,6 +132,24 @@ export class OwnerSchedulePage implements OnInit {
 
   get connectedDropLists(): string[] {
     return this.filteredTimeSlots.map(s => 'slot-' + s.time);
+  }
+
+  private async initSignalRConnection() {
+    try {
+      await this.signalRService.startScheduleConnection();
+
+      var signalRGroup = this.store.id.toString();
+
+      await this.signalRService.joinScheduleGroup(signalRGroup);
+
+      this.signalRService.onUpdateSchedule(() => {
+        this.loadSchedulesForDate();
+      });
+
+    } catch (error) {
+      console.error('Erro SignalR (loja):', error);
+      setTimeout(() => this.initSignalRConnection(), 5000);
+    }
   }
 
   private loadSchedulesForDate() {
@@ -869,7 +902,7 @@ export class OwnerSchedulePage implements OnInit {
     await modal.present();
 
     const { data } = await modal.onDidDismiss();
-    if (!data) 
+    if (!data)
       return;
 
     this.customerService

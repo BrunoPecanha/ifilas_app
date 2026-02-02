@@ -3,5 +3,6 @@ export interface CustomerServiceModel {
     name: string;
     icon: string;
     total: number;
+    finalPrice: number;
     quantity: number;
   }

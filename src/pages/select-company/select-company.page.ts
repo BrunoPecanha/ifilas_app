@@ -250,7 +250,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
       return `${card.minorQueue} pessoa(s) na frente`;
     }
 
-    return 'Sem ninguém na frente';
+    return 'Nenhuma pessoa na fila';
   }
 
   getQueueTimeText(card: any): string | null {

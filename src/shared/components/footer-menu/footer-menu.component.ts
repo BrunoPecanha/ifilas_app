@@ -94,11 +94,6 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
 
   initializeNotifications() {
     this.notificationsCount$ = this.notificationService.notificacoesNaoLidas$;
-
-    this.notificationsSubscription = this.notificationsCount$.subscribe(() => {
-      this.cdr.detectChanges();
-    });
-
     this.notificationService.atualizarContadorNaoLidas();
   }
 
@@ -152,7 +147,8 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
   }
 
   loadUserQueInfo() {
-    if (!this.userFromSession) return;
+    if (!this.userFromSession) 
+      return;
 
     const userId = this.userFromSession.id;
 

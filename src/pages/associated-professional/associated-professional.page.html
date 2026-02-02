@@ -6,7 +6,7 @@
   (onEndClick)="openInviteModal()"
 ></app-custom-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true"  class="ion-padding">
   <div class="page-container">
     <ng-container *ngIf="userRole === 2">
       <div class="team-section" *ngIf="professionals.length > 0">

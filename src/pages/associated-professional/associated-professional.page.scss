@@ -227,6 +227,14 @@ ion-content::part(scroll) {
 }
 
 .page-container {
-  padding: 16px;
+  padding: 0px;
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+
+.ion-padding {
+  --background: #f8f9fa;
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
+  position: relative;
+  z-index: 1;
 }
