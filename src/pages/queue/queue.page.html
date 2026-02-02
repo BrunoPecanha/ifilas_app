@@ -27,7 +27,7 @@
           <ion-icon name="calendar" class="appointment-icon"></ion-icon>
         </div>
         <div class="card-details">
-          <span class="card-label">Próximo Agendamento</span>
+          <span class="card-label">Próxima agenda em {{ nextAppointment.date | date:'dd/MM/yyyy' }}</span>
           <h3 class="card-title">{{ nextAppointment.store.name }}</h3>
           <p class="card-time">
             <ion-icon name="time-outline"></ion-icon>
