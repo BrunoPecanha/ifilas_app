@@ -25,12 +25,8 @@ export class NotificationService {
 
   private notificacoesSubject = new BehaviorSubject<NotificationPayload[]>([]);
   notificacoes$ = this.notificacoesSubject.asObservable();
-  private _notificationCount = new BehaviorSubject<number>(0);
-  public notificationCount$ = this._notificationCount.asObservable();
   private notificacoesNaoLidasSubject = new BehaviorSubject<number>(0);
   notificacoesNaoLidas$ = this.notificacoesNaoLidasSubject.asObservable();
-
-  private currentCount = 0;
 
   constructor(
     private http: HttpClient,
@@ -38,16 +34,6 @@ export class NotificationService {
     private ngZone: NgZone
   ) {
     this.iniciarSignalR();
-  }
-
-  incrementCount() {
-    this.currentCount++;
-    this._notificationCount.next(this.currentCount);
-  }
-
-  clearCount() {
-    this.currentCount = 0;
-    this._notificationCount.next(this.currentCount);
   }
 
   getUserNotifications(userId: number): Observable<NotificationPayload[]> {
@@ -141,22 +127,12 @@ export class NotificationService {
         notification.isRead = false;
 
         const exists = atuais.some(n => n.id === notification.id);
+        if (exists) return;
 
-        if (!exists) {
-          const atualizadas = [notification, ...atuais];
-          this.notificacoesSubject.next(atualizadas);
-          this.atualizarContadorNaoLidasInterno(atualizadas);
-        } else {
-          this.atualizarContadorNaoLidasInterno(atuais);
-        }
+        const atualizadas = [notification, ...atuais];
 
-        const tiposParaContador = ['RemovedFromQueue', 'NewInQueue', 'QueueClosed', 'ClientNoShow', 'UpdatedSchedule', 'UpdateQueue'];
-        debugger
-        if (tiposParaContador.includes(notification.type ?? '')) {
-          this.incrementCount();
-        }
-
-        this.atualizarContadorNaoLidas();
+        this.notificacoesSubject.next(atualizadas);
+        this.atualizarContadorNaoLidasInterno(atualizadas);
       });
     });
   }

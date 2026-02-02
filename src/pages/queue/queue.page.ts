@@ -1,12 +1,13 @@
 import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonContent, ToastController } from '@ionic/angular';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response';
 import { UserModel } from 'src/models/user-model';
 import { DashBoardService } from 'src/services/dashboard.service';
 import { QueueService } from 'src/services/queue.service';
 import { ScheduleService } from 'src/services/schedule.service';
+import { SignalRService } from 'src/services/seignalr.service';
 import { SessionService } from 'src/services/session.service';
 import { ToastService } from 'src/services/toast.service';
 import { TokenService } from 'src/services/token.service';
@@ -41,6 +42,8 @@ export class QueuePage implements AfterViewInit {
   nextQueue: QueueItem | null = null;
   editingExistingAppointment: boolean = false;
 
+  private queueSignalRSub?: Subscription;
+
   filteredAppointments: ScheduleItem[] = [];
 
   constructor(
@@ -52,7 +55,8 @@ export class QueuePage implements AfterViewInit {
     private scheduleService: ScheduleService,
     public router: Router,
     private activatedRoute: ActivatedRoute,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private signalRService: SignalRService
   ) {
     this.user = this.sessionService.getUser();
   }
@@ -73,8 +77,20 @@ export class QueuePage implements AfterViewInit {
     }
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
+    await this.signalRService.startQueueConnection();
+
+    this.queueSignalRSub = this.signalRService
+      .onQueueUpdated$()
+      .subscribe(() => {
+        this.loadDashboardData(this.user.id);
+      });
+
     this.loadCustomersAppointments();
+  }
+
+  ionViewWillLeave() {
+    this.queueSignalRSub?.unsubscribe();
   }
 
   async loadCustomersAppointments() {
@@ -304,7 +320,7 @@ export class QueuePage implements AfterViewInit {
     return map[status] || { text: 'Desconhecido', color: 'medium' };
   }
 
-  isQueueReadOnly(status: number): boolean {    
+  isQueueReadOnly(status: number): boolean {
     return [2, 3, 5].includes(status);
   }
 

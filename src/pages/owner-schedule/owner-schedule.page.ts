@@ -13,6 +13,7 @@ import { WalkInCustomerModalComponent } from "./modals/walk-in-customer-modal/wa
 import { ServiceConfigModalComponent } from "src/shared/components/service-config-modal-component/service-config-modal.component";
 import { CustomerService } from "src/services/customer.service";
 import { SignalRService } from "src/services/seignalr.service";
+import { Subject, Subscription } from "rxjs";
 
 @Component({
   selector: "app-owner-schedule",
@@ -49,6 +50,7 @@ export class OwnerSchedulePage implements OnInit {
   selectedCustomer: any = {};
   modalMode: 'qrcode' | 'services' | 'summary' = 'summary';
   isModalOpen = false;
+  private signalRSub?: Subscription;
 
   appointments: any[] = [];
 
@@ -89,7 +91,18 @@ export class OwnerSchedulePage implements OnInit {
 
   ionViewWillEnter() {
     this.loadSchedulesForDate();
+    this.initSignalRConnection();
+
+    this.signalRSub = this.signalRService
+      .onScheduleUpdated$()
+      .subscribe(() => {
+        this.loadSchedulesForDate();
+      });
   }
+
+  ionViewWillLeave() {
+    this.signalRSub?.unsubscribe();
+  } 
 
   get canShowPaymentDetails(): boolean {
     if (!this.store?.hideAmountsWhenTransferringCustomers)

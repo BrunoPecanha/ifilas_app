@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
+import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -17,6 +18,8 @@ export class SignalRService {
   private connectionPromiseQueue: Promise<void> | null = null;
   private connectionPromiseNotification: Promise<void> | null = null;
   private connectionPromiseSchedule: Promise<void> | null = null;
+  private scheduleUpdated$ = new Subject<void>();
+  private queueUpdated$ = new Subject<void>();
 
   constructor() { }
 
@@ -39,6 +42,10 @@ export class SignalRService {
       })
       .configureLogging(signalR.LogLevel.Information)
       .build();
+
+    this.hubConnectionQueue?.on('UpdateQueue', () => {
+      this.queueUpdated$.next();
+    });
 
     this.setupQueueConnectionEvents();
 
@@ -211,7 +218,20 @@ export class SignalRService {
     this.hubConnectionNotification?.off('ReceiveNotification');
     this.hubConnectionNotification?.on('ReceiveNotification', (notification) => {
       callback(notification);
+      this.emitScheduleUpdated();
     });
+  }
+
+  onScheduleUpdated$() {
+    return this.scheduleUpdated$.asObservable();
+  }
+
+  emitScheduleUpdated() {
+    this.scheduleUpdated$.next();
+  }
+
+  onQueueUpdated$() {
+    return this.queueUpdated$.asObservable();
   }
 
   public async notifyNotificationGroup(groupName: string, data: any): Promise<void> {
@@ -340,9 +360,9 @@ export class SignalRService {
   }
 
   public async leaveScheduleGroup(groupName: string): Promise<void> {
-    if (!this.isScheduleConnected()) 
+    if (!this.isScheduleConnected())
       return;
-    if (!this.joinedGroupsSchedule.has(groupName)) 
+    if (!this.joinedGroupsSchedule.has(groupName))
       return;
 
     try {
@@ -354,9 +374,9 @@ export class SignalRService {
   }
 
   public async leaveAllScheduleGroups(): Promise<void> {
-    if (!this.isScheduleConnected() || this.joinedGroupsSchedule.size === 0) 
+    if (!this.isScheduleConnected() || this.joinedGroupsSchedule.size === 0)
       return;
-    
+
     await Promise.all(Array.from(this.joinedGroupsSchedule).map(group => this.leaveScheduleGroup(group)));
   }
 
