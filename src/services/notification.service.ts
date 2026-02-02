@@ -119,6 +119,14 @@ export class NotificationService {
         this.registrarNotificacao();
       })
       .catch(err => console.error('Falha SignalR:', err));
+
+    this.signalRService.onUpdateQueue(() => {
+      this.registrarNotificacao();
+    });
+
+    this.signalRService.onUpdateSchedule(() => {
+      this.registrarNotificacao();
+    });
   }
 
   private registrarNotificacao() {
@@ -142,7 +150,8 @@ export class NotificationService {
           this.atualizarContadorNaoLidasInterno(atuais);
         }
 
-        const tiposParaContador = ['RemovedFromQueue', 'NewInQueue', 'QueueClosed', 'ClientNoShow'];
+        const tiposParaContador = ['RemovedFromQueue', 'NewInQueue', 'QueueClosed', 'ClientNoShow', 'UpdatedSchedule', 'UpdateQueue'];
+        debugger
         if (tiposParaContador.includes(notification.type ?? '')) {
           this.incrementCount();
         }
