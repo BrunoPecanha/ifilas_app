@@ -81,7 +81,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
     this.service.loadStoreAndProfessionals(storeId).subscribe({
       next: (response) => {
         this.store = response.data;
-
+        
         if (this.store && this.store.professionals) {
           const isProfessional = this.store.professionals.some(
             (prof) => prof.id === this.user.id
@@ -101,7 +101,8 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
             servicesProvided: prof.servicesProvided || 'Serviços diversos',
             rating: prof.rating || 0,
             numberOfRatings: prof.numberOfRatings || 0,
-            queueName: prof.queueName || (prof.useAgenda ? 'Agendamento' : 'Atendimento Geral')
+            queueName: prof.queueName || (prof.useAgenda ? 'Agendamento' : 'Atendimento Geral'),
+            isActive: prof.isActive
           }));
         }
 

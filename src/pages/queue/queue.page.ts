@@ -39,7 +39,7 @@ export class QueuePage implements AfterViewInit {
   myAppointments: ScheduleItem[] = [];
 
   nextAppointment: ScheduleItem | null = null;
-  nextQueue: QueueItem | null = null;
+  nextQueue!: QueueItem | null;
   editingExistingAppointment: boolean = false;
 
   private queueSignalRSub?: Subscription;

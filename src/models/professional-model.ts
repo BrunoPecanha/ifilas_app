@@ -21,4 +21,5 @@ export interface ProfessionalModel {
   distance: number;
   rating: number;
   numberOfRatings: number;
+  isActive: boolean;
 }

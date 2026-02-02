@@ -39,6 +39,27 @@
     </div>    
   </div>
 
+  <div class="highlight-cards">
+    <div class="highlight-card next-appointment" 
+         *ngIf="(nextQueue !== null) && activeSegment === 'agendamentos'"
+         (click)="goToQueue(nextQueue)">
+      <div class="card-content">
+        <div class="card-icon">
+          <ion-icon name="person" class="appointment-icon"></ion-icon>
+        </div>
+        <div class="card-details">
+          <span class="card-label">Fique atendo a sua vez em</span>
+          <h3 class="card-title">{{ nextQueue.store.name }}</h3>
+          <p class="card-time">
+            <ion-icon name="time-outline"></ion-icon>
+            Você é o #{{ nextQueue.position }} da fila 
+          </p>
+        </div>
+        <ion-icon name="chevron-forward" class="chevron-icon"></ion-icon>
+      </div>
+    </div>    
+  </div>
+
   <div class="ios-tabs">
     <div class="tabs-container">
       <div class="tab-item" 
