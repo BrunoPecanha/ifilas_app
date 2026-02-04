@@ -40,7 +40,7 @@ export class SplashPage {
 
   async tryAutoLogin() {
     try {
-      const response = await this.authService.refreshToken().toPromise();
+      const response = await this.authService.refreshToken().then();
 
       if (
         response &&

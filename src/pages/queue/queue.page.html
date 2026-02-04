@@ -27,11 +27,32 @@
           <ion-icon name="calendar" class="appointment-icon"></ion-icon>
         </div>
         <div class="card-details">
-          <span class="card-label">Próximo Agendamento</span>
+          <span class="card-label">Próxima agenda em {{ nextAppointment.date | date:'dd/MM/yyyy' }}</span>
           <h3 class="card-title">{{ nextAppointment.store.name }}</h3>
           <p class="card-time">
             <ion-icon name="time-outline"></ion-icon>
             {{ nextAppointment.time.slice(0,5) }} • {{ getTimeUntilAppointment(nextAppointment) }}
+          </p>
+        </div>
+        <ion-icon name="chevron-forward" class="chevron-icon"></ion-icon>
+      </div>
+    </div>    
+  </div>
+
+  <div class="highlight-cards">
+    <div class="highlight-card next-appointment" 
+         *ngIf="(nextQueue !== null) && activeSegment === 'agendamentos'"
+         (click)="goToQueue(nextQueue)">
+      <div class="card-content">
+        <div class="card-icon">
+          <ion-icon name="person" class="appointment-icon"></ion-icon>
+        </div>
+        <div class="card-details">
+          <span class="card-label">Fique atendo a sua vez em</span>
+          <h3 class="card-title">{{ nextQueue.store.name }}</h3>
+          <p class="card-time">
+            <ion-icon name="time-outline"></ion-icon>
+            Você é o #{{ nextQueue.position }} da fila 
           </p>
         </div>
         <ion-icon name="chevron-forward" class="chevron-icon"></ion-icon>

@@ -39,7 +39,7 @@ export class QueuePage implements AfterViewInit {
   myAppointments: ScheduleItem[] = [];
 
   nextAppointment: ScheduleItem | null = null;
-  nextQueue: QueueItem | null = null;
+  nextQueue!: QueueItem | null;
   editingExistingAppointment: boolean = false;
 
   private queueSignalRSub?: Subscription;
@@ -251,7 +251,7 @@ export class QueuePage implements AfterViewInit {
 
   updateCrossInformation() {
     this.nextAppointment = this.myAppointments
-      .filter(appt => appt.status === 0)
+      .filter(appt => appt.status === 9)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0] || null;
 
     this.nextQueue = this.myQueues

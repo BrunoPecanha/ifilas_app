@@ -158,9 +158,10 @@ export class ChooseEstablishmentPage implements OnInit {
   }
 
   private navigateToDestination(isQueueOpenToday: boolean) {
+    debugger
     if (this.profileSelected === 2) {
       this.router.navigate(['/queue-list-for-owner']);
-    } else if (isQueueOpenToday) {
+    } else if (isQueueOpenToday && !this.user.useAgenda) {
       this.router.navigate(['/customer-list-in-queue']);
     } else if (this.user.useAgenda) {
       this.router.navigate(['/owner-schedule']);

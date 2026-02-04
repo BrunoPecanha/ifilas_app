@@ -6,7 +6,7 @@ import {
   HttpRequest,
   HttpErrorResponse
 } from '@angular/common/http';
-import { Observable, catchError, finalize, switchMap, throwError } from 'rxjs';
+import { Observable, catchError, finalize, switchMap, throwError, from } from 'rxjs';
 import { AuthService } from 'src/services/auth.service';
 import { SessionService } from 'src/services/session.service';
 import { LoadingService } from 'src/services/loading.service';
@@ -40,7 +40,7 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(authReq).pipe(
       catchError((error) => {
         if (error instanceof HttpErrorResponse && error.status === 401) {
-          return this.authService.refreshToken().pipe(
+          return from(this.authService.refreshToken()).pipe(
             switchMap((newTokenResponse) => {
               const newToken = newTokenResponse?.data?.token;
               if (!newToken) {

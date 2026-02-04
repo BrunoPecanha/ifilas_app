@@ -107,7 +107,7 @@
     class="atendentes-wrapper"
     *ngIf="hasAnyProfessionals; else semAtendentes"
   >
-    <ion-card
+    <ion-card 
       *ngFor="let professional of filteredProfessionals"
       class="atendente-card"
       [ngClass]="professional.useAgenda ? 'agenda-card' : 'queue-card'"
