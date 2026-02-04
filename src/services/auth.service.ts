@@ -38,19 +38,19 @@ export class AuthService {
     this.clearSession();
   }
 
-  refreshToken(): Observable<AuthResponse> {
+  refreshToken(): Promise<AuthResponse> {
     const refreshToken = this.getRefreshToken();
 
     if (!refreshToken) {
       this.clearSession();
-      return throwError(() => new Error('Refresh token não encontrado'));
+      return Promise.reject(new Error('Refresh token não encontrado'));
     }
 
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/refresh-token`, { refreshToken }).pipe(
       tap(response => {
         this.setSession(response);
       })
-    );
+    ).toPromise().then(response => response as AuthResponse);
   }
 
   getToken(): string | null {
