@@ -61,6 +61,8 @@ export class NotificationPage implements OnInit, OnDestroy {
       }));
     });
     this.subscriptions.push(sub);
+
+    this.markAllAsRead()
   }
 
   ngOnDestroy() {
@@ -108,16 +110,17 @@ export class NotificationPage implements OnInit, OnDestroy {
       this.notificationService.atualizarContadorNaoLidas();
     }
   }
+
   removeNotification(id: string) {
     this.notifications = this.notifications.filter(noti => noti.id !== id);
     this.notificationService.deleteNotification(+id).subscribe();
     this.notificationService.atualizarContadorNaoLidas();
   }
 
-
   markAllAsRead() {
-    this.notifications.forEach(noti => noti.isRead = true);
-    this.notificationService.atualizarContadorNaoLidas();
+    this.notificationService
+      .markAllAsRead(this.user.id)
+      .subscribe();
   }
 
   clearNotifications() {

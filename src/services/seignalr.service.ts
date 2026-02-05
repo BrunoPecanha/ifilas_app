@@ -18,6 +18,7 @@ export class SignalRService {
   private connectionPromiseQueue: Promise<void> | null = null;
   private connectionPromiseNotification: Promise<void> | null = null;
   private connectionPromiseSchedule: Promise<void> | null = null;
+  private orderUpdated$ = new Subject<void>();
   private scheduleUpdated$ = new Subject<void>();
   private queueUpdated$ = new Subject<void>();
 
@@ -62,7 +63,8 @@ export class SignalRService {
   }
 
   private setupQueueConnectionEvents(): void {
-    if (!this.hubConnectionQueue) return;
+    if (!this.hubConnectionQueue) 
+      return;
 
     this.hubConnectionQueue.onreconnecting(error => { });
 
@@ -215,11 +217,20 @@ export class SignalRService {
   }
 
   public onReceiveNotification(callback: (notification: any) => void): void {
-    this.hubConnectionNotification?.off('ReceiveNotification');
-    this.hubConnectionNotification?.on('ReceiveNotification', (notification) => {
+    this.hubConnectionNotification?.off('receiveNotification');
+    this.hubConnectionNotification?.on('receiveNotification', (notification) => {
       callback(notification);
       this.emitScheduleUpdated();
+      this.emitOrderUpdated();
     });
+  }
+
+  onOrderUpdated$() {
+    return this.orderUpdated$.asObservable();
+  }
+
+  emitOrderUpdated() {
+    this.orderUpdated$.next();
   }
 
   onScheduleUpdated$() {
@@ -301,7 +312,8 @@ export class SignalRService {
   }
 
   private setupScheduleConnectionEvents(): void {
-    if (!this.hubConnectionSchedule) return;
+    if (!this.hubConnectionSchedule)
+      return;
 
     this.hubConnectionSchedule.onreconnecting(() => { });
 
@@ -332,7 +344,8 @@ export class SignalRService {
   }
 
   private async rejoinScheduleGroups(): Promise<void> {
-    if (this.joinedGroupsSchedule.size === 0) return;
+    if (this.joinedGroupsSchedule.size === 0)
+      return;
 
     await Promise.all(
       Array.from(this.joinedGroupsSchedule).map(group => this.hubConnectionSchedule?.invoke('JoinGroup', group))
@@ -344,8 +357,16 @@ export class SignalRService {
     this.hubConnectionSchedule?.on('UpdateSchedule', callback);
   }
 
-  public offUpdateSchedule(): void {
-    this.hubConnectionSchedule?.off('UpdateSchedule');
+  public onUpdateCustomerSchedule(callback: (data: any) => void): void {
+    this.hubConnectionSchedule?.off('RemovedFromSchedule');
+    this.hubConnectionSchedule?.on('RemovedFromSchedule', callback);
+    this.emitScheduleUpdated();
+  }
+
+  public onNewOrderApproval(callback: (data: any) => void): void {
+    this.hubConnectionSchedule?.off('NewOrderApproval');
+    this.hubConnectionSchedule?.on('NewOrderApproval', callback);
+    this.emitOrderUpdated();
   }
 
   public async notifyScheduleGroup(groupName: string, data: any): Promise<void> {

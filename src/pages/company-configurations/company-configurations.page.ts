@@ -609,11 +609,11 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.cadastroForm.get('city')?.enable();
     this.cadastroForm.get('state')?.enable();
 
-    const cnpjControl = this.cadastroForm.get('cnpj');
-    if (cnpjControl && cnpjControl.value) {
-      const cnpjLimpo = cnpjControl.value.replace(/[\.\/\-]/g, '');
-      cnpjControl.setValue(cnpjLimpo);
-    }
+    // const cnpjControl = this.cadastroForm.get('cnpj');
+    // if (cnpjControl && cnpjControl.value) {
+    //   const cnpjLimpo = cnpjControl.value.replace(/[\.\/\-]/g, '');
+    //   cnpjControl.setValue(cnpjLimpo);
+    // }
 
     const cepControl = this.cadastroForm.get('cep');
     if (cepControl && cepControl.value) {
