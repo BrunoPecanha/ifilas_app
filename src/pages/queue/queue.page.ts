@@ -92,11 +92,7 @@ export class QueuePage implements AfterViewInit {
       .subscribe(() => {
         this.loadDashboardData(this.user.id);
       });
-
-    this.signalRService.onUpdateCustomerSchedule(() => {
-      this.loadDashboardData(this.user.id);
-    });
-
+      
     this.loadCustomersAppointments();
   }
 

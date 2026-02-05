@@ -18,6 +18,7 @@ export class SignalRService {
   private connectionPromiseQueue: Promise<void> | null = null;
   private connectionPromiseNotification: Promise<void> | null = null;
   private connectionPromiseSchedule: Promise<void> | null = null;
+  private orderUpdated$ = new Subject<void>();
   private scheduleUpdated$ = new Subject<void>();
   private queueUpdated$ = new Subject<void>();
 
@@ -62,7 +63,8 @@ export class SignalRService {
   }
 
   private setupQueueConnectionEvents(): void {
-    if (!this.hubConnectionQueue) return;
+    if (!this.hubConnectionQueue) 
+      return;
 
     this.hubConnectionQueue.onreconnecting(error => { });
 
@@ -219,7 +221,16 @@ export class SignalRService {
     this.hubConnectionNotification?.on('receiveNotification', (notification) => {
       callback(notification);
       this.emitScheduleUpdated();
+      this.emitOrderUpdated();
     });
+  }
+
+  onOrderUpdated$() {
+    return this.orderUpdated$.asObservable();
+  }
+
+  emitOrderUpdated() {
+    this.orderUpdated$.next();
   }
 
   onScheduleUpdated$() {
@@ -350,6 +361,12 @@ export class SignalRService {
     this.hubConnectionSchedule?.off('RemovedFromSchedule');
     this.hubConnectionSchedule?.on('RemovedFromSchedule', callback);
     this.emitScheduleUpdated();
+  }
+
+  public onNewOrderApproval(callback: (data: any) => void): void {
+    this.hubConnectionSchedule?.off('NewOrderApproval');
+    this.hubConnectionSchedule?.on('NewOrderApproval', callback);
+    this.emitOrderUpdated();
   }
 
   public async notifyScheduleGroup(groupName: string, data: any): Promise<void> {

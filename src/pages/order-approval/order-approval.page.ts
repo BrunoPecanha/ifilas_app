@@ -8,7 +8,8 @@ import { OrderRequest } from 'src/models/requests/order-request';
 import { StoreModel } from 'src/models/store-model';
 import { UserModel } from 'src/models/user-model';
 import { CustomerStatusEnum } from 'src/models/enums/customer-status.enum';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { SignalRService } from 'src/services/seignalr.service';
 
 @Component({
   selector: 'app-order-approval',
@@ -28,12 +29,15 @@ export class OrderApprovalPage implements OnInit {
   filter: string = 'pending';
   store!: StoreModel;
   user!: UserModel;
+  private ordersSignalRSub?: Subscription;
+  private subscribed = false;
 
   constructor(
     private toastService: ToastService,
     private alertController: AlertController,
     private orderService: OrderService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private signalRService: SignalRService
   ) {
     this.store = this.sessionService.getStore();
     this.user = this.sessionService.getUser();
@@ -43,8 +47,18 @@ export class OrderApprovalPage implements OnInit {
     this.loadOrders();
   }
 
-  ionViewWillEnter() {
-    this.loadOrders();
+  async ionViewWillEnter() {
+    await this.signalRService.startNotificationConnection();
+
+    this.ordersSignalRSub = this.signalRService
+      .onOrderUpdated$()
+      .subscribe(() => {
+        this.loadOrders();
+      });
+  }
+
+  ionViewWillLeave() {
+    this.ordersSignalRSub?.unsubscribe();
   }
 
   async loadOrders() {
@@ -54,7 +68,7 @@ export class OrderApprovalPage implements OnInit {
       const response = await firstValueFrom(
         this.orderService.getOrdersWatingApprovmentByEmployee(this.store.id, this.user.id)
       );
-      
+
       if (response.valid && response.data) {
         const orders = response.data.map((o: any) => ({
           orderNumber: o.orderNumber,
@@ -100,18 +114,18 @@ export class OrderApprovalPage implements OnInit {
   }
 
   getStatusLabel(status: number): string {
-    if (status === 6) 
+    if (status === 6)
       return 'Pendente';
-    if (status === 7) 
+    if (status === 7)
       return 'Rejeitado';
 
     return 'Aprovado';
   }
 
   getStatusColor(status: number): string {
-    if (status === 6) 
+    if (status === 6)
       return 'warning';
-    if (status === 7) 
+    if (status === 7)
       return 'danger';
 
     return 'success';
