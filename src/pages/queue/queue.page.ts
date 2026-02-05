@@ -43,6 +43,7 @@ export class QueuePage implements AfterViewInit {
   editingExistingAppointment: boolean = false;
 
   private queueSignalRSub?: Subscription;
+  private scheduleSignalRSub?: Subscription;
 
   filteredAppointments: ScheduleItem[] = [];
 
@@ -85,6 +86,16 @@ export class QueuePage implements AfterViewInit {
       .subscribe(() => {
         this.loadDashboardData(this.user.id);
       });
+
+    this.scheduleSignalRSub = this.signalRService
+      .onScheduleUpdated$()
+      .subscribe(() => {
+        this.loadDashboardData(this.user.id);
+      });
+
+    this.signalRService.onUpdateCustomerSchedule(() => {
+      this.loadDashboardData(this.user.id);
+    });
 
     this.loadCustomersAppointments();
   }
