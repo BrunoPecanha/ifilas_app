@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { catchError, delay, from, map, Observable, of, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import QRCode from 'qrcode';
@@ -201,5 +201,16 @@ export class QueueService {
 
   exitQueue(custeomerId: number, queueId: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/queue/${custeomerId}/${queueId}/exit`);
+  }
+
+  transferCustomer(payload: {
+    customerId: number;
+    currentQueue: number;
+    destinationQueueId: number;
+  }) {
+    return this.http.put(
+      `${this.apiUrl}/queue/transfer-customer`,
+      payload
+    );
   }
 }

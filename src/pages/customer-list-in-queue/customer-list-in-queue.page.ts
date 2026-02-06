@@ -12,9 +12,11 @@ import { QrScannerService } from 'src/services/qr-scanner.service';
 import { QueueService } from 'src/services/queue.service';
 import { SignalRService } from 'src/services/seignalr.service';
 import { SessionService } from 'src/services/session.service';
+import { StoresService } from 'src/services/stores.service';
 import { ToastService } from 'src/services/toast.service';
 import { ServiceConfigModalComponent } from 'src/shared/components/service-config-modal-component/service-config-modal.component';
 import { isToday } from 'src/utils/date-utils';
+import { TransferCustomerModalComponent } from '../owner-schedule/modals/transfer-modal/transfer-customer-modal.component';
 
 @Component({
   selector: 'app-customer-list-in-queue',
@@ -34,13 +36,15 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
   showScrollIndicator: boolean = true;
   headerScrolled = false;
 
+  professionals: any[] = [];
+
   editingNameMap: { [clientId: number]: boolean } = {};
   editedNames: { [clientId: number]: string } = {};
 
   isServiceConfigModalOpen = false;
   servicePrice: number | null = null;
   serviceTime: number | null = null;
-  currentClient: any = null;
+ 
   lastScrollTop = 0;
   hideHeader = false;
   private storeId: number;
@@ -52,12 +56,12 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
     private queueService: QueueService,
     private sessionService: SessionService,
     private alertController: AlertController,
-    private toast: ToastService,
     private modalCtrl: ModalController,
     private signalRService: SignalRService,
     private router: Router,
     private qrScanner: QrScannerService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private storeService: StoresService
   ) {
     this.store = this.sessionService.getStore();
     this.storeId = this.store.id;
@@ -215,12 +219,12 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
     this.queueService.updateCustomerName(client.id, newName).subscribe({
       next: () => {
         client.name = newName;
-        this.toast.show('Nome atualizado com sucesso', 'success');
+        this.toastService.show('Nome atualizado com sucesso', 'success');
         this.cancelEditName(client.id);
       },
       error: (err) => {
         console.error('Erro ao atualizar nome:', err);
-        this.toast.show('Erro ao atualizar nome', 'danger');
+        this.toastService.show('Erro ao atualizar nome', 'danger');
       }
     });
   }
@@ -242,7 +246,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
         },
         error: (err) => {
           console.error('Erro ao carregar clientes:', err);
-          this.toast.show('Erro ao carregar lista de clientes', 'danger');
+          this.toastService.show('Erro ao carregar lista de clientes', 'danger');
         },
         complete: () => {
           this.isLoading = false;
@@ -342,18 +346,84 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
     this.queueService.pauseQueue(request).subscribe({
       next: (response) => {
         if (response.data.status === StatusQueueEnum.paused) {
-          this.toast.show(`Fila pausada com sucesso.`, 'warning');
+          this.toastService.show(`Fila pausada com sucesso.`, 'warning');
           this.isPaused = true;
         }
         else {
-          this.toast.show(`Fila despausada com sucesso.`, 'success');
+          this.toastService.show(`Fila despausada com sucesso.`, 'success');
           this.isPaused = false;
         }
       },
       error: (err) => {
         console.error('Erro ao pausar fila:', err);
-        this.toast.show(`Erro ao pausar a fila.`, 'danger');
+        this.toastService.show(`Erro ao pausar a fila.`, 'danger');
       }
+    });
+  }
+
+  async beginCustomerTransfer(customer: any) {
+    await this.loadProfessionals();
+    
+    const modal = await this.modalCtrl.create({
+      component: TransferCustomerModalComponent,
+      componentProps: {
+        professionals: this.professionals.filter(x => Number(x.id) !== Number(this.employee.id)),          
+        isQueue: true
+      }
+    });
+
+    modal.onDidDismiss().then(result => {
+      if (result.data?.queueId) {
+        this.executarTransferencia(customer, result.data.queueId);
+      }
+    });
+
+    await modal.present();
+  }
+
+  private executarTransferencia(customer: any, destinationQueueId: number) {
+    const payload = {
+      customerId: customer.id,
+      currentQueue: this.queue!.id,
+      destinationQueueId: destinationQueueId
+    };
+    
+    this.queueService.transferCustomer(payload).subscribe({
+      next: () => {
+        this.toastService.show('Cliente transferido com sucesso', 'success');
+        this.loadQueueData()
+      },
+      error: () => {
+        this.toastService.show('Erro ao transferir cliente', 'danger');
+      }
+    });
+  }
+
+  private loadProfessionals(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.storeService.loadProfessionals(Number(this.store.id)).subscribe({
+        next: (response: any) => {
+          if (response.valid && response.data) {
+            this.professionals = Array.isArray(response.data)
+              ? response.data.map((prof: any) => ({
+                id: prof.id.toString(),
+                nome: `${prof.name} ${prof.lastName}`,
+                queueId: prof.queueId
+              }))
+              : [{
+                id: response.data.id.toString(),
+                nome: response.data.name,
+                queueId: response.data.queueId
+              }];
+          }
+
+          resolve();
+        },
+        error: err => {
+          console.error(err);
+          reject(err);
+        }
+      });
     });
   }
 
@@ -378,7 +448,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
               this.queue = openQueue;
               this.isPaused = openQueue.status === StatusQueueEnum.paused;
             } else {
-              this.toast.show('Não há fila aberta para hoje.', 'warning');
+              this.toastService.show('Não há fila aberta para hoje.', 'warning');
               this.navigateToQueueAdmin();
             }
 
@@ -388,7 +458,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
         },
         error: (err) => {
           this.navCtrl.navigateRoot('/splash');
-          this.toast.show('Erro ao carregar informações da fila', 'danger');
+          this.toastService.show('Erro ao carregar informações da fila', 'danger');
         }
       });
   }
@@ -458,9 +528,9 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
         .toPromise();
 
       this.loadQueueData();
-      await this.toast.show('Cliente removido com sucesso', 'success');
+      await this.toastService.show('Cliente removido com sucesso', 'success');
     } catch (error) {
-      await this.toast.show('Erro ao remover cliente', 'danger');
+      await this.toastService.show('Erro ao remover cliente', 'danger');
     }
   }
 
@@ -476,7 +546,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
       },
       error: (err) => {
         console.error('Erro ao iniciar atendimento:', err);
-        this.toast.show('Erro ao iniciar atendimento', 'danger');
+        this.toastService.show('Erro ao iniciar atendimento', 'danger');
       }
     });
   }
@@ -496,11 +566,11 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
         const message = this.isPaused
           ? 'Fila pausada com sucesso'
           : 'Fila despausada com sucesso';
-        this.toast.show(message, this.isPaused ? 'warning' : 'success');
+        this.toastService.show(message, this.isPaused ? 'warning' : 'success');
       },
       error: (err) => {
         console.error('Erro ao pausar fila:', err);
-        this.toast.show('Erro ao alterar estado da fila', 'danger');
+        this.toastService.show('Erro ao alterar estado da fila', 'danger');
       }
     });
   }
@@ -510,11 +580,11 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
       .subscribe({
         next: (response) => {
           customer.timeCalledInQueue = response.data;
-          this.toast.show('Cliente notificado com sucesso', 'success');
+          this.toastService.show('Cliente notificado com sucesso', 'success');
         },
         error: (err) => {
           console.error('Erro ao notificar cliente:', err);
-          this.toast.show('Erro ao notificar cliente', 'danger');
+          this.toastService.show('Erro ao notificar cliente', 'danger');
         }
       });
   }
@@ -587,9 +657,9 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
   }
 
   openWhatsapp(customer: CustomerInQueueForEmployeeModel) {
-    const phone = customer.id;
+    const phone = customer.name?.replace(/\D/g, ''); // Remove caracteres não numéricos
     if (!phone) {
-      this.toast.show('Número de telefone não disponível', 'warning');
+      this.toastService.show('Número de telefone não disponível', 'warning');
       return;
     }
 

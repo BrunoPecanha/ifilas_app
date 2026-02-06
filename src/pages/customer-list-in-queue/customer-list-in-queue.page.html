@@ -3,14 +3,13 @@
   [subtitle]="'FILA ATUAL'"
   [showStartButton]="true"
   [startIconName]="'add'"
-  [endIconName]="'play'"
+  [endIconName]="isPaused ? 'play' : 'pause'"
   [hideOnScroll]="true"
   [scrollThreshold]="60"
   [isHidden]="hideHeader"
   [endLoading]="isLoading"
   (onEndClick)="toggleQueuePause()"
   (onStartClick)="addCustomerToQueue()"
-  [showNotificationBadge]="true"
 >
 </app-custom-header>
 
@@ -245,6 +244,17 @@
               </div>
 
               <div class="quick-actions">
+                <ion-button
+                  *ngIf="store?.allowTransfer"
+                  fill="clear"
+                  size="small"
+                  (click)="beginCustomerTransfer(client)"
+                  class="action-button config-btn"
+                  title="Configurar serviço"
+                >
+                  <ion-icon name="swap-horizontal-outline"></ion-icon>
+                </ion-button>
+
                 <ion-button
                   *ngIf="canEditCustomerPriceAndTime(client)"
                   fill="clear"

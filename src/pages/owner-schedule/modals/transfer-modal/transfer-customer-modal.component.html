@@ -31,7 +31,8 @@
 
         <div class="right">
           <div class="name">{{ prof.nome }}</div>
-          <div class="agenda">Agenda #{{ prof.scheduleId }}</div>
+          <div *ngIf="!isQueue" class="agenda">Agenda #{{ prof.scheduleId }}</div>
+          <div *ngIf="isQueue" class="agenda">Fila #{{ prof.queueId }}</div>
           <div class="specialty" *ngIf="prof.especialidade">{{ prof.especialidade }}</div>
           
           <div class="availability" *ngIf="prof.disponibilidade">
@@ -67,7 +68,7 @@
       [disabled]="!selectedProfessional"
     >
       <ion-icon name="arrow-forward" slot="start"></ion-icon>
-      Transferir para {{ selectedProfessional?.nome }}
+      Transferir para {{ selectedProfessional.nome }}
     </ion-button>
   </div>
 </ion-content>

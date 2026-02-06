@@ -5,6 +5,7 @@ interface Professional {
   id: number;
   nome: string;
   scheduleId: number;
+  queueId: number;
   especialidade?: string;
   disponibilidade?: string;
   isActive?: boolean;
@@ -23,11 +24,12 @@ export class TransferCustomerModalComponent implements OnInit {
   @Input() professionals: Professional[] = [];
   @Input() currentProfessionalId?: number;
   @Input() customerName?: string;
+  @Input() isQueue?: boolean = false;
 
   selectedProfessional: Professional | null = null;
   isLoading = false;
 
-  constructor(private modalCtrl: ModalController) {}
+  constructor(private modalCtrl: ModalController) { }
 
   ngOnInit() {
     if (this.currentProfessionalId && this.professionals) {
@@ -40,25 +42,28 @@ export class TransferCustomerModalComponent implements OnInit {
     this.professionals = this.professionals.map((prof, index) => ({
       ...prof,
       avatarColor: this.getAvatarColor(index),
-      isActive: prof.isActive ?? true 
+      isActive: prof.isActive ?? true
     }));
   }
 
   select(prof: Professional) {
-    if (prof.disabled) return;
-    if (!prof.scheduleId) return;
+    if (prof.disabled)
+      return;
+    if (!prof.queueId) return;
 
-    this.selectedProfessional = prof;    
+    this.selectedProfessional = prof;
   }
 
   confirmTransfer() {
-    if (!this.selectedProfessional || !this.selectedProfessional.scheduleId) return;
+    if (!this.selectedProfessional || !this.selectedProfessional.queueId) 
+      return;
 
     this.isLoading = true;
-    
+
     setTimeout(() => {
       this.modalCtrl.dismiss({
         scheduleId: this.selectedProfessional?.scheduleId,
+        queueId: this.selectedProfessional?.queueId,
         professionalId: this.selectedProfessional?.id,
         professionalName: this.selectedProfessional?.nome,
         confirmed: true
@@ -81,7 +86,7 @@ export class TransferCustomerModalComponent implements OnInit {
       'var(--ion-color-warning)',
       'var(--ion-color-danger)'
     ];
-    
+
     return colors[index % colors.length];
   }
 
