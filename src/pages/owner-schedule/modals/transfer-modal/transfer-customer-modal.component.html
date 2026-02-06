@@ -1,0 +1,73 @@
+<app-custom-header
+  subtitle="TRANSFERIR CLIENTE"
+  endIconName="close"
+  (onEndClick)="close()"
+></app-custom-header>
+
+<ion-content class="transfer-content">
+  <div class="transfer-info" *ngIf="professionals?.length">
+    <p>Selecione um profissional para transferir este cliente</p>
+  </div>
+
+  <div class="options-grid" *ngIf="professionals?.length; else emptyState">
+
+    <ion-card
+      class="option-card"
+      *ngFor="let prof of professionals"
+      (click)="select(prof)"
+      tappable
+      [class.selected]="selectedProfessional?.id === prof.id"
+      [class.disabled]="prof.disabled"
+    >
+      <ion-card-content class="card-content">
+
+        <div class="left">
+          <div class="avatar" [style.background]="prof.avatarColor || 'var(--ion-color-primary)'">
+            <ion-icon name="person" *ngIf="!prof.avatar"></ion-icon>
+            <img *ngIf="prof.avatar" [src]="prof.avatar" alt="Avatar" class="avatar-img" />
+          </div>
+          <div class="status-indicator" [class.active]="prof.isActive"></div>
+        </div>
+
+        <div class="right">
+          <div class="name">{{ prof.nome }}</div>
+          <div class="agenda">Agenda #{{ prof.scheduleId }}</div>
+          <div class="specialty" *ngIf="prof.especialidade">{{ prof.especialidade }}</div>
+          
+          <div class="availability" *ngIf="prof.disponibilidade">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ prof.disponibilidade }}</span>
+          </div>
+        </div>
+
+        <div class="selection-indicator">
+          <ion-icon name="checkmark-circle" *ngIf="selectedProfessional?.id === prof.id"></ion-icon>
+        </div>
+
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="people-outline"></ion-icon>
+      </div>
+      <h3>Nenhum profissional disponível</h3>
+      <p>Não há profissionais com agenda disponível no momento.</p>
+    </div>
+  </ng-template>
+
+  <div class="action-footer" *ngIf="professionals?.length && selectedProfessional">
+    <ion-button 
+      expand="block" 
+      class="confirm-button"
+      (click)="confirmTransfer()"
+      [disabled]="!selectedProfessional"
+    >
+      <ion-icon name="arrow-forward" slot="start"></ion-icon>
+      Transferir para {{ selectedProfessional?.nome }}
+    </ion-button>
+  </div>
+</ion-content>
