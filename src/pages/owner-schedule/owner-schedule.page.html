@@ -388,6 +388,7 @@
               <ion-icon slot="icon-only" name="create-outline"></ion-icon>
             </ion-item-option>
             <ion-item-option
+              *ngIf="store?.allowTransfer"
               color="warning"
               (click)="beginCustomerTransfer(customer)"
             >

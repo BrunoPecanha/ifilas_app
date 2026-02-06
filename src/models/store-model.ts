@@ -58,4 +58,5 @@ export interface StoreModel extends To {
   isOpen: boolean;
   likesCount?: number;
   hideAmountsWhenTransferringCustomers?: boolean;
+  allowTransfer?: boolean;
 }

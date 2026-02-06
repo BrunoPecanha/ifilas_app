@@ -102,6 +102,7 @@ export class StoresService {
     formData.append('StartServiceWithQRCode', String(formValue.startServiceWithQRCode || false));
     formData.append('ShareQueue', String(formValue.shareQueue || false));
     formData.append('HideAmountsWhenTransferringCustomers', String(formValue.hideAmountsWhenTransferringCustomers || false));
+     formData.append('AllowTransfer', String(formValue.allowTransfer || false));
 
 
     const logoControl = cadastroForm.get('logo');

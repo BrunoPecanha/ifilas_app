@@ -3,6 +3,7 @@ import { ScheduleService } from "src/services/schedule.service";
 import { CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserModel } from "src/models/user-model";
 import { SessionService } from "src/services/session.service";
+import { StoresService } from "src/services/stores.service";
 import { StoreModel } from "src/models/store-model";
 import { ToastService } from "src/services/toast.service";
 import { Router } from "@angular/router";
@@ -10,10 +11,11 @@ import { AlertController, ModalController } from "@ionic/angular";
 import { CpfSearchModalComponent } from "./modals/cpf-search-modal/cpf-search-modal.component";
 import { CustomerTypeModalComponent } from "./modals/customer-type-modal/customer-type-modal.component";
 import { WalkInCustomerModalComponent } from "./modals/walk-in-customer-modal/walk-in-customer-modal.component";
+import { TransferCustomerModalComponent } from "./modals/transfer-modal/transfer-customer-modal.component";
 import { ServiceConfigModalComponent } from "src/shared/components/service-config-modal-component/service-config-modal.component";
 import { CustomerService } from "src/services/customer.service";
 import { SignalRService } from "src/services/seignalr.service";
-import { Subject, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-owner-schedule",
@@ -32,6 +34,7 @@ export class OwnerSchedulePage implements OnInit {
   filteredTimeSlots: any[] = [];
   trashData: any[] = [];
   preSelectedSlot: any = null;
+  professionals: any[] = [];
 
   private originalSlotsTemplate: { time: string }[] = [];
 
@@ -79,7 +82,8 @@ export class OwnerSchedulePage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private customerService: CustomerService,
-    private signalRService: SignalRService
+    private signalRService: SignalRService,
+    private storeService: StoresService
   ) {
     this.user = this.sessionService.getUser();
     this.store = this.sessionService.getStore();
@@ -102,7 +106,7 @@ export class OwnerSchedulePage implements OnInit {
 
   ionViewWillLeave() {
     this.signalRSub?.unsubscribe();
-  } 
+  }
 
   get canShowPaymentDetails(): boolean {
     if (!this.store?.hideAmountsWhenTransferringCustomers)
@@ -250,62 +254,69 @@ export class OwnerSchedulePage implements OnInit {
     return h * 60 + m;
   }
 
-  async beginCustomerTransfer(customer: any) {
-    const alert = await this.alertController.create({
-      header: 'Transferir cliente',
-      message: 'Informe a agenda de destino',
-      inputs: [
-        {
-          name: 'nextSchedule',
-          type: 'number',
-          placeholder: 'ID da agenda de destino'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Transferir',
-          handler: (data) => {
-            if (!data.nextSchedule) {
-              this.toastController.show('Agenda de destino inválida', 'warning');
-              return false;
-            }
-
-            this.executarTransferencia(customer, Number(data.nextSchedule));
-            return true;
+  private loadProfessionals(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.storeService.loadProfessionals(Number(this.store.id)).subscribe({
+        next: (response: any) => {
+          if (response.valid && response.data) {
+            this.professionals = Array.isArray(response.data)
+              ? response.data.map((prof: any) => ({
+                id: prof.id.toString(),
+                nome: `${prof.name} ${prof.lastName}`,
+                scheduleId: prof.scheduleId
+              }))
+              : [{
+                id: response.data.id.toString(),
+                nome: response.data.name,
+                scheduleId: response.data.scheduleId
+              }];
           }
-        }
-      ]
-    });
 
-    await alert.present();
+          resolve();
+        },
+        error: err => {
+          console.error(err);
+          reject(err);
+        }
+      });
+    });
   }
 
-  private executarTransferencia(customer: any, nextScheduleId: number) {
+  async beginCustomerTransfer(customer: any) {
+    await this.loadProfessionals();
+
+    const modal = await this.modalController.create({
+      component: TransferCustomerModalComponent,
+      componentProps: {
+        professionals: this.professionals.filter(
+          x => Number(x.id) !== Number(this.user.id))
+      }
+    });
+
+    modal.onDidDismiss().then(result => {
+      if (result.data?.scheduleId) {
+        this.executarTransferencia(customer, result.data.scheduleId);
+      }
+    });
+
+    await modal.present();
+  }
+
+  private executarTransferencia(customer: any, destinationScheduleId: number) {
     const payload = {
       customerId: customer.id,
       currentSchedule: this.scheduleId,
-      nextSchedule: nextScheduleId
+      destinationScheduleId: destinationScheduleId
     };
-
-    this.isLoading = true;
 
     this.service.transferCustomer(payload).subscribe({
       next: () => {
         this.toastController.show('Cliente transferido com sucesso', 'success');
-
         this.removeAppointment(customer);
-
         this.loadSchedulesForDate();
-
-        this.isLoading = false;
       },
       error: () => {
         this.toastController.show('Erro ao transferir cliente', 'danger');
-        this.isLoading = false;
       }
     });
   }

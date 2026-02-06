@@ -93,17 +93,11 @@ export class ScheduleService {
   transferCustomer(payload: {
     customerId: number;
     currentSchedule: number;
-    nextSchedule: number;
+    destinationScheduleId: number;
   }) {
     return this.http.put(
       `${this.apiUrl}/transfer-customer`,
       payload
     );
-  }
-
-  private toLocalDateTimeString(date: Date): string {
-    const pad = (n: number) => n.toString().padStart(2, '0');
-
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   }
 }

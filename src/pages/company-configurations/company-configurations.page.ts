@@ -117,6 +117,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
       endServiceWithQRCode: [false],
       startServiceWithQRCode: [false],
       hideAmountsWhenTransferringCustomers: [false],
+      allowTransfer: [false],
       shareQueue: [false],
       wallPaper: [null],
       inCaseFailureAcceptFinishWithoutQRCode: [false],
@@ -163,54 +164,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
 
     this.resetFormAndPreviews();
   }
-
-  cnpjValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const cnpj = control.value?.replace(/\D/g, '') || '';
-
-      if (!cnpj || cnpj.length !== 14) {
-        return { invalidCnpj: true };
-      }
-
-      if (/^(\d)\1{13}$/.test(cnpj)) {
-        return { invalidCnpj: true };
-      }
-
-      let tamanho = cnpj.length - 2;
-      let numeros = cnpj.substring(0, tamanho);
-      let digitos = cnpj.substring(tamanho);
-      let soma = 0;
-      let pos = tamanho - 7;
-
-      for (let i = tamanho; i >= 1; i--) {
-        soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
-        if (pos < 2) pos = 9;
-      }
-
-      let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-      if (resultado !== parseInt(digitos.charAt(0))) {
-        return { invalidCnpj: true };
-      }
-
-      tamanho = tamanho + 1;
-      numeros = cnpj.substring(0, tamanho);
-      soma = 0;
-      pos = tamanho - 7;
-
-      for (let i = tamanho; i >= 1; i--) {
-        soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
-        if (pos < 2) pos = 9;
-      }
-
-      resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-      if (resultado !== parseInt(digitos.charAt(1))) {
-        return { invalidCnpj: true };
-      }
-
-      return null;
-    };
-  }
-
+  
   cepValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const cep = control.value?.replace(/\D/g, '') || '';
@@ -226,7 +180,8 @@ export class CompanyConfigurationsPage implements OnDestroy {
   getErrorMessage(fieldName: string): string {
     const field = this.cadastroForm.get(fieldName);
 
-    if (!field || !field.errors) return '';
+    if (!field || !field.errors) 
+      return '';
 
     if (this.serverErrors[fieldName]) {
       return this.serverErrors[fieldName];
@@ -331,6 +286,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
       cnpj: storeData.cnpj,
       name: storeData.name,
       hideAmountsWhenTransferringCustomers: storeData.hideAmountsWhenTransferringCustomers,
+      allowTransfer: storeData.allowTransfer,
       cep: storeData.cep || '',
       address: storeData.address || '',
       number: storeData.number || '',
