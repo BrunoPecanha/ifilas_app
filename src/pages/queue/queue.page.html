@@ -8,7 +8,7 @@
   [class.scrolled]="headerScrolled"
 ></app-custom-header>
 
-<ion-content  [fullscreen]="true" class="ion-padding">  
+<ion-content [fullscreen]="true" class="ion-padding">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-circle-outline"
@@ -19,30 +19,38 @@
   </ion-refresher>
 
   <div class="highlight-cards">
-    <div class="highlight-card next-appointment" 
-         *ngIf="nextAppointment && activeSegment === 'filas'"
-         (click)="goToAppointment(nextAppointment)">
+    <div
+      class="highlight-card next-appointment"
+      *ngIf="nextAppointment && activeSegment === 'filas'"
+      (click)="goToAppointment(nextAppointment)"
+    >
       <div class="card-content">
         <div class="card-icon">
           <ion-icon name="calendar" class="appointment-icon"></ion-icon>
         </div>
         <div class="card-details">
-          <span class="card-label">Próxima agenda em {{ nextAppointment.date | date:'dd/MM/yyyy' }}</span>
+          <span class="card-label"
+            >Próxima agenda em {{ nextAppointment.date | date:'dd/MM/yyyy'
+            }}</span
+          >
           <h3 class="card-title">{{ nextAppointment.store.name }}</h3>
           <p class="card-time">
             <ion-icon name="time-outline"></ion-icon>
-            {{ nextAppointment.time.slice(0,5) }} • {{ getTimeUntilAppointment(nextAppointment) }}
+            {{ nextAppointment.time.slice(0,5) }} • {{
+            getTimeUntilAppointment(nextAppointment) }}
           </p>
         </div>
         <ion-icon name="chevron-forward" class="chevron-icon"></ion-icon>
       </div>
-    </div>    
+    </div>
   </div>
 
   <div class="highlight-cards">
-    <div class="highlight-card next-appointment" 
-         *ngIf="(nextQueue !== null) && activeSegment === 'agendamentos'"
-         (click)="goToQueue(nextQueue)">
+    <div
+      class="highlight-card next-appointment"
+      *ngIf="(nextQueue !== null) && activeSegment === 'agendamentos'"
+      (click)="goToQueue(nextQueue)"
+    >
       <div class="card-content">
         <div class="card-icon">
           <ion-icon name="person" class="appointment-icon"></ion-icon>
@@ -52,19 +60,21 @@
           <h3 class="card-title">{{ nextQueue.store.name }}</h3>
           <p class="card-time">
             <ion-icon name="time-outline"></ion-icon>
-            Você é o #{{ nextQueue.position }} da fila 
+            Você é o #{{ nextQueue.position }} da fila
           </p>
         </div>
         <ion-icon name="chevron-forward" class="chevron-icon"></ion-icon>
       </div>
-    </div>    
+    </div>
   </div>
 
   <div class="ios-tabs">
     <div class="tabs-container">
-      <div class="tab-item" 
-           [class.active]="activeSegment === 'filas'"
-           (click)="activeSegment = 'filas'">
+      <div
+        class="tab-item"
+        [class.active]="activeSegment === 'filas'"
+        (click)="activeSegment = 'filas'"
+      >
         <div class="tab-content">
           <ion-icon name="list" class="tab-icon"></ion-icon>
           <span class="tab-text">Filas</span>
@@ -73,10 +83,12 @@
           </ion-badge>
         </div>
       </div>
-      
-      <div class="tab-item" 
-           [class.active]="activeSegment === 'agendamentos'"
-           (click)="activeSegment = 'agendamentos'">
+
+      <div
+        class="tab-item"
+        [class.active]="activeSegment === 'agendamentos'"
+        (click)="activeSegment = 'agendamentos'"
+      >
         <div class="tab-content">
           <ion-icon name="calendar" class="tab-icon"></ion-icon>
           <span class="tab-text">Agendamentos</span>
@@ -95,59 +107,78 @@
         <span class="section-count">{{ myQueues.length }}</span>
       </div>
 
-      <div *ngIf="myQueues && myQueues.length > 0; else noQueues" class="cards-grid">
-        <div class="ios-card queue-card" 
-             *ngFor="let queue of myQueues; trackBy: trackById"
-             [class.expanded]="expandedQueueId === queue.id"
-             [class.is-your-turn]="queue.position === 1"
-             [class.is-paused]="queue.isPaused"
-             (click)="toggleQueueExpansion(queue.id)">
-          
+      <div
+        *ngIf="myQueues && myQueues.length > 0; else noQueues"
+        class="cards-grid"
+      >
+        <div
+          class="ios-card queue-card"
+          *ngFor="let queue of myQueues; trackBy: trackById"
+          [class.expanded]="expandedQueueId === queue.id"
+          [class.is-your-turn]="queue.position === 1"
+          [class.is-paused]="queue.isPaused"
+          (click)="toggleQueueExpansion(queue.id)"
+        >
           <div class="card-header">
             <div class="store-info">
-              <img [src]="queue.store.logoPath || ''" 
-                   class="store-logo"
-                   (error)="handleImageError($event)">
+              <img
+                [src]="queue.store.logoPath || ''"
+                class="store-logo"
+                (error)="handleImageError($event)"
+              />
               <div class="store-details">
                 <div class="store-name-row">
                   <h3 class="store-name">{{ queue.store.name }}</h3>
-                  <ion-icon *ngIf="queue.store.isVerified" 
-                           name="checkmark-circle" 
-                           class="verified-badge"></ion-icon>
+                  <ion-icon
+                    *ngIf="queue.store.isVerified"
+                    name="checkmark-circle"
+                    class="verified-badge"
+                  ></ion-icon>
                 </div>
-                <ion-badge [color]="getQueueStatusColor(queue.status)" 
-                          class="status-badge">
+                <ion-badge
+                  [color]="getQueueStatusColor(queue.status)"
+                  class="status-badge"
+                >
                   {{ getStatusInfo(queue.status).text }}
                 </ion-badge>
               </div>
             </div>
-            
+
             <div class="queue-status">
               <div class="position-display" *ngIf="queue.position > 0">
                 <span class="position-number">#{{ queue.position }}</span>
                 <span class="position-label">posição</span>
               </div>
-              <ion-icon name="chevron-down" 
-                       class="expand-icon"
-                       [class.rotated]="expandedQueueId === queue.id"></ion-icon>
+              <ion-icon
+                name="chevron-down"
+                class="expand-icon"
+                [class.rotated]="expandedQueueId === queue.id"
+              ></ion-icon>
             </div>
           </div>
 
           <div class="card-body">
             <div class="info-row">
-              <div class="info-item">
-                <ion-icon name="time-outline" class="info-icon"></ion-icon>
-                <div class="info-content">
-                  <span class="info-label">Tempo estimado</span>
-                  <span class="info-value">{{ queue.waitingTime.slice(0,5) }} min</span>
-                </div>
-              </div>
-              
               <div class="info-item" *ngIf="queue.arrivalTime">
                 <ion-icon name="enter-outline" class="info-icon"></ion-icon>
                 <div class="info-content">
                   <span class="info-label">Entrada</span>
-                  <span class="info-value">{{ queue.arrivalTime | date:'HH:mm':'GMT-3' }}</span>
+                  <span class="info-value"
+                    >{{ queue.arrivalTime | date:'HH:mm':'GMT-3' }}</span
+                  >
+                </div>
+              </div>
+
+              <div class="info-item">
+                <ion-icon name="time-outline" class="info-icon"></ion-icon>
+                <div class="info-content">
+                  <span class="info-label">Estimativa às</span>
+                  <span class="info-value" *ngIf="queue.status !== 2">                    
+                    {{ parseUtcToBrazil(queue.predictedStartAt) | date:'HH:mm' }}
+                  </span>  
+                   <span class="info-value" *ngIf="queue.status === 2">                    
+                    -
+                  </span>                 
                 </div>
               </div>
             </div>
@@ -160,7 +191,10 @@
               </div>
             </div>
 
-            <div class="your-turn-banner" *ngIf="queue.position === 1">
+            <div
+              class="your-turn-banner"
+              *ngIf="queue.position === 1 && queue.status === 8"
+            >
               <ion-icon name="trophy" class="trophy-icon"></ion-icon>
               <span>É sua vez! Dirija-se ao estabelecimento</span>
             </div>
@@ -168,22 +202,33 @@
 
           <div class="expanded-content" *ngIf="expandedQueueId === queue.id">
             <div class="expanded-body">
-              <div class="queue-progress" *ngIf="queue.position > 1 && queue.totalInQueue">
+              <div
+                class="queue-progress"
+                *ngIf="queue.position > 1 && queue.totalInQueue"
+              >
                 <div class="progress-header">
                   <span>Progresso na fila</span>
                   <span>{{ queue.position }}/{{ queue.totalInQueue }}</span>
                 </div>
                 <div class="progress-bar">
-                  <div class="progress-fill" 
-                       [style.width.%]="getQueueProgress(queue)"></div>
+                  <div
+                    class="progress-fill"
+                    [style.width.%]="getQueueProgress(queue)"
+                  ></div>
                 </div>
               </div>
 
               <div class="services-section">
                 <h4 class="services-title">Serviços Selecionados</h4>
                 <div class="services-list">
-                  <div class="service-item" *ngFor="let service of queue.services">
-                    <ion-icon name="checkmark-circle" class="service-icon"></ion-icon>
+                  <div
+                    class="service-item"
+                    *ngFor="let service of queue.services"
+                  >
+                    <ion-icon
+                      name="checkmark-circle"
+                      class="service-icon"
+                    ></ion-icon>
                     <span>{{ service }}</span>
                   </div>
                 </div>
@@ -194,20 +239,30 @@
                   <ion-icon name="cash-outline" class="info-icon"></ion-icon>
                   <div class="info-content">
                     <span class="info-label">Pagamento</span>
-                    <span class="info-value">{{ queue.paymentMethod.name || 'A definir' }}</span>
+                    <span class="info-value"
+                      >{{ queue.paymentMethod.name || 'A definir' }}</span
+                    >
                   </div>
                 </div>
-                
+
                 <div class="info-item full-width" *ngIf="queue.totalString">
-                  <ion-icon name="pricetag-outline" class="info-icon"></ion-icon>
+                  <ion-icon
+                    name="pricetag-outline"
+                    class="info-icon"
+                  ></ion-icon>
                   <div class="info-content">
                     <span class="info-label">Valor Total</span>
-                    <span class="info-value total-value">{{ queue.totalString }}</span>
+                    <span class="info-value total-value"
+                      >{{ queue.totalString }}</span
+                    >
                   </div>
                 </div>
 
                 <div class="info-item full-width" *ngIf="queue.notes">
-                  <ion-icon name="information-circle-outline" class="info-icon"></ion-icon>
+                  <ion-icon
+                    name="information-circle-outline"
+                    class="info-icon"
+                  ></ion-icon>
                   <div class="info-content">
                     <span class="info-label">Observações</span>
                     <span class="info-value">{{ queue.notes }}</span>
@@ -216,23 +271,32 @@
               </div>
 
               <div class="card-actions">
-                <ion-button fill="outline" class="action-button edit" 
-                           [disabled]="isQueueReadOnly(queue.status)"
-                           (click)="editQueueServices(queue); $event.stopPropagation()">
+                <ion-button
+                  fill="outline"
+                  class="action-button edit"
+                  [disabled]="isQueueReadOnly(queue.status)"
+                  (click)="editQueueServices(queue); $event.stopPropagation()"
+                >
                   <ion-icon name="create-outline" slot="start"></ion-icon>
                   Editar
                 </ion-button>
-                
-                <ion-button *ngIf="queue.store.endServiceWithQRCode || queue.store.startServiceWithQRCode"
-                           fill="outline" class="action-button qr"
-                           (click)="generateQrCodeForAtendance(queue); $event.stopPropagation()">
+
+                <ion-button
+                  *ngIf="queue.store.endServiceWithQRCode || queue.store.startServiceWithQRCode"
+                  fill="outline"
+                  class="action-button qr"
+                  (click)="generateQrCodeForAtendance(queue); $event.stopPropagation()"
+                >
                   <ion-icon name="qr-code-outline" slot="start"></ion-icon>
                   QR Code
                 </ion-button>
-                
-                <ion-button fill="outline" class="action-button leave"
-                           [disabled]="isQueueReadOnly(queue.status)"
-                           (click)="leaveQueue(queue); $event.stopPropagation()">
+
+                <ion-button
+                  fill="outline"
+                  class="action-button leave"
+                  [disabled]="isQueueReadOnly(queue.status)"
+                  (click)="leaveQueue(queue); $event.stopPropagation()"
+                >
                   <ion-icon name="exit-outline" slot="start"></ion-icon>
                   Sair
                 </ion-button>
@@ -248,7 +312,7 @@
             <ion-icon name="list" class="empty-state-icon"></ion-icon>
           </div>
           <h3 class="empty-title">Nenhuma fila ativa</h3>
-          <p class="empty-message">Você não está em nenhuma fila no momento.</p>          
+          <p class="empty-message">Você não está em nenhuma fila no momento.</p>
         </div>
       </ng-template>
     </div>
@@ -257,15 +321,19 @@
   <ng-container *ngIf="activeSegment === 'agendamentos'">
     <div class="content-section">
       <div class="date-navigation">
-        <ion-button fill="clear" class="nav-button prev" (click)="previousDay()">
+        <ion-button
+          fill="clear"
+          class="nav-button prev"
+          (click)="previousDay()"
+        >
           <ion-icon name="chevron-back"></ion-icon>
         </ion-button>
-        
+
         <div class="current-date" (click)="selectDate()">
           <span class="date-day">{{ getDayOfWeek(selectedDate) }}</span>
           <span class="date-full">{{ selectedDate | date:'dd/MM/yyyy' }}</span>
         </div>
-        
+
         <ion-button fill="clear" class="nav-button next" (click)="nextDay()">
           <ion-icon name="chevron-forward"></ion-icon>
         </ion-button>
@@ -273,43 +341,57 @@
 
       <div class="section-header">
         <h2 class="section-title">Agendamentos</h2>
-        <span class="section-count">{{ getFilteredAppointments().length }}</span>
+        <span class="section-count"
+          >{{ getFilteredAppointments().length }}</span
+        >
       </div>
 
-      <div *ngIf="getFilteredAppointments().length > 0; else noAppointments" class="cards-grid">
-        <div class="ios-card appointment-card" 
-             *ngFor="let appt of getFilteredAppointments(); trackBy: trackById"
-             [class.expanded]="expandedAppointmentId === appt.id"
-             [class.upcoming]="isUpcomingAppointment(appt)"
-             (click)="toggleAppointmentExpansion(appt.id)">
-          
+      <div
+        *ngIf="getFilteredAppointments().length > 0; else noAppointments"
+        class="cards-grid"
+      >
+        <div
+          class="ios-card appointment-card"
+          *ngFor="let appt of getFilteredAppointments(); trackBy: trackById"
+          [class.expanded]="expandedAppointmentId === appt.id"
+          [class.upcoming]="isUpcomingAppointment(appt)"
+          (click)="toggleAppointmentExpansion(appt.id)"
+        >
           <div class="card-header">
             <div class="store-info">
-              <img [src]="appt.store.logoPath || ''" 
-                   class="store-logo"
-                   (error)="handleImageError($event)">
+              <img
+                [src]="appt.store.logoPath || ''"
+                class="store-logo"
+                (error)="handleImageError($event)"
+              />
               <div class="store-details">
                 <div class="store-name-row">
                   <h3 class="store-name">{{ appt.store.name }}</h3>
-                  <ion-icon *ngIf="appt.store.isVerified" 
-                           name="checkmark-circle" 
-                           class="verified-badge"></ion-icon>
+                  <ion-icon
+                    *ngIf="appt.store.isVerified"
+                    name="checkmark-circle"
+                    class="verified-badge"
+                  ></ion-icon>
                 </div>
-                <ion-badge [color]="getStatusInfo(appt.status).color" 
-                          class="status-badge">
+                <ion-badge
+                  [color]="getStatusInfo(appt.status).color"
+                  class="status-badge"
+                >
                   {{ getStatusInfo(appt.status).text }}
                 </ion-badge>
               </div>
             </div>
-            
+
             <div class="appointment-time">
               <div class="time-display">
                 <span class="time-hour">{{ appt.time.slice(0,5) }}</span>
                 <span class="time-label">horário</span>
               </div>
-              <ion-icon name="chevron-down" 
-                       class="expand-icon"
-                       [class.rotated]="expandedAppointmentId === appt.id"></ion-icon>
+              <ion-icon
+                name="chevron-down"
+                class="expand-icon"
+                [class.rotated]="expandedAppointmentId === appt.id"
+              ></ion-icon>
             </div>
           </div>
 
@@ -319,15 +401,19 @@
                 <ion-icon name="calendar-outline" class="info-icon"></ion-icon>
                 <div class="info-content">
                   <span class="info-label">Data</span>
-                  <span class="info-value">{{ appt.date | date:'dd/MM/yyyy' }}</span>
+                  <span class="info-value"
+                    >{{ appt.date | date:'dd/MM/yyyy' }}</span
+                  >
                 </div>
               </div>
-              
+
               <div class="info-item">
                 <ion-icon name="cash-outline" class="info-icon"></ion-icon>
                 <div class="info-content">
                   <span class="info-label">Pagamento</span>
-                  <span class="info-value">{{ appt.paymentMethod.name || 'A definir' }}</span>
+                  <span class="info-value"
+                    >{{ appt.paymentMethod.name || 'A definir' }}</span
+                  >
                 </div>
               </div>
             </div>
@@ -338,13 +424,22 @@
             </div>
           </div>
 
-          <div class="expanded-content" *ngIf="expandedAppointmentId === appt.id">
+          <div
+            class="expanded-content"
+            *ngIf="expandedAppointmentId === appt.id"
+          >
             <div class="expanded-body">
               <div class="services-section">
                 <h4 class="services-title">Serviços Agendados</h4>
                 <div class="services-list">
-                  <div class="service-item" *ngFor="let service of appt.services">
-                    <ion-icon name="checkmark-circle" class="service-icon"></ion-icon>
+                  <div
+                    class="service-item"
+                    *ngFor="let service of appt.services"
+                  >
+                    <ion-icon
+                      name="checkmark-circle"
+                      class="service-icon"
+                    ></ion-icon>
                     <span>{{ service }}</span>
                   </div>
                 </div>
@@ -352,15 +447,23 @@
 
               <div class="additional-info">
                 <div class="info-item full-width" *ngIf="appt.totalString">
-                  <ion-icon name="pricetag-outline" class="info-icon"></ion-icon>
+                  <ion-icon
+                    name="pricetag-outline"
+                    class="info-icon"
+                  ></ion-icon>
                   <div class="info-content">
                     <span class="info-label">Valor Total</span>
-                    <span class="info-value total-value">{{ appt.totalString }}</span>
+                    <span class="info-value total-value"
+                      >{{ appt.totalString }}</span
+                    >
                   </div>
                 </div>
 
                 <div class="info-item full-width" *ngIf="appt.notes">
-                  <ion-icon name="information-circle-outline" class="info-icon"></ion-icon>
+                  <ion-icon
+                    name="information-circle-outline"
+                    class="info-icon"
+                  ></ion-icon>
                   <div class="info-content">
                     <span class="info-label">Observações</span>
                     <span class="info-value">{{ appt.notes }}</span>
@@ -369,24 +472,33 @@
               </div>
 
               <div class="card-actions">
-                <ion-button fill="outline" class="action-button edit" 
-                           [disabled]="isQueueReadOnly(appt.status)"
-                           (click)="editAppointmentServices(appt); $event.stopPropagation()">
+                <ion-button
+                  fill="outline"
+                  class="action-button edit"
+                  [disabled]="isQueueReadOnly(appt.status)"
+                  (click)="editAppointmentServices(appt); $event.stopPropagation()"
+                >
                   <ion-icon name="create-outline" slot="start"></ion-icon>
                   Editar
                 </ion-button>
-                
-                <ion-button *ngIf="appt.store.endServiceWithQRCode || appt.store.startServiceWithQRCode"
-                           fill="outline" class="action-button qr"
-                           [disabled]="isQueueReadOnly(appt.status)"
-                           (click)="generateQrCodeForAtendance(appt); $event.stopPropagation()">
+
+                <ion-button
+                  *ngIf="appt.store.endServiceWithQRCode || appt.store.startServiceWithQRCode"
+                  fill="outline"
+                  class="action-button qr"
+                  [disabled]="isQueueReadOnly(appt.status)"
+                  (click)="generateQrCodeForAtendance(appt); $event.stopPropagation()"
+                >
                   <ion-icon name="qr-code-outline" slot="start"></ion-icon>
                   QR Code
                 </ion-button>
-                
-                <ion-button fill="outline" class="action-button cancel"
-                           [disabled]="isQueueReadOnly(appt.status)"
-                           (click)="cancelAppointment(appt); $event.stopPropagation()">
+
+                <ion-button
+                  fill="outline"
+                  class="action-button cancel"
+                  [disabled]="isQueueReadOnly(appt.status)"
+                  (click)="cancelAppointment(appt); $event.stopPropagation()"
+                >
                   <ion-icon name="trash-outline" slot="start"></ion-icon>
                   Cancelar
                 </ion-button>
@@ -402,7 +514,7 @@
             <ion-icon name="calendar" class="empty-state-icon"></ion-icon>
           </div>
           <h3 class="empty-title">Nenhum agendamento</h3>
-          <p class="empty-message">Não há agendamentos para esta data.</p>         
+          <p class="empty-message">Não há agendamentos para esta data.</p>
         </div>
       </ng-template>
     </div>

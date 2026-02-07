@@ -23,6 +23,7 @@ export interface QueueItem {
   services: string[];
   totalInQueue: number;
   arrivalTime: string;
+  predictedStartAt: string;
   notes: string;  
   categoryIcon: string;
   isPaused: boolean;

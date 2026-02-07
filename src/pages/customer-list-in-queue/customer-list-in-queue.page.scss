@@ -631,3 +631,10 @@ ion-content.header-hidden .queue-section {
 .footer-spacer {
   height: 15px;
 }
+
+.ion-padding {
+  --background: #f8f9fa;
+  --padding-bottom: calc(60px + 20px + 30px + env(safe-area-inset-bottom));
+  position: relative;
+  z-index: 1;
+}

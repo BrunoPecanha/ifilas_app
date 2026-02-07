@@ -92,7 +92,7 @@ export class QueuePage implements AfterViewInit {
       .subscribe(() => {
         this.loadDashboardData(this.user.id);
       });
-      
+
     this.loadCustomersAppointments();
   }
 
@@ -172,6 +172,21 @@ export class QueuePage implements AfterViewInit {
 
   previousDay() {
     this.changeDay(-1);
+  }
+
+  parseUtcToBrazil(dateStr: string): Date {
+    const [datePart, timePart] = dateStr.replace('Z', '').split('T');
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hour, minute, second] = timePart.split(':');
+
+    return new Date(
+      year,
+      month - 1,
+      day,
+      Number(hour) - 3, // UTC-3 Brasil
+      Number(minute),
+      Number(parseFloat(second))
+    );
   }
 
   private loadSchedulesForDate() {
