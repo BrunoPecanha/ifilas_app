@@ -15,4 +15,8 @@ export class DashBoardService {
   loadCustomerInfo(id: number): Observable<DashBoardResponse> {
     return this.http.get<DashBoardResponse>(`${this.apiUrl}/dashboard/${id}`);
   } 
+
+   loadCustomerPredictTime(id: number): Observable<any> {
+    return this.http.get<DashBoardResponse>(`${this.apiUrl}/dashboard/predict/${id}`);
+  } 
 }
