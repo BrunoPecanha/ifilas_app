@@ -44,7 +44,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
   isServiceConfigModalOpen = false;
   servicePrice: number | null = null;
   serviceTime: number | null = null;
- 
+
   lastScrollTop = 0;
   hideHeader = false;
   private storeId: number;
@@ -104,17 +104,20 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
   }
 
   calculateWaitingTime(arrivalTime: string): string {
-    const agora = new Date();
+    const now = new Date();
+
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
     const [h, m] = arrivalTime.split(':').map(Number);
-    const entrada = new Date();
-    entrada.setHours(h, m, 0, 0);
+    const entryMinutes = h * 60 + m;
 
-    const diffMs = agora.getTime() - entrada.getTime();
-    const diffMin = Math.floor(diffMs / 60000);
+    let diff = nowMinutes - entryMinutes;
 
-    return this.formatMinutesToHHMM(diffMin);
+    if (diff < 0) {
+      diff += 24 * 60;
+    }
+
+    return this.formatMinutesToHHMM(diff);
   }
-
 
   async openServiceConfig(client: any) {
     const servicesMapped = client.services
@@ -363,11 +366,11 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
 
   async beginCustomerTransfer(customer: any) {
     await this.loadProfessionals();
-    
+
     const modal = await this.modalCtrl.create({
       component: TransferCustomerModalComponent,
       componentProps: {
-        professionals: this.professionals.filter(x => Number(x.id) !== Number(this.employee.id)),          
+        professionals: this.professionals.filter(x => Number(x.id) !== Number(this.employee.id)),
         isQueue: true
       }
     });
@@ -387,7 +390,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
       currentQueue: this.queue!.id,
       destinationQueueId: destinationQueueId
     };
-    
+
     this.queueService.transferCustomer(payload).subscribe({
       next: () => {
         this.toastService.show('Cliente transferido com sucesso', 'success');
@@ -657,14 +660,13 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
   }
 
   openWhatsapp(customer: CustomerInQueueForEmployeeModel) {
-    const phone = customer.name?.replace(/\D/g, ''); // Remove caracteres não numéricos
-    if (!phone) {
+    if (!customer.phone) {
       this.toastService.show('Número de telefone não disponível', 'warning');
       return;
     }
 
     const message = encodeURIComponent(`Olá ${customer.name}, sua vez na fila chegou!`);
-    const url = `https://wa.me/55${phone}?text=${message}`;
+    const url = `https://wa.me/55${customer.phone}?text=${message}`;
     window.open(url, '_blank');
   }
 

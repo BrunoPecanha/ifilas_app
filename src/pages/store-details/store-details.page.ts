@@ -24,7 +24,7 @@ export class StoreDetailsPage implements OnInit {
   isLoading: boolean = true;
   selectedTab: string = 'services';
   liked: boolean = false;
-  canAccess: boolean = false; 
+  canAccess: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -190,6 +190,11 @@ export class StoreDetailsPage implements OnInit {
       default:
         return '';
     }
+  }
+
+  get whatsappLink(): string {
+    const message = 'Olá, vim do seu perfil no iFilas. Gostaria de saber mais sobre seus serviços.';
+    return `https://wa.me/55${this.store.whatsapp}?text=${encodeURIComponent(message)}`;
   }
 
   toggleLike(store: StoreModel, event: MouseEvent): void {
