@@ -8,8 +8,8 @@
 </app-custom-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-   <!-- <app-ad-banner [ad]="activeAd" class="tall-ad-notifications"></app-ad-banner> -->
-  <ion-refresher slot="fixed"  (ionRefresh)="handleRefresh($event)">
+  <!-- <app-ad-banner [ad]="activeAd" class="tall-ad-notifications"></app-ad-banner> -->
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-outline"
       pullingText="Puxe para atualizar"
@@ -49,7 +49,7 @@
           <h3>{{ noti.title }}</h3>
           <p>{{ noti.message }}</p>
           <span class="notification-time">
-            {{ noti.data | date:'shortTime' }}
+            {{ getNotificationTime(noti.sentAt) }}
           </span>
         </ion-label>
 
