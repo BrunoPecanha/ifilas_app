@@ -318,7 +318,8 @@ export class QueuePage implements AfterViewInit {
       7: 'danger',
       8: 'success',
       9: 'success',
-      10: 'tertiary'
+      10: 'tertiary',
+      11: 'success'
     };
 
     return statusColors[status] || 'medium';
@@ -336,7 +337,8 @@ export class QueuePage implements AfterViewInit {
       7: { text: 'Recusado', color: 'danger' },
       8: { text: 'Próximo', color: 'warning' },
       9: { text: 'Confirmado', color: 'success' },
-      10: { text: 'Agendado', color: 'tertiary' }
+      10: { text: 'Agendado', color: 'tertiary' },
+      11: { text: 'É sua vez', color: 'success' }
     };
 
     return map[status] || { text: 'Desconhecido', color: 'medium' };
