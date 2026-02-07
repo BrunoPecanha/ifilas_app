@@ -183,7 +183,7 @@ export class QueuePage implements AfterViewInit {
       year,
       month - 1,
       day,
-      Number(hour) - 3, // UTC-3 Brasil
+      Number(hour),
       Number(minute),
       Number(parseFloat(second))
     );

@@ -13,6 +13,7 @@ import { UserService } from 'src/services/user-service';
 import { SessionService } from 'src/services/session.service';
 import { GeoLocateService } from 'src/services/geo-locate.service';
 import { UserRequest } from 'src/models/requests/user-request';
+import { ToastService } from 'src/services/toast.service';
 
 @Component({
   selector: 'app-create-account',
@@ -33,7 +34,8 @@ export class CreateAccountPage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private sessionService: SessionService,
-    private geLocation: GeoLocateService
+    private geLocation: GeoLocateService,
+    private toastService: ToastService
   ) { }
 
   ngOnInit(): void {
@@ -82,7 +84,7 @@ export class CreateAccountPage implements OnInit {
     try {
       this.geLocation.getAddressByCep(cep).subscribe({
         next: (response: any) => {
-          if (response.valid && response.data) {            
+          if (response.valid && response.data) {
             this.registerForm.patchValue({
               address: response.data.lagradouro,
               neighborhood: response.data.bairro,
@@ -123,18 +125,21 @@ export class CreateAccountPage implements OnInit {
   getErrorMessage(fieldName: string): string {
     const field = this.registerForm.get(fieldName);
     if (!field?.errors) return '';
-    if (field.errors['required']) return 'Campo obrigatório';
-    if (field.errors['email']) return 'E-mail inválido';
-    if (field.errors['minlength']) return 'Campo inválido';
-    if (field.errors['requiredTrue']) return 'Aceite os termos';
+    if (field.errors['required'])
+      return 'Campo obrigatório';
+    if (field.errors['email'])
+      return 'E-mail inválido';
+    if (field.errors['minlength'])
+      return 'Campo inválido';
+    if (field.errors['requiredTrue'])
+      return 'Aceite os termos';
     return 'Campo inválido';
   }
 
   async onSubmit(event: Event) {
     event.preventDefault();
-    if (this.registerForm.invalid) return;
-
-    this.loading = true;
+    if (this.registerForm.invalid)
+      return;
 
     const raw = this.registerForm.getRawValue();
 
@@ -155,8 +160,13 @@ export class CreateAccountPage implements OnInit {
       await this.userService.createUser(userData).toPromise();
       this.sessionService.setGenericKey({ email: raw.email }, 'pendingUser');
       this.router.navigate(['/validate-code']);
-    } finally {
-      this.loading = false;
+    } catch (response: any) {
+      const message =
+        response?.error?.message ||
+        response?.error ||
+        'Erro ao criar usuário';
+
+      await this.toastService.error(message);
     }
   }
 }

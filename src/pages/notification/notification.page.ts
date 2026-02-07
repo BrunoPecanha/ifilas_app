@@ -79,6 +79,34 @@ export class NotificationPage implements OnInit, OnDestroy {
     });
   }
 
+  getNotificationTime(sentAt: string | Date): string {
+    const sentDate = new Date(sentAt);
+    const now = new Date();
+
+    const diffMs = now.getTime() - sentDate.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMinutes < 1) {
+      return 'Agora';
+    }
+
+    if (diffMinutes < 60) {
+      return `${diffMinutes} min`;
+    }
+
+    if (diffHours < 24) {
+      return `${diffHours} h`;
+    }
+
+    if (diffDays === 1) {
+      return 'Ontem';
+    }
+
+    return `${diffDays} dias`;
+  }
+
   get filteredNotifications() {
     return this.notifications
       .filter(noti => {

@@ -101,8 +101,7 @@ export class LoginPage implements OnInit {
       } else {
         await this.showAlert('Credenciais inválidas. Verifique seus dados.');
       }
-    } catch (error) {
-      console.error('Erro no login', error);
+    } catch (error) {      
       await this.showAlert('Erro ao tentar fazer login. Verifique sua conexão e tente novamente.');
     } finally {
       this.isLoading = false;
