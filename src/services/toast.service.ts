@@ -5,9 +5,6 @@ import { ToastController } from '@ionic/angular';
   providedIn: 'root',
 })
 export class ToastService {
-  error(arg0: string) {
-    throw new Error('Method not implemented.');
-  }
   constructor(private toastController: ToastController) {}
 
   async show(
@@ -22,5 +19,17 @@ export class ToastService {
       cssClass: `toast-${color}`,
     });
     await toast.present();
+  }
+
+  async error(message: string) {
+    await this.show(message || 'Erro inesperado', 'danger');
+  }
+
+  async success(message: string) {
+    await this.show(message, 'success');
+  }
+
+  async warning(message: string) {
+    await this.show(message, 'warning');
   }
 }

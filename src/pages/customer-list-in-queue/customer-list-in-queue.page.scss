@@ -634,7 +634,7 @@ ion-content.header-hidden .queue-section {
 
 .ion-padding {
   --background: #f8f9fa;
-  --padding-bottom: calc(60px + 20px + 30px + env(safe-area-inset-bottom));
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
   position: relative;
   z-index: 1;
 }
