@@ -1018,6 +1018,19 @@ export class OwnerSchedulePage implements OnInit {
     this.applyFilters();
   }
 
+  finishCustomerService(customer: any) {
+    this.service.finishCustomerService(customer.id).subscribe({
+      next: () => {
+        this.toastController.show('Atendimento finalizado com sucesso', 'success');
+        customer.status = 'done';
+        this.applyFilters();
+      },
+      error: (err) => {
+        this.toastController.show('Erro ao finalizar atendimento', 'danger');
+      }
+    });
+  }
+
   startCustomerService(customer: any) {
     this.service.startCustomerService(customer.id, this.user?.id || 0).subscribe({
       next: () => {
@@ -1045,10 +1058,13 @@ export class OwnerSchedulePage implements OnInit {
           text: 'Confirmar',
           cssClass: 'alert-confirm',
           handler: () => {
-            this.startCustomerService(customer);
+            if (customer.status === 'confirmed') {
+              this.startCustomerService(customer);
+            } else if (customer.status === 'inservice') {
+              this.finishCustomerService(customer);
+            }
           }
-        }
-      ]
+        }]
     });
 
     await alert.present();
