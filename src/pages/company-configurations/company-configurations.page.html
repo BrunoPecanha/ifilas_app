@@ -459,7 +459,6 @@
               <ion-toggle formControlName="shareQueue"></ion-toggle>
             </ion-item>
 
-            
             <ion-item class="compact-setting-item" lines="none">
               <ion-icon name="swap-horizontal-outline" slot="start"></ion-icon>
               <ion-label>Permitir transferência</ion-label>
@@ -469,7 +468,17 @@
             <ion-item class="compact-setting-item" lines="none">
               <ion-icon name="eye-off-outline" slot="start"></ion-icon>
               <ion-label>Ocultar valores ao transferir clientes</ion-label>
-              <ion-toggle formControlName="hideAmountsWhenTransferringCustomers"></ion-toggle>
+              <ion-toggle
+                formControlName="hideAmountsWhenTransferringCustomers"
+              ></ion-toggle>
+            </ion-item>
+
+            <ion-item class="compact-setting-item" lines="none">
+              <ion-icon name="lock-open-outline" slot="start"></ion-icon>
+              <ion-label>Aprovar agendamentos que excedam o horário</ion-label>
+              <ion-toggle
+                formControlName="approveAppointmentsThatExceedTheTime"
+              ></ion-toggle>
             </ion-item>
 
             <ion-item class="compact-setting-item" lines="none">

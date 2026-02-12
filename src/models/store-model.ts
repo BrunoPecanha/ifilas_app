@@ -59,4 +59,5 @@ export interface StoreModel extends To {
   likesCount?: number;
   hideAmountsWhenTransferringCustomers?: boolean;
   allowTransfer?: boolean;
+  approveAppointmentsThatExceedTheTime?: boolean;
 }

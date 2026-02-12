@@ -315,8 +315,9 @@ export class OwnerSchedulePage implements OnInit {
         this.removeAppointment(customer);
         this.loadSchedulesForDate();
       },
-      error: () => {
-        this.toastController.show('Erro ao transferir cliente', 'danger');
+      error: (response) => {        
+        console.error('Erro ao transferir cliente:', response);
+        this.toastController.show(response?.error?.data || 'Erro ao transferir cliente', 'danger');
       }
     });
   }
@@ -503,35 +504,57 @@ export class OwnerSchedulePage implements OnInit {
     return baseTimes.length - 1;
   }
 
-  private doesRangeConflict(startIndex: number, slotsCount: number, exceptAppointmentId: any): boolean {
+  private doesRangeConflict(
+    startIndex: number,
+    slotsCount: number,
+    exceptAppointmentId: any
+  ): boolean {
+
     const baseTimes = this.originalSlotsTemplate.map(s => s.time);
 
+    const targetStartTime = baseTimes[startIndex];
+    const targetEndTime =
+      baseTimes[startIndex + slotsCount] ??
+      this.addMinutes(targetStartTime, slotsCount * this.slotDuration);
+
+    const targetStartMinutes = this.toMinutes(targetStartTime);
+    const targetEndMinutes = this.toMinutes(targetEndTime);
+
     for (const other of this.appointments) {
+
       if (other.id === exceptAppointmentId)
         continue;
 
       if (!other.slotStart || !other.slotEnd)
         continue;
 
-      let otherStartIndex = baseTimes.indexOf(other.slotStart);
-      if (otherStartIndex === -1) {
-        otherStartIndex = baseTimes.findIndex(t => this.toMinutes(t) > this.toMinutes(other.slotStart));
-        if (otherStartIndex === -1) otherStartIndex = baseTimes.length - 1;
-      }
+      const otherStartMinutes = this.toMinutes(other.slotStart);
+      const otherEndMinutes = this.toMinutes(other.slotEnd);
 
-      const otherSlots = this.calculateTotalSlots(other.slotStart, other.slotEnd, this.originalSlotsTemplate as any);
-      const otherStart = otherStartIndex;
-      const otherEnd = otherStartIndex + otherSlots - 1;
+      // Se houver sobreposição real de tempo
+      const hasConflict =
+        targetStartMinutes < otherEndMinutes &&
+        targetEndMinutes > otherStartMinutes;
 
-      const targetStart = startIndex;
-      const targetEnd = startIndex + slotsCount - 1;
-
-      if (!(targetEnd < otherStart || targetStart > otherEnd)) {
+      if (hasConflict) {
         return true;
       }
     }
 
     return false;
+  }
+
+  private addMinutes(time: string, minutesToAdd: number): string {
+    const [hours, minutes] = time.split(':').map(Number);
+
+    const totalMinutes = hours * 60 + minutes + minutesToAdd;
+
+    const newHours = Math.floor(totalMinutes / 60);
+    const newMinutes = totalMinutes % 60;
+
+    return `${newHours.toString().padStart(2, '0')}:${newMinutes
+      .toString()
+      .padStart(2, '0')}`;
   }
 
   private recalculateSlots() {

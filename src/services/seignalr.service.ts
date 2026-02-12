@@ -217,8 +217,8 @@ export class SignalRService {
   }
 
   public onReceiveNotification(callback: (notification: any) => void): void {
-    this.hubConnectionNotification?.off('receiveNotification');
-    this.hubConnectionNotification?.on('receiveNotification', (notification) => {
+    this.hubConnectionNotification?.off('receivenotification');
+    this.hubConnectionNotification?.on('receivenotification', (notification) => {
       callback(notification);
       this.emitScheduleUpdated();
       this.emitOrderUpdated();

@@ -49,14 +49,20 @@ export class TransferCustomerModalComponent implements OnInit {
   select(prof: Professional) {
     if (prof.disabled)
       return;
-    if (!prof.queueId) return;
+
+    if (this.isQueue && !prof.queueId)
+      return;
+    if (!this.isQueue && !prof.scheduleId)
+      return;
 
     this.selectedProfessional = prof;
   }
 
   confirmTransfer() {
-    if (!this.selectedProfessional || !this.selectedProfessional.queueId) 
-      return;
+    if (!this.selectedProfessional) return;
+
+    if (this.isQueue && !this.selectedProfessional.queueId) return;
+    if (!this.isQueue && !this.selectedProfessional.scheduleId) return;
 
     this.isLoading = true;
 
