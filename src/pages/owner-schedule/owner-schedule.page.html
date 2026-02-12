@@ -5,7 +5,7 @@
 >
 </app-custom-header>
 
-<ion-content [scrollEvents]="true" (ionScroll)="onContentScroll($event)">
+<ion-content #content [scrollEvents]="true" (ionScroll)="onContentScroll($event)">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
   </ion-refresher>
 
@@ -238,6 +238,7 @@
               class="customer-card-compact"
               [class]="customer.status"
               cdkDrag
+              (cdkDragMoved)="onDragMoved($event)"
               [cdkDragData]="customer"
               (click)="openServicesSummary(customer)"
               [cdkDragDisabled]="!canDrag(customer)"
