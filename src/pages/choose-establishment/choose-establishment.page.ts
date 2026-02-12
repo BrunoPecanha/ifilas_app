@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, NavController } from '@ionic/angular';
+import { firstValueFrom } from 'rxjs';
 import { StoreModel } from 'src/models/store-model';
 import { UserModel } from 'src/models/user-model';
 import { EmployeeStoreService } from 'src/services/employee.store.service';
@@ -135,17 +136,26 @@ export class ChooseEstablishmentPage implements OnInit {
     this.navCtrl.back();
   }
 
-  handleCompanyClick(est: StoreModel) {
+  async handleCompanyClick(est: StoreModel) {
     this.loadingCompanyId = est.id;
-    this.updateEmployeeConfig(this.user.id, this.loadingCompanyId);
-        
     this.session.setStore(est);
 
-    this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, est.id)
-      .subscribe((isQueueOpenToday: boolean) => {
-        this.loadingCompanyId = null;
-        this.navigateToDestination(isQueueOpenToday);
-      });
+    try {
+      const useAgendaResponse = await firstValueFrom(
+        this.employeeStoreService.useAgenda(this.user.id, est.id)
+      );
+
+      const isQueueOpenToday = await firstValueFrom(
+        this.queueService.hasOpenQueueForEmployeeToday(this.user?.id, est.id)
+      );
+
+      this.user.useAgenda = useAgendaResponse.data;
+      this.session.setUser(this.user);
+
+      this.navigateToDestination(isQueueOpenToday);
+    } finally {
+      this.loadingCompanyId = null;
+    }
   }
 
   updateEmployeeConfig(id: number, storeId: number) {
@@ -157,7 +167,8 @@ export class ChooseEstablishmentPage implements OnInit {
     });
   }
 
-  private navigateToDestination(isQueueOpenToday: boolean) {    
+  private navigateToDestination(isQueueOpenToday: boolean) {
+    debugger
     if (this.profileSelected === 2) {
       this.router.navigate(['/queue-list-for-owner']);
     } else if (isQueueOpenToday && !this.user.useAgenda) {

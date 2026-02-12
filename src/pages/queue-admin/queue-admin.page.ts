@@ -13,7 +13,6 @@ import { ToastService } from 'src/services/toast.service';
 import { QueuePauseRequest } from 'src/models/requests/queue-pause-request';
 import { SignalRService } from 'src/services/seignalr.service';
 import { QueueCloseRequest } from 'src/models/requests/queue-close-request';
-import { isToday } from 'src/utils/date-utils';
 
 @Component({
   selector: 'app-queue-admin',
@@ -356,7 +355,7 @@ export class QueueAdminPage implements OnInit {
     await alert.present();
   }
 
-  async unpauseQueue(queue: QueueModel) {
+  async unPauseQueue(queue: QueueModel) {
     const request: QueuePauseRequest = {
       id: queue.id,
       pauseReason: ''
