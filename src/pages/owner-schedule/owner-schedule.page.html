@@ -371,7 +371,7 @@
               </ion-button>
             </div>
           </ion-item>
-          <ion-item-options side="end" *ngIf="canDrag(customer)">
+          <ion-item-options side="end" *ngIf="isServiceDone(customer)">
             <ion-item-option
               color="primary"
               (click)="confirmStartCustomerService(customer)"

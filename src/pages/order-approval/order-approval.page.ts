@@ -10,6 +10,7 @@ import { UserModel } from 'src/models/user-model';
 import { CustomerStatusEnum } from 'src/models/enums/customer-status.enum';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { SignalRService } from 'src/services/seignalr.service';
+import { OrderItemModel } from 'src/models/order-item.model';
 
 @Component({
   selector: 'app-order-approval',
@@ -70,25 +71,21 @@ export class OrderApprovalPage implements OnInit {
       );
 
       if (response.valid && response.data) {
-        const orders = response.data.map((o: any) => ({
-          orderNumber: o.orderNumber,
-          items: o.items,
-          name: o.name,
-          total: o.total,
-          paymentMethodId: o.paymentMethodId,
-          paymentIcon: o.paymentIcon,
-          paymentMethod: o.paymentMethod,
-          notes: o.notes,
-          priority: o.priority,
-          status: o.status,
-          processedAt: o.processedAt,
-          processedByName: o.processedByName,
-          rejectionReason: o.rejectionReason,
-        }));
+
+        const orders = response.data.map((o: OrderModel) => {
+          const calculated = this.calculateOrderTotal(o.items);
+
+          return {
+            ...o,
+            total: calculated.total,
+            totalDisplay: calculated.totalDisplay
+          };
+        });
 
         this.activeOrders = orders.filter(o => o.status === 6);
         this.processedOrders = orders.filter(o => o.status !== 6);
       }
+
     } catch (error) {
       this.toastService.show('Erro ao carregar pedidos', 'danger');
       console.error('Erro:', error);
@@ -111,6 +108,42 @@ export class OrderApprovalPage implements OnInit {
     }
 
     return [];
+  }
+
+  private calculateOrderTotal(items: OrderItemModel[]) {
+    if (!items || items.length === 0) {
+      return { total: 0, totalDisplay: 'A combinar' };
+    }
+
+    let total = 0;
+    let hasPendingVariableItem = false;
+
+    for (const item of items) {
+
+      const itemTotal = (item.finalPrice ?? 0) * (item.quantity ?? 1);
+      
+      if (item.variablePrice && item.finalPrice === 0) {
+        hasPendingVariableItem = true;
+        continue;
+      }
+
+      total += itemTotal;
+    }
+
+    const formatted = total.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+
+    if (hasPendingVariableItem && total > 0) {
+      return { total, totalDisplay: `${formatted} + a combinar` };
+    }
+
+    if (hasPendingVariableItem && total === 0) {
+      return { total: 0, totalDisplay: 'A combinar' };
+    }
+
+    return { total, totalDisplay: formatted };
   }
 
   getStatusLabel(status: number): string {

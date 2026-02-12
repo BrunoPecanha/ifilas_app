@@ -83,16 +83,35 @@
                         [color]="getServiceColor(item.name)"
                       >
                       </ion-icon>
+
                       <ion-label>
                         {{ item.name }}
-                        <p>
-                          {{ item.quantity }} × R$ {{
-                          item.price.toFixed(2).replace('.', ',') }}
+                       
+                        <p
+                          *ngIf="!(item.variablePrice && item.finalPrice === 0); else variablePriceTpl"
+                        >
+                          {{ item.quantity }} × {{ (item.finalPrice ||
+                          item.price) .toLocaleString('pt-BR', { style:
+                          'currency', currency: 'BRL' }) }}
                         </p>
+
+                        <ng-template #variablePriceTpl>
+                          <p>{{ item.quantity }} × A combinar</p>
+                        </ng-template>
                       </ion-label>
+
                       <ion-note slot="end">
-                        R$ {{ (item.quantity *
-                        item.price).toFixed(2).replace('.', ',') }}
+                        <ng-container
+                          *ngIf="!(item.variablePrice && item.finalPrice === 0); else variableTotalTpl"
+                        >
+                          {{ ((item.finalPrice || item.price) * item.quantity)
+                          .toLocaleString('pt-BR', { style: 'currency',
+                          currency: 'BRL' }) }}
+                        </ng-container>
+
+                        <ng-template #variableTotalTpl>
+                          A combinar
+                        </ng-template>
                       </ion-note>
                     </ion-item>
                   </ion-list>
@@ -102,10 +121,7 @@
                   <ion-item lines="none">
                     <ion-label>Total</ion-label>
                     <ion-note slot="end" color="primary">
-                      <strong
-                        >R$ {{ order.total.toFixed(2).replace('.', ',')
-                        }}</strong
-                      >
+                      <strong>R$ {{ order.totalDisplay }}</strong>
                     </ion-note>
                   </ion-item>
                 </div>
