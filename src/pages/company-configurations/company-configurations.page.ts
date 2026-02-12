@@ -121,6 +121,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
       shareQueue: [false],
       wallPaper: [null],
       inCaseFailureAcceptFinishWithoutQRCode: [false],
+      approveAppointmentsThatExceedTheTime: [false],
       storeSubtitle: [''],
       highLights: this.fb.array([])
     });
@@ -286,6 +287,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
       cnpj: storeData.cnpj,
       name: storeData.name,
       hideAmountsWhenTransferringCustomers: storeData.hideAmountsWhenTransferringCustomers,
+      approveAppointmentsThatExceedTheTime: storeData.approveAppointmentsThatExceedTheTime,
       allowTransfer: storeData.allowTransfer,
       cep: storeData.cep || '',
       address: storeData.address || '',

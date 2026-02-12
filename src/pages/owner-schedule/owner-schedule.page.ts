@@ -315,8 +315,9 @@ export class OwnerSchedulePage implements OnInit {
         this.removeAppointment(customer);
         this.loadSchedulesForDate();
       },
-      error: () => {
-        this.toastController.show('Erro ao transferir cliente', 'danger');
+      error: (response) => {        
+        console.error('Erro ao transferir cliente:', response);
+        this.toastController.show(response?.error?.data || 'Erro ao transferir cliente', 'danger');
       }
     });
   }
