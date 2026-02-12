@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from 'src/services/auth.service';
 import { SessionService } from 'src/services/session.service';

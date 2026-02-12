@@ -1,13 +1,13 @@
-import { Component, OnInit, QueryList, ViewChildren } from "@angular/core";
+import { Component, OnInit, QueryList, ViewChild, ViewChildren } from "@angular/core";
 import { ScheduleService } from "src/services/schedule.service";
-import { CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDragMove, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserModel } from "src/models/user-model";
 import { SessionService } from "src/services/session.service";
 import { StoresService } from "src/services/stores.service";
 import { StoreModel } from "src/models/store-model";
 import { ToastService } from "src/services/toast.service";
 import { Router } from "@angular/router";
-import { AlertController, ModalController } from "@ionic/angular";
+import { AlertController, IonContent, ModalController } from "@ionic/angular";
 import { CpfSearchModalComponent } from "./modals/cpf-search-modal/cpf-search-modal.component";
 import { CustomerTypeModalComponent } from "./modals/customer-type-modal/customer-type-modal.component";
 import { WalkInCustomerModalComponent } from "./modals/walk-in-customer-modal/walk-in-customer-modal.component";
@@ -25,6 +25,11 @@ import { Subscription } from "rxjs";
 export class OwnerSchedulePage implements OnInit {
   @ViewChildren('slotList', { read: CdkDropList }) slotLists!: QueryList<CdkDropList>;
   @ViewChildren('trashList', { read: CdkDropList }) trashList!: QueryList<CdkDropList>;
+
+  @ViewChild('content', { static: false }) content!: IonContent;
+
+  private autoScrollThreshold = 120; 
+  private autoScrollSpeed = 15;     
 
   selectedDate: Date = new Date();
   subtitleHidden = false;
@@ -246,7 +251,7 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   canDrag(customer: any): boolean {
-    return customer.status !== 'done' && customer.status !== 'cancelled' && customer.status !== 'absent';
+    return customer.status !== 'cancelled';
   }
 
   private toMinutes(time: string): number {
@@ -315,7 +320,7 @@ export class OwnerSchedulePage implements OnInit {
         this.removeAppointment(customer);
         this.loadSchedulesForDate();
       },
-      error: (response) => {        
+      error: (response) => {
         console.error('Erro ao transferir cliente:', response);
         this.toastController.show(response?.error?.data || 'Erro ao transferir cliente', 'danger');
       }
@@ -1242,6 +1247,23 @@ export class OwnerSchedulePage implements OnInit {
     };
 
     this.navigateToServiceSelection(walkInCustomer);
+  }
+
+  async onDragMoved(event: CdkDragMove<any>) {
+    const scrollEl = await this.content.getScrollElement();
+    const rect = scrollEl.getBoundingClientRect();
+
+    const pointerY = event.pointerPosition.y;
+
+    // Scroll para baixo
+    if (pointerY > rect.bottom - this.autoScrollThreshold) {
+      scrollEl.scrollTop += this.autoScrollSpeed;
+    }
+
+    // Scroll para cima
+    else if (pointerY < rect.top + this.autoScrollThreshold) {
+      scrollEl.scrollTop -= this.autoScrollSpeed;
+    }
   }
 
   navigateToServiceSelection(customer: any) {
