@@ -251,7 +251,11 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   canDrag(customer: any): boolean {
-    return customer.status !== 'cancelled';
+    return customer.status !== 'cancelled' && customer.status !== 'inservice' && customer.status !== 'done';
+  }
+
+  isServiceDone(customer: any) {
+     customer.status !== 'done';
   }
 
   private toMinutes(time: string): number {
