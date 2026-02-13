@@ -48,7 +48,6 @@ export class OwnerSchedulePage implements OnInit {
   searchQuery: string = '';
   trashHover = false;
   isDragging = false;
-  isLoading = false;
   user!: UserModel;
   store!: StoreModel;
   showFilters = false;
@@ -153,6 +152,7 @@ export class OwnerSchedulePage implements OnInit {
 
       this.signalRService.onUpdateSchedule(() => {
         this.loadSchedulesForDate();
+        this.recalculateSlots();
       });
 
     } catch (error) {
@@ -162,8 +162,6 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   private loadSchedulesForDate() {
-    this.isLoading = true;
-
     const d = this.selectedDate;
 
     const year = d.getFullYear();
@@ -180,7 +178,6 @@ export class OwnerSchedulePage implements OnInit {
 
         if (!data) {
           this.toastController.show('Nenhum dado encontrado', 'warning');
-          this.isLoading = false;
           return;
         }
 
@@ -235,11 +232,9 @@ export class OwnerSchedulePage implements OnInit {
 
         this.updateFilterCounts();
         this.applyFilters();
-        this.isLoading = false;
       },
       error: (err) => {
         this.toastController.show('Erro ao carregar agendamentos do dia', 'danger');
-        this.isLoading = false;
       }
     });
   }
@@ -345,7 +340,7 @@ export class OwnerSchedulePage implements OnInit {
     return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`;
   }
 
-  private calculateTotalSlots(slotStart: string,slotEnd: string, allSlots: any[] ): number {
+  private calculateTotalSlots(slotStart: string, slotEnd: string, allSlots: any[]): number {
     const startIndex = allSlots.findIndex(s => s.time === slotStart);
     const endIndex = allSlots.findIndex(s => s.time === slotEnd);
 
@@ -453,16 +448,13 @@ export class OwnerSchedulePage implements OnInit {
       appt.totalSlots = neededSlots;
     }
 
-    this.isLoading = true;
     this.service.updateCustomerAgendaAsync(movedCustomer.id, targetTime).subscribe({
       next: () => {
         this.toastController.show('Agenda atualizada com sucesso!', 'success');
         this.recalculateSlots();
-        this.isLoading = false;
       },
       error: (err) => {
         this.toastController.show('Falha ao atualizar o horário do cliente.', 'danger');
-        this.isLoading = false;
 
         this.loadSchedulesForDate();
       },
@@ -476,11 +468,9 @@ export class OwnerSchedulePage implements OnInit {
       next: () => {
         this.toastController.show('Atendimento removido!', 'success');
         this.removeAppointment(customer);
-        this.isLoading = false;
       },
       error: (err) => {
         this.toastController.show('Erro ao remover atendimento', 'danger');
-        this.isLoading = false;
         this.loadSchedulesForDate();
       },
     });
@@ -496,7 +486,6 @@ export class OwnerSchedulePage implements OnInit {
     slotDate.setHours(hours, minutes, 0, 0);
     return slotDate.getTime() < now.getTime();
   }
-
 
   private hasTimePassed(time: string): boolean {
     if (!this.isToday())
@@ -949,6 +938,7 @@ export class OwnerSchedulePage implements OnInit {
     await modal.present();
 
     const { data } = await modal.onDidDismiss();
+
     if (!data)
       return;
 
@@ -1000,16 +990,28 @@ export class OwnerSchedulePage implements OnInit {
     });
   }
 
-  recalculateCustomer(customer: any) {
-    customer.totalSlots = customer.services.reduce(
-      (sum: number, s: any) => sum + (s.finalDuration || 0),
+  recalcCustomer(customer: any) {
+    const totalMinutes = customer.services.reduce(
+      (sum: number, s: any) => sum + ((s.finalDuration || 0) * (s.quantity || 1)),
       0
     );
 
-    customer.totalPrice = customer.services.reduce(
-      (sum: number, s: any) => sum + (s.finalPrice || 0),
-      0
+    const appt = this.appointments.find(a => a.id === customer.id);
+
+    if (!appt) 
+      return;
+
+    appt.durationMinutes = totalMinutes;
+    appt.slotEnd = this.addMinutesToTime(appt.slotStart, totalMinutes);
+
+    appt.totalSlots = this.calculateTotalSlots(
+      appt.slotStart,
+      appt.slotEnd,
+      this.originalSlotsTemplate
     );
+
+    customer.totalSlots = appt.totalSlots;
+    this.recalculateSlots();
   }
 
   saveAppointmentServices(customer: any, servicesUpdate: any) {
@@ -1017,21 +1019,22 @@ export class OwnerSchedulePage implements OnInit {
       .updatePriceAndTimeForVariableServiceAsync(servicesUpdate)
       .subscribe({
         next: () => {
+
           this.toastController.show('Serviços atualizados com sucesso', 'success');
 
-          servicesUpdate.services.forEach((updated: any) => {
+          servicesUpdate.customerServices.forEach((updated: any) => {
+
             const original = customer.services.find(
-              (s: any) => s.serviceId === updated.id
+              (s: any) => s.serviceId === updated.serviceId
             );
 
             if (original) {
-              original.finalPrice = updated.finalPrice;
-              original.finalDuration = updated.finalDuration;
-              original.quantity = updated.quantity;
+              original.finalPrice = updated.price;
+              original.finalDuration = updated.duration;
             }
           });
 
-          this.recalculateCustomer(customer);
+          this.recalcCustomer(customer);
           this.applyFilters();
         },
         error: () => {
@@ -1271,12 +1274,10 @@ export class OwnerSchedulePage implements OnInit {
 
     const pointerY = event.pointerPosition.y;
 
-    // Scroll para baixo
     if (pointerY > rect.bottom - this.autoScrollThreshold) {
       scrollEl.scrollTop += this.autoScrollSpeed;
     }
 
-    // Scroll para cima
     else if (pointerY < rect.top + this.autoScrollThreshold) {
       scrollEl.scrollTop -= this.autoScrollSpeed;
     }
