@@ -9,7 +9,7 @@ export interface AddCustomerToScheduleRequest {
   professionalId: number;
   time: string;
   date: Date;
-  customerId: number;
+  customerId: number | null;
   looseCustomer: boolean;
   looseCustomerName: string;
   editingExistingAppointment?: boolean;

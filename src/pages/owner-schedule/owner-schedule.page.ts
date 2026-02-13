@@ -28,8 +28,8 @@ export class OwnerSchedulePage implements OnInit {
 
   @ViewChild('content', { static: false }) content!: IonContent;
 
-  private autoScrollThreshold = 120; 
-  private autoScrollSpeed = 15;     
+  private autoScrollThreshold = 120;
+  private autoScrollSpeed = 15;
 
   selectedDate: Date = new Date();
   subtitleHidden = false;
@@ -255,7 +255,7 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   isServiceDone(customer: any) {
-     customer.status !== 'done';
+    return customer.status !== 'done';
   }
 
   private toMinutes(time: string): number {
@@ -345,38 +345,48 @@ export class OwnerSchedulePage implements OnInit {
     return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`;
   }
 
-  private calculateTotalSlots(slotStart: string, slotEnd: string, allSlots: any[]): number {
-    if (!slotStart || !slotEnd || allSlots.length < 2)
+  private calculateTotalSlots(slotStart: string,slotEnd: string, allSlots: any[] ): number {
+    const startIndex = allSlots.findIndex(s => s.time === slotStart);
+    const endIndex = allSlots.findIndex(s => s.time === slotEnd);
+
+    if (startIndex === -1 || endIndex === -1)
       return 1;
 
-    const toMin = (time: string) => {
-      const t = time.substring(0, 5);
-      const [h, m] = t.split(':').map(Number);
-      return h * 60 + m;
-    };
-
-    const start = toMin(slotStart);
-    const end = toMin(slotEnd);
-
-    if (end <= start)
-      return 1;
-
-    const slotDurations: number[] = [];
-    for (let i = 1; i < allSlots.length; i++) {
-      const prev = toMin(allSlots[i - 1].time);
-      const curr = toMin(allSlots[i].time);
-      slotDurations.push(curr - prev);
-    }
-
-    const avgSlotDuration = slotDurations.length
-      ? slotDurations.reduce((a, b) => a + b, 0) / slotDurations.length
-      : this.slotDuration;
-
-    const totalDuration = end - start;
-    const totalSlots = Math.ceil(totalDuration / avgSlotDuration);
-
-    return totalSlots > 0 ? totalSlots : 1;
+    return endIndex - startIndex;
   }
+
+  // private calculateTotalSlots(slotStart: string, slotEnd: string, allSlots: any[]): number {
+  //   if (!slotStart || !slotEnd || allSlots.length < 2)
+  //     return 1;
+
+  //   const toMin = (time: string) => {
+  //     const t = time.substring(0, 5);
+  //     const [h, m] = t.split(':').map(Number);
+  //     return h * 60 + m;
+  //   };
+
+  //   const start = toMin(slotStart);
+  //   const end = toMin(slotEnd);
+
+  //   if (end <= start)
+  //     return 1;
+
+  //   const slotDurations: number[] = [];
+  //   for (let i = 1; i < allSlots.length; i++) {
+  //     const prev = toMin(allSlots[i - 1].time);
+  //     const curr = toMin(allSlots[i].time);
+  //     slotDurations.push(curr - prev);
+  //   }
+
+  //   const avgSlotDuration = slotDurations.length
+  //     ? slotDurations.reduce((a, b) => a + b, 0) / slotDurations.length
+  //     : this.slotDuration;
+
+  //   const totalDuration = end - start;
+  //   const totalSlots = Math.ceil(totalDuration / avgSlotDuration);
+
+  //   return totalSlots > 0 ? totalSlots : 1;
+  // }
 
   onDrop(event: CdkDragDrop<any[]>, targetSlot: any) {
     if (targetSlot.disabled) {
@@ -513,12 +523,7 @@ export class OwnerSchedulePage implements OnInit {
     return baseTimes.length - 1;
   }
 
-  private doesRangeConflict(
-    startIndex: number,
-    slotsCount: number,
-    exceptAppointmentId: any
-  ): boolean {
-
+  private doesRangeConflict(startIndex: number, slotsCount: number, exceptAppointmentId: any): boolean {
     const baseTimes = this.originalSlotsTemplate.map(s => s.time);
 
     const targetStartTime = baseTimes[startIndex];
@@ -540,7 +545,6 @@ export class OwnerSchedulePage implements OnInit {
       const otherStartMinutes = this.toMinutes(other.slotStart);
       const otherEndMinutes = this.toMinutes(other.slotEnd);
 
-      // Se houver sobreposição real de tempo
       const hasConflict =
         targetStartMinutes < otherEndMinutes &&
         targetEndMinutes > otherStartMinutes;
@@ -1042,10 +1046,18 @@ export class OwnerSchedulePage implements OnInit {
 
   quickAction(customer: any, slot?: any) {
     switch (customer.status) {
-      case 'pending': customer.status = 'confirmed'; break;
-      case 'confirmed': customer.status = 'inservice'; break;
-      case 'inservice': customer.status = 'done'; break;
-      case 'done': customer.status = 'confirmed'; break;
+      case 'pending'
+        : customer.status = 'confirmed';
+        break;
+      case 'confirmed'
+        : customer.status = 'inservice';
+        break;
+      case 'inservice'
+        : customer.status = 'done';
+        break;
+      case 'done'
+        : customer.status = 'confirmed';
+        break;
     }
     this.applyFilters();
   }

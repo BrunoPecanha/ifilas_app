@@ -238,7 +238,7 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
             if (!this.selectedDate) {
               await this.toastService.show('Data não selecionada', 'danger');
               return;
-            }
+            }            
 
             const request: AddCustomerToScheduleRequest = {
               selectedServices: this.selectedServices,
