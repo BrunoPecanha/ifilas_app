@@ -1,10 +1,10 @@
 <app-custom-header
   [subtitle]="'COMPROMISSOS'"
   [showStartButton]="true"
-  [startIconName]="'arrow-back-outline'"
   [showEndButton]="true"
   [endIconName]="'refresh-outline'"
   (onEndClick)="refreshAll()"
+  (onStartClick)="handleBack()"
   [class.scrolled]="headerScrolled"
 ></app-custom-header>
 

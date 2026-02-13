@@ -1,6 +1,6 @@
 import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, IonContent, ToastController } from '@ionic/angular';
+import { AlertController, IonContent, NavController, ToastController } from '@ionic/angular';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response';
 import { UserModel } from 'src/models/user-model';
@@ -46,6 +46,7 @@ export class QueuePage implements AfterViewInit {
   private scheduleSignalRSub?: Subscription;
 
   filteredAppointments: ScheduleItem[] = [];
+  cameFromEntryFlow = false;
 
   constructor(
     private alertController: AlertController,
@@ -57,9 +58,12 @@ export class QueuePage implements AfterViewInit {
     public router: Router,
     private activatedRoute: ActivatedRoute,
     private tokenService: TokenService,
-    private signalRService: SignalRService
+    private signalRService: SignalRService,
+    private navCtrl: NavController
   ) {
     this.user = this.sessionService.getUser();
+    const nav = this.router.getCurrentNavigation();
+    this.cameFromEntryFlow = nav?.extras.state?.['fromEntryFlow'] || false;
   }
 
   ngAfterViewInit() {
@@ -218,6 +222,14 @@ export class QueuePage implements AfterViewInit {
 
   getFilteredAppointments(): ScheduleItem[] {
     return this.filteredAppointments;
+  }
+
+  handleBack() {
+    if (this.cameFromEntryFlow) {
+      this.router.navigate(['/select-company'], { replaceUrl: true });
+    } else {
+      this.navCtrl.back(); 
+    }
   }
 
   getDayOfWeek(date: Date): string {
