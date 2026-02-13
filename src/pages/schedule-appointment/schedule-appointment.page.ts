@@ -238,7 +238,7 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
             if (!this.selectedDate) {
               await this.toastService.show('Data não selecionada', 'danger');
               return;
-            }            
+            }
 
             const request: AddCustomerToScheduleRequest = {
               selectedServices: this.selectedServices,
@@ -264,15 +264,21 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
                     this.router.navigate(['/owner-schedule']);
                   }
                   else
-                    this.router.navigate(['/queue']);
+                    this.router.navigate(['/queue'], {
+                      state: { fromEntryFlow: true }
+                    });
 
                 } else {
                   await this.toastService.show(res.message || 'Erro ao agendar', 'danger');
                 }
               },
               error: async (err) => {
-                sessionStorage.setItem('toastMessage', err.error || 'Erro ao agendar');
-                window.location.reload();
+                await this.toastService.show(
+                  err?.error?.message || err?.error || 'Erro ao agendar',
+                  'danger'
+                );
+
+                this.loadStoreAgenda();
               }
             });
           }

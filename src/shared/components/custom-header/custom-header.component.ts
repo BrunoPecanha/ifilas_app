@@ -84,12 +84,13 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-
   handleStartButtonClick() {
-    if (this.isBackButton() && !this.startDisabled && !this.startLoading) {
-      this.goBack();
-    } else if (!this.startLoading) {
+    if (this.startDisabled || this.startLoading) return;
+
+    if (this.onStartClick.observers.length > 0) {
       this.onStartClick.emit();
+    } else if (this.isBackButton()) {
+      this.goBack();
     }
   }
 
