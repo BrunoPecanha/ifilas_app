@@ -10,19 +10,31 @@ export class LoadingService {
 
   show() {
     this.count++;
-    this.loading$.next(true);
+
+    if (this.count === 1) {
+      Promise.resolve().then(() => {
+        this.loading$.next(true);
+      });
+    }
   }
 
   hide() {
     this.count--;
+
     if (this.count <= 0) {
       this.count = 0;
-      this.loading$.next(false);
+
+      Promise.resolve().then(() => {
+        this.loading$.next(false);
+      });
     }
   }
 
   reset() {
     this.count = 0;
-    this.loading$.next(false);
+
+    Promise.resolve().then(() => {
+      this.loading$.next(false);
+    });
   }
 }
