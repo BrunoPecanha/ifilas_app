@@ -34,8 +34,8 @@ export class CpfSearchModalComponent {
       this.modalController.dismiss({
         customer: this.customer
       });
-      
-      this.sessionStorage.setGenericKey(this.customer.id, "customerId", );
+
+      this.sessionStorage.setGenericKey(this.customer.id, "customerId",);
 
     } catch (error) {
       console.error('Erro ao selecionar cliente:', error);
@@ -88,7 +88,6 @@ export class CpfSearchModalComponent {
       } else {
         this.error = 'Cliente não encontrado. Verifique o CPF e tente novamente.';
       }
-
     } catch (err: any) {
       console.error('Erro na busca por CPF:', err);
 
@@ -99,7 +98,6 @@ export class CpfSearchModalComponent {
       } else {
         this.error = 'Erro ao buscar cliente. Tente novamente.';
       }
-
     } finally {
       this.loading = false;
     }

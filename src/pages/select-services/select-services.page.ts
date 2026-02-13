@@ -117,7 +117,7 @@ export class SelectServicesPage implements OnInit {
 
       this.professionalId = params['professionalId'] ?? navState['professionalId'] ?? null;
       this.professionalName = params['professionalName'] ?? navState['professionalName'] ?? null;
-      
+
       if (params['useAgenda'] !== undefined) {
         this.useAgenda = params['useAgenda'] === 'true';
       } else if (customerFromState?.useAgenda !== undefined) {
@@ -128,16 +128,6 @@ export class SelectServicesPage implements OnInit {
         this.useAgenda = false;
       }
 
-      if (params['customerId'] !== undefined) {
-        this.customerId = params['customerId'] ? Number(params['customerId']) : null;
-      } else if (navState['customerId'] !== undefined) {
-        this.customerId = navState['customerId'] ? Number(navState['customerId']) : null;
-      } else if (customerFromState?.id) {
-        this.customerId = Number(customerFromState.id);
-      } else {
-        this.customerId = null;
-      }
-
       if (params['looseCustomer'] !== undefined) {
         this.looseCustomer = params['looseCustomer'] === 'true';
       } else if (navState['looseCustomer'] !== undefined) {
@@ -145,16 +135,27 @@ export class SelectServicesPage implements OnInit {
       } else {
         this.looseCustomer = false;
       }
+      
+      if (params['customerId'] !== undefined) {
+        this.customerId = params['customerId'] ? Number(params['customerId']) : null;
+      } else if (navState['customerId'] !== undefined) {
+        this.customerId = navState['customerId'] ? Number(navState['customerId']) : null;
+      } else if (customerFromState?.id && !customerFromState?.isWalkIn) {
+        this.customerId = Number(customerFromState.id);
+        this.looseCustomer = false;
+      } else {
+        this.customerId = null;
+      }
 
       if (params['looseCustomerName'] !== undefined) {
         this.looseCustomerName = params['looseCustomerName'];
       } else if (navState['looseCustomerName'] !== undefined)
         this.looseCustomerName = navState['looseCustomerName'];
-      
+
       if (customerFromState) {
         this.useAgenda = true
       }
-      
+
       if (this.professionalId == null) {
         this.professionalId = this.user.id;
       }
@@ -173,7 +174,7 @@ export class SelectServicesPage implements OnInit {
     });
   }
 
-  get isPreScheduled(): boolean {    
+  get isPreScheduled(): boolean {
     return !!this.preSelectedDate && !!this.preSelectedTimeSlot;
   }
 
@@ -379,7 +380,7 @@ export class SelectServicesPage implements OnInit {
         },
         {
           text: 'Confirmar',
-          handler: () => {            
+          handler: () => {
             if (this.useAgenda) {
               this.proceedToSchedule();
             } else
@@ -513,7 +514,7 @@ export class SelectServicesPage implements OnInit {
       this.addCustomerToScheduleAndNavigate();
     } else {
       this.router.navigate(['/schedule-appointment']);
-    }    
+    }
   }
 
   addCustomerToScheduleAndNavigate() {
@@ -521,7 +522,7 @@ export class SelectServicesPage implements OnInit {
       id: s.id,
       quantity: s.quantity
     }));
-
+    
     const command: AddCustomerToScheduleRequest = {
       scheduleId: this.scheduleId,
       selectedServices: servicesToSend,
@@ -529,8 +530,8 @@ export class SelectServicesPage implements OnInit {
       paymentMethod: this.paymentMethod,
       professionalId: this.professionalId,
       storeId: this.storeId,
-      customerId: 0,
-      looseCustomer: this.looseCustomer,
+      customerId: this.looseCustomerName ? 0 : this.customerId,
+      looseCustomer: this.looseCustomerName ? true : false,
       looseCustomerName: this.looseCustomerName,
       time: this.preSelectedTimeSlot.time,
       date: this.preSelectedDate!
@@ -538,7 +539,7 @@ export class SelectServicesPage implements OnInit {
 
     this.scheduleService.addCustomerToSchedule(command).subscribe({
       next: () => {
-        this.sessionService.removeGenericKey('customerSelection');        
+        this.sessionService.removeGenericKey('customerSelection');
         this.router.navigate(['/owner-schedule']);
       },
       error: err => console.error(err)
