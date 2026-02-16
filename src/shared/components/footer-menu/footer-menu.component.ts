@@ -5,6 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { StoreModel } from 'src/models/store-model';
 import { NotificationService } from 'src/services/notification.service';
+import { SignalRService } from 'src/services/seignalr.service';
 import { SessionService } from 'src/services/session.service';
 import { UserService } from 'src/services/user-service';
 
@@ -29,7 +30,8 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
     private router: Router,
     private userService: UserService,
     private sessionService: SessionService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+     private signalRService: SignalRService   
   ) {
     // this.profile = this.sessionService.getProfile();
     // this.store = this.sessionService.getStore();
@@ -39,6 +41,7 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
     this.initializeNotifications();
     this.setActiveBasedOnRoute();
     this.setupRouterListener();
+    this.startNotificationListener();
 
     this.sessionService.user$.subscribe(user => {
       this.userFromSession = user;
@@ -75,6 +78,18 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       });
   }
+
+  private async startNotificationListener() {
+  await this.signalRService.startNotificationConnection();
+
+  this.signalRService.onReceiveNotification((notification) => {
+    console.log('Notificação recebida:', notification);
+
+    this.notificationService.atualizarContadorNaoLidas();
+
+    this.cdr.detectChanges();
+  });
+}
 
   setActiveBasedOnRoute() {
     const currentUrl = this.router.url;
