@@ -155,8 +155,8 @@
       <div class="terms-wrapper" [class.invalid]="isFieldInvalid('termsAccepted')">
         <ion-checkbox formControlName="termsAccepted"></ion-checkbox>
         <label>
-          Li e aceito os <a href="#">Termos de Uso</a> e
-          <a href="#">Política de Privacidade</a>
+          Li e aceito os <a (click)="openTerms()">Termos de Uso</a> e
+          <a (click)="openPrivacy()">Política de Privacidade</a>
         </label>
       </div>
 

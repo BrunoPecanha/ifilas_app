@@ -8,12 +8,14 @@ import {
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { UserService } from 'src/services/user-service';
 import { SessionService } from 'src/services/session.service';
 import { GeoLocateService } from 'src/services/geo-locate.service';
 import { UserRequest } from 'src/models/requests/user-request';
 import { ToastService } from 'src/services/toast.service';
+import { TermsPage } from './legal/terms/terms.page';
+import { PrivacyPage } from './legal/privacy/privacy.page';
 
 @Component({
   selector: 'app-create-account',
@@ -35,7 +37,8 @@ export class CreateAccountPage implements OnInit {
     private alertController: AlertController,
     private sessionService: SessionService,
     private geLocation: GeoLocateService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private modalCtrl: ModalController
   ) { }
 
   ngOnInit(): void {
@@ -168,5 +171,25 @@ export class CreateAccountPage implements OnInit {
 
       await this.toastService.error(message);
     }
+  }
+
+  async openTerms() {
+    const modal = await this.modalCtrl.create({
+      component: TermsPage,
+      breakpoints: [0, 0.9],
+      initialBreakpoint: 0.9
+    });
+
+    await modal.present();
+  }
+
+  async openPrivacy() {
+    const modal = await this.modalCtrl.create({
+      component: PrivacyPage,
+      breakpoints: [0, 0.9],
+      initialBreakpoint: 0.9
+    });
+
+    await modal.present();
   }
 }

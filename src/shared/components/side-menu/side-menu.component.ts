@@ -165,4 +165,21 @@ export class SideMenuComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  openSupport() {
+    const phone = '5521981970792'; 
+    const userName = this.userName || 'Usuário';
+
+    const message = `Olá, equipe da BMP Labs. Preciso de suporte no iFilas.
+
+    Usuário: ${userName}
+    Modelo do dispositivo: ${navigator.userAgent}
+
+    Descreva seu problema abaixo: `;   
+
+    const encodedMessage = encodeURIComponent(message);
+    const url = `https://wa.me/${phone}?text=${encodedMessage}`;
+
+    window.open(url, '_system');
+  }
 }

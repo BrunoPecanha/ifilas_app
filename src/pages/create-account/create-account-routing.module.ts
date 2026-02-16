@@ -7,7 +7,15 @@ const routes: Routes = [
   {
     path: '',
     component: CreateAccountPage
+  },  {
+    path: 'terms',
+    loadChildren: () => import('./legal/terms/terms.module').then( m => m.TermsPageModule)
+  },
+  {
+    path: 'privacy',
+    loadChildren: () => import('./legal/privacy/privacy.module').then( m => m.PrivacyPageModule)
   }
+
 ];
 
 @NgModule({
