@@ -57,6 +57,7 @@ export class NotificationPage implements OnInit, OnDestroy {
     const sub = this.notificationService.notificacoes$.subscribe(nots => {
       this.notifications = nots.map(n => ({
         ...n,
+        expanded: false,
         data: new Date(n.sentAt ?? Date.now())
       }));
     });
@@ -73,6 +74,7 @@ export class NotificationPage implements OnInit, OnDestroy {
     this.notificationService.getUserNotifications(this.user.id).subscribe(notifs => {
       this.notifications = notifs.map(n => ({
         ...n,
+        expanded: false,
         data: new Date(n.sentAt ?? Date.now())
       }));
       this.notificationService.atualizarContadorNaoLidas();
@@ -176,4 +178,9 @@ export class NotificationPage implements OnInit, OnDestroy {
   back() {
     this.navCtrl.back();
   }
+
+  toggleExpand(notification: any) {
+    notification.expanded = !notification.expanded;
+  }
+
 }

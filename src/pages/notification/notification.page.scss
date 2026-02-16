@@ -1,4 +1,5 @@
 .filters-section {
+  margin-top: 0px;
   margin-bottom: 16px;
 
   ion-segment {
@@ -78,16 +79,6 @@
       color: #212529;
     }
 
-    p {
-      font-size: 14px;
-      color: #6c757d;
-      margin-bottom: 4px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
     .notification-time {
       font-size: 12px;
       color: #adb5bd;
@@ -116,6 +107,29 @@
   }
 }
 
+
+
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification-content p {
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 4px;
+
+  max-height: 40px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.notification-content p.expanded {
+  max-height: 500px;
+}
+
+
 ::ng-deep app-ad-banner.tall-ad-notifications .ad-container {
   width: 98%;
   height: 8%;
@@ -123,21 +137,20 @@
   margin-top: 0%;
 }
 
-
 ion-content::part(scroll) {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-
-.filters-section {
-  margin-top: 0px; 
-  margin-bottom: 16px;
-}
-
 
 .ion-padding {
   --background: #f8f9fa;
   --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
   position: relative;
   z-index: 1;
+}
+
+ion-item-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

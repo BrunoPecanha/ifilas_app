@@ -17,9 +17,7 @@
             <span *ngIf="customersWaiting > 0">
               {{ customersWaiting }} pessoa(s) aguardando
             </span>
-            <span *ngIf="customersWaiting === 0">
-              Ninguém aguardando
-            </span>
+            <span *ngIf="customersWaiting === 0"> Ninguém aguardando </span>
           </ng-container>
 
           <ng-container *ngIf="profile === 2">
@@ -61,29 +59,54 @@
           (userFromSession?.profile === 1 && profile === 0)
         "
       >
-        <ion-item (click)="navigateTo('/select-company')" detail="false" lines="none" class="menu-item-compact">
+        <ion-item
+          (click)="navigateTo('/select-company')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact"
+        >
           <ion-icon name="storefront" slot="start"></ion-icon>
           <ion-label>Estabelecimentos</ion-label>
         </ion-item>
 
-        <ion-item (click)="navigateTo('/user-configurations')" detail="false" lines="none" class="menu-item-compact">
+        <ion-item
+          (click)="navigateTo('/user-configurations')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact"
+        >
           <ion-icon name="settings" slot="start"></ion-icon>
           <ion-label>Configurações Conta</ion-label>
         </ion-item>
 
-        <ion-item (click)="navigateTo('/client-history')" detail="false" lines="none" class="menu-item-compact">
+        <ion-item
+          (click)="navigateTo('/client-history')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact"
+        >
           <ion-icon name="time" slot="start"></ion-icon>
           <ion-label>Histórico</ion-label>
           <!-- <span class="badge-soon">EM BREVE</span> -->
         </ion-item>
 
-        <ion-item (click)="navigateTo('/role-registration')" detail="false" lines="none" class="menu-item-compact disabled-item">
+        <ion-item
+          (click)="navigateTo('/role-registration')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact disabled-item"
+        >
           <ion-icon name="star" slot="start"></ion-icon>
           <ion-label>Avaliações</ion-label>
           <span class="badge-soon">EM BREVE</span>
         </ion-item>
 
-        <ion-item (click)="navigateTo('/waiting-rooms-queue')" detail="false" lines="none" class="menu-item-compact disabled-item">
+        <ion-item
+          (click)="navigateTo('/waiting-rooms-queue')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact disabled-item"
+        >
           <ion-icon name="chatbubble" slot="start"></ion-icon>
           <ion-label>Mensagens</ion-label>
           <span class="badge-soon">EM BREVE</span>
@@ -101,8 +124,17 @@
         <ion-label>Trocar perfil</ion-label>
       </ion-item>
 
-      <ng-container *ngIf="profile === 1 || (userFromSession?.profile === 2 && profile === 1)">
-        <ion-item (click)="navigateTo('/user-configurations')" detail="false" lines="none" class="menu-item-compact">
+      <ng-container
+        *ngIf="
+          profile === 1 || (userFromSession?.profile === 2 && profile === 1)
+        "
+      >
+        <ion-item
+          (click)="navigateTo('/user-configurations')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact"
+        >
           <ion-icon name="settings" slot="start"></ion-icon>
           <ion-label>Configurações Conta</ion-label>
         </ion-item>
@@ -116,20 +148,39 @@
         >
           <ion-icon name="receipt" slot="start"></ion-icon>
           <ion-label>Liberação de Pedidos</ion-label>
-          <span class="badge-count" ionTooltip="Pedidos aguardando liberação">{{ pendingOrdersCount }}</span>
+          <span class="badge-count" ionTooltip="Pedidos aguardando liberação">{{
+            pendingOrdersCount
+          }}</span>
         </ion-item>
 
-        <ion-item (click)="navigateTo('/queue-admin')" detail="false" lines="none" class="menu-item-compact" *ngIf="!userFromSession?.useAgenda">
+        <ion-item
+          (click)="navigateTo('/queue-admin')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact"
+          *ngIf="!userFromSession?.useAgenda"
+        >
           <ion-icon name="list" slot="start"></ion-icon>
           <ion-label>Filas</ion-label>
         </ion-item>
 
-        <ion-item (click)="navigateTo('/schedule-config')" detail="false" lines="none" class="menu-item-compact" *ngIf="userFromSession?.useAgenda">
+        <ion-item
+          (click)="navigateTo('/schedule-config')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact"
+          *ngIf="userFromSession?.useAgenda"
+        >
           <ion-icon name="calendar" slot="start"></ion-icon>
           <ion-label>Agenda</ion-label>
         </ion-item>
 
-        <ion-item (click)="navigateTo('/role-registration')" detail="false" lines="none" class="menu-item-compact disabled-item">
+        <ion-item
+          (click)="navigateTo('/role-registration')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact disabled-item"
+        >
           <ion-icon name="chatbubble" slot="start"></ion-icon>
           <ion-label>Mensagens</ion-label>
           <span class="badge-soon">EM BREVE</span>
@@ -137,27 +188,52 @@
       </ng-container>
 
       <ng-container *ngIf="profile === 2">
-        <ion-item (click)="navigateTo('/company-configurations')" detail="false" lines="none" class="menu-item-compact">
+        <ion-item
+          (click)="navigateTo('/company-configurations')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact"
+        >
           <ion-icon name="settings" slot="start"></ion-icon>
           <ion-label>Configurações Empresa</ion-label>
         </ion-item>
-        <ion-item (click)="navigateTo('/associated-professional')" detail="false" lines="none" class="menu-item-compact">
+        <ion-item
+          (click)="navigateTo('/associated-professional')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact"
+        >
           <ion-icon name="person" slot="start"></ion-icon>
           <ion-label>Colaboradores</ion-label>
         </ion-item>
 
-        <ion-item (click)="navigateTo('service-registration')" detail="false" lines="none" class="menu-item-compact">
+        <ion-item
+          (click)="navigateTo('service-registration')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact"
+        >
           <ion-icon name="add-circle" slot="start"></ion-icon>
           <ion-label>Serviços/Produtos</ion-label>
         </ion-item>
 
-        <ion-item (click)="navigateTo('/role-registration')" detail="false" lines="none" class="menu-item-compact disabled-item">
+        <ion-item
+          (click)="navigateTo('/role-registration')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact disabled-item"
+        >
           <ion-icon name="bag-handle" slot="start"></ion-icon>
           <ion-label>Promoções</ion-label>
           <span class="badge-soon">EM BREVE</span>
         </ion-item>
 
-        <ion-item (click)="navigateTo('/role-registration')" detail="false" lines="none" class="menu-item-compact disabled-item">
+        <ion-item
+          (click)="navigateTo('/role-registration')"
+          detail="false"
+          lines="none"
+          class="menu-item-compact disabled-item"
+        >
           <ion-icon name="chatbubble" slot="start"></ion-icon>
           <ion-label>Mensagens</ion-label>
           <span class="badge-soon">EM BREVE</span>
@@ -175,10 +251,16 @@
         <ion-label>Crie sua empresa</ion-label>
       </ion-item>
 
-       <ion-item  *ngIf="profile === 1 || profile === 2" (click)="navigateTo('/reports')" detail="false" lines="none" class="menu-item-compact">
+      <ion-item
+        *ngIf="profile === 1 || profile === 2"
+        (click)="navigateTo('/reports')"
+        detail="false"
+        lines="none"
+        class="menu-item-compact"
+      >
         <ion-icon name="bar-chart" slot="start"></ion-icon>
         <ion-label>Relatórios</ion-label>
-         <!-- <span class="badge-soon">EM BREVE</span>  -->
+        <!-- <span class="badge-soon">EM BREVE</span>  -->
       </ion-item>
 
       <ion-item
@@ -190,6 +272,16 @@
       >
         <ion-icon name="briefcase" slot="start"></ion-icon>
         <ion-label>Trabalhos</ion-label>
+      </ion-item>
+
+      <ion-item
+        (click)="openSupport()"
+        detail="false"
+        lines="none"
+        class="menu-item-compact"
+      >
+        <ion-icon name="headset" slot="start"></ion-icon>
+        <ion-label>Suporte</ion-label>
       </ion-item>
 
       <div class="company-info-section" *ngIf="profile > 0 && companyName">
@@ -206,7 +298,10 @@
           </div>
           <div class="company-details">
             <div class="company-name-small">{{ companyName }}</div>
-            <button class="change-company-btn" (click)="navigateTo('/choose-establishment')">
+            <button
+              class="change-company-btn"
+              (click)="navigateTo('/choose-establishment')"
+            >
               <ion-icon name="swap-horizontal"></ion-icon>
               Trocar
             </button>
@@ -214,7 +309,11 @@
         </div>
       </div>
 
-      <ion-item (click)="logout()" lines="none" class="menu-item-compact logout-item">
+      <ion-item
+        (click)="logout()"
+        lines="none"
+        class="menu-item-compact logout-item"
+      >
         <ion-icon name="log-out" slot="start"></ion-icon>
         <ion-label>Sair</ion-label>
       </ion-item>

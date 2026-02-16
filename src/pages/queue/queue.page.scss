@@ -915,3 +915,132 @@ ion-content::-webkit-scrollbar {
   position: relative;
   z-index: 1;
 }
+
+
+
+:root,
+:root.dark,
+html,
+body {
+  color-scheme: light !important;
+}
+
+:root {
+  --ion-background-color: #f2f2f7 !important;
+  --ion-text-color: #1d1d1f !important;
+  --ion-card-background: #ffffff !important;
+  --ion-item-background: #ffffff !important;
+  --ion-toolbar-background: #f2f2f7 !important;
+  --ion-tab-bar-background: #ffffff !important;
+}
+
+
+ion-content {
+  --background: #f2f2f7 !important;
+}
+
+
+ion-header,
+ion-toolbar {
+  --background: #f2f2f7 !important;
+  --color: #1d1d1f !important;
+  background: #f2f2f7 !important;
+  color: #1d1d1f !important;
+  box-shadow: none !important;
+}
+
+.header-background,
+.toolbar-background {
+  background: #f2f2f7 !important;
+}
+
+
+.tabs-container {
+  background: #2c2c2e !important; 
+}
+
+
+
+.date-navigation {
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+}
+
+
+
+.ios-card,
+.highlight-card {
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+}
+
+
+
+.empty-title {
+  color: #1d1d1f !important;
+}
+
+.empty-message {
+  color: #8e8e93 !important;
+}
+
+
+ion-tab-bar {
+  --background: #ffffff !important;
+  background: #ffffff !important;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+ion-tab-button {
+  --color: #8e8e93;
+  --color-selected: #007aff;
+}
+
+.dark ion-content,
+.dark ion-header,
+.dark ion-toolbar,
+.dark ion-tab-bar {
+  --background: #f2f2f7 !important;
+  background: #f2f2f7 !important;
+}
+
+.ios-tabs {
+  background: transparent !important;
+}
+
+.tabs-container {
+  background: #ffffff !important;
+  border-radius: 14px;
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.tab-text {
+  color: #8e8e93 !important;
+}
+
+.tab-icon {
+  color: #8e8e93 !important;
+}
+
+.tab-item.active {
+  background: #007aff !important;
+}
+
+.tab-item.active .tab-text,
+.tab-item.active .tab-icon {
+  color: #ffffff !important;
+}
+
+.tab-badge {
+  background: #ff3b30 !important;
+  color: #ffffff !important;
+}
