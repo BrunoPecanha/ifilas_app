@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { AuthService } from './auth.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -22,31 +24,16 @@ export class SignalRService {
   private scheduleUpdated$ = new Subject<void>();
   private queueUpdated$ = new Subject<void>();
 
-  constructor() { }
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
   public async startQueueConnection(): Promise<void> {
     if (this.connectionPromiseQueue) {
       return this.connectionPromiseQueue;
     }
-    this.hubConnectionQueue = new signalR.HubConnectionBuilder()
-      .withUrl(environment.queueHub, {
-        transport: signalR.HttpTransportType.WebSockets,
-        accessTokenFactory: () => sessionStorage.getItem('token') || ''
-      })
-      .withAutomaticReconnect({
-        nextRetryDelayInMilliseconds: retryContext => {
-          if (retryContext.elapsedMilliseconds < 30000) {
-            return Math.random() * 2000 + 2000;
-          }
-          return Math.random() * 10000 + 10000;
-        }
-      })
-      .configureLogging(signalR.LogLevel.Information)
-      .build();
-
-    this.hubConnectionQueue?.on('UpdateQueue', () => {
-      this.queueUpdated$.next();
-    });
+    this.hubConnectionQueue = this.hubConnectionQueue = this.buildConnection(environment.queueHub);
 
     this.setupQueueConnectionEvents();
 
@@ -63,7 +50,7 @@ export class SignalRService {
   }
 
   private setupQueueConnectionEvents(): void {
-    if (!this.hubConnectionQueue) 
+    if (!this.hubConnectionQueue)
       return;
 
     this.hubConnectionQueue.onreconnecting(error => { });
@@ -309,6 +296,82 @@ export class SignalRService {
       });
 
     return this.connectionPromiseSchedule;
+  }
+
+  private async getSafeToken(): Promise<string> {
+    try {
+      const token = await this.getValidAccessToken();
+
+      if (!token) {
+        throw new Error('Token inválido');
+      }
+
+      return token;
+    } catch (error) {
+      await this.forceLogout();
+      throw error;
+    }
+  }
+
+  private async forceLogout(): Promise<void> {
+    try {
+      await this.stopAllConnections();
+    } catch { }
+
+    await this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  async getValidAccessToken(): Promise<string> {
+    const token = sessionStorage.getItem('token');
+
+    if (!token) {
+      throw new Error('Sem token');
+    }
+
+    if (this.isTokenExpired(token)) {
+      const newToken = await this.authService.getRefreshToken();
+      sessionStorage.setItem('token', newToken ?? '');
+      return newToken ?? '';
+    }
+
+    return token;
+  }
+
+  public isTokenExpired(token: string): boolean {
+    try {
+      if (!token) return true;
+
+      const payload = JSON.parse(atob(token.split('.')[1]));
+
+      if (!payload.exp) return true;
+
+      const expiryTime = payload.exp * 1000;
+      const now = Date.now();
+
+      const safetyMargin = 60 * 1000; // 1 minuto
+
+      return now >= (expiryTime - safetyMargin);
+    } catch {
+      return true;
+    }
+  }
+
+  private buildConnection(url: string): signalR.HubConnection {
+    return new signalR.HubConnectionBuilder()
+      .withUrl(url, {
+        accessTokenFactory: async () => await this.getSafeToken()
+      })
+      .withAutomaticReconnect({
+        nextRetryDelayInMilliseconds: retryContext => {
+          if (retryContext.elapsedMilliseconds < 30000) {
+            return Math.random() * 2000 + 2000;
+          }
+          return Math.random() * 10000 + 10000;
+        }
+      })
+      .configureLogging(signalR.LogLevel.Information)
+      .build();
   }
 
   private setupScheduleConnectionEvents(): void {

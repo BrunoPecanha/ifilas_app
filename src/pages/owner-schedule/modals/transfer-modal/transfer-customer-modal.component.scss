@@ -46,7 +46,6 @@
 
 .option-card.disabled {
   opacity: 0.6;
-  pointer-events: none;
 }
 
 .option-card ion-card-content {
@@ -255,3 +254,13 @@
 .option-card:nth-child(2) { animation-delay: 0.15s; }
 .option-card:nth-child(3) { animation-delay: 0.2s; }
 .option-card:nth-child(4) { animation-delay: 0.25s; }
+
+.status-indicator { 
+  border-radius: 50%;
+  background: #dc3545;
+  transition: background 0.2s ease;
+}
+
+.status-indicator.active {
+  background: #28a745;
+}
