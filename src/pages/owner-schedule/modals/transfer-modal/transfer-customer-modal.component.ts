@@ -1,11 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { ToastService } from 'src/services/toast.service';
 
 interface Professional {
   id: number;
   nome: string;
-  scheduleId: number;
-  queueId: number;
+  scheduleId: number | null;
+  queueId: number | null;
+  useAgenda: boolean;
   especialidade?: string;
   disponibilidade?: string;
   isActive?: boolean;
@@ -24,12 +26,10 @@ export class TransferCustomerModalComponent implements OnInit {
   @Input() professionals: Professional[] = [];
   @Input() currentProfessionalId?: number;
   @Input() customerName?: string;
-  @Input() isQueue?: boolean = false;
 
   selectedProfessional: Professional | null = null;
-  isLoading = false;
 
-  constructor(private modalCtrl: ModalController) { }
+  constructor(private modalCtrl: ModalController, private toastService: ToastService) { }
 
   ngOnInit() {
     if (this.currentProfessionalId && this.professionals) {
@@ -38,43 +38,89 @@ export class TransferCustomerModalComponent implements OnInit {
         disabled: prof.id === this.currentProfessionalId
       }));
     }
-
+    
     this.professionals = this.professionals.map((prof, index) => ({
       ...prof,
       avatarColor: this.getAvatarColor(index),
-      isActive: prof.isActive ?? true
+      isActive: prof.isActive ?? true,
+      scheduleId: prof.scheduleId,
+      useAgenda: prof.useAgenda,
+      queueId: prof.queueId
     }));
   }
 
   select(prof: Professional) {
-    if (prof.disabled)
+    if (prof.disabled) {
+      this.toastService.show('Você não pode transferir para este profissional.', 'warning');
       return;
+    }
 
-    if (this.isQueue && !prof.queueId)
+    if (prof.useAgenda && !prof.scheduleId) {
+      this.toastService.show('Este profissional não possui agenda disponível.', 'warning');
       return;
-    if (!this.isQueue && !prof.scheduleId)
+    }
+
+    if (!prof.useAgenda && !prof.queueId) {
+      this.toastService.show('Este profissional ainda não abriu a fila.', 'warning');
       return;
+    }
 
     this.selectedProfessional = prof;
   }
 
   confirmTransfer() {
-    if (!this.selectedProfessional) return;
+    if (!this.selectedProfessional)
+      return;
 
-    if (this.isQueue && !this.selectedProfessional.queueId) return;
-    if (!this.isQueue && !this.selectedProfessional.scheduleId) return;
+    const reason = this.getUnavailableReason(this.selectedProfessional);
 
-    this.isLoading = true;
+    if (reason) {
+      this.toastService.show(reason, 'warning');
+      return;
+    }
 
-    setTimeout(() => {
-      this.modalCtrl.dismiss({
-        scheduleId: this.selectedProfessional?.scheduleId,
-        queueId: this.selectedProfessional?.queueId,
-        professionalId: this.selectedProfessional?.id,
-        professionalName: this.selectedProfessional?.nome,
-        confirmed: true
-      });
-    }, 300);
+    const prof = this.selectedProfessional;
+
+    this.modalCtrl.dismiss({
+      scheduleId: prof.useAgenda ? prof.scheduleId : null,
+      queueId: !prof.useAgenda ? prof.queueId : null,
+      professionalId: prof.id,
+      professionalName: prof.nome,
+      useAgenda: prof.useAgenda,
+      confirmed: true
+    });
+  }
+
+  isSelectable(prof: Professional): boolean {
+    return !this.getUnavailableReason(prof);
+  }
+
+  handleClick(prof: Professional) {
+    const reason = this.getUnavailableReason(prof);
+
+    if (reason) {
+      this.toastService.show(reason, 'warning');
+      return;
+    }
+
+    this.selectedProfessional = prof;
+  }
+
+  getUnavailableReason(prof: Professional): string | null {
+    if (prof.disabled)
+      return 'Você não pode transferir para este profissional.';
+
+    if (prof.useAgenda) {
+      if (!prof.scheduleId)
+        return 'Este profissional não possui agenda disponível.';
+    }
+
+    if (!prof.useAgenda) {
+      if (!prof.queueId)
+        return 'Este profissional não possui fila aberta.';
+    }
+
+    return null;
   }
 
   close() {

@@ -66,11 +66,13 @@ export class AuthService {
   }
 
   private setSession(authResponse: AuthResponse) {
+    sessionStorage.setItem('token', authResponse.data.token);
     localStorage.setItem('refresh_token', authResponse.data.refreshToken);
   }
 
   private async clearSession() {
-     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('token');
     // await this.pushService.clearTokenOnLogout();
   }
 

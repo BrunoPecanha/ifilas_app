@@ -267,7 +267,9 @@ export class OwnerSchedulePage implements OnInit {
               ? response.data.map((prof: any) => ({
                 id: prof.id.toString(),
                 nome: `${prof.name} ${prof.lastName}`,
-                scheduleId: prof.scheduleId
+                scheduleId: prof.scheduleId,
+                useAgenda: prof.useAgenda,
+                queueId: prof.queueId                
               }))
               : [{
                 id: response.data.id.toString(),
@@ -298,19 +300,20 @@ export class OwnerSchedulePage implements OnInit {
     });
 
     modal.onDidDismiss().then(result => {
-      if (result.data?.scheduleId) {
-        this.executarTransferencia(customer, result.data.scheduleId);
+      if (result.data?.scheduleId || result.data?.queueId) {
+        this.executeTransfer(customer, result.data.scheduleId, result.data.queueId);
       }
     });
 
     await modal.present();
   }
 
-  private executarTransferencia(customer: any, destinationScheduleId: number) {
+  private executeTransfer(customer: any, destinationScheduleId: number, destinationQueueId: number) {
     const payload = {
       customerId: customer.id,
       currentSchedule: this.scheduleId,
-      destinationScheduleId: destinationScheduleId
+      destinationScheduleId: destinationScheduleId,
+      destinationQueueId: destinationQueueId
     };
 
     this.service.transferCustomer(payload).subscribe({
