@@ -129,7 +129,7 @@ export class QueueService {
 
   loadAllQueuesOfStoreForOwner(storeId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/queue/store/owners-queue/${storeId}`);
-  } 
+  }
 
   loadAllTodayQueue(storeId: number, filter: QueueFilterRequest): Observable<QueueListResponse> {
     return this.http.post<QueueListResponse>(
@@ -205,12 +205,13 @@ export class QueueService {
 
   transferCustomer(payload: {
     customerId: number;
-    currentQueue: number;
-    destinationQueueId: number;
+    currentSchedule?: number | null;
+    currentQueue?: number | null;
+    destinationScheduleId?: number | null;
+    destinationQueueId?: number | null;
+    date: string;
+    removeCustomerFromQueueReason: string;
   }) {
-    return this.http.put(
-      `${this.apiUrl}/queue/transfer-customer`,
-      payload
-    );
+    return this.http.put(`${this.apiUrl}/queue/transfer-customer`,  payload);   
   }
 }

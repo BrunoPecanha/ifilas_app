@@ -376,28 +376,56 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
     });
 
     modal.onDidDismiss().then(result => {
-      if (result.data?.queueId) {
-        this.executarTransferencia(customer, result.data.queueId);
-      }
+
+      const data = result.data;
+
+      if (!data?.confirmed)
+        return;
+
+      const payload = {
+        currentQueue: customer.queueId ?? null,
+        currentSchedule: customer.scheduleId ?? null,
+
+        destinationScheduleId: data.scheduleId ?? null,
+        destinationQueueId: data.queueId ?? null
+      };
+
+      this.executeTransfer(customer, payload);
     });
 
     await modal.present();
   }
 
-  private executarTransferencia(customer: any, destinationQueueId: number) {
+  private executeTransfer(
+    customer: any,
+    options: {
+      currentSchedule?: number | null;
+      currentQueue?: number | null;
+      destinationScheduleId?: number | null;
+      destinationQueueId?: number | null;
+    }
+  ) {
+    
     const payload = {
       customerId: customer.id,
-      currentQueue: this.queue!.id,
-      destinationQueueId: destinationQueueId
+      currentSchedule: options.currentSchedule ?? null,
+      currentQueue: options.currentQueue ?? null,
+      destinationScheduleId: options.destinationScheduleId ?? null,
+      destinationQueueId: options.destinationQueueId ?? null,
+      date: new Date().toISOString(),
+      removeCustomerFromQueueReason: 'Cliente transferido'
     };
 
     this.queueService.transferCustomer(payload).subscribe({
       next: () => {
         this.toastService.show('Cliente transferido com sucesso', 'success');
-        this.loadQueueData()
       },
-      error: () => {
-        this.toastService.show('Erro ao transferir cliente', 'danger');
+      error: (response) => {
+        console.error('Erro ao transferir cliente:', response);
+        this.toastService.show(
+          response?.error?.data || 'Erro ao transferir cliente',
+          'danger'
+        );
       }
     });
   }
@@ -411,12 +439,14 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
               ? response.data.map((prof: any) => ({
                 id: prof.id.toString(),
                 nome: `${prof.name} ${prof.lastName}`,
+                scheduleId: prof.scheduleId,
+                useAgenda: prof.useAgenda,
                 queueId: prof.queueId
               }))
               : [{
                 id: response.data.id.toString(),
                 nome: response.data.name,
-                queueId: response.data.queueId
+                scheduleId: response.data.scheduleId
               }];
           }
 

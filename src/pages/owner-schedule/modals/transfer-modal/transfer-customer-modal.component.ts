@@ -32,23 +32,24 @@ export class TransferCustomerModalComponent implements OnInit {
   constructor(private modalCtrl: ModalController, private toastService: ToastService) { }
 
   ngOnInit() {
-    debugger
     if (this.currentProfessionalId && this.professionals) {
       this.professionals = this.professionals.map(prof => ({
         ...prof,
         disabled: prof.id === this.currentProfessionalId
       }));
     }
-
+    
     this.professionals = this.professionals.map((prof, index) => ({
       ...prof,
       avatarColor: this.getAvatarColor(index),
-      isActive: prof.isActive ?? true
+      isActive: prof.isActive ?? true,
+      scheduleId: prof.scheduleId,
+      useAgenda: prof.useAgenda,
+      queueId: prof.queueId
     }));
   }
 
   select(prof: Professional) {
-    debugger
     if (prof.disabled) {
       this.toastService.show('Você não pode transferir para este profissional.', 'warning');
       return;
@@ -71,65 +72,56 @@ export class TransferCustomerModalComponent implements OnInit {
     if (!this.selectedProfessional)
       return;
 
+    const reason = this.getUnavailableReason(this.selectedProfessional);
+
+    if (reason) {
+      this.toastService.show(reason, 'warning');
+      return;
+    }
+
     const prof = this.selectedProfessional;
 
-    if (prof.useAgenda && !prof.scheduleId) {
-      this.toastService.show('Este profissional não possui agenda disponível.', 'warning');
-      return;
-    }
-
-    if (!prof.useAgenda && !prof.queueId) {
-      this.toastService.show('Não há filas abertas no momento para onde transferir.', 'warning');
-      return;
-    }
-
-    setTimeout(() => {
-      this.modalCtrl.dismiss({
-        scheduleId: prof.useAgenda ? prof.scheduleId : null,
-        queueId: !prof.useAgenda ? prof.queueId : null,
-        professionalId: prof.id,
-        professionalName: prof.nome,
-        useAgenda: prof.useAgenda,
-        confirmed: true
-      });
-    }, 300);
+    this.modalCtrl.dismiss({
+      scheduleId: prof.useAgenda ? prof.scheduleId : null,
+      queueId: !prof.useAgenda ? prof.queueId : null,
+      professionalId: prof.id,
+      professionalName: prof.nome,
+      useAgenda: prof.useAgenda,
+      confirmed: true
+    });
   }
 
   isSelectable(prof: Professional): boolean {
-    if (prof.disabled) 
-      return false;
-    if (prof.useAgenda && !prof.scheduleId) 
-      return false;
-    if (!prof.useAgenda && !prof.queueId) 
-      return false;
-
-    return true;
+    return !this.getUnavailableReason(prof);
   }
 
   handleClick(prof: Professional) {
-  const reason = this.getUnavailableReason(prof);
+    const reason = this.getUnavailableReason(prof);
 
-  if (reason) {
-    this.toastService.show(reason, 'warning');
-    return;
+    if (reason) {
+      this.toastService.show(reason, 'warning');
+      return;
+    }
+
+    this.selectedProfessional = prof;
   }
 
-  this.selectedProfessional = prof;
-}
-
   getUnavailableReason(prof: Professional): string | null {
-    debugger
-  if (prof.disabled)
-    return 'Você não pode transferir para este profissional.';
+    if (prof.disabled)
+      return 'Você não pode transferir para este profissional.';
 
-  if (prof.useAgenda && !prof.scheduleId)
-    return 'Este profissional não possui agenda disponível.';
+    if (prof.useAgenda) {
+      if (!prof.scheduleId)
+        return 'Este profissional não possui agenda disponível.';
+    }
 
-  if (!prof.useAgenda && !prof.queueId)
-    return 'Este profissional não possui fila disponível.';
+    if (!prof.useAgenda) {
+      if (!prof.queueId)
+        return 'Este profissional não possui fila aberta.';
+    }
 
-  return null;
-}
+    return null;
+  }
 
   close() {
     this.modalCtrl.dismiss({

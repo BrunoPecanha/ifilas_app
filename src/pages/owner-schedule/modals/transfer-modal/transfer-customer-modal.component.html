@@ -40,11 +40,11 @@
 
         <div class="right">
           <div class="name">{{ prof.nome }}</div>
-          <div class="agenda" *ngIf="prof.useAgenda">
+          <div class="agenda" *ngIf="prof.useAgenda && prof.scheduleId">
             Agenda #{{ prof.scheduleId }}
           </div>
 
-          <div class="agenda" *ngIf="!prof.useAgenda">
+          <div class="agenda" *ngIf="!prof.useAgenda && prof.queueId">
             Fila #{{ prof.queueId }}
           </div>
           <div class="specialty" *ngIf="prof.especialidade">
