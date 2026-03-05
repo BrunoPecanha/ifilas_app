@@ -1,6 +1,8 @@
 <app-custom-header
   subtitle="AGENDA"
-  [showStartButton]="false"
+  [showStartButton]="true"
+  startIconName="share-social-outline"
+  (onStartClick)="shareSchedule()"
   (onEndClick)="addAppointment($event)"
 >
 </app-custom-header>

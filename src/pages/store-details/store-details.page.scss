@@ -2485,6 +2485,7 @@ ion-content::part(scroll) {
 .banner-loja {
   position: relative;
   z-index: 1;
+  height: 200px;
 }
 
 .store-card {
@@ -2522,4 +2523,12 @@ ion-content::part(scroll) {
 .service-card,
 .product-card {
   border-left: none;
+}
+
+.store-container {
+  --padding-top: 0;
+}
+
+.store-banner {
+  margin-top: 0;
 }

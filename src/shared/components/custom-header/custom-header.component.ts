@@ -22,6 +22,7 @@ export class CustomHeaderComponent implements OnInit, OnDestroy {
   @Input() startDisabled: boolean = false;
   @Input() startLoading: boolean = false;
   @Output() onStartClick = new EventEmitter<void>();
+  @Input() floating = false;
 
   @Input() showEndButton: boolean = true;
   @Input() endIconName: string = 'add';

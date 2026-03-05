@@ -192,7 +192,7 @@ export class SelectProfessionalPage implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['/select-service']), {
+    this.router.navigate(['/select-company']), {
       queryParams: { storeId: this.storeId }
     };
   }
