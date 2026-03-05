@@ -262,10 +262,10 @@ ion-buttons {
   }
 }
 
-:host-context(ion-content) {
-  display: block;
-  height: calc(60px + env(safe-area-inset-top));
-}
+//  :host-context(ion-content) {
+//    display: block;
+//    height: calc(60px + env(safe-area-inset-top));
+//  }
 
 .floating-header {
   transition: transform 0.25s ease, opacity 0.2s ease;
@@ -358,4 +358,24 @@ app-custom-header {
   z-index: 1002;
 }
 
+ion-header {
+  position: relative;
+  z-index: 10;
+}
 
+.floating-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: transparent !important;
+  --background: transparent !important;
+}
+
+.floating-toolbar {
+  --background: #ffffff !important;
+  background: #ffffff !important;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+}

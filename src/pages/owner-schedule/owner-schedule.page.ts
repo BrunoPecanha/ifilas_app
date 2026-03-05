@@ -269,7 +269,7 @@ export class OwnerSchedulePage implements OnInit {
                 nome: `${prof.name} ${prof.lastName}`,
                 scheduleId: prof.scheduleId,
                 useAgenda: prof.useAgenda,
-                queueId: prof.queueId                
+                queueId: prof.queueId
               }))
               : [{
                 id: response.data.id.toString(),
@@ -285,6 +285,14 @@ export class OwnerSchedulePage implements OnInit {
           reject(err);
         }
       });
+    });
+  }
+
+  shareSchedule() {
+    const url = `${window.location.origin}/select-services?professionalId=${this.user.id}&professionalName=${encodeURIComponent(this.user.name + ' ' + this.user.lastName)}&storeId=${this.store.id}&useAgenda=${this.user.useAgenda}
+`;
+    navigator.clipboard.writeText(url).then(() => {
+      this.toastController.show('Link da agenda copiado para a área de transferência!', 'success');
     });
   }
 
@@ -1001,7 +1009,7 @@ export class OwnerSchedulePage implements OnInit {
 
     const appt = this.appointments.find(a => a.id === customer.id);
 
-    if (!appt) 
+    if (!appt)
       return;
 
     appt.durationMinutes = totalMinutes;
