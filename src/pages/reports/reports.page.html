@@ -1,0 +1,349 @@
+<app-custom-header
+  [showStartButton]="true"
+  startIconName="arrow-back"
+  [showEndButton]="false"
+  subtitle="RELATÓRIOS"
+></app-custom-header>
+
+<ion-content class="reports-container" [fullscreen]="true">
+  <!-- Date Selector iOS Style -->
+  <div class="date-selector-container">
+    <div class="date-selector" (click)="openDatePicker()">
+      <div class="date-info">
+        <span class="date-label">Período</span>
+        <div class="date-range">
+          <span class="date-value">{{ formatDateRange() }}</span>
+          <ion-icon name="chevron-down" class="chevron-icon"></ion-icon>
+        </div>
+      </div>
+      <div class="date-presets">
+        <button
+          class="preset-btn"
+          [class.active]="selectedPreset === 'today'"
+          (click)="setPreset('today', $event)"
+        >
+          Hoje
+        </button>
+        <button
+          class="preset-btn"
+          [class.active]="selectedPreset === 'week'"
+          (click)="setPreset('week', $event)"
+        >
+          Semana
+        </button>
+        <button
+          class="preset-btn"
+          [class.active]="selectedPreset === 'month'"
+          (click)="setPreset('month', $event)"
+        >
+          Mês
+        </button>
+        <button
+          class="preset-btn"
+          [class.active]="selectedPreset === 'custom'"
+          (click)="setPreset('custom', $event)"
+        >
+          Personalizado
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Métricas em Cards iOS Style -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-icon">
+        <ion-icon name="people"></ion-icon>
+      </div>
+      <div class="metric-content">
+        <span class="metric-label">Atendimentos</span>
+        <span class="metric-value">{{ metrics.totalCustomers }}</span>
+        <span
+          class="metric-trend"
+          [class.positive]="metrics.customersTrend > 0"
+        >
+          <ion-icon
+            [name]="metrics.customersTrend > 0 ? 'arrow-up' : 'arrow-down'"
+          ></ion-icon>
+          {{ metrics.customersTrend }}%
+        </span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div
+        class="metric-icon"
+        style="background: rgba(52, 199, 89, 0.1); color: #34c759"
+      >
+        <ion-icon name="cash"></ion-icon>
+      </div>
+      <div class="metric-content">
+        <span class="metric-label">Faturamento</span>
+        <span class="metric-value">R$ {{ metrics.totalRevenue }}</span>
+        <span class="metric-trend" [class.positive]="metrics.revenueTrend > 0">
+          <ion-icon
+            [name]="metrics.revenueTrend > 0 ? 'arrow-up' : 'arrow-down'"
+          ></ion-icon>
+          {{ metrics.revenueTrend }}%
+        </span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div
+        class="metric-icon"
+        style="background: rgba(255, 149, 0, 0.1); color: #ff9500"
+      >
+        <ion-icon name="time"></ion-icon>
+      </div>
+      <div class="metric-content">
+        <span class="metric-label">Tempo médio</span>
+        <span class="metric-value">{{ metrics.averageTime }} min</span>
+        <span class="metric-trend" [class.positive]="metrics.timeTrend < 0">
+          <ion-icon
+            [name]="metrics.timeTrend < 0 ? 'arrow-down' : 'arrow-up'"
+          ></ion-icon>
+          {{ metrics.timeTrend }}%
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráfico de Atendimentos (simulado) -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <h3>Atendimentos por dia</h3>
+      <span class="chart-period">{{ getChartPeriod() }}</span>
+    </div>
+    <div class="chart-bars">
+      <div class="bar-item" *ngFor="let day of chartData">
+        <div class="bar-label">{{ day.label }}</div>
+        <div class="bar-container">
+          <div
+            class="bar-fill"
+            [style.height.%]="day.percentage"
+            [style.background]="day.color"
+          ></div>
+        </div>
+        <div class="bar-value">{{ day.value }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Atendimentos -->
+  <div class="attendances-section">
+    <div class="section-header">
+      <h2>Atendimentos realizados</h2>
+      <span class="section-count">{{ customers.length }}</span>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Carregando relatório...</p>
+    </div>
+
+    <div *ngIf="!loading && customers.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="document-text-outline"></ion-icon>
+      </div>
+      <h3>Nenhum atendimento</h3>
+      <p>Não há atendimentos registrados para este período.</p>
+    </div>
+
+    <div class="attendances-list" *ngIf="!loading && customers.length > 0">
+      <div class="attendance-card" *ngFor="let customer of customers">
+        <div class="card-header">
+          <div class="customer-info">
+            <div class="customer-avatar">{{ customer.name.charAt(0) }}</div>
+            <div class="customer-details">
+              <h4 class="customer-name">{{ customer.name }}</h4>
+              <span class="customer-time">
+                <ion-icon name="time-outline"></ion-icon>
+                {{ customer.startTime }}
+              </span>
+            </div>
+          </div>
+          <div class="attendance-amount">R$ {{ customer.amount }}</div>
+        </div>
+
+        <div class="card-body">
+          <div class="service-tag">
+            <ion-icon name="cut-outline"></ion-icon>
+            {{ customer.service }}
+          </div>
+          <div
+            class="payment-tag"
+            [class]="getPaymentClass(customer.paymentMethod)"
+          >
+            <ion-icon
+              [name]="getPaymentIcon(customer.paymentMethod)"
+            ></ion-icon>
+            {{ customer.paymentMethod }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer-spacer"></div>
+</ion-content>
+
+<app-footer-menu></app-footer-menu>
+
+<!-- Modal de Seleção de Período -->
+<div class="date-picker-modal" [class.show]="showDatePicker">
+  <div class="modal-overlay" (click)="closeDatePicker()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="cancel-btn" (click)="closeDatePicker()">Cancelar</button>
+      <span class="modal-title">Selecionar Período</span>
+      <button class="done-btn" (click)="applyDateRange()">OK</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="date-range-type">
+        <button
+          class="range-type-btn"
+          [class.active]="dateRangeType === 'range'"
+          (click)="dateRangeType = 'range'"
+        >
+          Intervalo
+        </button>
+        <button
+          class="range-type-btn"
+          [class.active]="dateRangeType === 'single'"
+          (click)="dateRangeType = 'single'"
+        >
+          Dia único
+        </button>
+      </div>
+
+      <div class="date-pickers" *ngIf="dateRangeType === 'range'">
+        <div class="date-picker-item">
+          <span class="picker-label">De</span>
+          <div class="picker-value" (click)="openCustomStartPicker()">
+            {{ filters.startDate | date:'dd/MM/yyyy' }}
+          </div>
+        </div>
+        <div class="date-picker-item">
+          <span class="picker-label">Até</span>
+          <div class="picker-value" (click)="openCustomEndPicker()">
+            {{ filters.endDate | date:'dd/MM/yyyy' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="date-pickers" *ngIf="dateRangeType === 'single'">
+        <div class="date-picker-item full">
+          <span class="picker-label">Data</span>
+          <div class="picker-value" (click)="openCustomSinglePicker()">
+            {{ filters.singleDate | date:'dd/MM/yyyy' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick selects -->
+      <div class="quick-selects">
+        <button class="quick-btn" (click)="selectQuickRange('today')">
+          Hoje
+        </button>
+        <button class="quick-btn" (click)="selectQuickRange('yesterday')">
+          Ontem
+        </button>
+        <button class="quick-btn" (click)="selectQuickRange('week')">
+          Últimos 7 dias
+        </button>
+        <button class="quick-btn" (click)="selectQuickRange('month')">
+          Últimos 30 dias
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- iOS Style Custom Date Picker (Rolagem estilo iOS) -->
+<div class="ios-custom-date-picker" [class.show]="showCustomDatePicker">
+  <div class="picker-overlay" (click)="closeCustomPicker()"></div>
+  <div class="picker-container">
+    <div class="picker-header">
+      <button class="picker-cancel" (click)="closeCustomPicker()">
+        Cancelar
+      </button>
+      <span class="picker-title">Selecionar Data</span>
+      <button class="picker-done" (click)="confirmCustomDate()">
+        OK
+      </button>
+    </div>
+
+    <div class="picker-wheel">
+      <div class="wheel-row">
+        <!-- Dia -->
+        <div class="wheel-column">
+          <div class="wheel-label">Dia</div>
+          <div class="wheel-values" #dayWheel>
+            <div
+              *ngFor="let day of days"
+              class="wheel-value"
+              [class.selected]="selectedDay === day"
+              (click)="selectDay(day)"
+            >
+              {{ day }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Mês -->
+        <div class="wheel-column">
+          <div class="wheel-label">Mês</div>
+          <div class="wheel-values" #monthWheel>
+            <div
+              *ngFor="let month of months"
+              class="wheel-value"
+              [class.selected]="selectedMonth === month.value"
+              (click)="selectMonth(month.value)"
+            >
+              {{ month.label.substring(0,3) }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Ano -->
+        <div class="wheel-column">
+          <div class="wheel-label">Ano</div>
+          <div class="wheel-values" #yearWheel>
+            <div
+              *ngFor="let year of years"
+              class="wheel-value"
+              [class.selected]="selectedYear === year"
+              (click)="selectYear(year)"
+            >
+              {{ year }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="selection-indicator"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden Inputs (mantidos como fallback) -->
+<input
+  type="date"
+  #startDateInput
+  class="hidden-date-input"
+  (change)="onStartDateChange($event)"
+/>
+<input
+  type="date"
+  #endDateInput
+  class="hidden-date-input"
+  (change)="onEndDateChange($event)"
+/>
+<input
+  type="date"
+  #singleDateInput
+  class="hidden-date-input"
+  (change)="onSingleDateChange($event)"
+/>

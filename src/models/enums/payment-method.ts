@@ -1,6 +1,9 @@
 
 export enum PaymentMethodEnum {
-  pix = "Pix",
-  card = "Cartão",
-  cash = "Dinheiro"
+  pix = 1,
+  card = 2,
+  cash = 3,
+  automaticDebit = 4,
+  boleto = 5,
+  bankTransfer = 6
 }

@@ -5,6 +5,7 @@ import { StatusEnum } from "./enums/status-enum";
 import { To } from "./to";
 import { UserModel } from "./user-model";
 import { AddressModel } from "./address-model";
+import { PaymentMethodEnum } from "./enums/payment-method";
 
 export interface StoreModel extends To {
   id: number;
@@ -60,4 +61,21 @@ export interface StoreModel extends To {
   hideAmountsWhenTransferringCustomers?: boolean;
   allowTransfer?: boolean;
   approveAppointmentsThatExceedTheTime?: boolean;
+  payments?: PaymentMethodModel[];
+}
+
+export interface PaymentMethodModel {
+  type: PaymentMethodEnum;
+  selected: boolean;
+  pixKey?: string;
+  pixKeyType?: 'cpf' | 'email' | 'phone' | 'cnpj';
+  acceptsCredit?: boolean;
+  acceptsDebit?: boolean;
+  acceptsMealTicket?: boolean;
+  maxInstallments?: number;
+  acceptsChange?: boolean;
+  changeLimit?: number;
+  bank?: string;
+  agency?: string;
+  account?: string;
 }

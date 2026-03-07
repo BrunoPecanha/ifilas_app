@@ -3,15 +3,32 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, V
 import { NavController, ToastController, AlertController, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { CategoryModel } from 'src/models/category-model';
+import { PaymentMethodEnum } from 'src/models/enums/payment-method';
 import { addressResponse } from 'src/models/responses/address-response';
 import { CategoryResponse } from 'src/models/responses/category-response';
-import { StoreModel } from 'src/models/store-model';
+import { StoreModel, PaymentMethodModel } from 'src/models/store-model';
 import { UserModel } from 'src/models/user-model';
 import { CategoryService } from 'src/services/category.service';
 import { GeoLocateService } from 'src/services/geo-locate.service';
 import { SessionService } from 'src/services/session.service';
 import { StatesService } from 'src/services/states.service';
 import { StoresService } from 'src/services/stores.service';
+
+interface PaymentMethod {
+  type: PaymentMethodEnum;
+  selected: boolean;
+  pixKey?: string;
+  pixKeyType?: 'cpf' | 'email' | 'phone' | 'cnpj';
+  acceptsCredit?: boolean;
+  acceptsDebit?: boolean;
+  acceptsMealTicket?: boolean;
+  maxInstallments?: number;
+  acceptsChange?: boolean;
+  changeLimit?: number;
+  bank?: string;
+  agency?: string;
+  account?: string;
+}
 
 @Component({
   selector: 'app-company-configurations',
@@ -23,7 +40,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
   @ViewChild('wallpaperInput') wallpaperInput!: ElementRef<HTMLInputElement>;
 
   cadastroForm!: FormGroup;
-  logoOreview: any;
+  logoPreview: any;
   wallpaperPreview: any;
   sending = false;
   sent = false;
@@ -47,6 +64,11 @@ export class CompanyConfigurationsPage implements OnDestroy {
   searchingCep = false;
   serverErrors: { [key: string]: string } = {};
   private subscriptions: Subscription[] = [];
+  paymentMethodEnum: typeof PaymentMethodEnum;
+
+  showCategoryModal = false;
+  selectedCategoryId: number | null = null;
+  selectedCategoryName: string = '';
 
   weekDays = ['Segunda', 'Terca', 'Quarta', 'Quinta', 'Sexta', 'Sabado', 'Domingo'];
 
@@ -65,8 +87,8 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.initializeForm();
     this.loadStates();
     this.loadCategories();
+    this.paymentMethodEnum = PaymentMethodEnum;
   }
-
 
   ionViewWillEnter() {
     this.user = this.sessionService.getUser();
@@ -78,7 +100,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
         this.loadStoreData(this.store.id);
       }
     }
-  };
+  }
 
   ngOnDestroy() {
     this.cleanupResources();
@@ -105,6 +127,8 @@ export class CompanyConfigurationsPage implements OnDestroy {
       openingHours: this.fb.array(
         this.weekDays.map(day => this.createHorarioForm(day))
       ),
+      // Formas de pagamento
+      paymentMethods: this.fb.array([]),
       openAutomatic: [false],
       useAgenda: [false],
       attendSimultaneously: [false],
@@ -126,6 +150,9 @@ export class CompanyConfigurationsPage implements OnDestroy {
       highLights: this.fb.array([])
     });
 
+    // Inicializar formas de pagamento
+    this.initializePaymentMethods();
+
     this.cadastroForm.get('address')?.disable();
     this.cadastroForm.get('neighborhood')?.disable();
     this.cadastroForm.get('city')?.disable();
@@ -140,6 +167,25 @@ export class CompanyConfigurationsPage implements OnDestroy {
 
     this.setupQRCodeToggleListeners();
     this.setupOpeningHoursValidation();
+  }
+
+  private initializePaymentMethods() {
+    const paymentMethodsArray = this.cadastroForm.get('paymentMethods') as FormArray;
+
+
+    const defaultPaymentMethods: PaymentMethod[] = [
+      { type: PaymentMethodEnum.pix, selected: false, pixKey: '', pixKeyType: 'cpf' },
+      { type: PaymentMethodEnum.card, selected: false, acceptsCredit: false, acceptsDebit: false, acceptsMealTicket: false, maxInstallments: 1 },
+      { type: PaymentMethodEnum.cash, selected: false, acceptsChange: false, changeLimit: 1 },
+      { type: PaymentMethodEnum.automaticDebit, selected: false },
+      { type: PaymentMethodEnum.boleto, selected: false },
+      { type: PaymentMethodEnum.bankTransfer, selected: false, bank: '', agency: '', account: '' }
+    ];
+    debugger
+
+    defaultPaymentMethods.forEach(method => {
+      paymentMethodsArray.push(this.fb.group(method));
+    });
   }
 
   private setupQRCodeToggleListeners() {
@@ -162,15 +208,21 @@ export class CompanyConfigurationsPage implements OnDestroy {
   private cleanupResources() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.subscriptions = [];
-
     this.resetFormAndPreviews();
   }
-  
+
   cepValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const cep = control.value?.replace(/\D/g, '') || '';
       return (!cep || cep.length !== 8) ? { invalidCep: true } : null;
     };
+  }
+
+  togglePayment(index: number) {
+    const paymentControl = this.paymentMethods.at(index).get('selected');
+    if (paymentControl) {
+      paymentControl.setValue(!paymentControl.value);
+    }
   }
 
   isFieldInvalid(fieldName: string): boolean {
@@ -181,7 +233,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
   getErrorMessage(fieldName: string): string {
     const field = this.cadastroForm.get(fieldName);
 
-    if (!field || !field.errors) 
+    if (!field || !field.errors)
       return '';
 
     if (this.serverErrors[fieldName]) {
@@ -190,12 +242,18 @@ export class CompanyConfigurationsPage implements OnDestroy {
 
     const errors = field.errors;
 
-    if (errors['required']) return 'Este campo é obrigatório';
-    if (errors['email']) return 'Email inválido';
-    if (errors['minlength']) return `Mínimo de ${errors['minlength'].requiredLength} caracteres`;
-    if (errors['maxlength']) return `Máximo de ${errors['maxlength'].requiredLength} caracteres`;
-    if (errors['invalidCnpj']) return 'CNPJ inválido';
-    if (errors['invalidCep']) return 'CEP inválido';
+    if (errors['required'])
+      return 'Este campo é obrigatório';
+    if (errors['email'])
+      return 'Email inválido';
+    if (errors['minlength'])
+      return `Mínimo de ${errors['minlength'].requiredLength} caracteres`;
+    if (errors['maxlength'])
+      return `Máximo de ${errors['maxlength'].requiredLength} caracteres`;
+    if (errors['invalidCnpj'])
+      return 'CNPJ inválido';
+    if (errors['invalidCep'])
+      return 'CEP inválido';
 
     return 'Campo inválido';
   }
@@ -220,12 +278,18 @@ export class CompanyConfigurationsPage implements OnDestroy {
       openingHoursArray.push(this.createHorarioForm(day));
     });
 
+    const paymentMethodsArray = this.cadastroForm.get('paymentMethods') as FormArray;
+    while (paymentMethodsArray.length) {
+      paymentMethodsArray.removeAt(0);
+    }
+    this.initializePaymentMethods();
+
     const highlightsArray = this.cadastroForm.get('highLights') as FormArray;
     while (highlightsArray.length) {
       highlightsArray.removeAt(0);
     }
 
-    this.logoOreview = null;
+    this.logoPreview = null;
     this.wallpaperPreview = null;
 
     if (this.fileInput?.nativeElement) {
@@ -256,6 +320,10 @@ export class CompanyConfigurationsPage implements OnDestroy {
     return this.cadastroForm.get('highLights') as FormArray;
   }
 
+  get paymentMethods(): FormArray {
+    return this.cadastroForm.get('paymentMethods') as FormArray;
+  }
+
   getBack() {
     this.navCtrl.back();
   }
@@ -264,7 +332,6 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.loading = true;
     this.storeService.getStoreById(storeId).subscribe({
       next: (response) => {
-
         if (response.valid && response.data) {
           this.populateFormForEdition(response.data);
         } else {
@@ -316,11 +383,28 @@ export class CompanyConfigurationsPage implements OnDestroy {
       inCaseFailureAcceptFinishWithoutQRCode: storeData.inCaseFailureAcceptFinishWithoutQRCode
     });
 
+    if (storeData.payments && storeData.payments.length > 0) {
+      const paymentMethodsArray = this.cadastroForm.get('paymentMethods') as FormArray;
+
+      debugger
+      storeData.payments.forEach((method: PaymentMethodModel) => {
+        const index = paymentMethodsArray.controls.findIndex(
+          x => x.get('type')?.value === method.type
+        );
+
+        if (index !== -1) {
+          paymentMethodsArray.at(index).patchValue({
+            ...method,
+            selected: true
+          });
+        }
+      });
+    }
+
     this.setupQRCodeToggleListeners();
 
-
     if (storeData.logoPath) {
-      this.logoOreview = storeData.logoPath;
+      this.logoPreview = storeData.logoPath;
     }
     if (storeData.wallPaperPath) {
       this.wallpaperPreview = storeData.wallPaperPath;
@@ -495,7 +579,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        this.logoOreview = reader.result;
+        this.logoPreview = reader.result;
       };
       reader.readAsDataURL(file);
 
@@ -557,6 +641,86 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.cadastroForm.get('cnpj')?.setValue(valor, { emitEvent: false });
   }
 
+  areAllPaymentsSelected(): boolean {
+    return this.paymentMethods.controls.every(control => control.get('selected')?.value);
+  }
+
+  toggleAllPayments() {
+    const allSelected = this.areAllPaymentsSelected();
+    this.paymentMethods.controls.forEach(control => {
+      control.patchValue({ selected: !allSelected });
+    });
+  }
+
+  getPaymentColor(type: string): string {
+    const colors: { [key: string]: string } = {
+      [PaymentMethodEnum.pix]: '#32ade6',
+      [PaymentMethodEnum.card]: '#007aff',
+      [PaymentMethodEnum.cash]: '#34c759',
+      [PaymentMethodEnum.automaticDebit]: '#5856d6',
+      [PaymentMethodEnum.boleto]: '#ff9500',
+      [PaymentMethodEnum.bankTransfer]: '#af52de'
+    };
+    return colors[type] || '#8e8e93';
+  }
+
+  paymentIcons: Record<PaymentMethodEnum, string> = {
+    [PaymentMethodEnum.pix]: 'phone-portrait-outline',
+    [PaymentMethodEnum.card]: 'card-outline',
+    [PaymentMethodEnum.cash]: 'cash-outline',
+    [PaymentMethodEnum.automaticDebit]: 'repeat-outline',
+    [PaymentMethodEnum.boleto]: 'document-text-outline',
+    [PaymentMethodEnum.bankTransfer]: 'swap-horizontal-outline'
+  };
+
+  getPaymentIcon(type: PaymentMethodEnum): string {
+    return this.paymentIcons[type] || 'wallet-outline';
+  }
+
+  getIconColor(index: number): string {
+    const colors = ['#ff2d55', '#ff9500', '#5856d6', '#34c759', '#007aff', '#af52de'];
+    return colors[index % colors.length];
+  }
+
+  getIconName(icon: string): string {
+    const icons: { [key: string]: string } = {
+      'flame': 'flame-outline',
+      'cut': 'cut-outline',
+      'chair': 'chair-outline',
+      'star': 'star-outline',
+      'heart': 'heart-outline',
+      'thumbs-up': 'thumbs-up-outline'
+    };
+    return icons[icon] || 'star-outline';
+  }
+
+  private preparePaymentMethodsData(): PaymentMethodModel[] {
+    const paymentMethods = this.paymentMethods.value;
+
+    return paymentMethods
+      .filter((method: PaymentMethod) => method.selected)
+      .map((method: PaymentMethod) => {
+        const cleanMethod: PaymentMethodModel = {
+          type: method.type,
+          selected: true
+        };
+
+        if (method.pixKey) cleanMethod.pixKey = method.pixKey;
+        if (method.pixKeyType) cleanMethod.pixKeyType = method.pixKeyType;
+        if (method.acceptsCredit !== undefined) cleanMethod.acceptsCredit = method.acceptsCredit;
+        if (method.acceptsDebit !== undefined) cleanMethod.acceptsDebit = method.acceptsDebit;
+        if (method.acceptsMealTicket !== undefined) cleanMethod.acceptsMealTicket = method.acceptsMealTicket;
+        if (method.maxInstallments) cleanMethod.maxInstallments = method.maxInstallments;
+        if (method.acceptsChange !== undefined) cleanMethod.acceptsChange = method.acceptsChange;
+        if (method.changeLimit) cleanMethod.changeLimit = method.changeLimit;
+        if (method.bank) cleanMethod.bank = method.bank;
+        if (method.agency) cleanMethod.agency = method.agency;
+        if (method.account) cleanMethod.account = method.account;
+
+        return cleanMethod;
+      });
+  }
+
   async save(): Promise<void> {
     this.successMessage = null;
     this.errorMessage = null;
@@ -566,12 +730,6 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.cadastroForm.get('neighborhood')?.enable();
     this.cadastroForm.get('city')?.enable();
     this.cadastroForm.get('state')?.enable();
-
-    // const cnpjControl = this.cadastroForm.get('cnpj');
-    // if (cnpjControl && cnpjControl.value) {
-    //   const cnpjLimpo = cnpjControl.value.replace(/[\.\/\-]/g, '');
-    //   cnpjControl.setValue(cnpjLimpo);
-    // }
 
     const cepControl = this.cadastroForm.get('cep');
     if (cepControl && cepControl.value) {
@@ -609,8 +767,10 @@ export class CompanyConfigurationsPage implements OnDestroy {
       this.cadastroForm.get('state')?.enable();
 
       const storeData = this.storeService.prepareStoreData(this.cadastroForm, this.user!.id);
-      const storeId = this.store ? this.store.id : null;
 
+      storeData.append('paymentMethods', JSON.stringify(this.preparePaymentMethodsData()));
+
+      const storeId = this.store ? this.store.id : null;
       const observable = storeId
         ? this.storeService.updateStore(storeId, storeData)
         : this.storeService.createStore(storeData);
@@ -799,5 +959,51 @@ export class CompanyConfigurationsPage implements OnDestroy {
         endCtrl?.updateValueAndValidity();
       });
     });
+  }
+
+  openCategorySelect() {
+    this.selectedCategoryId = this.cadastroForm.get('categoryId')?.value;
+    this.showCategoryModal = true;
+  }
+
+  closeCategoryModal() {
+    this.showCategoryModal = false;
+  }
+
+  selectCategory(category: CategoryModel) {
+    this.selectedCategoryId = category.id;
+    this.selectedCategoryName = category.name;
+  }
+
+  confirmCategory() {
+    if (this.selectedCategoryId) {
+      this.cadastroForm.patchValue({ categoryId: this.selectedCategoryId });
+    }
+    this.closeCategoryModal();
+  }
+
+  getSelectedCategoryName(): string {
+    const categoryId = this.cadastroForm.get('categoryId')?.value;
+    const category = this.categories.find(c => c.id === categoryId);
+    return category ? category.name : 'Selecione uma categoria';
+  }
+
+  getPaymentName(type: PaymentMethodEnum): string {
+    switch (type) {
+      case PaymentMethodEnum.pix:
+        return 'PIX';
+      case PaymentMethodEnum.card:
+        return 'Cartão';
+      case PaymentMethodEnum.cash:
+        return 'Dinheiro';
+      case PaymentMethodEnum.automaticDebit:
+        return 'Débito Automático';
+      case PaymentMethodEnum.boleto:
+        return 'Boleto';
+      case PaymentMethodEnum.bankTransfer:
+        return 'Transferência';
+      default:
+        return '';
+    }
   }
 }
