@@ -9,542 +9,559 @@
   [subtitle]="'CONFIGURAÇÕES DA LOJA'"
 ></app-custom-header>
 
-<ion-content class="ion-padding" [fullscreen]="true" [formGroup]="cadastroForm">
-  <div class="form-grid-container">
-    <div class="form-row">
-      <ion-card class="compact-card image-section">
-        <ion-card-header class="compact-header">
-          <ion-card-title class="section-title">
-            <ion-icon name="images-outline" class="section-icon"></ion-icon>
-            Imagens
-          </ion-card-title>
-        </ion-card-header>
-
-        <ion-card-content class="compact-image-content">
-          <div class="compact-upload-grid">
-            <div class="upload-column">
-              <ion-card-subtitle class="compact-subtitle"
-                >Logo</ion-card-subtitle
-              >
-              <div class="compact-upload-item" (click)="selecionarImagem()">
-                <img
-                  *ngIf="logoOreview"
-                  [src]="logoOreview"
-                  alt="Logo"
-                  class="compact-preview"
-                />
-                <div class="compact-upload-overlay" *ngIf="!logoOreview">
-                  <ion-icon name="camera" class="upload-icon"></ion-icon>
-                </div>
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  #fileInput
-                  (change)="onImagemSelecionada($event)"
-                />
-              </div>
-              <div class="compact-upload-hint">500x500px</div>
-            </div>
-
-            <div class="upload-column">
-              <ion-card-subtitle class="compact-subtitle"
-                >Banner</ion-card-subtitle
-              >
-              <div class="compact-upload-item" (click)="selecionarWallpaper()">
-                <img
-                  *ngIf="wallpaperPreview"
-                  [src]="wallpaperPreview"
-                  alt="Banner"
-                  class="compact-preview"
-                />
-                <div class="compact-upload-overlay" *ngIf="!wallpaperPreview">
-                  <ion-icon name="image" class="upload-icon"></ion-icon>
-                </div>
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  #wallpaperInput
-                  (change)="onWallpaperSelecionado($event)"
-                />
-              </div>
-              <div class="compact-upload-hint">1200x400px</div>
-            </div>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="compact-card">
-        <ion-card-header class="compact-header">
-          <ion-card-title class="section-title">
-            <ion-icon
-              name="information-circle-outline"
-              class="section-icon"
-            ></ion-icon>
-            Informações
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="compact-form-grid">
-            <!-- <ion-item
-              class="compact-input"
-              lines="none"
-              [class.invalid]="isFieldInvalid('cnpj')"
-            >
-              <ion-label position="stacked">CNPJ *</ion-label>
-              <ion-input
-                type="text"
-                formControlName="cnpj"
-                maxlength="18"
-                (ionInput)="formatCNPJ($event)"
-              ></ion-input>
-              <div class="error-message" *ngIf="isFieldInvalid('cnpj')">
-                {{ getErrorMessage('cnpj') }}
-              </div> 
-            </ion-item>-->
-
-            <ion-item
-              class="compact-input"
-              lines="none"
-              [class.invalid]="isFieldInvalid('name')"
-            >
-              <ion-label position="stacked">Nome *</ion-label>
-              <ion-input maxlength="30" formControlName="name"></ion-input>
-              <div class="error-message" *ngIf="isFieldInvalid('name')">
-                {{ getErrorMessage('name') }}
-              </div>
-            </ion-item>
-
-            <ion-item class="compact-input" lines="none">
-              <ion-label position="stacked">Subtítulo</ion-label>
-              <ion-input
-                formControlName="storeSubtitle"
-                placeholder="Ex: Especialista em cortes masculinos"
-              ></ion-input>
-            </ion-item>
-
-            <ion-item
-              class="compact-input"
-              lines="none"
-              [class.invalid]="isFieldInvalid('categoryId')"
-            >
-              <ion-label position="stacked">Categoria *</ion-label>
-              <ion-select formControlName="categoryId" interface="action-sheet">
-                <ion-select-option
-                  *ngFor="let category of categories"
-                  [value]="category.id"
-                >
-                  {{ category.name }}
-                </ion-select-option>
-              </ion-select>
-              <div class="error-message" *ngIf="isFieldInvalid('categoryId')">
-                {{ getErrorMessage('categoryId') }}
-              </div>
-            </ion-item>
-          </div>
-        </ion-card-content>
-      </ion-card>
+<ion-content class="store-config-container" [fullscreen]="true" [formGroup]="cadastroForm">  
+  <div class="store-header-preview" *ngIf="logoPreview || wallpaperPreview">
+    <div class="wallpaper-container" [style.background-image]="'url(' + wallpaperPreview + ')'">
+      <div class="gradient-overlay"></div>
+      <div class="logo-container">
+        <img *ngIf="logoPreview" [src]="logoPreview" class="store-logo-preview" />
+        <div class="store-name-preview">{{ cadastroForm.get('name')?.value || 'Nome da Loja' }}</div>
+      </div>
     </div>
-
-    <div class="form-row">
-      <ion-card class="compact-card">
-        <ion-card-header class="compact-header">
-          <ion-card-title class="section-title">
-            <ion-icon
-              name="share-social-outline"
-              class="section-icon"
-            ></ion-icon>
-            Contatos
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="compact-form-grid">
-            <ion-item
-              class="compact-input"
-              lines="none"
-              [class.invalid]="isFieldInvalid('phoneNumber')"
-            >
-              <ion-label position="stacked">Telefone *</ion-label>
-              <ion-input
-                type="tel"
-                formControlName="phoneNumber"
-                maxlength="15"
-                (ionInput)="formatarTelefone($event)"
-                placeholder="(99) 99999-9999"
-              ></ion-input>
-              <div class="error-message" *ngIf="isFieldInvalid('phoneNumber')">
-                {{ getErrorMessage('phoneNumber') }}
-              </div>
-            </ion-item>
-
-            <ion-item class="compact-input" lines="none">
-              <ion-label position="stacked">Site</ion-label>
-              <ion-input
-                formControlName="website"
-                type="url"
-                placeholder="https://"
-              ></ion-input>
-            </ion-item>
-
-            <ion-item class="compact-input social-input" lines="none">
-              <ion-icon name="logo-facebook" slot="start"></ion-icon>
-              <ion-input
-                formControlName="facebook"
-                placeholder="facebook.com/seuuser"
-              ></ion-input>
-            </ion-item>
-
-            <ion-item class="compact-input social-input" lines="none">
-              <ion-icon name="logo-instagram" slot="start"></ion-icon>
-              <ion-input
-                formControlName="instagram"
-                placeholder="@seuuser"
-              ></ion-input>
-            </ion-item>
-
-            <ion-item class="compact-input social-input" lines="none">
-              <ion-icon name="logo-youtube" slot="start"></ion-icon>
-              <ion-input
-                formControlName="youtube"
-                placeholder="@seuuser"
-              ></ion-input>
-            </ion-item>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="compact-card">
-        <ion-card-header class="compact-header">
-          <ion-card-title class="section-title">
-            <ion-icon name="location-outline" class="section-icon"></ion-icon>
-            Endereço
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="compact-form-grid">
-            <ion-item
-              class="compact-input"
-              lines="none"
-              [class.invalid]="isFieldInvalid('cep')"
-            >
-              <ion-label position="stacked">CEP *</ion-label>
-              <ion-input
-                type="text"
-                formControlName="cep"
-                (ionBlur)="searchCep()"
-                maxlength="9"
-                placeholder="00000-000"
-              ></ion-input>
-              <div class="error-message" *ngIf="isFieldInvalid('cep')">
-                {{ getErrorMessage('cep') }}
-              </div>
-              <div class="cep-loading" *ngIf="searchingCep">
-                <ion-spinner name="crescent" color="primary"></ion-spinner>
-                Buscando endereço...
-              </div>
-            </ion-item>
-
-            <ion-item
-              class="compact-input"
-              lines="none"
-              [class.invalid]="isFieldInvalid('address')"
-            >
-              <ion-label position="stacked">Endereço *</ion-label>
-              <ion-input
-                formControlName="address"
-                placeholder="Nome da rua"
-                [readonly]="true"
-              ></ion-input>
-              <div class="error-message" *ngIf="isFieldInvalid('address')">
-                {{ getErrorMessage('address') }}
-              </div>
-            </ion-item>
-
-            <ion-item
-              class="compact-input"
-              lines="none"
-              [class.invalid]="isFieldInvalid('number')"
-            >
-              <ion-label position="stacked">Número *</ion-label>
-              <ion-input
-                formControlName="number"
-                placeholder="Nº"
-                type="number"
-              ></ion-input>
-              <div class="error-message" *ngIf="isFieldInvalid('number')">
-                {{ getErrorMessage('number') }}
-              </div>
-            </ion-item>
-
-            <ion-item
-              class="compact-input"
-              lines="none"
-              [class.invalid]="isFieldInvalid('neighborhood')"
-            >
-              <ion-label position="stacked">Bairro *</ion-label>
-              <ion-input
-                formControlName="neighborhood"
-                [readonly]="true"
-              ></ion-input>
-              <div class="error-message" *ngIf="isFieldInvalid('neighborhood')">
-                {{ getErrorMessage('neighborhood') }}
-              </div>
-            </ion-item>
-
-            <ion-item
-              class="compact-input"
-              lines="none"
-              [class.invalid]="isFieldInvalid('city')"
-            >
-              <ion-label position="stacked">Cidade *</ion-label>
-              <ion-input formControlName="city" [readonly]="true"></ion-input>
-              <div class="error-message" *ngIf="isFieldInvalid('city')">
-                {{ getErrorMessage('city') }}
-              </div>
-            </ion-item>
-
-            <ion-item
-              class="compact-input"
-              lines="none"
-              [class.invalid]="isFieldInvalid('state')"
-            >
-              <ion-label position="stacked">Estado *</ion-label>
-              <ion-input formControlName="state" [readonly]="true"></ion-input>
-              <div class="error-message" *ngIf="isFieldInvalid('state')">
-                {{ getErrorMessage('state') }}
-              </div>
-            </ion-item>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    </div>
-
-    <div class="form-row">
-      <ion-card class="compact-card">
-        <ion-card-header class="compact-header">
-          <ion-card-title class="section-title">
-            <ion-icon name="time-outline" class="section-icon"></ion-icon>
-            Horários
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="compact-schedule-container">
-            <ion-list class="compact-schedule-list">
-              <ion-item
-                *ngFor="let weekday of weekDays; let i = index"
-                [formGroup]="getHorarioFormGroup(i)"
-                class="compact-schedule-item"
-                lines="none"
-              >
-                <ion-label>{{ weekday | slice:0:3 }}</ion-label>
-
-                <ion-toggle formControlName="activated" slot="end"></ion-toggle>
-
-                <div
-                  class="compact-time-inputs"
-                  *ngIf="getHorarioFormGroup(i).get('activated')?.value"
-                >
-                  <ion-input
-                    type="time"
-                    formControlName="start"
-                    required
-                  ></ion-input>
-                  <span>às</span>
-                  <ion-input
-                    type="time"
-                    formControlName="end"
-                    required
-                  ></ion-input>
-                </div>
-              </ion-item>
-            </ion-list>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="compact-card">
-        <ion-card-header class="compact-header">
-          <ion-card-title class="section-title">
-            <ion-icon name="settings-outline" class="section-icon"></ion-icon>
-            Configurações
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-list class="compact-settings-list">
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="ban-outline" slot="start"></ion-icon>
-              <ion-label>
-                Bloquear cliente em outras filas
-                <span class="badge-label">EM BREVE</span>
-              </ion-label>
-              <ion-toggle formControlName="acceptOtherQueues"></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="swap-vertical-outline" slot="start"></ion-icon>
-              <ion-label
-                >Atender fora de ordem
-                <span class="badge-label">EM BREVE</span>
-              </ion-label>
-              <ion-toggle formControlName="answerOutOfOrder"></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
-              <ion-label>Aviso por WhatsApp</ion-label>
-              <ion-toggle formControlName="whatsAppNotice"></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="exit-outline" slot="start"></ion-icon>
-              <ion-label>Liberar pedidos</ion-label>
-              <ion-toggle
-                formControlName="releaseOrdersBeforeGetsQueued"
-              ></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="play-forward-outline" slot="start"></ion-icon>
-              <ion-label
-                >Abrir fila/fechar automaticamente
-                <span class="badge-label">EM BREVE</span>
-              </ion-label>
-              <ion-toggle formControlName="openAutomatic"></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="people-circle-outline" slot="start"></ion-icon>
-              <ion-label
-                >Atender simultaneamente
-                <span class="badge-label">EM BREVE</span>
-              </ion-label>
-              <ion-toggle formControlName="attendSimultaneously"></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="qr-code-outline" slot="start"></ion-icon>
-              <ion-label>Solicitar QR Code Antes</ion-label>
-              <ion-toggle formControlName="startServiceWithQRCode"></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="qr-code" slot="start"></ion-icon>
-              <ion-label>Solicitar QR Code Depois</ion-label>
-              <ion-toggle formControlName="endServiceWithQRCode"></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="checkmark" slot="start"></ion-icon>
-              <ion-label
-                >Permite iniciar/finalizar atendimento sem QRCode</ion-label
-              >
-              <ion-toggle
-                formControlName="inCaseFailureAcceptFinishWithoutQRCode"
-              ></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="share-social-outline" slot="start"></ion-icon>
-              <ion-label>Compartilhar Fila </ion-label>
-              <ion-toggle formControlName="shareQueue"></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="swap-horizontal-outline" slot="start"></ion-icon>
-              <ion-label>Permitir transferência</ion-label>
-              <ion-toggle formControlName="allowTransfer"></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="eye-off-outline" slot="start"></ion-icon>
-              <ion-label>Ocultar valores ao transferir clientes</ion-label>
-              <ion-toggle
-                formControlName="hideAmountsWhenTransferringCustomers"
-              ></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="lock-open-outline" slot="start"></ion-icon>
-              <ion-label>Aprovar agendamentos que excedam o horário</ion-label>
-              <ion-toggle
-                formControlName="approveAppointmentsThatExceedTheTime"
-              ></ion-toggle>
-            </ion-item>
-
-            <ion-item class="compact-setting-item" lines="none">
-              <ion-icon name="hourglass-outline" slot="start"></ion-icon>
-              <ion-label
-                >Remover após (min)
-                <span class="badge-label">EM BREVE</span>
-              </ion-label>
-              <ion-input
-                type="number"
-                formControlName="timeRemoval"
-                placeholder="0"
-              ></ion-input>
-            </ion-item>
-          </ion-list>
-        </ion-card-content>
-      </ion-card>
-    </div>
-
-    <ion-card class="compact-card full-width">
-      <ion-card-header class="compact-header">
-        <ion-card-title class="section-title">
-          <ion-icon name="star-outline" class="section-icon"></ion-icon>
-          Destaques
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-list class="compact-highlights-list" formArrayName="highLights">
-          <ion-item
-            *ngFor="let highlight of highLights.controls; let i = index"
-            [formGroupName]="i"
-            class="compact-highlight-item"
-            lines="none"
-          >
-            <ion-select
-              formControlName="icon"
-              interface="action-sheet"
-              class="compact-icon-select"
-            >
-              <ion-select-option value="flame">Fogo</ion-select-option>
-              <ion-select-option value="cut">Tesoura</ion-select-option>
-              <ion-select-option value="chair">Cadeira</ion-select-option>
-              <ion-select-option value="star">Estrela</ion-select-option>
-              <ion-select-option value="heart">Coração</ion-select-option>
-              <ion-select-option value="thumbs-up">Like</ion-select-option>
-            </ion-select>
-
-            <ion-input
-              formControlName="phrase"
-              placeholder="Frase relacionada"
-            ></ion-input>
-
-            <ion-button fill="clear" (click)="removerIconeFrase(i)">
-              <ion-icon name="trash-outline"></ion-icon>
-            </ion-button>
-          </ion-item>
-        </ion-list>
-
-        <ion-button
-          expand="block"
-          fill="outline"
-          (click)="adicionarIconeFrase()"
-          class="add-button"
-        >
-          <ion-icon name="add-outline" slot="start"></ion-icon>
-          Adicionar Destaque
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
   </div>
+
+  <div class="ios-section">
+    <div class="section-header">
+      <ion-icon name="images-outline" class="section-icon"></ion-icon>
+      <h2>Fotos da Loja</h2>
+    </div>
+    
+    <div class="images-grid">
+      <!-- Logo -->
+      <div class="image-card" (click)="selecionarImagem()">
+        <div class="image-preview" [class.has-image]="logoPreview">
+          <img *ngIf="logoPreview" [src]="logoPreview" class="preview-img" />
+          <div class="image-overlay" *ngIf="!logoPreview">
+            <ion-icon name="camera" class="overlay-icon"></ion-icon>
+            <span>Adicionar Logo</span>
+          </div>
+        </div>
+        <div class="image-label">
+          <ion-icon name="image-outline"></ion-icon>
+          <span>Logo da loja</span>
+          <small>500x500px</small>
+        </div>
+        <input type="file" hidden accept="image/*" #fileInput (change)="onImagemSelecionada($event)" />
+      </div>
+
+      <!-- Banner -->
+      <div class="image-card" (click)="selecionarWallpaper()">
+        <div class="image-preview banner-preview" [class.has-image]="wallpaperPreview">
+          <img *ngIf="wallpaperPreview" [src]="wallpaperPreview" class="preview-img" />
+          <div class="image-overlay" *ngIf="!wallpaperPreview">
+            <ion-icon name="image" class="overlay-icon"></ion-icon>
+            <span>Adicionar Banner</span>
+          </div>
+        </div>
+        <div class="image-label">
+          <ion-icon name="image"></ion-icon>
+          <span>Banner da loja</span>
+          <small>1200x400px</small>
+        </div>
+        <input type="file" hidden accept="image/*" #wallpaperInput (change)="onWallpaperSelecionado($event)" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Seção de Informações Básicas -->
+  <div class="ios-section">
+    <div class="section-header">
+      <ion-icon name="information-circle-outline" class="section-icon"></ion-icon>
+      <h2>Informações Básicas</h2>
+    </div>
+
+    <div class="form-card">
+      <div class="form-field" [class.invalid]="isFieldInvalid('name')">
+        <span class="field-label">Nome da loja *</span>
+        <input type="text" formControlName="name" placeholder="Ex: Salão da Rose" class="ios-input" />
+        <div class="error-message" *ngIf="isFieldInvalid('name')">
+          {{ getErrorMessage('name') }}
+        </div>
+      </div>
+
+      <div class="form-field">
+        <span class="field-label">Subtítulo</span>
+        <input type="text" formControlName="storeSubtitle" placeholder="Ex: Especialista em cortes masculinos" class="ios-input" />
+      </div>
+
+      <div class="form-field" [class.invalid]="isFieldInvalid('categoryId')">
+        <span class="field-label">Categoria *</span>
+        <div class="ios-select" (click)="openCategorySelect()">
+          <span>{{ getSelectedCategoryName() }}</span>
+          <ion-icon name="chevron-down"></ion-icon>
+        </div>
+        <div class="error-message" *ngIf="isFieldInvalid('categoryId')">
+          {{ getErrorMessage('categoryId') }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seção de Contato -->
+  <div class="ios-section">
+    <div class="section-header">
+      <ion-icon name="share-social-outline" class="section-icon"></ion-icon>
+      <h2>Contato</h2>
+    </div>
+
+    <div class="form-card">
+      <div class="form-field" [class.invalid]="isFieldInvalid('phoneNumber')">
+        <span class="field-label">Telefone *</span>
+        <input type="tel" formControlName="phoneNumber" (ionInput)="formatarTelefone($event)" placeholder="(99) 99999-9999" class="ios-input" />
+        <div class="error-message" *ngIf="isFieldInvalid('phoneNumber')">
+          {{ getErrorMessage('phoneNumber') }}
+        </div>
+      </div>
+
+      <div class="form-field">
+        <span class="field-label">Site</span>
+        <input type="url" formControlName="website" placeholder="https://meusite.com" class="ios-input" />
+      </div>
+
+      <div class="social-grid">
+        <div class="social-field">
+          <ion-icon name="logo-facebook"></ion-icon>
+          <input type="text" formControlName="facebook" placeholder="facebook.com/seuuser" class="ios-input-social" />
+        </div>
+        <div class="social-field">
+          <ion-icon name="logo-instagram"></ion-icon>
+          <input type="text" formControlName="instagram" placeholder="@seuuser" class="ios-input-social" />
+        </div>
+        <div class="social-field">
+          <ion-icon name="logo-youtube"></ion-icon>
+          <input type="text" formControlName="youtube" placeholder="@seuuser" class="ios-input-social" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seção de Endereço -->
+  <div class="ios-section">
+    <div class="section-header">
+      <ion-icon name="location-outline" class="section-icon"></ion-icon>
+      <h2>Endereço</h2>
+    </div>
+
+    <div class="form-card">
+      <div class="form-field" [class.invalid]="isFieldInvalid('cep')">
+        <span class="field-label">CEP *</span>
+        <input type="text" formControlName="cep" (ionBlur)="searchCep()" maxlength="9" placeholder="00000-000" class="ios-input" />
+        <div class="error-message" *ngIf="isFieldInvalid('cep')">
+          {{ getErrorMessage('cep') }}
+        </div>
+        <div class="cep-loading" *ngIf="searchingCep">
+          <ion-spinner name="crescent"></ion-spinner>
+          Buscando endereço...
+        </div>
+      </div>
+
+      <div class="address-grid">
+        <div class="form-field full-width" [class.invalid]="isFieldInvalid('address')">
+          <span class="field-label">Endereço *</span>
+          <input type="text" formControlName="address" placeholder="Nome da rua" class="ios-input" [readonly]="true" />
+          <div class="error-message" *ngIf="isFieldInvalid('address')">
+            {{ getErrorMessage('address') }}
+          </div>
+        </div>
+
+        <div class="form-field" [class.invalid]="isFieldInvalid('number')">
+          <span class="field-label">Número *</span>
+          <input type="number" formControlName="number" placeholder="Nº" class="ios-input" />
+          <div class="error-message" *ngIf="isFieldInvalid('number')">
+            {{ getErrorMessage('number') }}
+          </div>
+        </div>
+
+        <div class="form-field" [class.invalid]="isFieldInvalid('neighborhood')">
+          <span class="field-label">Bairro *</span>
+          <input type="text" formControlName="neighborhood" class="ios-input" [readonly]="true" />
+          <div class="error-message" *ngIf="isFieldInvalid('neighborhood')">
+            {{ getErrorMessage('neighborhood') }}
+          </div>
+        </div>
+
+        <div class="form-field" [class.invalid]="isFieldInvalid('city')">
+          <span class="field-label">Cidade *</span>
+          <input type="text" formControlName="city" class="ios-input" [readonly]="true" />
+          <div class="error-message" *ngIf="isFieldInvalid('city')">
+            {{ getErrorMessage('city') }}
+          </div>
+        </div>
+
+        <div class="form-field" [class.invalid]="isFieldInvalid('state')">
+          <span class="field-label">Estado *</span>
+          <input type="text" formControlName="state" class="ios-input" [readonly]="true" />
+          <div class="error-message" *ngIf="isFieldInvalid('state')">
+            {{ getErrorMessage('state') }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO: Formas de Pagamento -->
+  <div class="ios-section">
+    <div class="section-header">
+      <ion-icon name="wallet-outline" class="section-icon"></ion-icon>
+      <h2>Formas de Pagamento</h2>
+      <span class="badge-new">Configurar</span>
+    </div>
+
+    <div class="payment-methods-card">
+      <div class="payment-header">
+        <span class="payment-title">Selecione as formas de pagamento aceitas</span>
+        <button class="select-all-btn" (click)="toggleAllPayments()">
+          {{ areAllPaymentsSelected() ? 'Desmarcar todos' : 'Selecionar todos' }}
+        </button>
+      </div>
+
+      <div class="payment-grid" formArrayName="paymentMethods">
+        <div class="payment-item" 
+             *ngFor="let payment of paymentMethods.controls; let i = index" 
+             [formGroupName]="i"
+             [class.selected]="payment.get('selected')?.value"
+             (click)="togglePayment(i)">
+          
+          <div class="payment-checkbox">
+            <input type="checkbox" 
+                   formControlName="selected" 
+                   id="payment-{{i}}" 
+                   [checked]="payment.get('selected')?.value" />
+            
+            <label for="payment-{{i}}" class="checkbox-label">
+              <div class="payment-info">
+                <div class="payment-icon" [style.background]="getPaymentColor(payment.get('type')?.value)">
+                  <ion-icon [name]="getPaymentIcon(payment.get('type')?.value)"></ion-icon>
+                </div>
+                <div class="payment-details">
+                  <span class="payment-name">{{ getPaymentName(payment.get('type')?.value) }}</span>
+                  <span class="payment-description" *ngIf="payment.get('description')?.value">
+                    {{ payment.get('description')?.value }}
+                  </span>
+                </div>
+              </div>
+            </label>
+          </div>
+          
+          <!-- Campos adicionais para PIX -->
+          <div class="payment-extras" *ngIf="payment.get('selected')?.value && payment.get('type')?.value === paymentMethodEnum.pix" (click)="$event.stopPropagation()">
+            <input type="text" formControlName="pixKey" placeholder="Chave PIX (CPF, email ou telefone)" class="ios-input-small" />
+            <select formControlName="pixKeyType" class="ios-select-small">
+              <option value="cpf">CPF</option>
+              <option value="email">E-mail</option>
+              <option value="phone">Telefone</option>
+              <option value="cnpj">CNPJ</option>
+            </select>
+          </div>
+
+          <!-- Campos adicionais para Cartão -->
+          <div class="payment-extras" *ngIf="payment.get('selected')?.value && payment.get('type')?.value === paymentMethodEnum.card" (click)="$event.stopPropagation()">
+            <div class="card-flags">
+              <label class="flag-option">
+                <input type="checkbox" formControlName="acceptsCredit" /> Crédito
+              </label>
+              <label class="flag-option">
+                <input type="checkbox" formControlName="acceptsDebit" /> Débito
+              </label>
+              <label class="flag-option">
+                <input type="checkbox" formControlName="acceptsMealTicket" /> Vale Refeição
+              </label>
+            </div>
+            <div class="installments">
+              <span>Parcelamento:</span>
+              <select formControlName="maxInstallments" class="ios-select-small">
+                <option value="1">À vista</option>
+                <option value="2">Até 2x</option>
+                <option value="3">Até 3x</option>
+                <option value="4">Até 4x</option>
+                <option value="5">Até 5x</option>
+                <option value="6">Até 6x</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Campos adicionais para Dinheiro -->
+          <div class="payment-extras" *ngIf="payment.get('selected')?.value && payment.get('type')?.value === paymentMethodEnum.cash" (click)="$event.stopPropagation()">
+            <div class="cash-options">
+              <label class="flag-option">
+                <input type="checkbox" formControlName="acceptsChange" /> Aceita troco
+              </label>
+              <input type="number" formControlName="changeLimit" placeholder="Limite para troco (R$)" class="ios-input-small" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seção de Horários (iOS Style) -->
+  <div class="ios-section">
+    <div class="section-header">
+      <ion-icon name="time-outline" class="section-icon"></ion-icon>
+      <h2>Horário de Funcionamento</h2>
+    </div>
+
+    <div class="schedule-card" formArrayName="openingHours">
+      <div class="schedule-item" *ngFor="let weekday of weekDays; let i = index" [formGroupName]="i">
+        <div class="day-row">
+          <span class="day-name">{{ weekday }}</span>
+          <div class="day-toggle">
+            <span class="toggle-label">{{ getHorarioFormGroup(i).get('activated')?.value ? 'Aberto' : 'Fechado' }}</span>
+            <label class="ios-toggle">
+              <input type="checkbox" formControlName="activated" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="time-row" *ngIf="getHorarioFormGroup(i).get('activated')?.value">
+          <div class="time-input-group">
+            <span class="time-label">Abre</span>
+            <input type="time" formControlName="start" class="time-input" />
+          </div>
+          <div class="time-input-group">
+            <span class="time-label">Fecha</span>
+            <input type="time" formControlName="end" class="time-input" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seção de Configurações Avançadas -->
+  <div class="ios-section">
+    <div class="section-header">
+      <ion-icon name="settings-outline" class="section-icon"></ion-icon>
+      <h2>Configurações Avançadas</h2>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-group">
+        <h3>Controle de Fila</h3>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <ion-icon name="logo-whatsapp"></ion-icon>
+            <span>Aviso por WhatsApp</span>
+          </div>
+          <label class="ios-toggle">
+            <input type="checkbox" formControlName="whatsAppNotice" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <ion-icon name="qr-code-outline"></ion-icon>
+            <span>Solicitar QR Code Antes</span>
+          </div>
+          <label class="ios-toggle">
+            <input type="checkbox" formControlName="startServiceWithQRCode" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <ion-icon name="qr-code"></ion-icon>
+            <span>Solicitar QR Code Depois</span>
+          </div>
+          <label class="ios-toggle">
+            <input type="checkbox" formControlName="endServiceWithQRCode" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <ion-icon name="checkmark"></ion-icon>
+            <span>Permitir sem QR Code (falha)</span>
+          </div>
+          <label class="ios-toggle">
+            <input type="checkbox" formControlName="inCaseFailureAcceptFinishWithoutQRCode" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Compartilhamento</h3>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <ion-icon name="share-social-outline"></ion-icon>
+            <span>Compartilhar Fila</span>
+          </div>
+          <label class="ios-toggle">
+            <input type="checkbox" formControlName="shareQueue" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <ion-icon name="swap-horizontal-outline"></ion-icon>
+            <span>Permitir transferência</span>
+          </div>
+          <label class="ios-toggle">
+            <input type="checkbox" formControlName="allowTransfer" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <ion-icon name="eye-off-outline"></ion-icon>
+            <span>Ocultar valores ao transferir</span>
+          </div>
+          <label class="ios-toggle">
+            <input type="checkbox" formControlName="hideAmountsWhenTransferringCustomers" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Agendamentos</h3>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <ion-icon name="lock-open-outline"></ion-icon>
+            <span>Aprovar agendamentos que excedam o horário</span>
+          </div>
+          <label class="ios-toggle">
+            <input type="checkbox" formControlName="approveAppointmentsThatExceedTheTime" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <ion-icon name="exit-outline"></ion-icon>
+            <span>Liberar pedidos</span>
+          </div>
+          <label class="ios-toggle">
+            <input type="checkbox" formControlName="releaseOrdersBeforeGetsQueued" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item with-input">
+          <div class="setting-info">
+            <ion-icon name="hourglass-outline"></ion-icon>
+            <span>Remover após (minutos)</span>
+          </div>
+          <input type="number" formControlName="timeRemoval" placeholder="0" class="ios-input-number" />
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Funcionalidades Futuras</h3>
+        
+        <div class="setting-item disabled">
+          <div class="setting-info">
+            <ion-icon name="ban-outline"></ion-icon>
+            <span>Bloquear cliente em outras filas</span>
+            <span class="badge-coming-soon">Em breve</span>
+          </div>
+          <label class="ios-toggle disabled">
+            <input type="checkbox" disabled />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item disabled">
+          <div class="setting-info">
+            <ion-icon name="swap-vertical-outline"></ion-icon>
+            <span>Atender fora de ordem</span>
+            <span class="badge-coming-soon">Em breve</span>
+          </div>
+          <label class="ios-toggle disabled">
+            <input type="checkbox" disabled />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item disabled">
+          <div class="setting-info">
+            <ion-icon name="play-forward-outline"></ion-icon>
+            <span>Abrir/fechar automaticamente</span>
+            <span class="badge-coming-soon">Em breve</span>
+          </div>
+          <label class="ios-toggle disabled">
+            <input type="checkbox" disabled />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item disabled">
+          <div class="setting-info">
+            <ion-icon name="people-circle-outline"></ion-icon>
+            <span>Atender simultaneamente</span>
+            <span class="badge-coming-soon">Em breve</span>
+          </div>
+          <label class="ios-toggle disabled">
+            <input type="checkbox" disabled />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seção de Destaques -->
+  <div class="ios-section">
+    <div class="section-header">
+      <ion-icon name="star-outline" class="section-icon"></ion-icon>
+      <h2>Destaques da Loja</h2>
+    </div>
+
+    <div class="highlights-card" formArrayName="highLights">
+      <div class="highlight-item" *ngFor="let highlight of highLights.controls; let i = index" [formGroupName]="i">
+        <div class="highlight-icon" [style.background]="getIconColor(i)">
+          <ion-icon [name]="getIconName(highlight.get('icon')?.value)"></ion-icon>
+        </div>
+        <input type="text" formControlName="phrase" placeholder="Ex: Melhor barba da cidade" class="highlight-input" />
+        <button class="remove-btn" (click)="removerIconeFrase(i)">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      </div>
+
+      <button class="add-highlight-btn" (click)="adicionarIconeFrase()">
+        <ion-icon name="add-outline"></ion-icon>
+        Adicionar Destaque
+      </button>
+    </div>
+  </div>
+
+  <!-- Spacer para o footer -->
+  <div class="footer-spacer"></div>
 </ion-content>
 
+<!-- Modal de Seleção de Categoria -->
+<div class="ios-modal" [class.show]="showCategoryModal">
+  <div class="modal-overlay" (click)="closeCategoryModal()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="cancel-btn" (click)="closeCategoryModal()">Cancelar</button>
+      <span class="modal-title">Selecionar Categoria</span>
+      <button class="done-btn" (click)="confirmCategory()">OK</button>
+    </div>
+    <div class="modal-body">
+      <div class="category-list">
+        <button class="category-item" *ngFor="let category of categories" (click)="selectCategory(category)">
+          <span>{{ category.name }}</span>
+          <ion-icon *ngIf="selectedCategoryId === category.id" name="checkmark"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toasts de Feedback -->
 <ion-toast
   [isOpen]="successMessage !== null"
-  message="{{successMessage}}"
+  [message]="successMessage"
   duration="3000"
   position="top"
   color="success"
@@ -554,7 +571,7 @@
 
 <ion-toast
   [isOpen]="errorMessage !== null"
-  message="{{errorMessage}}"
+  [message]="errorMessage"
   duration="4000"
   position="top"
   color="danger"

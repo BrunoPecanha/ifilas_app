@@ -19,8 +19,6 @@ ion-header.hidden {
   opacity: 1;
 }
 
-
-
 .modern-content.content-collapsed {
   --padding-top: 120px;
 }
@@ -1799,9 +1797,6 @@ ion-content::part(scroll)::-webkit-scrollbar {
 }
 
 
-
-
-/* 🔥 quando colapsado */
 .modern-content.content-collapsed .always-visible-content {
   transform: translateY(-120%);
   opacity: 0;

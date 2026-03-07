@@ -125,6 +125,10 @@ const routes: Routes = [
   {
     path: 'owner-schedule',
     loadChildren: () => import('../pages/owner-schedule/owner-schedule.module').then( m => m.OwnerSchedulePageModule)
+  },
+  {
+    path: 'reports',
+    loadChildren: () => import('../pages/reports/reports.module').then( m => m.ReportsPageModule)
   }
 ];
 
