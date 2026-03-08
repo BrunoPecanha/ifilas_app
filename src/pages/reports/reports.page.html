@@ -2,11 +2,10 @@
   [showStartButton]="true"
   startIconName="arrow-back"
   [showEndButton]="false"
-  subtitle="RELATÓRIOS"
+  subtitle="RELATÓRIO"
 ></app-custom-header>
 
 <ion-content class="reports-container" [fullscreen]="true">
-  <!-- Date Selector iOS Style -->
   <div class="date-selector-container">
     <div class="date-selector" (click)="openDatePicker()">
       <div class="date-info">
@@ -49,7 +48,6 @@
     </div>
   </div>
 
-  <!-- Métricas em Cards iOS Style -->
   <div class="metrics-grid">
     <div class="metric-card">
       <div class="metric-icon">
@@ -109,7 +107,7 @@
     </div>
   </div>
 
-  <!-- Gráfico de Atendimentos (simulado) -->
+  <!-- Gráfico de Atendimentos -->
   <div class="chart-card">
     <div class="chart-header">
       <h3>Atendimentos por dia</h3>
@@ -122,7 +120,7 @@
           <div
             class="bar-fill"
             [style.height.%]="day.percentage"
-            [style.background]="day.color"
+            [style.background]="'linear-gradient(180deg, ' + day.color + ', #ffffff20)'"
           ></div>
         </div>
         <div class="bar-value">{{ day.value }}</div>
@@ -130,19 +128,58 @@
     </div>
   </div>
 
-  <!-- Lista de Atendimentos -->
+  <div class="insights-card">
+    <div class="insights-header">
+      <h3>Insights do período</h3>
+    </div>
+
+    <div class="insights-grid">
+      <div class="insight-box">
+        <div class="insight-icon fire">
+          <ion-icon name="flame"></ion-icon>
+        </div>
+
+        <div class="insight-content">
+          <span class="insight-label">Dia mais cheio</span>
+          <span class="insight-value"
+            >{{ busiestDay?.day }} ({{ busiestDay?.count }})</span
+          >
+        </div>
+      </div>
+
+      <div class="insight-box">
+        <div class="insight-icon money">
+          <ion-icon name="cash"></ion-icon>
+        </div>
+
+        <div class="insight-content">
+          <span class="insight-label">Serviço destaque</span>
+          <span class="insight-value"> {{ topService?.serviceName }} </span>
+        </div>
+      </div>
+
+      <div class="insight-box">
+        <div class="insight-icon time">
+          <ion-icon name="time"></ion-icon>
+        </div>
+
+        <div class="insight-content">
+          <span class="insight-label">Horário cheio</span>
+          <span class="insight-value">
+            {{ busiestPeriod?.period }}h ({{ busiestPeriod?.count }})
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="attendances-section">
     <div class="section-header">
       <h2>Atendimentos realizados</h2>
       <span class="section-count">{{ customers.length }}</span>
     </div>
 
-    <div *ngIf="loading" class="loading-state">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Carregando relatório...</p>
-    </div>
-
-    <div *ngIf="!loading && customers.length === 0" class="empty-state">
+    <div *ngIf="customers.length === 0" class="empty-state">
       <div class="empty-icon">
         <ion-icon name="document-text-outline"></ion-icon>
       </div>
@@ -150,7 +187,7 @@
       <p>Não há atendimentos registrados para este período.</p>
     </div>
 
-    <div class="attendances-list" *ngIf="!loading && customers.length > 0">
+    <div class="attendances-list" *ngIf="customers.length > 0">
       <div class="attendance-card" *ngFor="let customer of customers">
         <div class="card-header">
           <div class="customer-info">
@@ -159,7 +196,8 @@
               <h4 class="customer-name">{{ customer.name }}</h4>
               <span class="customer-time">
                 <ion-icon name="time-outline"></ion-icon>
-                {{ customer.startTime }}
+                {{ customer.date | date:'dd/MM/yyyy' }} - {{ customer.startTime
+                }}
               </span>
             </div>
           </div>
@@ -168,7 +206,7 @@
 
         <div class="card-body">
           <div class="service-tag">
-            <ion-icon name="cut-outline"></ion-icon>
+            <ion-icon [name]="getBusinessIcon()"></ion-icon>
             {{ customer.service }}
           </div>
           <div
@@ -184,7 +222,7 @@
       </div>
     </div>
   </div>
-  
+
   <div class="footer-spacer"></div>
 </ion-content>
 
@@ -261,7 +299,6 @@
   </div>
 </div>
 
-<!-- iOS Style Custom Date Picker (Rolagem estilo iOS) -->
 <div class="ios-custom-date-picker" [class.show]="showCustomDatePicker">
   <div class="picker-overlay" (click)="closeCustomPicker()"></div>
   <div class="picker-container">
@@ -270,9 +307,7 @@
         Cancelar
       </button>
       <span class="picker-title">Selecionar Data</span>
-      <button class="picker-done" (click)="confirmCustomDate()">
-        OK
-      </button>
+      <button class="picker-done" (click)="confirmCustomDate()">OK</button>
     </div>
 
     <div class="picker-wheel">

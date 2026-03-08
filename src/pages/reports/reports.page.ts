@@ -1,9 +1,14 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { StoreModel } from 'src/models/store-model';
+import { UserModel } from 'src/models/user-model';
+import { ReportService } from 'src/services/report.service';
+import { SessionService } from 'src/services/session.service';
 
 interface Customer {
   name: string;
   service: string;
   startTime: string;
+  date: string;
   paymentMethod: string;
   amount: number;
 }
@@ -24,25 +29,35 @@ interface ChartData {
   color: string;
 }
 
+interface ReportRequest {
+  storeId: number;
+  employeeId: number;
+  startDate: string;
+  endDate: string;
+}
+
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.page.html',
   styleUrls: ['./reports.page.scss'],
 })
 export class ReportsPage implements OnInit {
+
   @ViewChild('startDateInput') startDateInput!: ElementRef;
   @ViewChild('endDateInput') endDateInput!: ElementRef;
   @ViewChild('singleDateInput') singleDateInput!: ElementRef;
 
-  loading = false;
   showDatePicker = false;
+  showCustomDatePicker = false;
+  store: StoreModel = {} as StoreModel;
+  employee!: UserModel;
+
   dateRangeType: 'range' | 'single' = 'range';
   selectedPreset: 'today' | 'week' | 'month' | 'custom' = 'week';
-  showCustomDatePicker = false;
   customPickerType: 'start' | 'end' | 'single' = 'start';
 
-  // Dados para o picker
   days: number[] = Array.from({ length: 31 }, (_, i) => i + 1);
+
   months = [
     { value: 1, label: 'Janeiro' },
     { value: 2, label: 'Fevereiro' },
@@ -57,6 +72,17 @@ export class ReportsPage implements OnInit {
     { value: 11, label: 'Novembro' },
     { value: 12, label: 'Dezembro' }
   ];
+
+  dayColors = [
+    '#ff3b30', // Dom
+    '#007aff', // Seg
+    '#34c759', // Ter
+    '#ff9500', // Qua
+    '#5856d6', // Qui
+    '#ff2d55', // Sex
+    '#5ac8fa'  // Sab
+  ];
+
   years: number[] = [];
 
   selectedDay: number = new Date().getDate();
@@ -69,10 +95,6 @@ export class ReportsPage implements OnInit {
     singleDate: new Date()
   };
 
-  openStartDatePicker = false;
-  openEndDatePicker = false;
-  openSingleDatePicker = false;
-
   metrics: Metrics = {
     totalCustomers: 0,
     totalRevenue: 0,
@@ -83,12 +105,18 @@ export class ReportsPage implements OnInit {
   };
 
   customers: Customer[] = [];
-
   chartData: ChartData[] = [];
+  report: any = null;
+  busiestDay: any = null;
+  topService: any = null;
+  busiestPeriod: any = null;
 
-  constructor() {
-    // Gerar anos (últimos 2 anos, atual e próximos 2)
+  constructor(private sessionService: SessionService, private reportService: ReportService) {
+    this.store = this.sessionService.getStore();
+    this.employee = this.sessionService.getUser();
+
     const currentYear = new Date().getFullYear();
+
     this.years = [
       currentYear - 2,
       currentYear - 1,
@@ -102,37 +130,39 @@ export class ReportsPage implements OnInit {
     this.search();
   }
 
-  // Métodos para abrir picker customizado
   openCustomStartPicker() {
     this.customPickerType = 'start';
     const date = this.filters.startDate;
-    this.selectedDay = date.getDate();
-    this.selectedMonth = date.getMonth() + 1;
-    this.selectedYear = date.getFullYear();
+    this.setPickerDate(date);
     this.showCustomDatePicker = true;
   }
 
   openCustomEndPicker() {
     this.customPickerType = 'end';
     const date = this.filters.endDate;
-    this.selectedDay = date.getDate();
-    this.selectedMonth = date.getMonth() + 1;
-    this.selectedYear = date.getFullYear();
+    this.setPickerDate(date);
     this.showCustomDatePicker = true;
   }
 
   openCustomSinglePicker() {
     this.customPickerType = 'single';
     const date = this.filters.singleDate;
-    this.selectedDay = date.getDate();
-    this.selectedMonth = date.getMonth() + 1;
-    this.selectedYear = date.getFullYear();
+    this.setPickerDate(date);
     this.showCustomDatePicker = true;
   }
 
-  // Método para confirmar data
+  setPickerDate(date: Date) {
+    this.selectedDay = date.getDate();
+    this.selectedMonth = date.getMonth() + 1;
+    this.selectedYear = date.getFullYear();
+  }
+
   confirmCustomDate() {
-    const selectedDate = new Date(this.selectedYear, this.selectedMonth - 1, this.selectedDay);
+    const selectedDate = new Date(
+      this.selectedYear,
+      this.selectedMonth - 1,
+      this.selectedDay
+    );
 
     switch (this.customPickerType) {
       case 'start':
@@ -153,6 +183,82 @@ export class ReportsPage implements OnInit {
     this.showCustomDatePicker = false;
   }
 
+  buildWeekChart(apiDays: any[]) {
+    const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const fullWeek: ChartData[] = [];
+    const max = Math.max(...apiDays.map(d => d.count), 1);
+
+    for (let i = 0; i < 7; i++) {
+      const found = apiDays.find(d => d.dayOfWeek === i);
+      const value = found ? found.count : 0;
+
+      fullWeek.push({
+        label: daysOfWeek[i],
+        value: value,
+        percentage: (value / max) * 100,
+        color: this.dayColors[i]
+      });
+    }
+
+    return fullWeek;
+  }
+
+  getMostBusyPeriod() {
+    if (!this.report?.attendances?.length) 
+      return null;
+
+    const periods: any = {};
+
+    this.report.attendances.forEach((a: { startTime: string }) => {
+      const hour = Number(a.startTime.split(':')[0]);
+
+      const start = Math.floor(hour / 2) * 2;
+      const end = start + 2;
+      const key = `${start}-${end}`;
+
+      if (!periods[key]) {
+        periods[key] = 0;
+      }
+
+      periods[key]++;
+    });
+
+    const busiest = Object.entries(periods).sort((a: any, b: any) => b[1] - a[1])[0];      
+
+    if (!busiest) 
+      return null;
+
+    return {
+      period: busiest[0],
+      count: busiest[1]
+    };
+  }
+
+  getTopService() {
+    if (!this.report?.servicesSummary?.length)
+      return null;
+
+    return this.report.servicesSummary
+      .reduce((prev: { revenue: number; }, current: { revenue: number; }) =>
+        current.revenue > prev.revenue ? current : prev
+      );
+  }
+
+  getMostBusyDay() {
+    if (!this.report?.chartData?.byDayOfWeek?.length)
+      return null;
+
+    const busiest = this.report.chartData.byDayOfWeek
+      .reduce((prev: { count: number; }, current: { count: number; }) =>
+        current.count > prev.count ? current : prev
+      );
+
+    return {
+      day: this.translateDay(busiest.dayOfWeek),
+      count: busiest.count
+    };
+  }
+
   selectDay(day: number) {
     this.selectedDay = day;
   }
@@ -166,134 +272,175 @@ export class ReportsPage implements OnInit {
   }
 
   search() {
-    this.loading = true;
+    const filter = this.buildRequestFilter();
 
-    // Simulação de chamada API
-    setTimeout(() => {
-      // Gerar dados mockados baseados no período
-      const daysDiff = this.getDaysDifference();
+    this.reportService
+      .getMetricsReport(
+        this.employee.id,
+        filter
+      )
+      .subscribe({
+        next: (res) => {
 
-      // Métricas com tendências
-      this.metrics = {
-        totalCustomers: 12 + Math.floor(Math.random() * 10),
-        totalRevenue: 480 + Math.floor(Math.random() * 200),
-        averageTime: 25 + Math.floor(Math.random() * 10),
-        customersTrend: Math.floor(Math.random() * 20) - 5,
-        revenueTrend: Math.floor(Math.random() * 25) - 2,
-        timeTrend: Math.floor(Math.random() * 15) - 7
-      };
+          if (!res.valid) {
+            return;
+          }
 
-      // Clientes mockados
-      this.customers = [
-        {
-          name: 'João Silva',
-          service: 'Corte de cabelo',
-          startTime: '09:00',
-          paymentMethod: 'Pix',
-          amount: 40
+          const data = res.data;
+          this.report = data;
+
+          this.metrics.totalCustomers = data.metrics.totalCustomers;
+          this.metrics.totalRevenue = data.metrics.totalRevenue;
+          this.metrics.averageTime = data.metrics.averageTime;
+
+          this.metrics.customersTrend = data.metrics.trends.customersTrend;
+          this.metrics.revenueTrend = data.metrics.trends.revenueTrend;
+          this.metrics.timeTrend = data.metrics.trends.timeTrend;
+
+          this.chartData = this.buildWeekChart(
+            data.chartData.byDayOfWeek
+          );
+
+          this.customers = data.attendances.map(a => ({
+            name: a.customerName,
+            service: a.service ?? 'Serviço',
+            date: a.date,
+            startTime: a.startTime,
+            paymentMethod: a.paymentMethod,
+            amount: a.amount
+          }));
+
+          this.busiestDay = this.getMostBusyDay();
+          this.topService = this.getTopService();
+          this.busiestPeriod = this.getMostBusyPeriod();
         },
-        {
-          name: 'Maria Souza',
-          service: 'Barba',
-          startTime: '10:00',
-          paymentMethod: 'Cartão',
-          amount: 30
-        },
-        {
-          name: 'Pedro Santos',
-          service: 'Corte + Barba',
-          startTime: '11:30',
-          paymentMethod: 'Dinheiro',
-          amount: 60
-        },
-        {
-          name: 'Ana Oliveira',
-          service: 'Coloração',
-          startTime: '14:00',
-          paymentMethod: 'Pix',
-          amount: 120
-        },
-        {
-          name: 'Carlos Lima',
-          service: 'Corte infantil',
-          startTime: '15:30',
-          paymentMethod: 'Cartão',
-          amount: 35
+        error: (err) => {
+          console.error(err);
         }
-      ];
-
-      // Dados do gráfico
-      this.generateChartData(daysDiff);
-
-      this.loading = false;
-    }, 600);
-  }
-
-  getDaysDifference(): number {
-    const diffTime = Math.abs(this.filters.endDate.getTime() - this.filters.startDate.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
-
-  generateChartData(days: number) {
-    const colors = ['#007aff', '#34c759', '#ff9500', '#ff2d55', '#5856d6'];
-    const days_of_week = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-
-    this.chartData = [];
-
-    for (let i = 0; i < Math.min(days, 7); i++) {
-      const date = new Date(this.filters.startDate);
-      date.setDate(date.getDate() + i);
-
-      const value = Math.floor(Math.random() * 15) + 3;
-      const maxValue = 20;
-
-      this.chartData.push({
-        label: days_of_week[date.getDay()],
-        value: value,
-        percentage: (value / maxValue) * 100,
-        color: colors[i % colors.length]
       });
+  }
+
+  getPeriodLabel(period: string | undefined) {
+    switch (period) {
+      case 'morning':
+        return '08h – 12h';
+      case 'afternoon':
+        return '12h – 18h';
+      case 'evening':
+        return '18h+';
+      default:
+        return '-';
     }
   }
 
-  formatDateRange(): string {
-    if (this.dateRangeType === 'range') {
-      return `${this.formatDate(this.filters.startDate)} - ${this.formatDate(this.filters.endDate)}`;
+  translateDay(day: number): string {
+    const map: any = {
+      0: 'Dom',
+      1: 'Seg',
+      2: 'Ter',
+      3: 'Qua',
+      4: 'Qui',
+      5: 'Sex',
+      6: 'Sáb'
+    };
+
+    return map[day] ?? '';
+  }
+
+  buildRequestFilter(): ReportRequest {
+    let startDate: Date;
+    let endDate: Date;
+
+    if (this.dateRangeType === 'single') {
+      startDate = new Date(this.filters.singleDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate = new Date(this.filters.singleDate);
+      endDate.setHours(23, 59, 59, 999);
+
     } else {
-      return this.formatDate(this.filters.singleDate);
+      startDate = new Date(this.filters.startDate);
+      startDate.setHours(0, 0, 0, 0);
+
+      endDate = new Date(this.filters.endDate);
+      endDate.setHours(23, 59, 59, 999);
+    }
+
+    return {
+      storeId: this.store.id,
+      employeeId: this.employee.id,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString()
+    };
+  }
+
+  setPreset(preset: 'today' | 'week' | 'month' | 'custom', event: Event) {
+    event.stopPropagation();
+    this.selectedPreset = preset;
+
+    switch (preset) {
+      case 'today':
+        this.dateRangeType = 'single';
+        this.filters.singleDate = new Date();
+        break;
+
+      case 'week':
+        this.dateRangeType = 'range';
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        this.filters.startDate = weekAgo;
+        this.filters.endDate = new Date();
+        break;
+
+      case 'month':
+        this.dateRangeType = 'range';
+        const monthAgo = new Date();
+        monthAgo.setDate(monthAgo.getDate() - 30);
+        this.filters.startDate = monthAgo;
+        this.filters.endDate = new Date();
+        break;
+
+      case 'custom':
+        this.openDatePicker();
+        break;
+    }
+
+    if (preset !== 'custom') {
+      this.search();
     }
   }
 
-  formatDate(date: Date): string {
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-  }
+  selectQuickRange(range: 'today' | 'yesterday' | 'week' | 'month') {
+    switch (range) {
+      case 'today':
+        this.dateRangeType = 'single';
+        this.filters.singleDate = new Date();
+        break;
+      case 'yesterday':
+        this.dateRangeType = 'single';
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        this.filters.singleDate = yesterday;
+        break;
 
-  getChartPeriod(): string {
-    if (this.dateRangeType === 'range') {
-      return `${this.filters.startDate.toLocaleDateString('pt-BR')} - ${this.filters.endDate.toLocaleDateString('pt-BR')}`;
-    } else {
-      return this.filters.singleDate.toLocaleDateString('pt-BR');
+      case 'week':
+        this.dateRangeType = 'range';
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        this.filters.startDate = weekAgo;
+        this.filters.endDate = new Date();
+        break;
+
+      case 'month':
+        this.dateRangeType = 'range';
+        const monthAgo = new Date();
+        monthAgo.setDate(monthAgo.getDate() - 30);
+        this.filters.startDate = monthAgo;
+        this.filters.endDate = new Date();
+        break;
     }
-  }
 
-  openEndDatePickerMethod() {
-    if (this.endDateInput && this.endDateInput.nativeElement) {
-      this.endDateInput.nativeElement.showPicker();
-    }
-  }
-
-  openStartDatePickerMethod() {
-    setTimeout(() => { // Pequeno delay para garantir que a variável foi atualizada
-      if (this.startDateInput && this.startDateInput.nativeElement) {
-        this.startDateInput.nativeElement.showPicker();
-      }
-    }, 10);
-  }
-
-  openSingleDatePickerMethod() {
-    if (this.singleDateInput && this.singleDateInput.nativeElement) {
-      this.singleDateInput.nativeElement.showPicker();
-    }
+    this.closeDatePicker();
+    this.search();
   }
 
   openDatePicker() {
@@ -309,96 +456,100 @@ export class ReportsPage implements OnInit {
     this.search();
   }
 
-  setPreset(preset: 'today' | 'week' | 'month' | 'custom', event: Event) {
-    event.stopPropagation();
-    this.selectedPreset = preset;
-
-    const today = new Date();
-
-    switch (preset) {
-      case 'today':
-        this.dateRangeType = 'single';
-        this.filters.singleDate = new Date(today);
-        break;
-      case 'week':
-        this.dateRangeType = 'range';
-        this.filters.endDate = new Date(today);
-        this.filters.startDate = new Date(today.setDate(today.getDate() - 7));
-        break;
-      case 'month':
-        this.dateRangeType = 'range';
-        this.filters.endDate = new Date(today);
-        this.filters.startDate = new Date(today.setDate(today.getDate() - 30));
-        break;
-      case 'custom':
-        this.openDatePicker();
-        break;
+  getDaysDifference(): number {
+    if (this.dateRangeType === 'single') {
+      return 1;
     }
 
-    if (preset !== 'custom') {
-      this.search();
+    const diffTime = Math.abs(
+      this.filters.endDate.getTime() - this.filters.startDate.getTime()
+    );
+
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  generateChartData(days: number) {
+
+    const dayColors = [
+      '#ff3b30', // Dom
+      '#007aff', // Seg
+      '#34c759', // Ter
+      '#ff9500', // Qua
+      '#5856d6', // Qui
+      '#ff2d55', // Sex
+      '#5ac8fa'  // Sab
+    ];
+
+    const days_of_week = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    this.chartData = [];
+    const maxValue = 20;
+
+    for (let i = 0; i < Math.min(days, 7); i++) {
+      const date = new Date(this.filters.startDate);
+      date.setDate(date.getDate() + i);
+      const value = Math.floor(Math.random() * 15) + 3;
+      const dayIndex = date.getDay();
+
+      this.chartData.push({
+        label: days_of_week[dayIndex],
+        value: value,
+        percentage: (value / maxValue) * 100,
+        color: dayColors[dayIndex]
+      });
     }
   }
 
-  selectQuickRange(range: 'today' | 'yesterday' | 'week' | 'month') {
-    const today = new Date();
+  private businessIcons: { [key: number]: string } = {
+    1: 'cut-outline',
+    2: 'color-palette-outline',
+    3: 'construct-outline',
+    4: 'fast-food-outline',
+    5: 'medkit-outline',
+    6: 'grid-outline',
+    7: 'hand-left-outline',
+    8: 'ice-cream-outline',
+    9: 'sparkles-outline',
+    10: 'brush-outline'
+  };
 
-    switch (range) {
-      case 'today':
-        this.dateRangeType = 'single';
-        this.filters.singleDate = new Date();
-        break;
-      case 'yesterday':
-        this.dateRangeType = 'single';
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        this.filters.singleDate = yesterday;
-        break;
-      case 'week':
-        this.dateRangeType = 'range';
-        this.filters.endDate = new Date();
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        this.filters.startDate = weekAgo;
-        break;
-      case 'month':
-        this.dateRangeType = 'range';
-        this.filters.endDate = new Date();
-        const monthAgo = new Date();
-        monthAgo.setDate(monthAgo.getDate() - 30);
-        this.filters.startDate = monthAgo;
-        break;
-    }
-
-    this.closeDatePicker();
-    this.search();
+  getBusinessIcon(): string {
+    return this.businessIcons[this.store.categoryId] || 'pricetag-outline';
   }
 
-  onStartDateChange(event: any) {
-    if (event.target.value) {
-      this.filters.startDate = new Date(event.target.value);
+  formatDateRange(): string {
+    if (this.dateRangeType === 'range') {
+      return `${this.formatDate(this.filters.startDate)} - ${this.formatDate(this.filters.endDate)}`;
+    } else {
+      return this.formatDate(this.filters.singleDate);
     }
   }
 
-  onEndDateChange(event: any) {
-    if (event.target.value) {
-      this.filters.endDate = new Date(event.target.value);
-    }
+  formatDate(date: Date): string {
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit'
+    });
   }
 
-  onSingleDateChange(event: any) {
-    if (event.target.value) {
-      this.filters.singleDate = new Date(event.target.value);
-      this.dateRangeType = 'single';
+  getChartPeriod(): string {
+    if (this.dateRangeType === 'range') {
+      return `${this.filters.startDate.toLocaleDateString('pt-BR')} - ${this.filters.endDate.toLocaleDateString('pt-BR')}`;
     }
+
+    return this.filters.singleDate.toLocaleDateString('pt-BR');
   }
 
   getPaymentIcon(method: string): string {
+
     switch (method.toLowerCase()) {
-      case 'pix': return 'phone-portrait-outline';
-      case 'cartão': return 'card-outline';
-      case 'dinheiro': return 'cash-outline';
-      default: return 'wallet-outline';
+      case 'pix':
+        return 'phone-portrait-outline';
+      case 'cartão':
+        return 'card-outline';
+      case 'dinheiro':
+        return 'cash-outline';
+      default:
+        return 'wallet-outline';
     }
   }
 
@@ -407,11 +558,29 @@ export class ReportsPage implements OnInit {
   }
 
   exportData() {
-    console.log('Exportando dados...');
-    // Implementar lógica de exportação
+    console.log('Exportando relatório...');
   }
 
   toggleFilters() {
-    // Método mantido para compatibilidade
+    // mantido para compatibilidade
+  }
+
+  onEndDateChange(event: any) {
+    if (event.target.value) {
+      this.filters.endDate = new Date(event.target.value);
+    }
+  }
+
+  onStartDateChange(event: any) {
+    if (event.target.value) {
+      this.filters.startDate = new Date(event.target.value);
+    }
+  }
+
+  onSingleDateChange(event: any) {
+    if (event.target.value) {
+      this.filters.singleDate = new Date(event.target.value);
+      this.dateRangeType = 'single';
+    }
   }
 }
