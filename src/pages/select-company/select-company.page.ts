@@ -53,7 +53,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.startAutoScroll();
+    // this.startAutoScroll();
   }
 
   ionViewWillEnter() {
@@ -68,7 +68,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.stopAutoScroll();
+    // this.stopAutoScroll();
   }
 
   private loadStores() {
@@ -306,42 +306,42 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     }
   }
 
-  onBannerScroll() {
-    const scrollElement = this.bannersScroll.nativeElement;
-    const scrollLeft = scrollElement.scrollLeft;
-    const bannerWidth = scrollElement.clientWidth;
+  // onBannerScroll() {
+  //   const scrollElement = this.bannersScroll.nativeElement;
+  //   const scrollLeft = scrollElement.scrollLeft;
+  //   const bannerWidth = scrollElement.clientWidth;
 
-    this.activeBannerIndex = Math.round(scrollLeft / bannerWidth);
-  }
+  //   this.activeBannerIndex = Math.round(scrollLeft / bannerWidth);
+  // }
 
-  goToBanner(index: number) {
-    this.activeBannerIndex = index;
-    const scrollElement = this.bannersScroll.nativeElement;
-    const bannerWidth = scrollElement.clientWidth;
+  // goToBanner(index: number) {
+  //   this.activeBannerIndex = index;
+  //   const scrollElement = this.bannersScroll.nativeElement;
+  //   const bannerWidth = scrollElement.clientWidth;
 
-    scrollElement.scrollTo({
-      left: index * bannerWidth,
-      behavior: 'smooth'
-    });
-  }
+  //   scrollElement.scrollTo({
+  //     left: index * bannerWidth,
+  //     behavior: 'smooth'
+  //   });
+  // }
 
-  startAutoScroll() {
-    this.autoScrollInterval = setInterval(() => {
-      const nextIndex = (this.activeBannerIndex + 1) % this.banners.length;
-      this.goToBanner(nextIndex);
-    }, 6000);
-  }
+  // startAutoScroll() {
+  //   this.autoScrollInterval = setInterval(() => {
+  //     const nextIndex = (this.activeBannerIndex + 1) % this.banners.length;
+  //     this.goToBanner(nextIndex);
+  //   }, 6000);
+  // }
 
-  stopAutoScroll() {
-    if (this.autoScrollInterval) {
-      clearInterval(this.autoScrollInterval);
-    }
-  }
+  // stopAutoScroll() {
+  //   if (this.autoScrollInterval) {
+  //     clearInterval(this.autoScrollInterval);
+  //   }
+  // }
 
-  pauseAutoScroll() {
-    this.stopAutoScroll();
-    setTimeout(() => this.startAutoScroll(), 10000);
-  }
+  // pauseAutoScroll() {
+  //   this.stopAutoScroll();
+  //   setTimeout(() => this.startAutoScroll(), 10000);
+  // }
 
   applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
     if (this.selectedFilter === filter) {
