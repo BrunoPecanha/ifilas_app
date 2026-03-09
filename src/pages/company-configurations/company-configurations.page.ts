@@ -142,6 +142,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
       startServiceWithQRCode: [false],
       hideAmountsWhenTransferringCustomers: [false],
       allowTransfer: [false],
+      startScheduleServiceAutomatically: [false],
       shareQueue: [false],
       wallPaper: [null],
       inCaseFailureAcceptFinishWithoutQRCode: [false],
@@ -180,8 +181,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
       { type: PaymentMethodEnum.automaticDebit, selected: false },
       { type: PaymentMethodEnum.boleto, selected: false },
       { type: PaymentMethodEnum.bankTransfer, selected: false, bank: '', agency: '', account: '' }
-    ];
-    debugger
+    ];    
 
     defaultPaymentMethods.forEach(method => {
       paymentMethodsArray.push(this.fb.group(method));
@@ -380,13 +380,13 @@ export class CompanyConfigurationsPage implements OnDestroy {
       endServiceWithQRCode: storeData.endServiceWithQRCode,
       startServiceWithQRCode: storeData.startServiceWithQRCode,
       shareQueue: storeData.shareQueue,
+      startScheduleServiceAutomatically: storeData.startScheduleServiceAutomatically,
       inCaseFailureAcceptFinishWithoutQRCode: storeData.inCaseFailureAcceptFinishWithoutQRCode
     });
 
     if (storeData.payments && storeData.payments.length > 0) {
       const paymentMethodsArray = this.cadastroForm.get('paymentMethods') as FormArray;
 
-      debugger
       storeData.payments.forEach((method: PaymentMethodModel) => {
         const index = paymentMethodsArray.controls.findIndex(
           x => x.get('type')?.value === method.type
