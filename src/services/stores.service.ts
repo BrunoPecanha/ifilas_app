@@ -98,6 +98,7 @@ export class StoresService {
     formData.append('Youtube', formValue.youtube || '');
     formData.append('WebSite', formValue.website || '');
     formData.append('ReleaseOrdersBeforeGetsQueued', String(formValue.releaseOrdersBeforeGetsQueued || false));
+    formData.append('StartScheduleServiceAutomatically', String(formValue.startScheduleServiceAutomatically || false));
     formData.append('EndServiceWithQRCode', String(formValue.endServiceWithQRCode || false));
     formData.append('StartServiceWithQRCode', String(formValue.startServiceWithQRCode || false));
     formData.append('ShareQueue', String(formValue.shareQueue || false));

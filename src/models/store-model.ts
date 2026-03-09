@@ -35,7 +35,7 @@ export interface StoreModel extends To {
   openingHours?: OpeningHoursModel[];
   highLights: HighLightModel[];
   ownerId: number;
-  owner?: UserModel;  
+  owner?: UserModel;
   status: StatusEnum;
   liked: boolean;
   createdAt?: Date | any;
@@ -51,10 +51,11 @@ export interface StoreModel extends To {
   releaseOrdersBeforeGetsQueued: boolean;
   endServiceWithQRCode: boolean;
   startServiceWithQRCode: boolean;
+  startScheduleServiceAutomatically: boolean;
   shareQueue: boolean;
   isVerified: boolean;
   inCaseFailureAcceptFinishWithoutQRCode: boolean;
-  distance?: number; 
+  distance?: number;
   nextHourOnAgenda: string;
   isOpen: boolean;
   likesCount?: number;
