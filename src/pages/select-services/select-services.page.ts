@@ -89,6 +89,15 @@ export class SelectServicesPage implements OnInit {
     this.setupScrollListener();
   }
 
+  ionViewWillEnter() {
+    const savedServices = this.sessionService.getGenericKey('selectedServices');
+
+    if (savedServices) {
+      this.selectedServices = savedServices;
+      this.updateTotals();
+    }
+  }
+
   trackByServiceId = (index: number, item: ServiceModel) => item?.id ?? index;
 
   getProfessionalAndStore() {
@@ -135,7 +144,7 @@ export class SelectServicesPage implements OnInit {
       } else {
         this.looseCustomer = false;
       }
-      
+
       if (params['customerId'] !== undefined) {
         this.customerId = params['customerId'] ? Number(params['customerId']) : null;
       } else if (navState['customerId'] !== undefined) {
@@ -179,9 +188,12 @@ export class SelectServicesPage implements OnInit {
   }
 
   getBack() {
-    this.router.navigate(['/select-professional']), {
-      queryParams: { storeId: this.storeId }
-    };
+    this.router.navigate(
+      ['/select-professional'],
+      {
+        queryParams: { storeId: this.storeId }
+      }
+    );
   }
 
   isServiceSelected(service: ServiceModel): boolean {
@@ -283,12 +295,18 @@ export class SelectServicesPage implements OnInit {
     }
   }
 
-  // preciso implementar o abrir detalhes do serviço 
   openServiceDetail(service: ServiceModel) {
     if (!service)
-      return;
+      return;   
 
-    console.log('openServiceDetail:', service);
+    this.router.navigate(['/item-details'], {      
+      state: {
+        service: service,
+        storeId: this.storeId,
+        useAgenda: this.useAgenda,
+        professionalName: this.professionalName
+      }
+    });
   }
 
   onSelectedClick(index: number) {
@@ -326,6 +344,8 @@ export class SelectServicesPage implements OnInit {
     }, 0);
 
     this.formatOutput();
+
+    this.sessionService.setGenericKey(this.selectedServices, 'selectedServices');
   }
 
   private convertTimeStringToMinutes(timeString: string): number {
@@ -380,7 +400,7 @@ export class SelectServicesPage implements OnInit {
         },
         {
           text: 'Confirmar',
-          handler: () => {
+          handler: () => {            
             if (this.useAgenda) {
               this.proceedToSchedule();
             } else
@@ -522,7 +542,7 @@ export class SelectServicesPage implements OnInit {
       id: s.id,
       quantity: s.quantity
     }));
-    
+
     const command: AddCustomerToScheduleRequest = {
       scheduleId: this.scheduleId,
       selectedServices: servicesToSend,
@@ -616,17 +636,28 @@ export class SelectServicesPage implements OnInit {
       event.stopPropagation();
 
     const idx = this.selectedServices.findIndex(s => s.id === service.id);
+
     if (idx >= 0) {
-      this.selectedServices[idx].quantity = (Number(this.selectedServices[idx].quantity) || 0) + 1;
-      this.updateTotals();
+      const updated = {
+        ...this.selectedServices[idx],
+        quantity: (Number(this.selectedServices[idx].quantity) || 0) + 1
+      };
+
+      this.selectedServices[idx] = updated;
+      this.selectedServices = [...this.selectedServices];
     } else {
-      this.selectedServices.push({ ...service, quantity: 1 } as ServiceModel);
+      this.selectedServices = [
+        ...this.selectedServices,
+        { ...service, quantity: 1 }
+      ];
+
       if (service?.id != null) {
         this.animatingAdd[service.id] = true;
         setTimeout(() => delete this.animatingAdd[service.id], 700);
       }
-      this.updateTotals();
     }
+
+    this.updateTotals();
   }
 
   decrementServiceForUi(service: ServiceModel, event?: Event) {
@@ -634,15 +665,21 @@ export class SelectServicesPage implements OnInit {
       event.stopPropagation();
 
     const idx = this.selectedServices.findIndex(s => s.id === service.id);
-    if (idx < 0)
-      return;
+    if (idx < 0) return;
 
     const current = Number(this.selectedServices[idx].quantity) || 0;
+
     if (current > 1) {
-      this.selectedServices[idx].quantity = current - 1;
+      this.selectedServices[idx] = {
+        ...this.selectedServices[idx],
+        quantity: current - 1
+      };
     } else {
       this.selectedServices.splice(idx, 1);
     }
+
+    this.selectedServices = [...this.selectedServices];
+
     this.updateTotals();
   }
 }

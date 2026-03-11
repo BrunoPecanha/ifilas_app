@@ -15,6 +15,8 @@ import { NavegationHistoryService } from 'src/services/navegation-history.servic
 export class CustomHeaderComponent implements OnInit, OnDestroy {
   @Input() title: string = '';
   @Input() subtitle?: string;
+  @Input() otherSubtitle?: string;
+  @Input() hideOtherSubtitle: boolean = false;
 
   @Input() showStartButton: boolean = false;
   @Input() startIconName: string = 'chevron-back-outline';

@@ -90,6 +90,29 @@ ion-spinner {
   margin-top: 0;
 }
 
+.title-container .other-subtitle {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  margin-top: 2px;
+}
+
+.title-container .other-subtitle {
+  font-size: 9px;
+  color: var(--ion-color-medium);
+  margin-top: 2px;
+  transition: opacity 160ms ease, transform 160ms ease;
+  transform-origin: top left;
+}
+
+.title-container .other-subtitle.hidden {
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  height: 0;
+  margin-top: 0;
+}
+
+
 .notification-wrapper {
   position: relative;
   overflow: visible !important;

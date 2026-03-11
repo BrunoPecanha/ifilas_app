@@ -27,6 +27,13 @@
       >
         {{ subtitle }}
       </div>
+         <div
+        *ngIf="otherSubtitle && !hideOtherSubtitle"
+        class="other-subtitle"
+        [class.hidden]="hideOtherSubtitle"
+      >
+        {{ otherSubtitle }}
+      </div>
     </ion-title>
 
     <ion-buttons slot="end">

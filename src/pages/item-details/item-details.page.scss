@@ -1,0 +1,272 @@
+.service-page {
+  --background: #f6f7f9;
+}
+
+.hero-image {
+  position: relative;
+  height: 42vh;
+  min-height: 280px;
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.55)
+  );
+}
+
+.service-card {
+  position: relative;
+
+  margin-top: -90px;
+
+  background: #fff;
+  border-radius: 28px 28px 0 0;
+
+  padding: 28px 22px 120px;
+
+  box-shadow: 0 -6px 25px rgba(0, 0, 0, 0.15);
+
+  min-height: calc(100vh - 260px);
+}
+
+.service-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+}
+
+.price-row span {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.price-row strong {
+  display: block;
+  font-size: 1.2rem;
+}
+
+.action-area {
+  margin-top: 40px;
+}
+
+.quantity-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  transition: 0.2s;
+}
+
+.add-btn ion-icon {
+  font-size: 1.2rem;
+}
+
+.add-btn:active {
+  transform: scale(0.96);
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: white;
+  border-radius: 16px;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.bottom-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.price-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-label {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.price-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.quantity-wrapper {
+  display: flex;
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: white;
+  border-radius: 16px;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.qty-btn {
+  width: 34px;
+  height: 34px;
+
+  border-radius: 10px;
+
+  border: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty-btn.plus {
+  background: #667eea;
+  color: white;
+}
+
+.qty-btn.minus {
+  background: #f3f4f6;
+}
+
+.qty-number {
+  font-weight: 700;
+  font-size: 1.1rem;
+
+  min-width: 20px;
+  text-align: center;
+}
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hero-image {
+  position: relative;
+  height: 42vh;
+  min-height: 280px;
+
+  margin-top: -70px;
+  padding-top: 70px;
+}
+
+.bottom-cart {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 100px;
+  background: white;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cart-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-label {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.price-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.add-cart-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: 0.2s;
+}
+
+.add-cart-btn:active {
+  transform: scale(0.96);
+}
+
+.service-card {
+  padding-bottom: 220px;
+}
+
+.hero-image {
+  position: relative;
+  height: 42vh;
+  min-height: 280px;
+  top: -70px;      
+  z-index: 0;
+}

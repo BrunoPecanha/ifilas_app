@@ -98,6 +98,8 @@ export class QueuePage implements AfterViewInit {
       });
 
     this.loadCustomersAppointments();
+
+    this.sessionService.removeGenericKey('selectedServices');
   }
 
   ionViewWillLeave() {
@@ -228,7 +230,7 @@ export class QueuePage implements AfterViewInit {
     if (this.cameFromEntryFlow) {
       this.router.navigate(['/select-company'], { replaceUrl: true });
     } else {
-      this.navCtrl.back(); 
+      this.navCtrl.back();
     }
   }
 
