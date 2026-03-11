@@ -1,0 +1,63 @@
+<app-custom-header
+  [class.scrolled]="headerScrolled"
+  subtitle="DETALHES DO ITEM"
+  [showStartButton]="true"
+  (onStartClick)="goBack()"  
+  (onEndClick)="confirmSelection()"
+></app-custom-header>
+
+<ion-content fullscreen class="service-page">
+  <div class="hero-image">
+    <img *ngIf="service?.imgPath" [src]="service?.imgPath" class="hero-img" />
+    <div class="hero-overlay"></div>
+  </div>
+
+  <div class="service-card">
+    <h1 class="service-title">{{ service?.name }}</h1>
+
+    <div class="price-row">
+      <div>
+        <span>PREÇO</span>
+        <strong>{{ getFormattedPrice() }}</strong>
+      </div>
+
+      <div>
+        <span>DURAÇÃO</span>
+        <strong>{{ getFormattedTime() }}</strong>
+      </div>
+    </div>
+
+    <p class="service-description">
+      {{ service?.description || 'Sem descrição disponível.' }}
+    </p>
+  </div>
+
+  <div class="bottom-cart">
+    <div class="cart-info">
+      <div class="price-area">
+        <span class="price-label">TOTAL</span>
+        <span class="price-value"> {{ quantity * (service?.price || 0) | currency:'BRL' }} </span>
+      </div>
+
+      <div class="qty-control" *ngIf="quantity > 0">
+        <button class="qty-btn minus" (click)="decrement()">
+          <ion-icon name="remove"></ion-icon>
+        </button>
+
+        <span class="qty-number">{{ quantity }}</span>
+
+        <button class="qty-btn plus" (click)="increment()">
+          <ion-icon name="add"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <button class="add-cart-btn" (click)="add()" *ngIf="quantity === 0">
+      <ion-icon name="add"></ion-icon>
+      Adicionar
+    </button>
+  </div>
+
+</ion-content>
+  <div class="footer-spacer"></div>
+<app-footer-menu></app-footer-menu>
