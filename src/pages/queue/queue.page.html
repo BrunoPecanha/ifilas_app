@@ -173,12 +173,11 @@
                 <ion-icon name="time-outline" class="info-icon"></ion-icon>
                 <div class="info-content">
                   <span class="info-label">Estimativa às</span>
-                  <span class="info-value" *ngIf="queue.status !== 2">                    
-                    {{ parseUtcToBrazil(queue.predictedStartAt) | date:'HH:mm' }}
-                  </span>  
-                   <span class="info-value" *ngIf="queue.status === 2">                    
-                    -
-                  </span>                 
+                  <span class="info-value" *ngIf="queue.status !== 2">
+                    {{ parseUtcToBrazil(queue.predictedStartAt) | date:'HH:mm'
+                    }}
+                  </span>
+                  <span class="info-value" *ngIf="queue.status === 2"> - </span>
                 </div>
               </div>
             </div>
@@ -195,7 +194,10 @@
               class="your-turn-banner"
               *ngIf="queue.position === 1 && queue.status === 8"
             >
-              <ion-icon name="information-circle" class="trophy-icon"></ion-icon>
+              <ion-icon
+                name="information-circle"
+                class="trophy-icon"
+              ></ion-icon>
               <span>Fique atendo às nossas notificações!</span>
             </div>
           </div>
@@ -236,12 +238,19 @@
 
               <div class="additional-info">
                 <div class="info-item full-width">
-                  <ion-icon name="cash-outline" class="info-icon"></ion-icon>
+                  <ion-icon
+                    [name]="paymentIcons[queue.paymentMethod.type]"
+                    class="info-icon"
+                    [style.color]="paymentColors[queue.paymentMethod.type]"
+                  ></ion-icon>
+
                   <div class="info-content">
                     <span class="info-label">Pagamento</span>
-                    <span class="info-value"
-                      >{{ queue.paymentMethod.name || 'A definir' }}</span
-                    >
+
+                    <span class="info-value">
+                      {{ paymentNames[queue.paymentMethod.type] || 'A definir'
+                      }}
+                    </span>
                   </div>
                 </div>
 
@@ -408,12 +417,18 @@
               </div>
 
               <div class="info-item">
-                <ion-icon name="cash-outline" class="info-icon"></ion-icon>
+                <ion-icon
+                  [name]="paymentIcons[appt.paymentMethod.type]"
+                  class="info-icon"
+                  [style.color]="paymentColors[appt.paymentMethod.type]"
+                ></ion-icon>
+
                 <div class="info-content">
                   <span class="info-label">Pagamento</span>
-                  <span class="info-value"
-                    >{{ appt.paymentMethod.name || 'A definir' }}</span
-                  >
+
+                  <span class="info-value">
+                    {{ paymentNames[appt.paymentMethod.type] || 'A definir' }}
+                  </span>
                 </div>
               </div>
             </div>

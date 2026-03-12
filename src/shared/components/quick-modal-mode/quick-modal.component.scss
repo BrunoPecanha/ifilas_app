@@ -95,3 +95,33 @@
   top: 50%;
   transform: translateY(-50%);
 }
+
+.payment-method {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f8f9fa;
+}
+
+.payment-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.payment-icon {
+  font-size: 20px;
+}
+
+.payment-label {
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+}
+
+.payment-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}

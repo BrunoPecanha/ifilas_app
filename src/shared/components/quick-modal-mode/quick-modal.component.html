@@ -37,7 +37,7 @@
 
         <ng-container *ngIf="mode === 'summary'">
           <div class="services-summary">
-            <div class="service-item" *ngFor="let service of services">
+            <div class="service-item" *ngFor="let service of customer.services">
               <div class="service-left">
                 <ion-icon name="cut-outline" class="service-icon"></ion-icon>
 
@@ -57,6 +57,24 @@
 
             <div class="services-divider"></div>
 
+            <div class="payment-method" *ngIf="paymentType">
+              <div class="payment-left">
+                <ion-icon
+                  [name]="paymentIcon"
+                  [style.color]="paymentColor"
+                  class="payment-icon"
+                ></ion-icon>
+
+                <span class="payment-label">Forma de pagamento</span>
+              </div>
+
+              <span class="payment-value">
+                {{ paymentName }}
+              </span>
+            </div>
+
+            <div class="services-divider"></div>
+
             <div class="services-total">
               <span>Total</span>
               <strong>{{ getTotalPrice() | currency : "BRL" }}</strong>
@@ -67,7 +85,7 @@
         <ng-container *ngIf="mode === 'services'">
           <div class="services-list-modal">
             <ion-list>
-              <ion-item *ngFor="let service of services">
+              <ion-item *ngFor="let service of customer.services">
                 <ion-icon name="pricetag-outline" slot="start"></ion-icon>
                 <ion-label>{{ service.name }}</ion-label>
               </ion-item>

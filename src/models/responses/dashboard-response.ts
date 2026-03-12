@@ -24,7 +24,7 @@ export interface QueueItem {
   totalInQueue: number;
   arrivalTime: string;
   predictedStartAt: string;
-  notes: string;  
+  notes: string;
   categoryIcon: string;
   isPaused: boolean;
   pauseReason: string | null;
@@ -44,12 +44,34 @@ export interface ScheduleItem {
   paymentMethod: PaymentMethod;
   notes: string;
   categoryIcon: string;
-  total: number;  
+  total: number;
   totalString: string | null;
 }
 
 export interface PaymentMethod {
-  name: string;
+  type: number;
+  name?: string;
   icon: string;
-  details: string | null;
+
+  selected: boolean;
+
+  // PIX
+  pixKey?: string | null;
+  pixKeyType?: number | null;
+
+  // Cartão
+  acceptsCredit?: boolean | null;
+  acceptsDebit?: boolean | null;
+  maxInstallments?: number | null;
+
+  // Dinheiro
+  acceptsChange?: boolean | null;
+  changeLimit?: number | null;
+
+  // Outros
+  acceptsMealTicket?: boolean | null;
+
+  // Informações extras
+  notes?: string | null;
+  details?: string | null;
 }

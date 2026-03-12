@@ -2,6 +2,7 @@ import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonContent, NavController, ToastController } from '@ionic/angular';
 import { firstValueFrom, Subscription } from 'rxjs';
+import { PaymentMethodEnum } from 'src/models/enums/payment-method';
 import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response';
 import { UserModel } from 'src/models/user-model';
 import { DashBoardService } from 'src/services/dashboard.service';
@@ -763,11 +764,9 @@ export class QueuePage implements AfterViewInit {
     this.content.scrollToTop(200);
   }
 
-
   onCardLongPress(item: any, type: 'queue' | 'appointment'): void {
     console.log('Long press on', type, item.id);
   }
-
 
   async openStoreLocation(store: any): Promise<void> {
     if (store.latitude && store.longitude) {
@@ -777,6 +776,33 @@ export class QueuePage implements AfterViewInit {
       this.toastService.show('Localização não disponível', 'warning');
     }
   }
+
+  paymentIcons: Record<number, string> = {
+    [PaymentMethodEnum.pix]: 'phone-portrait-outline',
+    [PaymentMethodEnum.card]: 'card-outline',
+    [PaymentMethodEnum.cash]: 'cash-outline',
+    [PaymentMethodEnum.automaticDebit]: 'repeat-outline',
+    [PaymentMethodEnum.boleto]: 'document-text-outline',
+    [PaymentMethodEnum.bankTransfer]: 'swap-horizontal-outline'
+  };
+
+  paymentColors: Record<number, string> = {
+    [PaymentMethodEnum.pix]: '#32ade6',
+    [PaymentMethodEnum.card]: '#007aff',
+    [PaymentMethodEnum.cash]: '#34c759',
+    [PaymentMethodEnum.automaticDebit]: '#5856d6',
+    [PaymentMethodEnum.boleto]: '#ff9500',
+    [PaymentMethodEnum.bankTransfer]: '#af52de'
+  };
+
+  paymentNames: Record<number, string> = {
+    [PaymentMethodEnum.pix]: 'Pix',
+    [PaymentMethodEnum.card]: 'Cartão',
+    [PaymentMethodEnum.cash]: 'Dinheiro',
+    [PaymentMethodEnum.automaticDebit]: 'Débito automático',
+    [PaymentMethodEnum.boleto]: 'Boleto',
+    [PaymentMethodEnum.bankTransfer]: 'Transferência'
+  };
 
   async shareItem(item: any, type: 'queue' | 'appointment'): Promise<void> {
     if (navigator.share) {
