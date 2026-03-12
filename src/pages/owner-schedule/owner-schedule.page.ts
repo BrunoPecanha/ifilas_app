@@ -1,4 +1,4 @@
-import { Component, OnInit, QueryList, ViewChild, ViewChildren } from "@angular/core";
+import { Component, OnInit, QueryList, ViewChild, ViewChildren, AfterViewInit } from "@angular/core";
 import { ScheduleService } from "src/services/schedule.service";
 import { CdkDragDrop, CdkDragMove, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserModel } from "src/models/user-model";
@@ -7,7 +7,7 @@ import { StoresService } from "src/services/stores.service";
 import { StoreModel } from "src/models/store-model";
 import { ToastService } from "src/services/toast.service";
 import { Router } from "@angular/router";
-import { AlertController, IonContent, ModalController } from "@ionic/angular";
+import { AlertController, IonContent, ModalController, Platform } from "@ionic/angular";
 import { CpfSearchModalComponent } from "./modals/cpf-search-modal/cpf-search-modal.component";
 import { CustomerTypeModalComponent } from "./modals/customer-type-modal/customer-type-modal.component";
 import { WalkInCustomerModalComponent } from "./modals/walk-in-customer-modal/walk-in-customer-modal.component";
@@ -22,9 +22,8 @@ import { Subscription } from "rxjs";
   templateUrl: "./owner-schedule.page.html",
   styleUrls: ["./owner-schedule.page.scss"],
 })
-export class OwnerSchedulePage implements OnInit {
+export class OwnerSchedulePage implements OnInit, AfterViewInit {
   @ViewChildren('slotList', { read: CdkDropList }) slotLists!: QueryList<CdkDropList>;
-  @ViewChildren('trashList', { read: CdkDropList }) trashList!: QueryList<CdkDropList>;
 
   @ViewChild('content', { static: false }) content!: IonContent;
 
@@ -36,8 +35,8 @@ export class OwnerSchedulePage implements OnInit {
   private lastScrollCheck = 0;
 
   selectedTimeSlots: any[] = [];
+  allDropListIds: string[] = [];
   filteredTimeSlots: any[] = [];
-  trashData: any[] = [];
   preSelectedSlot: any = null;
   professionals: any[] = [];
 
@@ -46,7 +45,6 @@ export class OwnerSchedulePage implements OnInit {
   currentView: 'grid' | 'list' = 'grid';
   searchTerm: string = '';
   searchQuery: string = '';
-  trashHover = false;
   isDragging = false;
   user!: UserModel;
   store!: StoreModel;
@@ -63,6 +61,11 @@ export class OwnerSchedulePage implements OnInit {
 
   slotDuration = 30;
 
+  longPressTimer: any;
+  longPressThreshold = 500;
+  customerBeingLongPressed: any = null;
+  isLongPressing = false;
+
   statusFilters = [
     { value: 'waiting', label: 'Aguardando', selected: false, count: 0, color: 'medium' },
     { value: 'pending', label: 'Pendente', selected: false, count: 0, color: 'warning' },
@@ -78,6 +81,9 @@ export class OwnerSchedulePage implements OnInit {
 
   serviceFilters: any[] = [];
 
+  // Propriedade para conexão das drop lists
+  connectedDropLists: CdkDropList[] = [];
+
   constructor(
     private service: ScheduleService,
     private sessionService: SessionService,
@@ -87,7 +93,8 @@ export class OwnerSchedulePage implements OnInit {
     private alertController: AlertController,
     private customerService: CustomerService,
     private signalRService: SignalRService,
-    private storeService: StoresService
+    private storeService: StoresService,
+    private platform: Platform
   ) {
     this.user = this.sessionService.getUser();
     this.store = this.sessionService.getStore();
@@ -95,6 +102,13 @@ export class OwnerSchedulePage implements OnInit {
 
   ngOnInit() {
     this.loadSchedulesForDate();
+  }
+
+  ngAfterViewInit() {
+    // Conecta as drop lists após a view ser inicializada
+    setTimeout(() => {
+      this.updateConnectedDropLists();
+    });
   }
 
   ionViewWillEnter() {
@@ -110,6 +124,7 @@ export class OwnerSchedulePage implements OnInit {
 
   ionViewWillLeave() {
     this.signalRSub?.unsubscribe();
+    this.clearLongPressTimer();
   }
 
   get canShowPaymentDetails(): boolean {
@@ -138,8 +153,10 @@ export class OwnerSchedulePage implements OnInit {
     return this.slotLists ? this.slotLists.map(l => l.id) : [];
   }
 
-  get connectedDropLists(): string[] {
-    return this.filteredTimeSlots.map(s => 'slot-' + s.time);
+  private updateConnectedDropLists() {
+    if (this.slotLists) {
+      this.connectedDropLists = this.slotLists.toArray();
+    }
   }
 
   private async initSignalRConnection() {
@@ -159,6 +176,96 @@ export class OwnerSchedulePage implements OnInit {
       console.error('Erro SignalR (loja):', error);
       setTimeout(() => this.initSignalRConnection(), 5000);
     }
+  }
+
+  // NOVO MÉTODO: Iniciar long press
+  startLongPress(customer: any, event: Event) {
+    if (!this.canDeleteCustomer(customer)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    
+    this.clearLongPressTimer();
+    this.customerBeingLongPressed = customer;
+    
+    // Feedback tátil
+    if (this.platform.is('capacitor') && navigator.vibrate) {
+      navigator.vibrate(30);
+    }
+    
+    this.longPressTimer = setTimeout(() => {
+      this.confirmDeleteCustomer(customer);
+      this.isLongPressing = false;
+      this.customerBeingLongPressed = null;
+    }, this.longPressThreshold);
+    
+    this.isLongPressing = true;
+  }
+
+  // NOVO MÉTODO: Cancelar long press
+  cancelLongPress() {
+    this.clearLongPressTimer();
+    this.isLongPressing = false;
+    this.customerBeingLongPressed = null;
+  }
+
+  // NOVO MÉTODO: Limpar timer
+  private clearLongPressTimer() {
+    if (this.longPressTimer) {
+      clearTimeout(this.longPressTimer);
+      this.longPressTimer = null;
+    }
+  }
+
+  canDeleteCustomer(customer: any): boolean {
+    return customer.status !== 'done' && customer.status !== 'inservice';
+  }
+
+  async confirmDeleteCustomer(customer: any) {
+    const alert = await this.alertController.create({
+      header: 'Remover Atendimento',
+      message: `Deseja realmente remover o atendimento de ${customer.name}?`,
+      cssClass: 'delete-confirm-alert',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'alert-cancel',
+          handler: () => {
+            this.cancelLongPress();
+          }
+        },
+        {
+          text: 'Remover',
+          cssClass: 'alert-delete',
+          handler: () => {
+            this.executeDeleteCustomer(customer);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private executeDeleteCustomer(customer: any) {
+    this.service.removeMissingCustomer(customer.id, "Removido pelo responsável pelo atendimento").subscribe({
+      next: () => {
+        this.toastController.show('Atendimento removido com sucesso!', 'success');
+        this.removeAppointment(customer);
+        
+        if (this.platform.is('capacitor') && navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao remover atendimento:', err);
+        this.toastController.show('Erro ao remover atendimento', 'danger');
+        this.loadSchedulesForDate();
+      }
+    });
   }
 
   private loadSchedulesForDate() {
@@ -212,6 +319,7 @@ export class OwnerSchedulePage implements OnInit {
             isTransfered: customer.isTransfered || false,
             slotStart,
             slotEnd,
+            paymentMethodId: customer.paymentMethodId,
             durationMinutes,
             status: this.mapStatus(customer.status ?? 0),
             services: (customer.services || []).map((s: any) => ({
@@ -232,6 +340,10 @@ export class OwnerSchedulePage implements OnInit {
 
         this.updateFilterCounts();
         this.applyFilters();
+
+        setTimeout(() => {
+          this.updateConnectedDropLists();
+        });
       },
       error: (err) => {
         this.toastController.show('Erro ao carregar agendamentos do dia', 'danger');
@@ -240,6 +352,7 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   openServicesSummary(customer: any) {
+    this.cancelLongPress();
     this.selectedCustomer = customer;
     this.modalMode = 'summary';
     this.isModalOpen = true;
@@ -297,6 +410,8 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   async beginCustomerTransfer(customer: any) {
+    this.cancelLongPress(); 
+    
     await this.loadProfessionals();
 
     const modal = await this.modalController.create({
@@ -360,39 +475,6 @@ export class OwnerSchedulePage implements OnInit {
 
     return endIndex - startIndex;
   }
-
-  // private calculateTotalSlots(slotStart: string, slotEnd: string, allSlots: any[]): number {
-  //   if (!slotStart || !slotEnd || allSlots.length < 2)
-  //     return 1;
-
-  //   const toMin = (time: string) => {
-  //     const t = time.substring(0, 5);
-  //     const [h, m] = t.split(':').map(Number);
-  //     return h * 60 + m;
-  //   };
-
-  //   const start = toMin(slotStart);
-  //   const end = toMin(slotEnd);
-
-  //   if (end <= start)
-  //     return 1;
-
-  //   const slotDurations: number[] = [];
-  //   for (let i = 1; i < allSlots.length; i++) {
-  //     const prev = toMin(allSlots[i - 1].time);
-  //     const curr = toMin(allSlots[i].time);
-  //     slotDurations.push(curr - prev);
-  //   }
-
-  //   const avgSlotDuration = slotDurations.length
-  //     ? slotDurations.reduce((a, b) => a + b, 0) / slotDurations.length
-  //     : this.slotDuration;
-
-  //   const totalDuration = end - start;
-  //   const totalSlots = Math.ceil(totalDuration / avgSlotDuration);
-
-  //   return totalSlots > 0 ? totalSlots : 1;
-  // }
 
   onDrop(event: CdkDragDrop<any[]>, targetSlot: any) {
     if (targetSlot.disabled) {
@@ -466,28 +548,9 @@ export class OwnerSchedulePage implements OnInit {
       },
       error: (err) => {
         this.toastController.show('Falha ao atualizar o horário do cliente.', 'danger');
-
         this.loadSchedulesForDate();
       },
     });
-  }
-
-  onTrashDrop(event: CdkDragDrop<any[]>) {
-    const customer = event.item.data;
-
-    this.service.removeMissingCustomer(customer.id, "Removido pelo responsável pelo atendimento").subscribe({
-      next: () => {
-        this.toastController.show('Atendimento removido!', 'success');
-        this.removeAppointment(customer);
-      },
-      error: (err) => {
-        this.toastController.show('Erro ao remover atendimento', 'danger');
-        this.loadSchedulesForDate();
-      },
-    });
-
-    this.trashHover = false;
-    this.isDragging = false;
   }
 
   isSlotPassed(slotTime: string): boolean {
@@ -660,6 +723,10 @@ export class OwnerSchedulePage implements OnInit {
     this.filteredTimeSlots = [...this.selectedTimeSlots];
     this.updateFilterCounts();
     this.applyFilters();
+
+    setTimeout(() => {
+      this.updateConnectedDropLists();
+    });
   }
 
   private groupCustomerSlots(slots: any[]): any[] {
@@ -756,6 +823,14 @@ export class OwnerSchedulePage implements OnInit {
 
     this.updateFilterCounts();
     this.showFilters = false;
+
+    setTimeout(() => {
+      this.updateConnectedDropLists();
+    });
+  }
+
+  getStatusFilterByValue(value: string): any {
+    return this.statusFilters?.find(filter => filter.value === value);
   }
 
   updateFilterCounts() {
@@ -918,6 +993,8 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   async editAppointment(customer: any) {
+    this.cancelLongPress();
+    
     const servicesMapped = customer.services
       .filter((s: any) => s.variablePrice || s.variableTime)
       .map((s: any) => ({
@@ -1103,6 +1180,8 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   async confirmStartCustomerService(customer: any) {
+    this.cancelLongPress(); 
+    
     const alert = await this.alertController.create({
       header: 'Confirmar ação',
       message: `Deseja realmente alterar o atendimento de ${customer.name}?`,
@@ -1150,11 +1229,15 @@ export class OwnerSchedulePage implements OnInit {
 
   onDragStarted() {
     this.isDragging = true;
+    this.cancelLongPress();
+
+    if (navigator.vibrate) {
+      navigator.vibrate(15);
+    }
   }
 
   onDragEnded() {
     this.isDragging = false;
-    this.trashHover = false;
   }
 
   async handleRefresh(event: any) {
@@ -1189,6 +1272,7 @@ export class OwnerSchedulePage implements OnInit {
   }
 
   addAppointment(slot: any) {
+    this.cancelLongPress(); 
     this.preSelectedSlot = slot;
     this.openAddCustomerModal();
   }
