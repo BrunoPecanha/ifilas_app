@@ -105,7 +105,6 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // Conecta as drop lists após a view ser inicializada
     setTimeout(() => {
       this.updateConnectedDropLists();
     });
@@ -178,7 +177,6 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     }
   }
 
-  // NOVO MÉTODO: Iniciar long press
   startLongPress(customer: any, event: Event) {
     if (!this.canDeleteCustomer(customer)) {
       return;
@@ -190,7 +188,6 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     this.clearLongPressTimer();
     this.customerBeingLongPressed = customer;
     
-    // Feedback tátil
     if (this.platform.is('capacitor') && navigator.vibrate) {
       navigator.vibrate(30);
     }
@@ -204,14 +201,12 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     this.isLongPressing = true;
   }
 
-  // NOVO MÉTODO: Cancelar long press
   cancelLongPress() {
     this.clearLongPressTimer();
     this.isLongPressing = false;
     this.customerBeingLongPressed = null;
   }
 
-  // NOVO MÉTODO: Limpar timer
   private clearLongPressTimer() {
     if (this.longPressTimer) {
       clearTimeout(this.longPressTimer);
