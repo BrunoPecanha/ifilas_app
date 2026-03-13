@@ -95,6 +95,7 @@ export class SelectServicesPage implements OnInit {
     if (savedServices) {
       this.selectedServices = savedServices;
       this.updateTotals();
+      this.sessionService.removeGenericKey('selectedServices');
     }
   }
 
@@ -297,14 +298,17 @@ export class SelectServicesPage implements OnInit {
 
   openServiceDetail(service: ServiceModel) {
     if (!service)
-      return;   
+      return;
 
-    this.router.navigate(['/item-details'], {      
+    this.router.navigate(['/item-details'], {
       state: {
         service: service,
         storeId: this.storeId,
         useAgenda: this.useAgenda,
-        professionalName: this.professionalName
+        professionalName: this.professionalName,
+        queueId: this.queueId,
+        scheduleId: this.scheduleId,
+        editingExistingAppointment: this.editingExistingAppointment
       }
     });
   }
@@ -400,7 +404,7 @@ export class SelectServicesPage implements OnInit {
         },
         {
           text: 'Confirmar',
-          handler: () => {            
+          handler: () => {
             if (this.useAgenda) {
               this.proceedToSchedule();
             } else
