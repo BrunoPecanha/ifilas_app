@@ -405,7 +405,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
       destinationQueueId?: number | null;
     }
   ) {
-    
+
     const payload = {
       customerId: customer.id,
       currentSchedule: options.currentSchedule ?? null,
@@ -460,9 +460,26 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
     });
   }
 
-  get isAnyClientInService(): boolean {
-    return this.clients?.some(client => client.inService) && !this.store.attendSimultaneously;
+  canStartService(client: any, index: number): boolean {
+    const hasClientInService = this.clients?.some(c => c.inService);   
+    
+    if (!this.store.attendSimultaneously && hasClientInService) {
+      return false;
+    }
+
+    if (!this.store.answerOutOfOrder) {
+      const hasPreviousPending = this.clients
+        ?.slice(0, index)
+        .some(c => !c.inService);
+
+      if (hasPreviousPending) {
+        return false;
+      }
+    }
+
+    return true;
   }
+
 
   private getQueueOrAgendaForEmployee() {
     if (!this.employee.id)

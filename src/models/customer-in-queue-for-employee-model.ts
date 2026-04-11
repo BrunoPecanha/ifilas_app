@@ -12,6 +12,7 @@ export interface CustomerInQueueForEmployeeModel {
   timeCalledInQueue: Date;
   isPaused: boolean;
   canEditName: boolean;
+  status: number;
   phone: string;
   pricePending: boolean;  
 }
