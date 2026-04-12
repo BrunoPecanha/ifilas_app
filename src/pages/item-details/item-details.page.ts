@@ -21,6 +21,9 @@ export class ItemDetailsPage implements OnInit {
   headerScrolled: boolean = false;
   quantity = 0;
   professionalName: string = '';
+  queueId: number = 0;
+  scheduleId: number = 0;
+  editingExistingAppointment: boolean = false;
 
   selectedServices: ServiceModel[] = [];
 
@@ -39,6 +42,9 @@ export class ItemDetailsPage implements OnInit {
       this.storeId = state.storeId;
       this.useAgenda = state.useAgenda || false;
       this.professionalName = state.professionalName || '';
+      this.queueId = state.queueId || 0;
+      this.scheduleId = state.scheduleId || 0;
+      this.editingExistingAppointment = state.editingExistingAppointment || false;
     }
   }
 
@@ -76,7 +82,10 @@ export class ItemDetailsPage implements OnInit {
       queryParams: {
         storeId: this.storeId,
         useAgenda: this.useAgenda,
-        professionalName: this.professionalName
+        professionalName: this.professionalName,
+        queueId: this.queueId,
+        scheduleId: this.scheduleId,
+        editingExistingAppointment: this.editingExistingAppointment
       }
     });
   }

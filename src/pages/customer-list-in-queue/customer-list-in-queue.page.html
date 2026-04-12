@@ -267,7 +267,7 @@
                 </ion-button>
 
                 <ion-button
-                  [disabled]="client.pricePending || (isAnyClientInService && !client.inService) || client.inService"
+                  [disabled]="client.pricePending || !canStartService(client, i)"
                   fill="clear"
                   size="small"
                   (click)="callCustomer(client)"
@@ -305,7 +305,7 @@
               </ion-button>
 
               <ion-button
-                [disabled]="client.pricePending || (isAnyClientInService && !client.inService)"
+                [disabled]="client.pricePending || !canStartService(client, i)"
                 *ngIf="!isPaused"
                 class="service-button"
                 fill="solid"

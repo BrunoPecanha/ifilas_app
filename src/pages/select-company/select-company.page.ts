@@ -277,7 +277,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
 
   getUserAddress() {
     const user = this.session.getUser();
-    return `${user?.address}, ${user?.number}` || 'Endereço não definido';
+    return `${user?.address}` || 'Endereço não definido';
   }
 
   hasActiveFilters(): boolean {

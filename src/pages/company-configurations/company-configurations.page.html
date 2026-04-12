@@ -518,9 +518,13 @@
           <div class="setting-info">
             <ion-icon name="qr-code-outline"></ion-icon>
             <span>Solicitar QR Code Antes</span>
+            <span class="badge-coming-soon">Em breve</span>
           </div>
           <label class="ios-toggle">
-            <input type="checkbox" formControlName="startServiceWithQRCode" />
+            <input
+              type="checkbox disabled"
+              formControlName="startServiceWithQRCode"
+            />
             <span class="toggle-slider"></span>
           </label>
         </div>
@@ -529,9 +533,13 @@
           <div class="setting-info">
             <ion-icon name="qr-code"></ion-icon>
             <span>Solicitar QR Code Depois</span>
+            <span class="badge-coming-soon">Em breve</span>
           </div>
           <label class="ios-toggle">
-            <input type="checkbox" formControlName="endServiceWithQRCode" />
+            <input
+              type="checkbox disabled"
+              formControlName="endServiceWithQRCode"
+            />
             <span class="toggle-slider"></span>
           </label>
         </div>
@@ -540,10 +548,11 @@
           <div class="setting-info">
             <ion-icon name="checkmark"></ion-icon>
             <span>Permitir sem QR Code (falha)</span>
+            <span class="badge-coming-soon">Em breve</span>
           </div>
           <label class="ios-toggle">
             <input
-              type="checkbox"
+              type="checkbox disabled"
               formControlName="inCaseFailureAcceptFinishWithoutQRCode"
             />
             <span class="toggle-slider"></span>
@@ -556,7 +565,10 @@
             <span>Iniciar serviço automaticamente</span>
           </div>
           <label class="ios-toggle">
-            <input type="checkbox" formControlName="startScheduleServiceAutomatically" />
+            <input
+              type="checkbox"
+              formControlName="startScheduleServiceAutomatically"
+            />
             <span class="toggle-slider"></span>
           </label>
         </div>
@@ -569,9 +581,10 @@
           <div class="setting-info">
             <ion-icon name="share-social-outline"></ion-icon>
             <span>Compartilhar Fila</span>
+            <span class="badge-coming-soon">Em breve</span>
           </div>
           <label class="ios-toggle">
-            <input type="checkbox" formControlName="shareQueue" />
+            <input type="checkbox disabled" formControlName="shareQueue" />
             <span class="toggle-slider"></span>
           </label>
         </div>
@@ -608,7 +621,7 @@
         <div class="setting-item">
           <div class="setting-info">
             <ion-icon name="lock-open-outline"></ion-icon>
-            <span>Aprovar agendamentos que excedam o horário</span>
+            <span>Aprovar agend. que excedam horário</span>
           </div>
           <label class="ios-toggle">
             <input
@@ -686,14 +699,14 @@
           </label>
         </div>
 
-        <div class="setting-item disabled">
+        <div class="setting-item">
           <div class="setting-info">
             <ion-icon name="people-circle-outline"></ion-icon>
             <span>Atender simultaneamente</span>
             <span class="badge-coming-soon">Em breve</span>
           </div>
-          <label class="ios-toggle disabled">
-            <input type="checkbox" disabled />
+          <label class="ios-toggle">
+            <input type="checkbox" />
             <span class="toggle-slider"></span>
           </label>
         </div>

@@ -1,0 +1,159 @@
+// iOS Style Confirmation Page
+.confirmation-content {
+  --background: #f8f8f8;
+  
+  &::part(scroll) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.confirmation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  min-height: 100%;
+  text-align: center;
+}
+
+// Success Animation
+.success-animation {
+  margin-bottom: 32px;
+  animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.circle-check {
+  width: 100px;
+  height: 100px;
+  background: #34c759;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(52, 199, 89, 0.3);
+  
+  ion-icon {
+    font-size: 64px;
+    color: white;
+    animation: checkmark 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+  }
+}
+
+// Title
+.confirmation-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1c1c1e;
+  margin: 0 0 12px 0;
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+}
+
+// Text
+.confirmation-text {
+  font-size: 16px;
+  color: #8e8e93;
+  line-height: 1.4;
+  margin: 0 0 40px 0;
+  max-width: 280px;
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+// Button
+.continue-button {
+  --background: #007aff;
+  --background-hover: #0051d5;
+  --border-radius: 14px;
+  --box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+  height: 52px;
+  font-size: 17px;
+  font-weight: 600;
+  text-transform: none;
+  margin: 0;
+  max-width: 300px;
+  width: 100%;
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// Animations
+@keyframes scaleUp {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .confirmation-container {
+    padding: 24px;
+  }
+  
+  .circle-check {
+    width: 80px;
+    height: 80px;
+    
+    ion-icon {
+      font-size: 48px;
+    }
+  }
+  
+  .confirmation-title {
+    font-size: 24px;
+  }
+  
+  .confirmation-text {
+    font-size: 15px;
+    max-width: 260px;
+  }
+}
+
+// Dark Mode
+@media (prefers-color-scheme: dark) {
+  .confirmation-content {
+    --background: #000000;
+  }
+  
+  .confirmation-title {
+    color: #ffffff;
+  }
+  
+  .confirmation-text {
+    color: #8e8e93;
+  }
+}

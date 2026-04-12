@@ -781,7 +781,6 @@ export class QueuePage implements AfterViewInit {
     [PaymentMethodEnum.pix]: 'phone-portrait-outline',
     [PaymentMethodEnum.card]: 'card-outline',
     [PaymentMethodEnum.cash]: 'cash-outline',
-    [PaymentMethodEnum.automaticDebit]: 'repeat-outline',
     [PaymentMethodEnum.boleto]: 'document-text-outline',
     [PaymentMethodEnum.bankTransfer]: 'swap-horizontal-outline'
   };
@@ -790,7 +789,6 @@ export class QueuePage implements AfterViewInit {
     [PaymentMethodEnum.pix]: '#32ade6',
     [PaymentMethodEnum.card]: '#007aff',
     [PaymentMethodEnum.cash]: '#34c759',
-    [PaymentMethodEnum.automaticDebit]: '#5856d6',
     [PaymentMethodEnum.boleto]: '#ff9500',
     [PaymentMethodEnum.bankTransfer]: '#af52de'
   };
@@ -799,7 +797,6 @@ export class QueuePage implements AfterViewInit {
     [PaymentMethodEnum.pix]: 'Pix',
     [PaymentMethodEnum.card]: 'Cartão',
     [PaymentMethodEnum.cash]: 'Dinheiro',
-    [PaymentMethodEnum.automaticDebit]: 'Débito automático',
     [PaymentMethodEnum.boleto]: 'Boleto',
     [PaymentMethodEnum.bankTransfer]: 'Transferência'
   };

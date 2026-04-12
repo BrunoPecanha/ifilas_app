@@ -1,0 +1,27 @@
+<ion-content class="confirmation-content">
+  <div class="confirmation-container">
+    <!-- Success Icon -->
+    <div class="success-animation">
+      <div class="circle-check">
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <h1 class="confirmation-title">Agendamento Confirmado!</h1>
+
+    <!-- Description -->
+    <p class="confirmation-text">
+      Acompanhe o status em tempo real no aplicativo.
+    </p>
+
+    <!-- Continue Button -->
+    <ion-button 
+      expand="block" 
+      class="continue-button"
+      (click)="goToSchedule()"
+    >
+      Continuar
+    </ion-button>
+  </div>
+</ion-content>
