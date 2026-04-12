@@ -22,7 +22,8 @@ export class ConfirmationPage {
     this.router.navigate(['/queue'], {
       queryParams: {
         userId: this.userId,
-        editingExistingAppointment: this.editingExistingAppointment
+        editingExistingAppointment: this.editingExistingAppointment,
+        state: { from: 'confirmation' }
       }
     });
   }

@@ -27,12 +27,35 @@
           *ngFor="let service of selectedServices"
           class="service-item-compact"
         >
-          <div class="service-name">{{ service.name }}</div>
+          <div class="service-name">
+            {{ service.name }}
+            <span *ngIf="service.quantity > 1" class="service-quantity">
+              (x{{ service.quantity }})
+            </span>
+          </div>
+
           <div class="service-details">
-            <span class="service-price"
-              >{{ service.price | currency:'BRL':'symbol':'1.2-2' }}</span
-            >
-            <span class="service-time">{{ service.duration }} min</span>
+            <span class="service-price" *ngIf="!service.variablePrice">
+              {{ (service.price * service.quantity) |
+              currency:'BRL':'symbol':'1.2-2' }}
+            </span>
+
+            <span class="service-price" *ngIf="service.variablePrice">
+              R$ 0,00
+            </span>
+
+            <span class="service-time" *ngIf="service.quantity === 1">
+              <span *ngIf="service.variableTime"> (a combinar) </span>
+              <span *ngIf="!service.variableTime">
+                {{ service.duration }} min
+              </span>
+            </span>
+            <span class="service-time" *ngIf="service.quantity > 1">
+              <span *ngIf="service.variableTime"> (a combinar) </span>
+              <span *ngIf="!service.variableTime">
+                {{ service.duration }} min
+              </span>
+            </span>
           </div>
         </div>
       </div>
@@ -91,15 +114,26 @@
     <div class="pricing-section">
       <div class="price-row">
         <span>Subtotal</span>
-        <span>{{ subtotal | currency:'BRL':'symbol':'1.2-2' }}</span>
+        <span class="value">
+          {{ subtotal | currency:'BRL':'symbol':'1.2-2' }}</span
+        >
       </div>
       <div class="price-row" *ngIf="serviceFee > 0">
         <span>Taxa de Serviço</span>
-        <span>{{ serviceFee | currency:'BRL':'symbol':'1.2-2' }}</span>
+        <span class="value"
+          >{{ serviceFee | currency:'BRL':'symbol':'1.2-2' }}</span
+        >
       </div>
       <div class="price-row total">
         <span>Valor Final</span>
-        <span>{{ finalTotal | currency:'BRL':'symbol':'1.2-2' }}</span>
+        <div class="total-wrapper">
+          <span class="blue-total">
+            {{ finalTotal | currency:'BRL':'symbol':'1.2-2' }}
+          </span>
+          <span *ngIf="hasVariablePrice" class="variable-note">
+            + a combinar
+          </span>
+        </div>
       </div>
     </div>
   </div>

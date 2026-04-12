@@ -284,7 +284,7 @@ export class SelectServicesPage implements OnInit {
 
   removeServiceById(id: number) {
     const idx = this.selectedServices.findIndex(s => s.id === id);
-    if (idx >= 0) 
+    if (idx >= 0)
       this.removeService(idx);
   }
 
@@ -517,11 +517,11 @@ export class SelectServicesPage implements OnInit {
     this.queueService.updateCustomerToQueue(command).subscribe();
   }
 
-  goToQueueCheckout() {    
-     const storeData = {
-        name: this.store.name,
-        logo: this.store.logoPath       
-      };
+  goToQueueCheckout() {
+    const storeData = {
+      name: this.store.name,
+      logo: this.store.logoPath
+    };
 
     const checkoutContext = {
       flow: this.useAgenda ? 'agenda' : 'queue',
@@ -544,7 +544,10 @@ export class SelectServicesPage implements OnInit {
       userId: this.user.id
     };
 
-    this.sessionService.setGenericKey(checkoutContext, 'queueCheckoutContext');
+    this.sessionService.setGenericKey(
+      JSON.parse(JSON.stringify(checkoutContext)),
+      'queueCheckoutContext'
+    );
 
     this.router.navigate(['/checkout'], {
       state: checkoutContext

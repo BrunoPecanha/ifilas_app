@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { PaymentModel } from 'src/models/payment-model';
 import { PaymentsResponse } from 'src/models/responses/payment-response';
@@ -63,25 +63,29 @@ export class CheckoutPage implements OnInit {
     private toastController: ToastController,
     private sessionService: SessionService,
     private paymentService: PaymentService
-  ) { }
+  ) {
+    this.loadCheckoutData();
+  }
 
   ngOnInit() {
+    this.loadPayments();
+  }
+
+  ionViewWillEnter() {
     this.loadCheckoutData();
     this.calculateTotals();
     this.calculateEstimatedEndTime();
-    this.loadPayments();
   }
 
   loadCheckoutData() {
     const navState = this.router.getCurrentNavigation()?.extras?.state as any;
     const historyState = history.state || {};
-    const savedState = this.sessionService.getGenericKey('queueCheckoutContext') || {};
 
-    const state = {
-      ...savedState,
-      ...historyState,
-      ...navState
-    };
+    const state =
+      navState ||
+      historyState ||
+      this.sessionService.getGenericKey('queueCheckoutContext') ||
+      {};
 
     if (state) {
       this.storeData = state.storeData || this.storeData;
@@ -109,6 +113,10 @@ export class CheckoutPage implements OnInit {
       this.looseCustomerName = state.looseCustomerName || '';
       this.notes = state.notes || '';
     }
+  }
+
+  get hasVariablePrice(): boolean {
+    return this.selectedServices.some(s => s.variablePrice);
   }
 
   loadPayments(): void {
@@ -303,7 +311,7 @@ export class CheckoutPage implements OnInit {
 
         this.sessionService.removeGenericKey('queueCheckoutContext');
 
-        this.router.navigate(['/queue-success'], {
+        this.router.navigate(['/confirmation'], {
           state: {
             userId: this.userId,
             editingExistingAppointment: this.editingExistingAppointment

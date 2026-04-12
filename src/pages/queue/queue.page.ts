@@ -1,6 +1,6 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, IonContent, NavController, ToastController } from '@ionic/angular';
+import { AlertController, IonContent, NavController } from '@ionic/angular';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { PaymentMethodEnum } from 'src/models/enums/payment-method';
 import { QueueItem, ScheduleItem } from 'src/models/responses/dashboard-response';
@@ -18,7 +18,7 @@ import { TokenService } from 'src/services/token.service';
   templateUrl: './queue.page.html',
   styleUrls: ['./queue.page.scss'],
 })
-export class QueuePage implements AfterViewInit {
+export class QueuePage implements AfterViewInit, OnInit {
   @ViewChild(IonContent) content: IonContent = null as any;
 
   currentDate = new Date();
@@ -27,6 +27,7 @@ export class QueuePage implements AfterViewInit {
   showQrModal = false;
   isLoadingQr = false;
   headerScrolled = false;
+  fromRoute: string | null = null;
 
   qrCodeDataUrl: string = '';
 
@@ -64,7 +65,15 @@ export class QueuePage implements AfterViewInit {
   ) {
     this.user = this.sessionService.getUser();
     const nav = this.router.getCurrentNavigation();
-    this.cameFromEntryFlow = nav?.extras.state?.['fromEntryFlow'] || false;
+    this.cameFromEntryFlow = nav?.extras.queryParams?.['state']?.['fromEntryFlow'] || false;
+  }
+
+  ngOnInit() {
+    const nav = this.router.getCurrentNavigation();
+    
+    this.fromRoute = nav?.extras.queryParams?.['state']?.['from']
+      || history.state?.from
+      || null;
   }
 
   ngAfterViewInit() {
@@ -227,12 +236,13 @@ export class QueuePage implements AfterViewInit {
     return this.filteredAppointments;
   }
 
-  handleBack() {
-    if (this.cameFromEntryFlow) {
+  handleBack() {    
+    if (this.cameFromEntryFlow || this.fromRoute === 'confirmation') {
       this.router.navigate(['/select-company'], { replaceUrl: true });
-    } else {
-      this.navCtrl.back();
+      return;
     }
+
+    this.navCtrl.back();
   }
 
   getDayOfWeek(date: Date): string {
