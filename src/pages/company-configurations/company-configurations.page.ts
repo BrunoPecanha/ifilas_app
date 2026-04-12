@@ -178,7 +178,6 @@ export class CompanyConfigurationsPage implements OnDestroy {
       { type: PaymentMethodEnum.pix, selected: false, pixKey: '', pixKeyType: 'cpf' },
       { type: PaymentMethodEnum.card, selected: false, acceptsCredit: false, acceptsDebit: false, acceptsMealTicket: false, maxInstallments: 1 },
       { type: PaymentMethodEnum.cash, selected: false, acceptsChange: false, changeLimit: 1 },
-      { type: PaymentMethodEnum.automaticDebit, selected: false },
       { type: PaymentMethodEnum.boleto, selected: false },
       { type: PaymentMethodEnum.bankTransfer, selected: false, bank: '', agency: '', account: '' }
     ];    
@@ -657,7 +656,6 @@ export class CompanyConfigurationsPage implements OnDestroy {
       [PaymentMethodEnum.pix]: '#32ade6',
       [PaymentMethodEnum.card]: '#007aff',
       [PaymentMethodEnum.cash]: '#34c759',
-      [PaymentMethodEnum.automaticDebit]: '#5856d6',
       [PaymentMethodEnum.boleto]: '#ff9500',
       [PaymentMethodEnum.bankTransfer]: '#af52de'
     };
@@ -668,7 +666,6 @@ export class CompanyConfigurationsPage implements OnDestroy {
     [PaymentMethodEnum.pix]: 'phone-portrait-outline',
     [PaymentMethodEnum.card]: 'card-outline',
     [PaymentMethodEnum.cash]: 'cash-outline',
-    [PaymentMethodEnum.automaticDebit]: 'repeat-outline',
     [PaymentMethodEnum.boleto]: 'document-text-outline',
     [PaymentMethodEnum.bankTransfer]: 'swap-horizontal-outline'
   };
@@ -991,13 +988,11 @@ export class CompanyConfigurationsPage implements OnDestroy {
   getPaymentName(type: PaymentMethodEnum): string {
     switch (type) {
       case PaymentMethodEnum.pix:
-        return 'PIX';
+        return 'Pix';
       case PaymentMethodEnum.card:
         return 'Cartão';
       case PaymentMethodEnum.cash:
         return 'Dinheiro';
-      case PaymentMethodEnum.automaticDebit:
-        return 'Débito Automático';
       case PaymentMethodEnum.boleto:
         return 'Boleto';
       case PaymentMethodEnum.bankTransfer:

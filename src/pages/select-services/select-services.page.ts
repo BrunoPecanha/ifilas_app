@@ -13,6 +13,7 @@ import { SessionService } from 'src/services/session.service';
 import { SignalRService } from 'src/services/seignalr.service';
 import { ScheduleService } from 'src/services/schedule.service';
 import { AddCustomerToScheduleRequest } from 'src/models/requests/add-customer-to-schedule-request copy';
+import { StoreModel } from 'src/models/store-model';
 
 @Component({
   selector: 'app-select-services',
@@ -40,6 +41,7 @@ export class SelectServicesPage implements OnInit {
   looseCustomerName: string = '';
   useAgenda: boolean = false;
   professionalId = 0;
+  store!: StoreModel;
   professionalName = '';
   editingExistingAppointment: boolean = false;
 
@@ -66,6 +68,7 @@ export class SelectServicesPage implements OnInit {
     private signalRService: SignalRService
   ) {
     this.user = this.sessionService.getUser();
+    this.store = this.sessionService.getStore();
   }
 
   ngAfterViewInit() {
@@ -281,9 +284,9 @@ export class SelectServicesPage implements OnInit {
 
   removeServiceById(id: number) {
     const idx = this.selectedServices.findIndex(s => s.id === id);
-    if (idx >= 0) this.removeService(idx);
+    if (idx >= 0) 
+      this.removeService(idx);
   }
-
 
   addServiceWithAnimation(service: ServiceModel) {
     this.addService(service);
@@ -408,7 +411,7 @@ export class SelectServicesPage implements OnInit {
             if (this.useAgenda) {
               this.proceedToSchedule();
             } else
-              this.proceedToQueue();
+              this.goToQueueCheckout();
           }
         }
       ]
@@ -512,6 +515,40 @@ export class SelectServicesPage implements OnInit {
     };
 
     this.queueService.updateCustomerToQueue(command).subscribe();
+  }
+
+  goToQueueCheckout() {    
+     const storeData = {
+        name: this.store.name,
+        logo: this.store.logoPath       
+      };
+
+    const checkoutContext = {
+      flow: this.useAgenda ? 'agenda' : 'queue',
+      storeId: this.storeId,
+      storeData: storeData,
+      queueId: this.queueId,
+      professionalId: this.professionalId,
+      professionalName: this.professionalName,
+      customerId: this.customerId,
+      looseCustomer: this.looseCustomer,
+      looseCustomerName: this.looseCustomerName,
+      notes: this.notes,
+      paymentMethod: this.paymentMethod,
+      selectedServices: this.selectedServices,
+      totalTime: this.fixedTimeTotal,
+      totalPrice: this.fixedPriceTotal,
+      totalTimeString: this.totalTimeString,
+      totalPriceString: this.totalPriceString,
+      editingExistingAppointment: this.editingExistingAppointment,
+      userId: this.user.id
+    };
+
+    this.sessionService.setGenericKey(checkoutContext, 'queueCheckoutContext');
+
+    this.router.navigate(['/checkout'], {
+      state: checkoutContext
+    });
   }
 
   proceedToQueue() {

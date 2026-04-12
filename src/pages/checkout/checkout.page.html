@@ -1,0 +1,108 @@
+<app-custom-header
+  title="CHECKOUT"
+  [subtitle]="professionalData.name"
+  [showEndButton]="true"
+  [showStartButton]="true"
+  endIconName="checkmark-outline"
+  [endDisabled]="!selectedPaymentMethod"
+  (onEndClick)="confirmCheckout()"
+  (onStartClick)="goBack()"
+>
+</app-custom-header>
+
+<ion-content class="checkout-content" [fullscreen]="true">
+  <div class="checkout-container">
+    <div class="store-header">
+      <h1>{{ storeData.name }}</h1>
+      <div class="waiting-time">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>Tempo estimado: {{ totalTimeString }} de espera</span>
+      </div>
+    </div>
+
+    <div class="services-section">
+      <h3 class="section-title">Serviços selecionados</h3>
+      <div class="services-list-compact">
+        <div
+          *ngFor="let service of selectedServices"
+          class="service-item-compact"
+        >
+          <div class="service-name">{{ service.name }}</div>
+          <div class="service-details">
+            <span class="service-price"
+              >{{ service.price | currency:'BRL':'symbol':'1.2-2' }}</span
+            >
+            <span class="service-time">{{ service.duration }} min</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="entry-time" *ngIf="flow === 'queue'">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <span>Entrada na fila às <b>{{ currentTime }}</b></span>
+    </div>
+
+    <div class="entry-time" *ngIf="flow !== 'queue'">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <span>Agendamento: {{ selectedTimeSlot }}</span>
+    </div>
+
+    <div class="payment-section">
+      <h3 class="section-title">Pagamento</h3>
+
+      <div class="payment-grid">
+        <div
+          *ngFor="let method of paymentMethods"
+          class="payment-card"
+          [class.selected]="selectedPaymentMethod?.type === method.type"
+          (click)="selectPaymentMethod(method)"
+        >
+          <ion-icon [name]="method.icon" class="payment-icon"></ion-icon>
+
+          <span class="payment-name"> {{ method.name }} </span>
+        </div>
+      </div>
+
+      <div
+        class="installments-wrapper"
+        *ngIf="selectedPaymentMethod?.type === 2 && selectedPaymentMethod?.acceptsCredit"
+      >
+        <ion-item lines="none" class="installments-selector">
+          <ion-label>Parcelamento</ion-label>
+
+          <ion-select
+            [(ngModel)]="selectedInstallments"
+            interface="action-sheet"
+            (ionChange)="calculateInstallments()"
+          >
+            <ion-select-option
+              *ngFor="let option of installmentsOptions"
+              [value]="option"
+            >
+              {{ option }}x de {{ calculateInstallmentValue(option) |
+              currency:'BRL':'symbol':'1.2-2' }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+    </div>
+
+    <div class="pricing-section">
+      <div class="price-row">
+        <span>Subtotal</span>
+        <span>{{ subtotal | currency:'BRL':'symbol':'1.2-2' }}</span>
+      </div>
+      <div class="price-row" *ngIf="serviceFee > 0">
+        <span>Taxa de Serviço</span>
+        <span>{{ serviceFee | currency:'BRL':'symbol':'1.2-2' }}</span>
+      </div>
+      <div class="price-row total">
+        <span>Valor Final</span>
+        <span>{{ finalTotal | currency:'BRL':'symbol':'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<app-footer-menu></app-footer-menu>

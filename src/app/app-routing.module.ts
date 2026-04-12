@@ -133,7 +133,17 @@ const routes: Routes = [
   {
     path: 'item-details',
     loadChildren: () => import('../pages/item-details/item-details.module').then( m => m.ItemDetailsPageModule)
+  },
+  {
+    path: 'checkout',
+    loadChildren: () => import('../pages/checkout/checkout.module').then( m => m.CheckoutPageModule)
+  },
+  {
+    path: 'confirmation-page',
+    loadChildren: () => import('../pages/confirmation-page/confirmation-page.module').then( m => m.ConfirmationPagePageModule)
   }
+
+
 
 ];
 
