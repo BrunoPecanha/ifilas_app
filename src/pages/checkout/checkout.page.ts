@@ -7,6 +7,7 @@ import { PaymentsResponse } from 'src/models/responses/payment-response';
 import { ServiceModel } from 'src/models/service-model';
 import { PaymentService } from 'src/services/payment-service';
 import { QueueService } from 'src/services/queue.service';
+import { ScheduleService } from 'src/services/schedule.service';
 import { SignalRService } from 'src/services/seignalr.service';
 import { SessionService } from 'src/services/session.service';
 
@@ -66,7 +67,8 @@ export class CheckoutPage implements OnInit {
     private sessionService: SessionService,
     private paymentService: PaymentService,
     private queueService: QueueService,
-    private signalRService: SignalRService
+    private signalRService: SignalRService,
+    private scheduleService: ScheduleService
   ) {
     this.loadCheckoutData();
   }
@@ -283,10 +285,26 @@ export class CheckoutPage implements OnInit {
     await alert.present();
   }
 
+  get formattedScheduleInfo(): string {
+    if (this.flow !== 'schedule' || !this.selectedDate || !this.selectedTimeSlot) {
+      return '';
+    }
+
+    const date = new Date(this.selectedDate);
+
+    const formattedDate = date.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long'
+    });
+
+    return `${formattedDate} às ${this.selectedTimeSlot}`;
+  }
+
   async processCheckout() {
     const loading = await this.alertController.create({
       header: 'Processando...',
-      message: 'Estamos confirmando sua fila',
+      message: 'Confirmando...',
       backdropDismiss: false
     });
 
@@ -298,6 +316,31 @@ export class CheckoutPage implements OnInit {
     }));
 
     try {
+      if (this.flow === 'schedule') {
+
+        const request = {
+          selectedServices: servicesToSend,
+          notes: this.notes || '',
+          paymentMethod: Number(this.selectedPaymentMethod?.type || 1),
+          storeId: this.storeId,
+          scheduleId: 0,
+          professionalId: this.professionalId,
+          time: this.selectedTimeSlot,
+          date: this.selectedDate,
+          customerId: this.customerId,
+          looseCustomer: this.looseCustomer,
+          looseCustomerName: this.looseCustomerName
+        };
+
+        await this.scheduleService.addCustomerToSchedule(request).toPromise();
+
+        await loading.dismiss();
+
+        this.navigateAfterQueue('schedule');
+
+        return;
+      }
+
       if (this.customerId) {
         const command: UpdateCustomerToQueueRequest = {
           selectedServices: servicesToSend,
@@ -308,9 +351,8 @@ export class CheckoutPage implements OnInit {
 
         await this.queueService.updateCustomerToQueue(command).toPromise();
         await this.initSignalRConnection();
-        this.navigateAfterQueue();
       }
-      else {        
+      else {
         const command = {
           selectedServices: servicesToSend,
           notes: this.notes,
@@ -322,9 +364,11 @@ export class CheckoutPage implements OnInit {
         };
 
         await this.queueService.addCustomerToQueue(command).toPromise();
-        await loading.dismiss();
-        this.navigateAfterQueue();
       }
+
+      await loading.dismiss();
+
+      this.navigateAfterQueue('queue');
 
       this.sessionService.removeGenericKey('queueCheckoutContext');
 
@@ -334,10 +378,11 @@ export class CheckoutPage implements OnInit {
     }
   }
 
-  private navigateAfterQueue() {
+  private navigateAfterQueue(flow: string) {
     const queryParams = {
       userId: this.userId,
-      editingExistingAppointment: this.editingExistingAppointment
+      editingExistingAppointment: this.editingExistingAppointment,
+      flow: flow
     };
     this.router.navigate(['/confirmation'], { queryParams });
   }

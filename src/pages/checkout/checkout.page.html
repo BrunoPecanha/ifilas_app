@@ -71,9 +71,13 @@
       </span>
     </div>
 
-    <div class="entry-time" *ngIf="flow !== 'queue'">
-      <ion-icon name="calendar-outline"></ion-icon>
-      <span>Agendamento: {{ selectedTimeSlot }}</span>
+    <div class="schedule-info" *ngIf="flow === 'schedule'">
+      <ion-icon name="calendar-clear-outline"></ion-icon>
+
+      <div class="schedule-text">
+        <span class="label">Agendamento</span>
+        <span class="value"> {{ formattedScheduleInfo }} </span>
+      </div>
     </div>
 
     <div class="payment-section">
