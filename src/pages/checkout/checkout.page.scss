@@ -15,14 +15,14 @@
   padding: 20px;
   margin-bottom: 16px;
   text-align: center;
-  
+
   h1 {
     margin: 0 0 8px 0;
     font-size: 24px;
     font-weight: 700;
     color: #1c1c1e;
   }
-  
+
   .waiting-time {
     display: inline-flex;
     align-items: center;
@@ -30,12 +30,12 @@
     background: rgba(0, 122, 255, 0.1);
     padding: 6px 12px;
     border-radius: 20px;
-    
+
     ion-icon {
       font-size: 16px;
       color: #007aff;
     }
-    
+
     span {
       font-size: 14px;
       color: #007aff;
@@ -69,27 +69,27 @@
     align-items: baseline;
     padding: 8px 0;
     border-bottom: 1px solid #e5e5ea;
-    
+
     &:last-child {
       border-bottom: none;
     }
-    
+
     .service-name {
       font-size: 15px;
       font-weight: 500;
       color: #1c1c1e;
     }
-    
+
     .service-details {
       display: flex;
       gap: 12px;
-      
+
       .service-price {
         font-size: 15px;
         font-weight: 600;
         color: #1c1c1e;
       }
-      
+
       .service-time {
         font-size: 13px;
         color: #8e8e93;
@@ -107,16 +107,15 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  
+
   ion-icon {
     font-size: 20px;
     color: #007aff;
   }
-  
+
   span {
     font-size: 15px;
     font-weight: 500;
-    color: #1c1c1e;
   }
 }
 
@@ -146,30 +145,30 @@
   gap: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   &:active {
     transform: scale(0.96);
   }
-  
+
   &.selected {
     background: rgba(0, 122, 255, 0.1);
     border-color: #007aff;
-    
+
     .payment-icon {
       color: #007aff;
     }
-    
+
     .payment-name {
       color: #007aff;
       font-weight: 600;
     }
   }
-  
+
   .payment-icon {
     font-size: 28px;
     color: #8e8e93;
   }
-  
+
   .payment-name {
     font-size: 13px;
     font-weight: 500;
@@ -189,13 +188,13 @@
   --padding-start: 0;
   --inner-padding-end: 0;
   --min-height: 44px;
-  
+
   ion-label {
     font-size: 15px;
     font-weight: 500;
     color: #1c1c1e;
   }
-  
+
   ion-select {
     --placeholder-color: #8e8e93;
     font-size: 15px;
@@ -215,37 +214,25 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  
+
   &:first-child {
     padding-top: 0;
   }
-  
+
   span:first-child {
     font-size: 15px;
     color: #8e8e93;
   }
-  
-  span:last-child {
-    font-size: 15px;
-    font-weight: 500;
-    color: #1c1c1e;
-  }
-  
+
   &.total {
     padding-top: 12px;
     margin-top: 4px;
     border-top: 1px solid #e5e5ea;
-    
+
     span:first-child {
       font-size: 17px;
       font-weight: 600;
       color: #1c1c1e;
-    }
-    
-    span:last-child {
-      font-size: 20px;
-      font-weight: 700;
-      color: #007aff;
     }
   }
 }
@@ -265,11 +252,11 @@
   font-weight: 600;
   text-transform: none;
   margin: 0;
-  
+
   &:active {
     transform: scale(0.98);
   }
-  
+
   &[disabled] {
     --background: #e5e5ea;
     --color: #8e8e93;
@@ -290,23 +277,23 @@
     padding: 12px;
     padding-bottom: calc(80px + env(safe-area-inset-bottom));
   }
-  
+
   .payment-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .store-header {
     padding: 16px;
-    
+
     h1 {
       font-size: 22px;
     }
   }
-  
+
   .service-item-compact {
     flex-direction: column;
     gap: 4px;
-    
+
     .service-details {
       justify-content: space-between;
       width: 100%;
@@ -319,7 +306,7 @@
   .checkout-content {
     --background: #000000;
   }
-  
+
   .store-header,
   .services-section,
   .entry-time,
@@ -327,7 +314,7 @@
   .pricing-section {
     background: #1c1c1e;
   }
-  
+
   .store-header h1,
   .service-name,
   .service-price,
@@ -336,20 +323,20 @@
   .price-row.total span:first-child {
     color: #ffffff;
   }
-  
+
   .payment-card {
     background: #2c2c2e;
     border-color: #3a3a3c;
-    
+
     &.selected {
       background: rgba(10, 132, 255, 0.2);
     }
   }
-  
+
   .service-item-compact {
     border-bottom-color: #2c2c2e;
   }
-  
+
   .price-row.total {
     border-top-color: #2c2c2e;
   }
@@ -358,4 +345,55 @@
 ion-content::part(scroll) {
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+.price-row.total {
+  .total-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .variable-note {
+    font-size: 12px;
+    color: #d32f2f;
+    font-style: italic;
+  }
+
+  .blue-total {
+    color: #007aff !important;
+  }
+}
+
+.schedule-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: #f4f6f8;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+
+  ion-icon {
+    font-size: 22px;
+    color: var(--ion-color-primary);
+  }
+
+  .schedule-text {
+    display: flex;
+    flex-direction: column;
+
+    .label {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+      text-transform: capitalize;
+    }
+  }
 }

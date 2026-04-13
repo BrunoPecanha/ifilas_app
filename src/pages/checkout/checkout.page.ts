@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { PaymentModel } from 'src/models/payment-model';
+import { UpdateCustomerToQueueRequest } from 'src/models/requests/update-customer-to-queue-request';
 import { PaymentsResponse } from 'src/models/responses/payment-response';
 import { ServiceModel } from 'src/models/service-model';
 import { PaymentService } from 'src/services/payment-service';
+import { QueueService } from 'src/services/queue.service';
+import { ScheduleService } from 'src/services/schedule.service';
+import { SignalRService } from 'src/services/seignalr.service';
 import { SessionService } from 'src/services/session.service';
 
 @Component({
@@ -54,7 +58,6 @@ export class CheckoutPage implements OnInit {
   looseCustomerName: any;
   notes: any;
   userId: any;
-  queueService: any;
   editingExistingAppointment: any;
 
   constructor(
@@ -62,26 +65,33 @@ export class CheckoutPage implements OnInit {
     private alertController: AlertController,
     private toastController: ToastController,
     private sessionService: SessionService,
-    private paymentService: PaymentService
-  ) { }
+    private paymentService: PaymentService,
+    private queueService: QueueService,
+    private signalRService: SignalRService,
+    private scheduleService: ScheduleService
+  ) {
+    this.loadCheckoutData();
+  }
 
   ngOnInit() {
+    this.loadPayments();
+  }
+
+  ionViewWillEnter() {
     this.loadCheckoutData();
     this.calculateTotals();
     this.calculateEstimatedEndTime();
-    this.loadPayments();
   }
 
   loadCheckoutData() {
     const navState = this.router.getCurrentNavigation()?.extras?.state as any;
     const historyState = history.state || {};
-    const savedState = this.sessionService.getGenericKey('queueCheckoutContext') || {};
 
-    const state = {
-      ...savedState,
-      ...historyState,
-      ...navState
-    };
+    const state =
+      navState ||
+      historyState ||
+      this.sessionService.getGenericKey('queueCheckoutContext') ||
+      {};
 
     if (state) {
       this.storeData = state.storeData || this.storeData;
@@ -103,12 +113,17 @@ export class CheckoutPage implements OnInit {
 
       this.storeId = state.storeId || 0;
       this.queueId = state.queueId || 0;
+      this.userId = state.userId || 0;
       this.professionalId = state.professionalId || 0;
       this.customerId = state.customerId ?? null;
       this.looseCustomer = !!state.looseCustomer;
       this.looseCustomerName = state.looseCustomerName || '';
       this.notes = state.notes || '';
     }
+  }
+
+  get hasVariablePrice(): boolean {
+    return this.selectedServices.some(s => s.variablePrice);
   }
 
   loadPayments(): void {
@@ -251,10 +266,7 @@ export class CheckoutPage implements OnInit {
     const alert = await this.alertController.create({
       header: 'Confirmar Atendimento',
       message: `
-      ${this.storeData.name} \n
-      ${this.professionalData.name} \n 
-      ${this.selectedServices.length} \n 
-      Valor Total: ${this.finalTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}     
+        Podemos prosseguir com a entrada na agenda?
     `,
       buttons: [
         {
@@ -273,10 +285,26 @@ export class CheckoutPage implements OnInit {
     await alert.present();
   }
 
+  get formattedScheduleInfo(): string {
+    if (this.flow !== 'schedule' || !this.selectedDate || !this.selectedTimeSlot) {
+      return '';
+    }
+
+    const date = new Date(this.selectedDate);
+
+    const formattedDate = date.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long'
+    });
+
+    return `${formattedDate} às ${this.selectedTimeSlot}`;
+  }
+
   async processCheckout() {
     const loading = await this.alertController.create({
       header: 'Processando...',
-      message: 'Estamos confirmando sua fila',
+      message: 'Confirmando...',
       backdropDismiss: false
     });
 
@@ -287,34 +315,84 @@ export class CheckoutPage implements OnInit {
       quantity: service.quantity || 1
     }));
 
-    const command = {
-      selectedServices: servicesToSend,
-      notes: this.notes,
-      paymentMethod: this.selectedPaymentMethod?.type,
-      professionalId: this.professionalId,
-      queueId: this.queueId,
-      userId: this.customerId || this.userId,
-      looseCustomer: this.looseCustomer
-    };
+    try {
+      if (this.flow === 'schedule') {
 
-    this.queueService.addCustomerToQueue(command).subscribe({
-      next: async () => {
+        const request = {
+          selectedServices: servicesToSend,
+          notes: this.notes || '',
+          paymentMethod: Number(this.selectedPaymentMethod?.type || 1),
+          storeId: this.storeId,
+          scheduleId: 0,
+          professionalId: this.professionalId,
+          time: this.selectedTimeSlot,
+          date: this.selectedDate,
+          customerId: this.customerId,
+          looseCustomer: this.looseCustomer,
+          looseCustomerName: this.looseCustomerName
+        };
+
+        await this.scheduleService.addCustomerToSchedule(request).toPromise();
+
         await loading.dismiss();
 
-        this.sessionService.removeGenericKey('queueCheckoutContext');
+        this.navigateAfterQueue('schedule');
 
-        this.router.navigate(['/queue-success'], {
-          state: {
-            userId: this.userId,
-            editingExistingAppointment: this.editingExistingAppointment
-          }
-        });
-      },
-      error: async (err: any) => {
-        await loading.dismiss();
-        console.error(err);
+        return;
       }
-    });
+
+      if (this.customerId) {
+        const command: UpdateCustomerToQueueRequest = {
+          selectedServices: servicesToSend,
+          notes: this.notes || '',
+          paymentMethod: Number(this.selectedPaymentMethod?.type || 1),
+          id: this.customerId,
+        };
+
+        await this.queueService.updateCustomerToQueue(command).toPromise();
+        await this.initSignalRConnection();
+      }
+      else {
+        const command = {
+          selectedServices: servicesToSend,
+          notes: this.notes,
+          paymentMethod: Number(this.selectedPaymentMethod?.type || 1),
+          professionalId: this.professionalId,
+          queueId: this.queueId,
+          userId: this.customerId || this.userId,
+          looseCustomer: this.looseCustomer
+        };
+
+        await this.queueService.addCustomerToQueue(command).toPromise();
+      }
+
+      await loading.dismiss();
+
+      this.navigateAfterQueue('queue');
+
+      this.sessionService.removeGenericKey('queueCheckoutContext');
+
+    } catch (err) {
+      await loading.dismiss();
+      console.error(err);
+    }
+  }
+
+  private navigateAfterQueue(flow: string) {
+    const queryParams = {
+      userId: this.userId,
+      editingExistingAppointment: this.editingExistingAppointment,
+      flow: flow
+    };
+    this.router.navigate(['/confirmation'], { queryParams });
+  }
+
+  private async initSignalRConnection() {
+    try {
+      await this.signalRService.startQueueConnection();
+    } catch (error) {
+      setTimeout(() => this.initSignalRConnection(), 5000);
+    }
   }
 
   goBack() {

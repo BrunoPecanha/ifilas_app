@@ -460,8 +460,11 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
     });
   }
 
-  canStartService(client: any, index: number): boolean {
+  canStartService(client: CustomerInQueueForEmployeeModel, index: number): boolean {    
     const hasClientInService = this.clients?.some(c => c.inService);   
+    
+    if(client.inService)
+      return true;
     
     if (!this.store.attendSimultaneously && hasClientInService) {
       return false;

@@ -235,51 +235,28 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
         {
           text: 'Confirmar',
           handler: async () => {
-            if (!this.selectedDate) {
-              await this.toastService.show('Data não selecionada', 'danger');
-              return;
-            }
 
-            const request: AddCustomerToScheduleRequest = {
-              selectedServices: this.selectedServices,
-              notes: this.notes ?? '',
-              paymentMethod: this.paymentMethod,
+            const checkoutContext = {
+              flow: 'schedule',
               storeId: this.storeId,
-              scheduleId: 0,
               professionalId: this.professionalId,
-              time: this.selectedTimeSlot!.time,
-              date: this.selectedDate,
               customerId: this.customerId,
               looseCustomer: this.looseCustomer,
-              looseCustomerName: this.looseCustomerName
+              looseCustomerName: this.looseCustomerName,
+              notes: this.notes ?? '',
+              paymentMethod: this.paymentMethod,
+              selectedServices: this.selectedServices,
+              selectedDate: this.selectedDate,
+              selectedTimeSlot: this.selectedTimeSlot!.time
             };
 
-            this.service.addCustomerToSchedule(request).subscribe({
-              next: async (res) => {
-                if (res.valid) {
-                  await this.toastService.show('Agendamento realizado com sucesso!', 'success');
-                  this.clearSessionDate();
+            this.sessionService.setGenericKey(
+              JSON.parse(JSON.stringify(checkoutContext)),
+              'queueCheckoutContext'
+            );
 
-                  if (this.redirectToCustomerDashBoard) {
-                    this.router.navigate(['/owner-schedule']);
-                  }
-                  else
-                    this.router.navigate(['/queue'], {
-                      state: { fromEntryFlow: true }
-                    });
-
-                } else {
-                  await this.toastService.show(res.message || 'Erro ao agendar', 'danger');
-                }
-              },
-              error: async (err) => {
-                await this.toastService.show(
-                  err?.error?.message || err?.error || 'Erro ao agendar',
-                  'danger'
-                );
-
-                this.loadStoreAgenda();
-              }
+            this.router.navigate(['/checkout'], {
+              state: checkoutContext
             });
           }
         }
