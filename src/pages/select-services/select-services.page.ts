@@ -542,7 +542,7 @@ export class SelectServicesPage implements OnInit {
       totalPriceString: this.totalPriceString,
       editingExistingAppointment: this.editingExistingAppointment,
       userId: this.user.id
-    };
+    };    
 
     this.sessionService.setGenericKey(
       JSON.parse(JSON.stringify(checkoutContext)),

@@ -12,10 +12,16 @@ export class ConfirmationPage {
   editingExistingAppointment = false;
 
   constructor(private router: Router) {
-    const state = history.state || {};
+    this.getQueryParams();
+  }
 
-    this.userId = state.userId || 0;
-    this.editingExistingAppointment = state.editingExistingAppointment || false;
+  getQueryParams() {
+    const nav = this.router.getCurrentNavigation();
+    const userId = nav?.extras.queryParams?.['userId'];
+    const editingExistingAppointment = nav?.extras.queryParams?.['editingExistingAppointment'];
+
+    this.userId = userId || 0;
+    this.editingExistingAppointment = editingExistingAppointment || false;
   }
 
   goToQueue() {

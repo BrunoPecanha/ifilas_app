@@ -2,9 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { PaymentModel } from 'src/models/payment-model';
+import { UpdateCustomerToQueueRequest } from 'src/models/requests/update-customer-to-queue-request';
 import { PaymentsResponse } from 'src/models/responses/payment-response';
 import { ServiceModel } from 'src/models/service-model';
 import { PaymentService } from 'src/services/payment-service';
+import { QueueService } from 'src/services/queue.service';
+import { SignalRService } from 'src/services/seignalr.service';
 import { SessionService } from 'src/services/session.service';
 
 @Component({
@@ -54,7 +57,6 @@ export class CheckoutPage implements OnInit {
   looseCustomerName: any;
   notes: any;
   userId: any;
-  queueService: any;
   editingExistingAppointment: any;
 
   constructor(
@@ -62,7 +64,9 @@ export class CheckoutPage implements OnInit {
     private alertController: AlertController,
     private toastController: ToastController,
     private sessionService: SessionService,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private queueService: QueueService,
+    private signalRService: SignalRService
   ) {
     this.loadCheckoutData();
   }
@@ -107,6 +111,7 @@ export class CheckoutPage implements OnInit {
 
       this.storeId = state.storeId || 0;
       this.queueId = state.queueId || 0;
+      this.userId = state.userId || 0;
       this.professionalId = state.professionalId || 0;
       this.customerId = state.customerId ?? null;
       this.looseCustomer = !!state.looseCustomer;
@@ -259,10 +264,7 @@ export class CheckoutPage implements OnInit {
     const alert = await this.alertController.create({
       header: 'Confirmar Atendimento',
       message: `
-      ${this.storeData.name} \n
-      ${this.professionalData.name} \n 
-      ${this.selectedServices.length} \n 
-      Valor Total: ${this.finalTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}     
+        Podemos prosseguir com a entrada na agenda?
     `,
       buttons: [
         {
@@ -295,34 +297,57 @@ export class CheckoutPage implements OnInit {
       quantity: service.quantity || 1
     }));
 
-    const command = {
-      selectedServices: servicesToSend,
-      notes: this.notes,
-      paymentMethod: this.selectedPaymentMethod?.type,
-      professionalId: this.professionalId,
-      queueId: this.queueId,
-      userId: this.customerId || this.userId,
-      looseCustomer: this.looseCustomer
-    };
+    try {
+      if (this.customerId) {
+        const command: UpdateCustomerToQueueRequest = {
+          selectedServices: servicesToSend,
+          notes: this.notes || '',
+          paymentMethod: Number(this.selectedPaymentMethod?.type || 1),
+          id: this.customerId,
+        };
 
-    this.queueService.addCustomerToQueue(command).subscribe({
-      next: async () => {
-        await loading.dismiss();
-
-        this.sessionService.removeGenericKey('queueCheckoutContext');
-
-        this.router.navigate(['/confirmation'], {
-          state: {
-            userId: this.userId,
-            editingExistingAppointment: this.editingExistingAppointment
-          }
-        });
-      },
-      error: async (err: any) => {
-        await loading.dismiss();
-        console.error(err);
+        await this.queueService.updateCustomerToQueue(command).toPromise();
+        await this.initSignalRConnection();
+        this.navigateAfterQueue();
       }
-    });
+      else {        
+        const command = {
+          selectedServices: servicesToSend,
+          notes: this.notes,
+          paymentMethod: Number(this.selectedPaymentMethod?.type || 1),
+          professionalId: this.professionalId,
+          queueId: this.queueId,
+          userId: this.customerId || this.userId,
+          looseCustomer: this.looseCustomer
+        };
+
+        await this.queueService.addCustomerToQueue(command).toPromise();
+        await loading.dismiss();
+        this.navigateAfterQueue();
+      }
+
+      this.sessionService.removeGenericKey('queueCheckoutContext');
+
+    } catch (err) {
+      await loading.dismiss();
+      console.error(err);
+    }
+  }
+
+  private navigateAfterQueue() {
+    const queryParams = {
+      userId: this.userId,
+      editingExistingAppointment: this.editingExistingAppointment
+    };
+    this.router.navigate(['/confirmation'], { queryParams });
+  }
+
+  private async initSignalRConnection() {
+    try {
+      await this.signalRService.startQueueConnection();
+    } catch (error) {
+      setTimeout(() => this.initSignalRConnection(), 5000);
+    }
   }
 
   goBack() {

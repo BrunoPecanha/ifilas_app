@@ -12,13 +12,13 @@
 
 <ion-content class="checkout-content" [fullscreen]="true">
   <div class="checkout-container">
-    <div class="store-header">
+    <!-- <div class="store-header">
       <h1>{{ storeData.name }}</h1>
       <div class="waiting-time">
         <ion-icon name="time-outline"></ion-icon>
         <span>Tempo estimado: {{ totalTimeString }} de espera</span>
       </div>
-    </div>
+    </div> -->
 
     <div class="services-section">
       <h3 class="section-title">Serviços selecionados</h3>
@@ -63,7 +63,12 @@
 
     <div class="entry-time" *ngIf="flow === 'queue'">
       <ion-icon name="calendar-outline"></ion-icon>
-      <span>Entrada na fila às <b>{{ currentTime }}</b></span>
+      <span
+        ><b>Entrada na fila às</b> {{ currentTime }}
+        <div class="waiting-time">
+          <span><b>Tempo estimado:</b> {{ totalTimeString }} de espera</span>
+        </div>
+      </span>
     </div>
 
     <div class="entry-time" *ngIf="flow !== 'queue'">
