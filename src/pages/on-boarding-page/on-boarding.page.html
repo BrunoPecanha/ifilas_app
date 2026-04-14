@@ -1,7 +1,6 @@
 <ion-content class="onboarding-content" [fullscreen]="true">
   <div class="swiper-container" #swiperContainer>
     <div class="swiper-wrapper">
-
       <div class="swiper-slide">
         <div class="slide-container">
           <div class="icon-wrapper">
@@ -11,7 +10,8 @@
           <h1>Chega de perder tempo em filas</h1>
           <p class="highlight">Acompanhe tudo em tempo real</p>
           <p>
-            Entre na fila sem sair de casa e saiba exatamente quando será atendido.
+            Entre na fila sem sair de casa e saiba exatamente quando será
+            atendido.
           </p>
         </div>
       </div>
@@ -24,9 +24,7 @@
 
           <h1>Tudo em um só lugar</h1>
           <p class="highlight">Simples. Rápido. Organizado.</p>
-          <p>
-            Gerencie suas filas, atendimentos e histórico sem complicação.
-          </p>
+          <p>Gerencie suas filas, atendimentos e histórico sem complicação.</p>
         </div>
       </div>
 
@@ -38,9 +36,7 @@
 
           <h1>Não perca sua vez</h1>
           <p class="highlight">Avisos inteligentes</p>
-          <p>
-            Receba notificações quando sua vez estiver chegando.
-          </p>
+          <p>Receba notificações quando sua vez estiver chegando.</p>
         </div>
       </div>
 
@@ -51,9 +47,26 @@
           </div>
 
           <h1>Leve seu negócio para o próximo nível</h1>
-          <p class="highlight">Crie loja no app e disponibilize suas filas ou agendas em minutos</p>
+          <p class="highlight">Crie e personalize suas loja no iFilas</p>
           <p>
-            Organize seus atendimentos, reduza filas e ofereça uma experiência moderna para seus clientes com o iFilas.
+            Organize seus atendimentos, reduza espera e ofereça uma experiência
+            moderna para seus clientes disponibilizando suas filas ou agendas em
+            minutos.
+          </p>
+        </div>
+      </div>
+
+      <div class="swiper-slide">
+        <div class="slide-container">
+          <div class="icon-wrapper primary">
+            <ion-icon name="call-outline"></ion-icon>
+          </div>
+
+          <h1>Chega de ligações o tempo todo</h1>
+          <p class="highlight">Seu cliente vê tudo sozinho</p>
+          <p>
+            Horários disponíveis, tamanho da fila e tempo de espera — tudo
+            direto no app, sem precisar te chamar.
           </p>
         </div>
       </div>
@@ -66,12 +79,24 @@
 
           <h1>Controle total</h1>
           <p class="highlight">Histórico completo</p>
-          <p>
-            Veja seus atendimentos, tempos e serviços realizados.
-          </p>
+          <p>Veja seus atendimentos, tempos e serviços realizados.</p>
         </div>
       </div>
 
+      <div class="swiper-slide">
+        <div class="slide-container">
+          <div class="icon-wrapper success">
+            <ion-icon name="rocket-outline"></ion-icon>
+          </div>
+
+          <h1>E aí, vamos começar?</h1>
+          <p class="highlight">Leve sua experiência para outro nível</p>
+          <p>
+            Crie sua primeira fila ou encontre um atendimento agora mesmo. É
+            rápido, simples e gratuito.
+          </p>
+        </div>
+      </div>
     </div>
 
     <div class="swiper-pagination"></div>
@@ -79,29 +104,26 @@
 
   <div class="bottom-navigation">
     <div class="buttons-container">
-
       <ion-button
-        *ngIf="currentIndex < 4"
+        *ngIf="currentIndex < 6"
         fill="clear"
         class="skip-button"
-        (click)="skip()">
+        (click)="skip()"
+      >
         Pular
       </ion-button>
 
-      <ion-button
-        *ngIf="currentIndex < 4"
-        class="next-button"
-        (click)="next()">
+      <ion-button *ngIf="currentIndex < 6" class="next-button" (click)="next()">
         Próximo
       </ion-button>
 
       <ion-button
-        *ngIf="currentIndex === 4"
+        *ngIf="currentIndex === 6"
         class="start-button"
-        (click)="start()">
+        (click)="start()"
+      >
         Começar agora
       </ion-button>
-
     </div>
   </div>
 </ion-content>
