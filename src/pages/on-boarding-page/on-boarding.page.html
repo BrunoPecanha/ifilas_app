@@ -1,9 +1,7 @@
 <ion-content class="onboarding-content" [fullscreen]="true">
-
   <div class="swiper-container" #swiperContainer>
     <div class="swiper-wrapper">
 
-      <!-- SLIDE 1 -->
       <div class="swiper-slide">
         <div class="slide-container">
           <div class="icon-wrapper">
@@ -12,11 +10,12 @@
 
           <h1>Chega de perder tempo em filas</h1>
           <p class="highlight">Acompanhe tudo em tempo real</p>
-          <p>Entre na fila sem sair de casa e saiba exatamente quando será atendido.</p>
+          <p>
+            Entre na fila sem sair de casa e saiba exatamente quando será atendido.
+          </p>
         </div>
       </div>
 
-      <!-- SLIDE 2 -->
       <div class="swiper-slide">
         <div class="slide-container">
           <div class="icon-wrapper success">
@@ -25,11 +24,12 @@
 
           <h1>Tudo em um só lugar</h1>
           <p class="highlight">Simples. Rápido. Organizado.</p>
-          <p>Gerencie suas filas, atendimentos e histórico sem complicação.</p>
+          <p>
+            Gerencie suas filas, atendimentos e histórico sem complicação.
+          </p>
         </div>
       </div>
 
-      <!-- SLIDE 3 -->
       <div class="swiper-slide">
         <div class="slide-container">
           <div class="icon-wrapper warning">
@@ -38,11 +38,26 @@
 
           <h1>Não perca sua vez</h1>
           <p class="highlight">Avisos inteligentes</p>
-          <p>Receba notificações quando sua vez estiver chegando.</p>
+          <p>
+            Receba notificações quando sua vez estiver chegando.
+          </p>
         </div>
       </div>
 
-      <!-- SLIDE 4 -->
+      <div class="swiper-slide">
+        <div class="slide-container">
+          <div class="icon-wrapper primary">
+            <ion-icon name="storefront-outline"></ion-icon>
+          </div>
+
+          <h1>Leve seu negócio para o próximo nível</h1>
+          <p class="highlight">Crie loja no app e disponibilize suas filas ou agendas em minutos</p>
+          <p>
+            Organize seus atendimentos, reduza filas e ofereça uma experiência moderna para seus clientes com o iFilas.
+          </p>
+        </div>
+      </div>
+
       <div class="swiper-slide">
         <div class="slide-container">
           <div class="icon-wrapper chart">
@@ -51,7 +66,9 @@
 
           <h1>Controle total</h1>
           <p class="highlight">Histórico completo</p>
-          <p>Veja seus atendimentos, tempos e serviços realizados.</p>
+          <p>
+            Veja seus atendimentos, tempos e serviços realizados.
+          </p>
         </div>
       </div>
 
@@ -60,30 +77,31 @@
     <div class="swiper-pagination"></div>
   </div>
 
-  <!-- BOTÕES -->
   <div class="bottom-navigation">
     <div class="buttons-container">
 
-      <ion-button *ngIf="currentIndex < 3"
-                  fill="clear"
-                  class="skip-button"
-                  (click)="skip()">
+      <ion-button
+        *ngIf="currentIndex < 4"
+        fill="clear"
+        class="skip-button"
+        (click)="skip()">
         Pular
       </ion-button>
 
-      <ion-button *ngIf="currentIndex < 3"
-                  class="next-button"
-                  (click)="next()">
+      <ion-button
+        *ngIf="currentIndex < 4"
+        class="next-button"
+        (click)="next()">
         Próximo
       </ion-button>
 
-      <ion-button *ngIf="currentIndex === 3"
-                  class="start-button"
-                  (click)="start()">
+      <ion-button
+        *ngIf="currentIndex === 4"
+        class="start-button"
+        (click)="start()">
         Começar agora
       </ion-button>
 
     </div>
   </div>
-
 </ion-content>
