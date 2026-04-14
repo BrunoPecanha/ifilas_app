@@ -18,7 +18,7 @@ export class SplashPage {
     private sessionService: SessionService,
     private authService: AuthService,
     private ngZone: NgZone
-  ) {}
+  ) { }
 
   ionViewDidEnter() {
     this.phase = 1;
@@ -27,12 +27,19 @@ export class SplashPage {
       this.phase = 2;
     }, 500);
 
+    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+
+    if (!hasSeenOnboarding) {
+      this.router.navigate(['/on-boarding']);
+      return;
+    }
+
     if (!this.triedAutoLogin) {
       this.triedAutoLogin = true;
 
       setTimeout(() => {
         this.tryAutoLogin();
-      }, 8000);
+      }, 800);
     } else {
       this.clearSessionAndLogout();
     }

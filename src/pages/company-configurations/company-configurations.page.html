@@ -40,7 +40,6 @@
     </div>
 
     <div class="images-grid">
-      <!-- Logo -->
       <div class="image-card" (click)="selecionarImagem()">
         <div class="image-preview" [class.has-image]="logoPreview">
           <img *ngIf="logoPreview" [src]="logoPreview" class="preview-img" />
@@ -63,7 +62,6 @@
         />
       </div>
 
-      <!-- Banner -->
       <div class="image-card" (click)="selecionarWallpaper()">
         <div
           class="image-preview banner-preview"
@@ -95,7 +93,6 @@
     </div>
   </div>
 
-  <!-- Seção de Informações Básicas -->
   <div class="ios-section">
     <div class="section-header">
       <ion-icon
@@ -142,7 +139,6 @@
     </div>
   </div>
 
-  <!-- Seção de Contato -->
   <div class="ios-section">
     <div class="section-header">
       <ion-icon name="share-social-outline" class="section-icon"></ion-icon>
@@ -206,7 +202,6 @@
     </div>
   </div>
 
-  <!-- Seção de Endereço -->
   <div class="ios-section">
     <div class="section-header">
       <ion-icon name="location-outline" class="section-icon"></ion-icon>
@@ -309,7 +304,6 @@
     </div>
   </div>
 
-  <!-- SEÇÃO: Formas de Pagamento -->
   <div class="ios-section">
     <div class="section-header">
       <ion-icon name="wallet-outline" class="section-icon"></ion-icon>
@@ -369,7 +363,6 @@
             </label>
           </div>
 
-          <!-- Campos adicionais para PIX -->
           <div
             class="payment-extras"
             *ngIf="payment.get('selected')?.value && payment.get('type')?.value === paymentMethodEnum.pix"
@@ -389,7 +382,6 @@
             </select>
           </div>
 
-          <!-- Campos adicionais para Cartão -->
           <div
             class="payment-extras"
             *ngIf="payment.get('selected')?.value && payment.get('type')?.value === paymentMethodEnum.card"
@@ -420,11 +412,16 @@
                 <option value="4">Até 4x</option>
                 <option value="5">Até 5x</option>
                 <option value="6">Até 6x</option>
+                <option value="7">Até 7x</option>
+                <option value="8">Até 8x</option>
+                <option value="9">Até 9x</option>
+                <option value="10">Até 10x</option>
+                <option value="11">Até 11x</option>
+                <option value="12">Até 12x</option>
               </select>
             </div>
           </div>
 
-          <!-- Campos adicionais para Dinheiro -->
           <div
             class="payment-extras"
             *ngIf="payment.get('selected')?.value && payment.get('type')?.value === paymentMethodEnum.cash"
@@ -448,7 +445,6 @@
     </div>
   </div>
 
-  <!-- Seção de Horários (iOS Style) -->
   <div class="ios-section">
     <div class="section-header">
       <ion-icon name="time-outline" class="section-icon"></ion-icon>
@@ -492,7 +488,6 @@
     </div>
   </div>
 
-  <!-- Seção de Configurações Avançadas -->
   <div class="ios-section">
     <div class="section-header">
       <ion-icon name="settings-outline" class="section-icon"></ion-icon>
@@ -646,13 +641,14 @@
           </label>
         </div>
 
-        <div class="setting-item with-input">
+        <div class="setting-item with-input disabled">
           <div class="setting-info">
             <ion-icon name="hourglass-outline"></ion-icon>
             <span>Remover após (minutos)</span>
           </div>
+          <span class="badge-coming-soon">Em breve</span>
           <input
-            type="number"
+            type="number"            
             formControlName="timeRemoval"
             placeholder="0"
             class="ios-input-number"
@@ -726,7 +722,6 @@
     </div>
   </div>
 
-  <!-- Seção de Destaques -->
   <div class="ios-section">
     <div class="section-header">
       <ion-icon name="star-outline" class="section-icon"></ion-icon>
@@ -762,11 +757,9 @@
     </div>
   </div>
 
-  <!-- Spacer para o footer -->
   <div class="footer-spacer"></div>
 </ion-content>
 
-<!-- Modal de Seleção de Categoria -->
 <div class="ios-modal" [class.show]="showCategoryModal">
   <div class="modal-overlay" (click)="closeCategoryModal()"></div>
   <div class="modal-content">
@@ -795,7 +788,6 @@
   </div>
 </div>
 
-<!-- Toasts de Feedback -->
 <ion-toast
   [isOpen]="successMessage !== null"
   [message]="successMessage"

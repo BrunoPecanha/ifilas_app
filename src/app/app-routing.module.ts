@@ -141,6 +141,10 @@ const routes: Routes = [
   {
     path: 'confirmation',
     loadChildren: () => import('../pages/confirmation-page/confirmation-page.module').then( m => m.ConfirmationPagePageModule)
+  },
+  {
+    path: 'on-boarding',
+    loadChildren: () => import('../pages/on-boarding-page/on-boarding.module').then( m => m.OnBoardingPageModule)
   }
 ];
 
