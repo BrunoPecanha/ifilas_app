@@ -164,7 +164,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
     this.cadastroForm.get('acceptOtherQueues')?.disable();
     this.cadastroForm.get('answerOutOfOrder')?.disable();
     this.cadastroForm.get('answerScheduledTime')?.disable();
-    this.cadastroForm.get('timeRemoval')?.disable();
+    // this.cadastroForm.get('timeRemoval')?.disable();
 
     this.setupQRCodeToggleListeners();
     this.setupOpeningHoursValidation();

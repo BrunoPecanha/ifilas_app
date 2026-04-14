@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class SessionService {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   private readonly TOKEN_KEY = 'token';
   private readonly USER_KEY = 'user';
@@ -15,7 +15,14 @@ export class SessionService {
   private readonly PROFILE_KEY = 'profile';
   private readonly CUSTOMER_KEY = 'customer';
   private readonly REFRESH_TOKEN = 'refresh_token';
-
+  private readonly LOOSE_CUSTOMER = 'looseCustomer';
+  private readonly LOOSE_CUSTOMER_NAME = 'looseCustomerName';
+  private readonly NOTES = 'notes';
+  private readonly PAYMENT_METHOD = 'paymentMethod';
+  private readonly PROFESSIONAL_ID = 'professionalId';
+  private readonly QUEUE_CHECKOUT_CONTEXT = 'queueCheckoutContext';
+  private readonly STORE_ID = 'storeId';
+  private readonly SELETED_SERVICES = 'selectedServices';
 
   private userSubject = new BehaviorSubject<any | null>(this.getUserFromStorage());
   user$ = this.userSubject.asObservable();
@@ -58,17 +65,17 @@ export class SessionService {
 
   setUser(user: any): void {
     sessionStorage.setItem(this.USER_KEY, JSON.stringify(user));
-    this.userSubject.next(user); 
+    this.userSubject.next(user);
   }
 
   setProfile(profile: number): void {
     sessionStorage.setItem(this.PROFILE_KEY, profile.toString());
-    this.profileSubject.next(profile); 
+    this.profileSubject.next(profile);
   }
 
   setStore(store: any): void {
     sessionStorage.setItem(this.STORES_KEY, JSON.stringify(store));
-    this.storeSubject.next(store); 
+    this.storeSubject.next(store);
   }
 
   setCustomer(customer: number) {
@@ -111,6 +118,15 @@ export class SessionService {
     sessionStorage.removeItem(this.STORES_KEY);
     sessionStorage.removeItem(this.PROFILE_KEY);
     sessionStorage.removeItem(this.CUSTOMER_KEY);
+
+    sessionStorage.removeItem(this.LOOSE_CUSTOMER);
+    sessionStorage.removeItem(this.LOOSE_CUSTOMER_NAME);
+    sessionStorage.removeItem(this.NOTES);
+    sessionStorage.removeItem(this.PAYMENT_METHOD);
+    sessionStorage.removeItem(this.PROFESSIONAL_ID);
+    sessionStorage.removeItem(this.QUEUE_CHECKOUT_CONTEXT);
+    sessionStorage.removeItem(this.STORE_ID);
+    sessionStorage.removeItem(this.SELETED_SERVICES);
 
     this.userSubject.next(null);
     this.profileSubject.next(-1);
