@@ -1,5 +1,4 @@
-iFilas
-📌 Visão Geral
+# iFilas App (iOS/Android)
 
 O iFilas é um sistema inteligente de gestão de filas e atendimentos, criado para resolver um problema comum em estabelecimentos que atendem presencialmente: longas esperas, falta de previsibilidade e desorganização no atendimento.
 
