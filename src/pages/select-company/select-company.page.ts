@@ -25,8 +25,11 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
   searching = false;
   categoriesExpanded = false;
 
+  searchQuery: string = '';
+  private searchTimeout: any;
+
+
   categories: CategoryModel[] = [];
-  searchQuery = '';
   selectedCategoryId: number | null = null;
   selectedFilter: 'minorQueue' | 'favorites' | 'recent' | 'nearby' | null = null;
   favoriteStores: StoreModel[] = [];
@@ -54,7 +57,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // Iniciar carrossel automático após view pronta (será chamado em ionViewWillEnter)
+
   }
 
   ionViewWillEnter() {
@@ -132,9 +135,18 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     this.isEmptyResult = false;
 
     const categoryId = this.selectedCategoryId ?? undefined;
-    const quickFilter = this.selectedFilter ?? undefined;
 
-    this.service.loadFilteredStores(userId, categoryId, quickFilter, this.currentPage, this.pageSize).subscribe({
+    const quickFilter = this.searchQuery?.trim()
+      ? this.searchQuery.trim()
+      : this.selectedFilter ?? undefined;
+
+    this.service.loadFilteredStores(
+      userId,
+      categoryId,
+      quickFilter,
+      this.currentPage,
+      this.pageSize
+    ).subscribe({
       next: (response) => {
         this.handleStoresResponse(response);
       },
@@ -600,11 +612,11 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     console.error(message);
   }
 
- get shouldShowFavorites(): boolean {
-  return this.favoriteStores.length > 0 &&
-    (!this.searchQuery || this.searchQuery.trim() === '') &&
-    !this.searching;
-}
+  get shouldShowFavorites(): boolean {
+    return this.favoriteStores.length > 0 &&
+      (!this.searchQuery || this.searchQuery.trim() === '') &&
+      !this.searching;
+  }
 
   goToNotifications() {
     try {
@@ -639,12 +651,49 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     this.searching = false;
     this.searchQuery = '';
     this.contentHidden = false;
+
+    this.resetPagination();
+    this.loadStores(); 
   }
 
-  // ==================== ALTERAR ENDEREÇO ====================
   changeAddress() {
-    // Implemente aqui a lógica para abrir modal de seleção de endereço
-    // Exemplo: this.modalController.create({ component: AddressModalComponent }).then(m => m.present());
     console.log('Abrir alteração de endereço');
+  }
+
+  clearSearch() {
+    this.searchQuery = '';
+    this.contentHidden = false;
+    this.resetPagination();
+    this.loadStores();
+  }
+
+  onSearchChange() {
+    const query = this.searchQuery.trim();
+    clearTimeout(this.searchTimeout);
+
+    if (!query) {
+      this.resetSearch();
+
+      this.resetPagination();
+      this.loadStores(); 
+
+      return;
+    }
+
+    if (query.length < 2) {
+      return;
+    }
+
+    this.searchTimeout = setTimeout(() => {
+      this.resetPagination();
+      this.loadStores();
+    }, 300);
+  }
+
+  resetSearch() {
+    this.searching = false;
+    this.contentHidden = false;
+
+    this.selectedCategoryId = null;
   }
 }

@@ -1,32 +1,30 @@
-<div class="top-compact-bar" [class.search-open]="searching">
-  <!-- Endereço (modo normal) -->
-  <div class="address-area" *ngIf="!searching" (click)="changeAddress()">
-    <ion-icon name="location-outline"></ion-icon>
-    <span class="address-text">{{ getUserAddress() }}</span>
-    <ion-icon name="chevron-down-outline" class="address-arrow"></ion-icon>
+<div class="top-compact-bar">
+  <div class="location-block" (click)="changeAddress()">
+    <span class="location-label">SUA LOCALIZAÇÃO</span>
+
+    <div class="location-row">
+      <ion-icon name="location-outline"></ion-icon>
+      <span class="address-text">{{ getUserAddress() }}</span>
+      <ion-icon name="chevron-down-outline"></ion-icon>
+    </div>
   </div>
-  
-  <!-- Campo de pesquisa (modo busca) -->
-  <div class="search-area" *ngIf="searching">
+
+  <!-- BUSCA -->
+  <div class="search-bar active">
     <ion-icon name="search-outline"></ion-icon>
+
     <input
       type="text"
       placeholder="Buscar lojas, serviços ou profissionais..."
       [(ngModel)]="searchQuery"
-      (input)="onSearch($event)"
-      autofocus
+      (input)="onSearchChange()"
     />
-    <button class="close-search" (click)="closeSearch()">
+
+    <button *ngIf="searchQuery" class="close-search" (click)="clearSearch()">
       <ion-icon name="close-outline"></ion-icon>
     </button>
   </div>
-
-  <!-- Botão lupa (modo normal) -->
-  <button class="search-toggle" *ngIf="!searching" (click)="openSearch()">
-    <ion-icon name="search-outline"></ion-icon>
-  </button>
 </div>
-
 <ion-content
   class="modern-content"
   [class.hidden]="searching || contentHidden"
@@ -42,10 +40,14 @@
     ></ion-refresher-content>
   </ion-refresher>
 
-  <div class="collapsible-content" [class.hidden]="searching || searchQuery.trim() !== ''">
-    
-    <!-- ==================== CARROSSEL PATROCINADO ==================== -->
-    <div class="banners-section" *ngIf="!searching && searchQuery.trim() === ''">
+  <div
+    class="collapsible-content"
+    [class.hidden]="searching || searchQuery.trim() !== ''"
+  >
+    <div
+      class="banners-section"
+      *ngIf="!searching && searchQuery.trim() === ''"
+    >
       <div
         class="banners-scroll"
         #bannersScroll
@@ -111,8 +113,10 @@
       </div>
     </div>
 
-    <!-- ==================== SEUS FAVORITOS ==================== -->
-    <div class="favorite-stores-section" *ngIf="shouldShowFavorites && !searching">
+    <div
+      class="favorite-stores-section"
+      *ngIf="shouldShowFavorites && !searching"
+    >
       <div class="section-header">
         <h3 class="section-title">Seus favoritos</h3>
       </div>
@@ -157,8 +161,8 @@
         </div>
       </div>
     </div>
-
-  </div><!-- FIM collapsible-content -->
+  </div>
+  <!-- FIM collapsible-content -->
 
   <!-- ==================== LISTA DE LOJAS PRÓXIMAS ==================== -->
   <div class="content-container">
