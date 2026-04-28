@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { CategoryModel } from 'src/models/category-model';
@@ -43,6 +43,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
   private isScrolling = false;
   activeBannerIndex = 0;
   autoScrollInterval: any;
+  private autoScrollPaused = false; // NOVO
 
   constructor(
     private router: Router,
@@ -53,22 +54,22 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // this.startAutoScroll();
+    // Iniciar carrossel automático após view pronta (será chamado em ionViewWillEnter)
   }
 
   ionViewWillEnter() {
     this.resetPagination();
     this.loadData();
+    this.startAutoScroll(); // NOVO: iniciar carrossel
   }
 
+  ngOnDestroy() {
+    this.stopAutoScroll(); // NOVO: limpar intervalo
+  }
 
   private loadData() {
     this.loadCategories();
     this.loadStores();
-  }
-
-  ngOnDestroy() {
-    // this.stopAutoScroll();
   }
 
   private loadStores() {
@@ -98,22 +99,29 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     });
   }
 
+  // Banners atualizados com campos para o carrossel patrocinado
   banners = [
     {
       id: 1,
-      title: 'Evite filas',
+      title: 'Barbearias parceiras',
+      subtitle: 'Até 30% OFF no primeiro corte',
+      cta: 'Aproveitar',
       image: 'assets/images/banner/banner_promo.jpg',
       action: 'about'
     },
     {
       id: 2,
-      title: 'Favoritos',
+      title: 'Salões premium',
+      subtitle: 'Tratamentos exclusivos com 25% OFF',
+      cta: 'Conferir',
       image: 'assets/images/banner/banner_promo2.png',
       action: 'favorites'
     },
     {
       id: 3,
-      title: 'Chegue na hora certa',
+      title: 'Agende sem fila',
+      subtitle: 'Chegue na hora certa com desconto',
+      cta: 'Ver como funciona',
       image: 'assets/images/banner/banner_promo3.jpg',
       action: 'how-it-works'
     }
@@ -143,7 +151,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
 
   private loadFavoriteStores(userId: number) {
     this.service.getAllLikedStoresByUserId(userId).subscribe({
-      next: (response) => {        
+      next: (response) => {
         this.favoriteStores = response.data.map((store: StoreModel) => ({
           ...store,
           isNew: this.checkIfNew(store.createdAt),
@@ -210,7 +218,6 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
   onSearch(event: any) {
     const searchValue = event.detail?.value || event.target?.value || '';
     this.searchQuery = searchValue;
-
 
     if (this.searchQuery.trim() !== '') {
       this.contentHidden = true;
@@ -286,62 +293,87 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
 
   getActiveFiltersCount(): number {
     let count = 0;
-    if (this.selectedFilter)
-      count++;
-    if (this.selectedCategoryId)
-      count++;
-    if (this.searchQuery)
-      count++;
+    if (this.selectedFilter) count++;
+    if (this.selectedCategoryId) count++;
+    if (this.searchQuery) count++;
     return count;
   }
 
-
-
+  // ==================== BANNERS / CARROSSEL PATROCINADO ====================
   onBannerClick(banner: any) {
     switch (banner.action) {
       case 'about':
+        // Navegar para tela sobre, promoção, etc.
         break;
       case 'favorites':
+        this.viewAllFavorites();
+        break;
+      case 'how-it-works':
+        // Navegar para explicação
         break;
     }
   }
 
-  // onBannerScroll() {
-  //   const scrollElement = this.bannersScroll.nativeElement;
-  //   const scrollLeft = scrollElement.scrollLeft;
-  //   const bannerWidth = scrollElement.clientWidth;
+  onBannerScroll() {
+    if (!this.bannersScroll) return;
+    const scrollElement = this.bannersScroll.nativeElement;
+    const scrollLeft = scrollElement.scrollLeft;
+    // largura do card = largura da view menos margens (conforme CSS)
+    const cardWidth = scrollElement.clientWidth - 48; // 48 = 2 * 16px padding + 16px gap
+    const newIndex = Math.round(scrollLeft / (cardWidth + 12)); // 12 = gap
+    if (newIndex !== this.activeBannerIndex && newIndex >= 0 && newIndex < this.banners.length) {
+      this.activeBannerIndex = newIndex;
+    }
+  }
 
-  //   this.activeBannerIndex = Math.round(scrollLeft / bannerWidth);
-  // }
+  goToBanner(index: number) {
+    if (!this.bannersScroll || index < 0 || index >= this.banners.length) return;
+    const scrollElement = this.bannersScroll.nativeElement;
+    const cardWidth = scrollElement.clientWidth - 48;
+    scrollElement.scrollTo({
+      left: index * (cardWidth + 12),
+      behavior: 'smooth'
+    });
+    this.activeBannerIndex = index;
+    this.resetAutoScrollTimer(); // reinicia o timer após interação manual
+  }
 
-  // goToBanner(index: number) {
-  //   this.activeBannerIndex = index;
-  //   const scrollElement = this.bannersScroll.nativeElement;
-  //   const bannerWidth = scrollElement.clientWidth;
+  startAutoScroll() {
+    if (this.banners.length <= 1) return;
+    this.stopAutoScroll();
+    this.autoScrollInterval = setInterval(() => {
+      if (this.autoScrollPaused) return;
+      const nextIndex = (this.activeBannerIndex + 1) % this.banners.length;
+      this.goToBanner(nextIndex);
+    }, 4000); // troca a cada 4 segundos
+  }
 
-  //   scrollElement.scrollTo({
-  //     left: index * bannerWidth,
-  //     behavior: 'smooth'
-  //   });
-  // }
+  stopAutoScroll() {
+    if (this.autoScrollInterval) {
+      clearInterval(this.autoScrollInterval);
+      this.autoScrollInterval = null;
+    }
+  }
 
-  // startAutoScroll() {
-  //   this.autoScrollInterval = setInterval(() => {
-  //     const nextIndex = (this.activeBannerIndex + 1) % this.banners.length;
-  //     this.goToBanner(nextIndex);
-  //   }, 6000);
-  // }
+  pauseAutoScroll() {
+    this.autoScrollPaused = true;
+  }
 
-  // stopAutoScroll() {
-  //   if (this.autoScrollInterval) {
-  //     clearInterval(this.autoScrollInterval);
-  //   }
-  // }
+  resumeAutoScroll() {
+    this.autoScrollPaused = false;
+    this.resetAutoScrollTimer();
+  }
 
-  // pauseAutoScroll() {
-  //   this.stopAutoScroll();
-  //   setTimeout(() => this.startAutoScroll(), 10000);
-  // }
+  private resetAutoScrollTimer() {
+    this.stopAutoScroll();
+    this.startAutoScroll();
+  }
+
+  // ==================== FILTROS (já existente) ====================
+  // openFilters pode ser usado no botão "Filtrar" do cabeçalho; chama o toggle existente
+  openFilters() {
+    this.toggleFilters();
+  }
 
   applyFilter(filter: 'minorQueue' | 'favorites' | 'recent' | 'nearby') {
     if (this.selectedFilter === filter) {
@@ -374,8 +406,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
   }
 
   async onContentScroll(event: any) {
-    if (this.isScrolling)
-      return;
+    if (this.isScrolling) return;
 
     this.isScrolling = true;
 
@@ -538,7 +569,6 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     this.canScrollRight = element.scrollWidth > element.clientWidth + element.scrollLeft;
   }
 
-
   private resetPagination() {
     this.currentPage = 1;
     this.hasMoreData = true;
@@ -570,11 +600,11 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     console.error(message);
   }
 
-  get shouldShowFavorites(): boolean {
-    return this.favoriteStores.length > 0 &&
-      (!this.searchQuery || this.searchQuery.trim() === '') &&
-      !this.searching;
-  }
+ get shouldShowFavorites(): boolean {
+  return this.favoriteStores.length > 0 &&
+    (!this.searchQuery || this.searchQuery.trim() === '') &&
+    !this.searching;
+}
 
   goToNotifications() {
     try {
@@ -609,5 +639,12 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     this.searching = false;
     this.searchQuery = '';
     this.contentHidden = false;
+  }
+
+  // ==================== ALTERAR ENDEREÇO ====================
+  changeAddress() {
+    // Implemente aqui a lógica para abrir modal de seleção de endereço
+    // Exemplo: this.modalController.create({ component: AddressModalComponent }).then(m => m.present());
+    console.log('Abrir alteração de endereço');
   }
 }

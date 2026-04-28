@@ -1,14 +1,17 @@
 <div class="top-compact-bar" [class.search-open]="searching">
-  <div class="address-area" *ngIf="!searching">
+  <!-- Endereço (modo normal) -->
+  <div class="address-area" *ngIf="!searching" (click)="changeAddress()">
     <ion-icon name="location-outline"></ion-icon>
     <span class="address-text">{{ getUserAddress() }}</span>
+    <ion-icon name="chevron-down-outline" class="address-arrow"></ion-icon>
   </div>
   
+  <!-- Campo de pesquisa (modo busca) -->
   <div class="search-area" *ngIf="searching">
     <ion-icon name="search-outline"></ion-icon>
     <input
       type="text"
-      placeholder="Buscar lojas ou serviços"
+      placeholder="Buscar lojas, serviços ou profissionais..."
       [(ngModel)]="searchQuery"
       (input)="onSearch($event)"
       autofocus
@@ -18,6 +21,7 @@
     </button>
   </div>
 
+  <!-- Botão lupa (modo normal) -->
   <button class="search-toggle" *ngIf="!searching" (click)="openSearch()">
     <ion-icon name="search-outline"></ion-icon>
   </button>
@@ -38,25 +42,40 @@
     ></ion-refresher-content>
   </ion-refresher>
 
-  <div class="collapsible-content"  [class.hidden]="searching || searchQuery.trim() !== ''">
-    <!-- <div class="banners-section">
+  <div class="collapsible-content" [class.hidden]="searching || searchQuery.trim() !== ''">
+    
+    <!-- ==================== CARROSSEL PATROCINADO ==================== -->
+    <div class="banners-section" *ngIf="!searching && searchQuery.trim() === ''">
       <div
         class="banners-scroll"
         #bannersScroll
         (scroll)="onBannerScroll()"
-        (mouseenter)="stopAutoScroll()"
-        (mouseleave)="startAutoScroll()"
+        (mouseenter)="pauseAutoScroll()"
+        (mouseleave)="resumeAutoScroll()"
         (touchstart)="pauseAutoScroll()"
+        (touchend)="resumeAutoScroll()"
       >
         <div
           class="banner-card"
           *ngFor="let banner of banners; let i = index"
           (click)="onBannerClick(banner)"
         >
-          <img [src]="banner.image" [alt]="banner.title" />
+          <div class="banner-image-container">
+            <img [src]="banner.image" [alt]="banner.title" />
+          </div>
+          <!-- Overlay com texto e CTA -->
+          <div class="banner-overlay">
+            <div class="banner-content">
+              <p class="banner-label">PATROCINADO</p>
+              <h2 class="banner-title">{{ banner.title }}</h2>
+              <p class="banner-subtitle">{{ banner.subtitle }}</p>
+              <button class="banner-cta">{{ banner.cta }}</button>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- Indicadores de slide -->
       <div class="scroll-indicator">
         <div
           class="scroll-dot"
@@ -65,8 +84,9 @@
           (click)="goToBanner(i)"
         ></div>
       </div>
-    </div> -->
+    </div>
 
+    <!-- ==================== CATEGORIAS ==================== -->
     <div class="categories-header">
       <h3 class="section-title">Categorias</h3>
     </div>
@@ -91,6 +111,7 @@
       </div>
     </div>
 
+    <!-- ==================== SEUS FAVORITOS ==================== -->
     <div class="favorite-stores-section" *ngIf="shouldShowFavorites && !searching">
       <div class="section-header">
         <h3 class="section-title">Seus favoritos</h3>
@@ -115,25 +136,31 @@
             <div class="store-status-badge" [class.open]="store.isOpen">
               {{ store.isOpen ? 'Aberto' : 'Fechado' }}
             </div>
-            <!-- <div class="favorite-badge">
-              <ion-icon name="heart"></ion-icon>
-            </div> -->
           </div>
           <div class="store-info">
             <h4 class="store-name">{{ store.name }}</h4>
-            <!-- <div class="store-meta">
-              <span class="rating">
-                <ion-icon name="star"></ion-icon>
-                {{ store.rating || '0' }}
-              </span>
-              <span class="distance">{{ store.distance }} m</span>
-            </div> -->
           </div>
         </div>
       </div>
     </div>
-  </div>
 
+    <!-- ==================== ANÚNCIO PARCEIRO PREMIUM ==================== -->
+    <div class="premium-ad" *ngIf="!searching && searchQuery.trim() === ''">
+      <div class="premium-ad-card">
+        <div class="premium-ad-content">
+          <ion-icon name="diamond-outline" class="premium-icon"></ion-icon>
+          <div class="premium-text">
+            <p class="premium-title">Vire parceiro premium</p>
+            <p class="premium-subtitle">Apareça no topo da busca</p>
+          </div>
+          <button class="premium-btn">Saiba mais</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- FIM collapsible-content -->
+
+  <!-- ==================== LISTA DE LOJAS PRÓXIMAS ==================== -->
   <div class="content-container">
     <div *ngIf="!isLoading && !isEmptyResult" class="companies-container">
       <div class="results-header">
