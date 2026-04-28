@@ -1,144 +1,139 @@
+::ng-deep app-custom-header.rounded-header {
+  ion-toolbar, .toolbar-container, .custom-header {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    overflow: hidden;
+  }
+}
+
 ion-content {
-  --padding-bottom: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  --background: #f2f2f6;
 }
 
 .container {
-  flex: 1;
+  padding: 16px 12px; 
+  min-height: 100%;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .cards-function {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 0.1rem;
-  padding: 0.1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .card-wrapper {
-  flex: 1 1 45%;
-  min-width: 260px;
-  max-width: 400px;
-}
+  flex: 1 1 280px; 
+  max-width: 340px; 
+  margin: 0;
+  border-radius: 24px;
+  background: transparent;
+  box-shadow: none;
+  transition: transform 0.2s ease;
 
-.card-wrapper:hover {
-  transform: scale(1.02);
+  &:active {
+    transform: scale(0.97);
+  }
 }
 
 .card-inner {
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  margin: 2rem 1rem 1rem;
-  padding: 1.5rem 0.75rem 0rem;
-  position: relative;
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 24px 16px 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  height: 100%;
+  align-items: center;
 }
 
 .circle-icon {
-  width: 70px;
-  height: 70px;
-  background-color: var(--ion-color-primary);
+  width: 76px;
+  height: 76px;
+  background: linear-gradient(145deg, #007aff, #0051d5);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.circle-icon ion-icon {
-  font-size: 40px;
-  color: #fff;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+  ion-icon {
+    font-size: 44px;
+    color: white;
+  }
 }
 
 .card-title {
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
-  font-size: 1.4rem;
-  text-align: center;
-  color: #292829;
-  margin-top: 1.2rem;
+  font-size: 22px;
+  font-weight: 600;
+  color: #1c1c1e;
+  margin: 8px 0 4px;
 }
 
 .description-card {
-  text-align: center;
-  margin-top: -0.8rem;
-}
-
-.description-card h2 {
-  font-family: "Poppins", sans-serif;
-  font-weight: 400;
-  font-size: 0.7rem;
-  color: #8a8a8a;
-  text-transform: uppercase;
-}
-
-.description-card h3 {
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: #292829;
-  text-transform: uppercase;
-}
-
-@media (min-width: 600px) {
-  .cards-function {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
+  h2 {
+    font-size: 13px;
+    font-weight: 500;
+    color: #8e8e93;
+    letter-spacing: 0.5px;
+    margin: 0 0 4px;
   }
+  h3 {
+    font-size: 17px;
+    font-weight: 590;
+    color: #007aff;
+    margin: 0;
+  }
+}
 
+@media (min-width: 768px) {
   .card-wrapper {
-    flex: 1 1 calc(45% - 1rem);
-    max-width: calc(45% - 1rem);
+    flex: 1 1 300px;
+    max-width: 360px;
   }
 }
 
-@media (min-width: 900px) {
+@media (max-width: 600px) {
+  .container {
+    padding: 12px;
+  }
   .card-wrapper {
-    flex: 1 1 calc(30% - 1rem);
-    max-width: calc(30% - 1rem);
+    flex: 1 1 100%;
+    max-width: 100%;
   }
-}
-
-@media (max-height: 700px), (max-width: 350px) {
   .card-inner {
-    padding: 2rem 0.5rem 0.5rem;
-    margin: 1.5rem 0.5rem 0.5rem;
+    padding: 20px 12px;
   }
-
   .circle-icon {
-    width: 55px;
-    height: 55px;
+    width: 66px;
+    height: 66px;
+    ion-icon {
+      font-size: 38px;
+    }
   }
+}
 
-  .circle-icon ion-icon {
-    font-size: 32px;
+@media (prefers-color-scheme: dark) {
+  ion-content {
+    --background: #000000;
   }
-
+  .card-inner {
+    background: #1c1c1e;
+  }
   .card-title {
-    font-size: 1.1rem;
-    margin-top: 1rem;
+    color: #ffffff;
   }
-
   .description-card h2 {
-    font-size: 0.6rem;
+    color: #8e8e93;
   }
-
   .description-card h3 {
-    font-size: 0.8rem;
-  }
-
-  .cards-function {
-    gap: 0.5rem;
-    padding: 0.5rem;
+    color: #0a84ff;
   }
 }
 

@@ -1,12 +1,13 @@
 <app-custom-header
   subtitle="SELECIONE O PERFIL"
   [showStartButton]="false"
-   [showEndButton]="true"
+  [showEndButton]="true"
   endIconName="close-outline"
   (onEndClick)="exit()"
+  class="rounded-header"
 ></app-custom-header>
 
-<ion-content>
+<ion-content fullscreen>
   <div class="container">
     <div class="cards-function">
       <ion-card class="box card-wrapper" (click)="redirect('/select-company', 0)">
@@ -24,7 +25,11 @@
         </div>
       </ion-card>
 
-      <ion-card class="box card-wrapper" *ngIf="user?.profile === 1 || user?.profile === 2" (click)="redirect('/choose-establishment', 1)">
+      <ion-card
+        class="box card-wrapper"
+        *ngIf="user?.profile === 1 || user?.profile === 2"
+        (click)="redirect('/choose-establishment', 1)"
+      >
         <div class="card-inner">
           <div class="circle-icon">
             <ion-icon name="hammer"></ion-icon>
@@ -38,8 +43,12 @@
           </ion-card-content>
         </div>
       </ion-card>
-      
-      <ion-card class="box card-wrapper" *ngIf="user?.profile === 2" (click)="redirect('/choose-establishment', 2)">
+
+      <ion-card
+        class="box card-wrapper"
+        *ngIf="user?.profile === 2"
+        (click)="redirect('/choose-establishment', 2)"
+      >
         <div class="card-inner">
           <div class="circle-icon">
             <ion-icon name="briefcase"></ion-icon>
@@ -48,7 +57,7 @@
             <ion-card-title class="card-title">PROPRIETÁRIO</ion-card-title>
           </ion-card-header>
           <ion-card-content class="description-card">
-            <h2>Estabelecimento</h2>
+            <h2>ESTABELECIMENTO</h2>
             <h3>Eu sou empreendedor</h3>
           </ion-card-content>
         </div>
