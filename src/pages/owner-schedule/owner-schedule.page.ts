@@ -80,8 +80,6 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
   ];
 
   serviceFilters: any[] = [];
-
-  // Propriedade para conexão das drop lists
   connectedDropLists: CdkDropList[] = [];
 
   constructor(

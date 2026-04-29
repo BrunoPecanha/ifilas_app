@@ -10,6 +10,7 @@ import { QueueService } from 'src/services/queue.service';
 import { ScheduleService } from 'src/services/schedule.service';
 import { SignalRService } from 'src/services/seignalr.service';
 import { SessionService } from 'src/services/session.service';
+import { ToastService } from 'src/services/toast.service';
 
 @Component({
   selector: 'app-checkout',
@@ -63,7 +64,7 @@ export class CheckoutPage implements OnInit {
   constructor(
     private router: Router,
     private alertController: AlertController,
-    private toastController: ToastController,
+    private toastController: ToastService,
     private sessionService: SessionService,
     private paymentService: PaymentService,
     private queueService: QueueService,
@@ -253,13 +254,7 @@ export class CheckoutPage implements OnInit {
 
   async confirmCheckout() {
     if (!this.selectedPaymentMethod) {
-      const toast = await this.toastController.create({
-        message: 'Por favor, selecione uma forma de pagamento',
-        duration: 3000,
-        position: 'bottom',
-        color: 'warning'
-      });
-      await toast.present();
+      await this.toastController.show('Por favor, selecione uma forma de pagamento', 'warning')      
       return;
     }
 
@@ -382,7 +377,8 @@ export class CheckoutPage implements OnInit {
     const queryParams = {
       userId: this.userId,
       editingExistingAppointment: this.editingExistingAppointment,
-      flow: flow
+      flow: flow,
+      isOwner: this.sessionService.getProfile() === 1 || this.sessionService.getProfile() === 2
     };
     this.router.navigate(['/confirmation'], { queryParams });
   }
