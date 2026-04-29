@@ -46,7 +46,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
   private isScrolling = false;
   activeBannerIndex = 0;
   autoScrollInterval: any;
-  private autoScrollPaused = false; // NOVO
+  private autoScrollPaused = false;
 
   constructor(
     private router: Router,
@@ -63,11 +63,11 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
   ionViewWillEnter() {
     this.resetPagination();
     this.loadData();
-    this.startAutoScroll(); // NOVO: iniciar carrossel
+    this.startAutoScroll();
   }
 
   ngOnDestroy() {
-    this.stopAutoScroll(); // NOVO: limpar intervalo
+    this.stopAutoScroll();
   }
 
   private loadData() {
@@ -102,29 +102,53 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     });
   }
 
-  // Banners atualizados com campos para o carrossel patrocinado
+
   banners = [
     {
-      id: 1,
-      title: 'Barbearias parceiras',
-      subtitle: 'Até 30% OFF no primeiro corte',
-      cta: 'Aproveitar',
-      image: 'assets/images/banner/banner_promo.jpg',
-      action: 'about'
-    },
-    {
-      id: 2,
-      title: 'Salões premium',
-      subtitle: 'Tratamentos exclusivos com 25% OFF',
-      cta: 'Conferir',
-      image: 'assets/images/banner/banner_promo2.png',
-      action: 'favorites'
-    },
-    {
       id: 3,
-      title: 'Agende sem fila',
-      subtitle: 'Chegue na hora certa com desconto',
-      cta: 'Ver como funciona',
+      title: 'Destaque sua loja',
+      subtitle: 'Apareça primeiro para clientes próximos',
+      cta: 'Em breve',
+      image: 'assets/images/banner/banner_promo3.jpg',
+      action: 'how-it-works'
+    },
+    {
+      id: 4,
+      title: 'Quer mais clientes?',
+      subtitle: 'Destaque sua loja e aumente seus atendimentos',
+      cta: 'Em breve',
+      image: 'assets/images/banner/banner_promo3.jpg',
+      action: 'how-it-works'
+    },
+    {
+      id: 5,
+      title: 'Fique na frente da concorrência',
+      subtitle: 'Sua loja em evidência para quem está por perto',
+      cta: 'Em breve',
+      image: 'assets/images/banner/banner_promo3.jpg',
+      action: 'how-it-works'
+    },
+    {
+      id: 6,
+      title: 'Mais visibilidade, mais movimento',
+      subtitle: 'Destaque sua loja e lota sua agenda',
+      cta: 'Em breve',
+      image: 'assets/images/banner/banner_promo3.jpg',
+      action: 'how-it-works'
+    },
+    {
+      id: 7,
+      title: 'Bora lotar essa agenda?',
+      subtitle: 'Coloque sua loja em destaque aqui no app',
+      cta: 'Em breve',
+      image: 'assets/images/banner/banner_promo3.jpg',
+      action: 'how-it-works'
+    },
+    {
+      id: 8,
+      title: 'Sua loja bombando 🔥',
+      subtitle: 'Apareça pra quem tá pronto pra ser atendido',
+      cta: 'Em breve',
       image: 'assets/images/banner/banner_promo3.jpg',
       action: 'how-it-works'
     }
@@ -311,17 +335,14 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     return count;
   }
 
-  // ==================== BANNERS / CARROSSEL PATROCINADO ====================
   onBannerClick(banner: any) {
     switch (banner.action) {
       case 'about':
-        // Navegar para tela sobre, promoção, etc.
         break;
       case 'favorites':
         this.viewAllFavorites();
         break;
       case 'how-it-works':
-        // Navegar para explicação
         break;
     }
   }
@@ -330,9 +351,8 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     if (!this.bannersScroll) return;
     const scrollElement = this.bannersScroll.nativeElement;
     const scrollLeft = scrollElement.scrollLeft;
-    // largura do card = largura da view menos margens (conforme CSS)
-    const cardWidth = scrollElement.clientWidth - 48; // 48 = 2 * 16px padding + 16px gap
-    const newIndex = Math.round(scrollLeft / (cardWidth + 12)); // 12 = gap
+    const cardWidth = scrollElement.clientWidth - 48;
+    const newIndex = Math.round(scrollLeft / (cardWidth + 12));
     if (newIndex !== this.activeBannerIndex && newIndex >= 0 && newIndex < this.banners.length) {
       this.activeBannerIndex = newIndex;
     }
@@ -347,7 +367,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
       behavior: 'smooth'
     });
     this.activeBannerIndex = index;
-    this.resetAutoScrollTimer(); // reinicia o timer após interação manual
+    this.resetAutoScrollTimer();
   }
 
   startAutoScroll() {
@@ -357,7 +377,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
       if (this.autoScrollPaused) return;
       const nextIndex = (this.activeBannerIndex + 1) % this.banners.length;
       this.goToBanner(nextIndex);
-    }, 4000); // troca a cada 4 segundos
+    }, 4000);
   }
 
   stopAutoScroll() {
@@ -381,8 +401,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     this.startAutoScroll();
   }
 
-  // ==================== FILTROS (já existente) ====================
-  // openFilters pode ser usado no botão "Filtrar" do cabeçalho; chama o toggle existente
+
   openFilters() {
     this.toggleFilters();
   }
@@ -653,7 +672,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
     this.contentHidden = false;
 
     this.resetPagination();
-    this.loadStores(); 
+    this.loadStores();
   }
 
   changeAddress() {
@@ -675,7 +694,7 @@ export class SelectCompanyPage implements OnInit, OnDestroy {
       this.resetSearch();
 
       this.resetPagination();
-      this.loadStores(); 
+      this.loadStores();
 
       return;
     }
