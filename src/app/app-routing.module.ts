@@ -27,6 +27,10 @@ const routes: Routes = [
     path: 'on-boarding',
     loadChildren: () => import('../pages/on-boarding-page/on-boarding.module').then(m => m.OnBoardingPageModule)
   },
+   {
+    path: 'validate-code',
+    loadChildren: () => import('../pages/validate-code/validate-code.module').then(m => m.ValidateCodePageModule)
+  },
   {
     path: 'role-registration',
     canActivate: [AuthGuard],
@@ -141,12 +145,7 @@ const routes: Routes = [
     path: 'order-approval',
     canActivate: [AuthGuard],
     loadChildren: () => import('../pages/order-approval/order-approval.module').then(m => m.OrderApprovalPageModule)
-  },
-  {
-    path: 'validate-code',
-    canActivate: [AuthGuard],
-    loadChildren: () => import('../pages/validate-code/validate-code.module').then(m => m.ValidateCodePageModule)
-  },
+  }, 
   {
     path: 'schedule-appointment',
     canActivate: [AuthGuard],
