@@ -10,6 +10,7 @@ export class ConfirmationPage {
 
   userId: number = 0;
   editingExistingAppointment = false;
+  isOwner = false;
 
   constructor(private router: Router) {
     this.getQueryParams();
@@ -19,12 +20,18 @@ export class ConfirmationPage {
     const nav = this.router.getCurrentNavigation();
     const userId = nav?.extras.queryParams?.['userId'];
     const editingExistingAppointment = nav?.extras.queryParams?.['editingExistingAppointment'];
+    this.isOwner = nav?.extras.queryParams?.['isOwner'];
 
     this.userId = userId || 0;
     this.editingExistingAppointment = editingExistingAppointment || false;
   }
 
-  goToQueue() {
+  goToMainPage() {
+    if (this.isOwner) {
+      this.router.navigate(['/owner-schedule']);
+      return;
+    }
+
     this.router.navigate(['/queue'], {
       queryParams: {
         userId: this.userId,
@@ -32,13 +39,5 @@ export class ConfirmationPage {
         state: { from: 'confirmation' }
       }
     });
-  }
-
-  goToSchedule() {
-    // Navega para a agenda ou página inicial
-    this.router.navigate(['/schedule']);
-
-    // Ou limpa o histórico e vai para a agenda
-    // this.router.navigate(['/schedule'], { replaceUrl: true });
-  }
+  } 
 }
