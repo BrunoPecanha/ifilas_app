@@ -180,7 +180,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
       { type: PaymentMethodEnum.cash, selected: false, acceptsChange: false, changeLimit: 1 },
       { type: PaymentMethodEnum.boleto, selected: false },
       { type: PaymentMethodEnum.bankTransfer, selected: false, bank: '', agency: '', account: '' }
-    ];    
+    ];
 
     defaultPaymentMethods.forEach(method => {
       paymentMethodsArray.push(this.fb.group(method));
@@ -458,59 +458,34 @@ export class CompanyConfigurationsPage implements OnDestroy {
     }));
   }
 
-  async searchCep() {
+
+  async searchCep() {    
     const cepControl = this.cadastroForm.get('cep');
-    if (!cepControl || cepControl.invalid)
+    if (!cepControl || cepControl.invalid) {
       return;
+    }
 
     const cep = cepControl.value.replace(/\D/g, '');
-    if (cep.length !== 8)
+    if (cep.length !== 8) {
       return;
-
-    this.searchingCep = true;
-    let loading: HTMLIonLoadingElement | null = null;
+    }
 
     try {
-      loading = await this.loadingController.create({
-        message: 'Buscando CEP...',
-        duration: 10000
-      });
-      await loading.present();
-
       this.geoLocalizationService.getAddressByCep(cep).subscribe({
-        next: (response: addressResponse) => {
-          if (loading) {
-            loading.dismiss();
-            loading = null;
-          }
-
+        next: (response: any) => {
           if (response.valid && response.data) {
-            this.cadastroForm.get('address')?.enable();
-            this.cadastroForm.get('neighborhood')?.enable();
-            this.cadastroForm.get('city')?.enable();
-            this.cadastroForm.get('state')?.enable();
-
             this.cadastroForm.patchValue({
               address: response.data.lagradouro,
               neighborhood: response.data.bairro,
               city: response.data.localidade,
               state: response.data.uf || response.data.estado
             });
-
-            this.cadastroForm.get('address')?.disable();
-            this.cadastroForm.get('neighborhood')?.disable();
-            this.cadastroForm.get('city')?.disable();
-            this.cadastroForm.get('state')?.disable();
           } else {
             this.showCepError(response.message);
             cepControl.setErrors({ invalidCep: true });
           }
         },
         error: (error) => {
-          if (loading) {
-            loading.dismiss();
-            loading = null;
-          }
           this.showCepError('Erro ao buscar CEP. Tente novamente.');
           console.error('Erro na busca do CEP:', error);
         }
@@ -519,13 +494,8 @@ export class CompanyConfigurationsPage implements OnDestroy {
     } catch (error) {
       console.error('Erro no searchCep:', error);
       this.showCepError('Erro inesperado. Tente novamente.');
-    } finally {
-      this.searchingCep = false;
-      if (loading) {
-        loading.dismiss();
-      }
     }
-  }
+  } 
 
   private async showCepError(message: string) {
     const alert = await this.alertController.create({

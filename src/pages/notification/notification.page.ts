@@ -63,7 +63,12 @@ export class NotificationPage implements OnInit, OnDestroy {
     });
     this.subscriptions.push(sub);
 
-    this.markAllAsRead()
+  }
+
+  ionViewDidEnter() {
+    setTimeout(() => {
+      this.markAllAsRead();
+    }, 2000);
   }
 
   ngOnDestroy() {
