@@ -81,14 +81,6 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
 
   private async startNotificationListener() {
   await this.signalRService.startNotificationConnection();
-
-  this.signalRService.onReceiveNotification((notification) => {
-    console.log('Notificação recebida:', notification);
-
-    this.notificationService.atualizarContadorNaoLidas();
-
-    this.cdr.detectChanges();
-  });
 }
 
   setActiveBasedOnRoute() {
