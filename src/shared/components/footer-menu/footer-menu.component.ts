@@ -31,10 +31,8 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private sessionService: SessionService,
     private cdr: ChangeDetectorRef,
-     private signalRService: SignalRService   
+    private signalRService: SignalRService
   ) {
-    // this.profile = this.sessionService.getProfile();
-    // this.store = this.sessionService.getStore();
   }
 
   ngOnInit() {
@@ -45,6 +43,11 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
 
     this.sessionService.user$.subscribe(user => {
       this.userFromSession = user;
+
+      if (user?.id) {
+        this.notificationService.getUserNotifications(user.id).subscribe();
+      }
+
       this.cdr.detectChanges();
     });
 
@@ -80,8 +83,8 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
   }
 
   private async startNotificationListener() {
-  await this.signalRService.startNotificationConnection();
-}
+    await this.signalRService.startNotificationConnection();
+  }
 
   setActiveBasedOnRoute() {
     const currentUrl = this.router.url;
@@ -101,7 +104,6 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
 
   initializeNotifications() {
     this.notificationsCount$ = this.notificationService.notificacoesNaoLidas$;
-    this.notificationService.atualizarContadorNaoLidas();
   }
 
   async goToHome(main: boolean = false) {
@@ -154,7 +156,7 @@ export class FooterMenuComponent implements OnInit, OnDestroy {
   }
 
   loadUserQueInfo() {
-    if (!this.userFromSession) 
+    if (!this.userFromSession)
       return;
 
     const userId = this.userFromSession.id;
