@@ -119,22 +119,18 @@ ion-content {
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  ion-content {
-    --background: #000000;
-  }
-  .card-inner {
-    background: #1c1c1e;
-  }
-  .card-title {
-    color: #ffffff;
-  }
-  .description-card h2 {
-    color: #8e8e93;
-  }
-  .description-card h3 {
-    color: #0a84ff;
-  }
+.card-inner {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 24px 16px 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+
+  border: 1px solid #e5e5ea; 
+}
+
+.ios-input,
+.ios-select {
+  border: 1px solid #dcdce0; 
 }
 
 ion-content::part(scroll) {

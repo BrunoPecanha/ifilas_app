@@ -1,6 +1,5 @@
-// iOS Style Checkout Page - Compact Version
 .checkout-content {
-  --background: #f8f8f8;
+  --background: #f2f2f7;
 }
 
 .checkout-container {
@@ -8,12 +7,23 @@
   padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 
-// Store Header
-.store-header {
-  background: white;
+
+.store-header,
+.services-section,
+.payment-section,
+.pricing-section,
+.entry-time,
+.schedule-info {
+  background: #ffffff;
   border-radius: 16px;
-  padding: 20px;
   margin-bottom: 16px;
+
+  border: 1px solid #e5e5ea;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.store-header {
+  padding: 20px;
   text-align: center;
 
   h1 {
@@ -44,7 +54,7 @@
   }
 }
 
-// Section Title
+
 .section-title {
   font-size: 15px;
   font-weight: 600;
@@ -54,12 +64,9 @@
   letter-spacing: 0.5px;
 }
 
-// Services Section
+
 .services-section {
-  background: white;
-  border-radius: 16px;
   padding: 16px;
-  margin-bottom: 12px;
 }
 
 .services-list-compact {
@@ -98,12 +105,9 @@
   }
 }
 
-// Entry Time
+
 .entry-time {
-  background: white;
-  border-radius: 16px;
   padding: 14px 16px;
-  margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -119,12 +123,39 @@
   }
 }
 
-// Payment Section
+
+.schedule-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+
+  ion-icon {
+    font-size: 22px;
+    color: var(--ion-color-primary);
+  }
+
+  .schedule-text {
+    display: flex;
+    flex-direction: column;
+
+    .label {
+      font-size: 12px;
+      color: #8e8e93;
+    }
+
+    .value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1c1c1e;
+      text-transform: capitalize;
+    }
+  }
+}
+
+
 .payment-section {
-  background: white;
-  border-radius: 16px;
   padding: 16px;
-  margin-bottom: 12px;
 }
 
 .payment-grid {
@@ -176,7 +207,7 @@
   }
 }
 
-// Installments
+
 .installments-wrapper {
   margin-top: 12px;
   padding-top: 12px;
@@ -201,12 +232,9 @@
   }
 }
 
-// Pricing Section
+
 .pricing-section {
-  background: white;
-  border-radius: 16px;
   padding: 16px;
-  margin-bottom: 20px;
 }
 
 .price-row {
@@ -214,10 +242,6 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-
-  &:first-child {
-    padding-top: 0;
-  }
 
   span:first-child {
     font-size: 15px;
@@ -237,10 +261,24 @@
   }
 }
 
-// Action Button
-.action-section {
-  margin-top: 8px;
+.price-row.total {
+  .total-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .variable-note {
+    font-size: 12px;
+    color: #d32f2f;
+    font-style: italic;
+  }
+
+  .blue-total {
+    color: #007aff !important;
+  }
 }
+
 
 .payment-button {
   --background: #007aff;
@@ -250,8 +288,6 @@
   height: 52px;
   font-size: 17px;
   font-weight: 600;
-  text-transform: none;
-  margin: 0;
 
   &:active {
     transform: scale(0.98);
@@ -261,17 +297,10 @@
     --background: #e5e5ea;
     --color: #8e8e93;
     --box-shadow: none;
-    opacity: 1;
   }
 }
 
-// Helper
-.format-duration {
-  font-size: 13px;
-  color: #8e8e93;
-}
 
-// Responsive
 @media (max-width: 480px) {
   .checkout-container {
     padding: 12px;
@@ -301,99 +330,8 @@
   }
 }
 
-// Dark Mode
-@media (prefers-color-scheme: dark) {
-  .checkout-content {
-    --background: #000000;
-  }
-
-  .store-header,
-  .services-section,
-  .entry-time,
-  .payment-section,
-  .pricing-section {
-    background: #1c1c1e;
-  }
-
-  .store-header h1,
-  .service-name,
-  .service-price,
-  .entry-time span,
-  .payment-name,
-  .price-row.total span:first-child {
-    color: #ffffff;
-  }
-
-  .payment-card {
-    background: #2c2c2e;
-    border-color: #3a3a3c;
-
-    &.selected {
-      background: rgba(10, 132, 255, 0.2);
-    }
-  }
-
-  .service-item-compact {
-    border-bottom-color: #2c2c2e;
-  }
-
-  .price-row.total {
-    border-top-color: #2c2c2e;
-  }
-}
 
 ion-content::part(scroll) {
   scrollbar-width: none;
   -ms-overflow-style: none;
-}
-
-.price-row.total {
-  .total-wrapper {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-  }
-
-  .variable-note {
-    font-size: 12px;
-    color: #d32f2f;
-    font-style: italic;
-  }
-
-  .blue-total {
-    color: #007aff !important;
-  }
-}
-
-.schedule-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  background: #f4f6f8;
-  padding: 12px 14px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-
-  ion-icon {
-    font-size: 22px;
-    color: var(--ion-color-primary);
-  }
-
-  .schedule-text {
-    display: flex;
-    flex-direction: column;
-
-    .label {
-      font-size: 12px;
-      color: #666;
-    }
-
-    .value {
-      font-size: 14px;
-      font-weight: 600;
-      color: #222;
-      text-transform: capitalize;
-    }
-  }
 }

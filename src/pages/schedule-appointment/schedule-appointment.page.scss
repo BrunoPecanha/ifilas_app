@@ -764,3 +764,17 @@ ion-content::part(scroll) {
   position: relative;
   z-index: 1;
 }
+
+.card-inner {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 24px 16px 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+
+  border: 1px solid #e5e5ea; 
+}
+
+.ios-input,
+.ios-select {
+  border: 1px solid #dcdce0; 
+}

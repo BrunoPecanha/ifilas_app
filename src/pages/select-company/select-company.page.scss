@@ -675,12 +675,11 @@ ion-content::part(scroll)::-webkit-scrollbar {
   color: #c53030;
 }
 
-/* Grid de detalhes da loja */
 .store-details-grid {
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-rows: auto auto;
-  gap: 8px 12px;
+  gap: 0px 12px;
   align-items: center;
 }
 
@@ -874,7 +873,7 @@ ion-content::part(scroll)::-webkit-scrollbar {
     font-size: 24px;
   }
   .store-details-grid {
-    gap: 6px 8px;
+    gap: 0px 8px;
   }
   .rating-inline,
   .distance-inline {

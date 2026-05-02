@@ -1,4 +1,3 @@
-// iOS Style SCSS
 .schedule-container {
   padding: 16px;
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
@@ -6,7 +5,6 @@
   min-height: 100%;
 }
 
-// Date Selector iOS Style
 .date-section {
   margin-bottom: 20px;
 }
@@ -66,7 +64,6 @@
   font-weight: 600;
 }
 
-// Stats Section iOS Style
 .stats-section {
   margin-bottom: 20px;
 }
@@ -109,7 +106,7 @@
   font-weight: 500;
 }
 
-// Controls Section
+
 .controls-section {
   display: flex;
   align-items: center;
@@ -742,76 +739,6 @@
   
   .date-pill-text {
     font-size: 15px;
-  }
-}
-
-// Dark Mode Support
-@media (prefers-color-scheme: dark) {
-  .schedule-container {
-    background: #000000;
-  }
-  
-  .stat-card {
-    background: #1c1c1e;
-  }
-  
-  .stat-label {
-    color: #8e8e93;
-  }
-  
-  .date-pill {
-    background: rgba(10, 132, 255, 0.15);
-    
-    .date-pill-text {
-      color: #ffffff;
-    }
-  }
-  
-  .time-slot,
-  .filters-panel,
-  .active-filters,
-  .list-item,
-  .empty-state {
-    background: #1c1c1e;
-    border-color: #2c2c2e;
-  }
-  
-  .slot-header {
-    background: #2c2c2e;
-    border-bottom-color: #3a3a3c;
-  }
-  
-  .slot-time,
-  .customer-name,
-  .filter-label {
-    color: #ffffff;
-  }
-  
-  .chip {
-    background: #2c2c2e;
-    color: #ffffff;
-    
-    &.selected {
-      background: rgba(10, 132, 255, 0.2);
-    }
-  }
-  
-  .empty-slot {
-    background: #2c2c2e;
-    border-color: #3a3a3c;
-    
-    span {
-      color: #8e8e93;
-    }
-  }
-  
-  .ios-searchbar {
-    --background: #2c2c2e;
-    --color: #ffffff;
-  }
-  
-  .view-segment {
-    background: #2c2c2e;
   }
 }
 
