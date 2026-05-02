@@ -2,7 +2,6 @@
   --background: #f8f9ff;
 }
 
-/* iOS Header */
 .ios-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -48,7 +47,6 @@
   }
 }
 
-/* Date Selector */
 .date-selector-container {
   padding: 20px;
   margin-top: -10px;
@@ -119,7 +117,6 @@
   }
 }
 
-/* Metrics Grid */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -187,7 +184,6 @@
   }
 }
 
-/* Chart Card */
 .chart-card {
   background: white;
   border-radius: 24px;
@@ -257,7 +253,6 @@
   }
 }
 
-/* Attendances Section */
 .attendances-section {
   padding: 0 20px 20px;
 
@@ -389,7 +384,7 @@
   }
 }
 
-/* Loading State */
+
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -411,7 +406,7 @@
   }
 }
 
-/* Empty State */
+
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -452,7 +447,7 @@
   }
 }
 
-/* Date Picker Modal */
+
 .date-picker-modal {
   position: fixed;
   top: 0;
@@ -601,7 +596,7 @@
   }
 }
 
-/* Hidden Date Input */
+
 .hidden-date-input {
   position: absolute;
   opacity: 0;
@@ -620,59 +615,6 @@
   }
 }
 
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  .reports-container {
-    --background: #000000;
-  }
-
-  .ios-header {
-    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-  }
-
-  .date-selector,
-  .metric-card,
-  .chart-card,
-  .attendance-card,
-  .empty-state,
-  .modal-content {
-    background: #1c1c1e;
-  }
-
-  .date-value,
-  .metric-value,
-  .customer-name,
-  .modal-title,
-  .picker-value {
-    color: #ffffff;
-  }
-
-  .preset-btn {
-    background: #2c2c2e;
-    color: #98989d;
-
-    &.active {
-      background: #0a84ff;
-      color: white;
-    }
-  }
-
-  .service-tag {
-    background: #2c2c2e;
-    color: #ffffff;
-  }
-
-  .date-picker-item {
-    background: #2c2c2e;
-  }
-
-  .quick-btn {
-    background: #2c2c2e;
-    color: #0a84ff;
-  }
-}
-
-/* iOS Style Custom Date Picker */
 .ios-custom-date-picker {
   position: fixed;
   top: 0;
@@ -825,7 +767,6 @@
   }
 }
 
-/* Quick Select Grid Aprimorado */
 .quick-selects-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -932,8 +873,6 @@ ion-content::part(scroll) {
     height: 100%;
   }
 }
-
-/* Insights */
 
 .insights-card {
   background: white;

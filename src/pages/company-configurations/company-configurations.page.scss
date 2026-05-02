@@ -929,53 +929,6 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .store-config-container {
-    --background: #000000;
-  }
-
-  .image-card,
-  .form-card,
-  .payment-methods-card,
-  .schedule-card,
-  .settings-card,
-  .highlights-card,
-  .modal-content {
-    background: #1c1c1e;
-  }
-
-  .image-label,
-  .day-name,
-  .payment-name,
-  h2,
-  .setting-info span {
-    color: #ffffff;
-  }
-
-  .ios-input,
-  .ios-select,
-  .social-field,
-  .highlight-input,
-  .time-input,
-  .ios-input-small,
-  .ios-select-small {
-    background: #2c2c2e;
-    border-color: #3a3a3c;
-    color: #ffffff;
-
-    &::placeholder {
-      color: #8e8e93;
-    }
-  }
-
-  .image-preview {
-    background: #2c2c2e;
-  }
-
-  .badge-coming-soon {
-    background: rgba(255, 149, 0, 0.2);
-  }
-}
 
 .ion-padding {
   --background: #f8f9fa;

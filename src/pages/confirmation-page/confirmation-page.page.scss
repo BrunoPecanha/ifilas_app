@@ -1,4 +1,3 @@
-// iOS Style Confirmation Page
 .confirmation-content {
   --background: #f8f8f8;
   
@@ -19,7 +18,6 @@
   text-align: center;
 }
 
-// Success Animation
 .success-animation {
   margin-bottom: 32px;
   animation: scaleUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -42,7 +40,6 @@
   }
 }
 
-// Title
 .confirmation-title {
   font-size: 28px;
   font-weight: 700;
@@ -61,7 +58,6 @@
   animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
 }
 
-// Button
 .continue-button {
   --background: #007aff;
   --background-hover: #0051d5;
@@ -118,7 +114,6 @@
   }
 }
 
-// Responsive
 @media (max-width: 480px) {
   .confirmation-container {
     padding: 24px;
@@ -140,20 +135,5 @@
   .confirmation-text {
     font-size: 15px;
     max-width: 260px;
-  }
-}
-
-// Dark Mode
-@media (prefers-color-scheme: dark) {
-  .confirmation-content {
-    --background: #000000;
-  }
-  
-  .confirmation-title {
-    color: #ffffff;
-  }
-  
-  .confirmation-text {
-    color: #8e8e93;
   }
 }
