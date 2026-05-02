@@ -342,6 +342,7 @@ export class CheckoutPage implements OnInit {
           notes: this.notes || '',
           paymentMethod: Number(this.selectedPaymentMethod?.type || 1),
           id: this.customerId,
+          storeId: this.storeId,
         };
 
         await this.queueService.updateCustomerToQueue(command).toPromise();
