@@ -5,4 +5,5 @@ export interface UpdateCustomerToQueueRequest {
   notes: string;
   paymentMethod: number;
   id: number;
+  storeId: number;
 }

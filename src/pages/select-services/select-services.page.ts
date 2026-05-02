@@ -511,7 +511,8 @@ export class SelectServicesPage implements OnInit {
       selectedServices: servicesToSend,
       notes: this.notes,
       paymentMethod: Number(this.paymentMethod),
-      id: this.customerId || 0
+      id: this.customerId || 0,
+      storeId: this.customerId || 0
     };
 
     this.queueService.updateCustomerToQueue(command).subscribe();
