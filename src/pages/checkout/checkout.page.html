@@ -66,7 +66,13 @@
       <span
         ><b>Entrada na fila às</b> {{ currentTime }}
         <div class="waiting-time">
-          <span><b>Tempo estimado:</b> {{ totalTimeString }} de espera</span>
+          <span *ngIf="totalTimeString; else agoraTpl">
+            <b>Tempo estimado total:</b> {{ totalTimeString }}
+          </span>
+
+          <ng-template #agoraTpl>
+            <span><b>Tempo estimado:</b> agora</span>
+          </ng-template>
         </div>
       </span>
     </div>
