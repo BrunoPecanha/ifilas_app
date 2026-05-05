@@ -11,48 +11,22 @@
 
 <div class="header-loja-dinamico">
   <div class="banner-loja">
-    <img
-      *ngIf="store?.wallPaperPath; else bannerPlaceholder"
-      [src]="store?.wallPaperPath"
-      alt="Banner da loja"
-      class="banner-image"
-    />
-    <ng-template #bannerPlaceholder>
-      <div class="banner-fallback"></div>
-    </ng-template>
-
+    <img *ngIf="store?.wallPaperPath; else bannerPlaceholder" [src]="store?.wallPaperPath" alt="Banner" class="banner-image" />
+    <ng-template #bannerPlaceholder><div class="banner-fallback"></div></ng-template>
     <div class="banner-overlay"></div>
   </div>
 
   <div class="store-card">
     <div class="store-card-inner">
-      <div class="logo-wrap" aria-hidden="true">
-        <img
-          [src]="store?.storeLogoPath"
-          alt="{{ store?.name || 'Loja' }} logo"
-          class="logo-loja"
-        />
+      <div class="logo-wrap">
+        <img [src]="store?.storeLogoPath" class="logo-loja" />
       </div>
-
       <div class="store-meta">
-        <div class="store-row">
-          <div class="title-block">
-            <h2 class="nome-loja">
-              {{ store?.name }}
-              <ion-icon
-                *ngIf="store?.isVerified"
-                name="checkmark-circle"
-                class="verified-icon"
-                color="primary"
-              ></ion-icon>
-            </h2>
-            <p class="descricao-loja">{{ store?.subtitle }}</p>
-          </div>
-
-          <div class="store-badges"></div>
-        </div>
-
-        <div class="store-actions" aria-hidden="true"></div>
+        <h2 class="nome-loja">
+          {{ store?.name }}
+          <ion-icon *ngIf="store?.isVerified" name="checkmark-circle" class="verified-icon"></ion-icon>
+        </h2>
+        <p class="descricao-loja">{{ store?.subtitle }}</p>
       </div>
     </div>
   </div>
@@ -60,228 +34,93 @@
 
 <ion-content class="scroll-area" fullscreen>
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-    <ion-refresher-content
-      pullingIcon="chevron-down-outline"
-      pullingText="Puxe para atualizar"
-      refreshingSpinner="circles"
-      refreshingText="Atualizando..."
-    >
-    </ion-refresher-content>
+    <ion-refresher-content pullingIcon="chevron-down-outline" refreshingSpinner="circles"></ion-refresher-content>
   </ion-refresher>
 
   <div class="filter-section">
-    <div class="filter-buttons clean">
-      <button
-        class="filter-btn"
-        [class.active]="isFilterActive('all')"
-        (click)="setFilter('all')"
-      >
-        <ion-icon name="people-outline"></ion-icon>
+    <div class="modern-segment">
+      <button class="seg-btn" [class.active]="isFilterActive('all')" (click)="setFilter('all')">
         <span>Todos</span>
       </button>
-
-      <button
-        class="filter-btn"
-        [class.active]="isFilterActive('queue')"
-        (click)="setFilter('queue')"
-      >
-        <ion-icon name="list-outline"></ion-icon>
+      <button class="seg-btn" [class.active]="isFilterActive('queue')" (click)="setFilter('queue')">
         <span>Fila</span>
       </button>
-
-      <button
-        class="filter-btn"
-        [class.active]="isFilterActive('agenda')"
-        (click)="setFilter('agenda')"
-      >
-        <ion-icon name="calendar-outline"></ion-icon>
+      <button class="seg-btn" [class.active]="isFilterActive('agenda')" (click)="setFilter('agenda')">
         <span>Agenda</span>
       </button>
     </div>
+    <p class="counter-text" *ngIf="hasAnyProfessionals">{{ getProfessionalsCountText() }}</p>
+  </div>
 
-    <div class="professionals-counter" *ngIf="hasAnyProfessionals">
-      {{ getProfessionalsCountText() }}
+  <div class="atendentes-container" *ngIf="hasAnyProfessionals; else semAtendentes">
+    <div 
+      *ngFor="let professional of filteredProfessionals" 
+      class="atendente-glass-card"
+      [class.offline]="professional.status !== StatusQueueEnum.open"
+      (click)="professional.useAgenda ? openAgenda(professional) : getInTheQueue(professional)"
+    >
+      <div class="card-header">
+        <div class="photo-wrapper">
+          <img *ngIf="professional.profileImage" [src]="professional.profileImage" class="prof-img" />
+          <ion-icon *ngIf="!professional.profileImage" name="person-circle" class="prof-icon-placeholder"></ion-icon>
+          <div class="status-ring" [ngClass]="getStatusClass(professional.status)"></div>
+        </div>
+        
+        <div class="prof-title">
+          <h3>{{ professional.name }} {{ professional.lastName }}</h3>
+          <div class="rating-badge" *ngIf="shouldShowRating(professional)">
+            <ion-icon name="star" color="warning"></ion-icon>
+            <span>{{ professional.rating }}</span>
+          </div>
+        </div>
+
+        <div class="type-icon-wrapper">
+          <ion-icon [name]="professional.useAgenda ? 'calendar-clear-outline' : 'flash-outline'" [color]="professional.useAgenda ? 'secondary' : 'primary'"></ion-icon>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <p class="prof-subtitle">{{ professional.subtitle || professional.queueName }}</p>
+        
+        <div class="tags-row">
+          <span class="modern-tag" *ngIf="professional.isNew">Novo</span>
+          <span class="modern-tag info" *ngIf="professional.servicesProvided">
+            <ion-icon name="cut-outline"></ion-icon> {{ professional.servicesProvided }}
+          </span>
+        </div>
+      </div>
+
+      
+      <div class="card-footer">
+        <ng-container *ngIf="!professional.useAgenda">
+          <div class="queue-status">
+            <div class="queue-text">
+              <span class="waiting-count">{{ professional.customersWaiting }} na fila</span>
+              <span class="waiting-time">{{ formatWaitingTime(professional.averageWaitingTime) }} espera</span>
+            </div>
+            <div class="mini-progress-bg">
+              <div class="mini-progress-fill" 
+                [style.width.%]="getQueueProgress(professional.customersWaiting)"
+                [style.background]="getColorProgress(professional.customersWaiting)">
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="professional.useAgenda">
+          <div class="agenda-action">
+            <span>Horários disponíveis</span>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
 
-  <div
-    class="atendentes-wrapper"
-    *ngIf="hasAnyProfessionals; else semAtendentes"
-  >
-    <ion-card 
-      *ngFor="let professional of filteredProfessionals"
-      class="atendente-card"
-      [ngClass]="professional.useAgenda ? 'agenda-card' : 'queue-card'"
-      (click)="professional.useAgenda ? openAgenda(professional) : getInTheQueue(professional)"
-      [class.disabled]="professional.status !== StatusQueueEnum.open"
-    >
-      <div class="card-content-wrapper">
-        <div class="photo-column">
-          <div class="professional-photo">
-            <ng-container *ngIf="professional.profileImage; else defaultAvatar">
-              <img
-                [src]="professional.profileImage"
-                alt="{{ professional.name }}"
-                class="photo-image"
-                (error)="professional.profileImage = ''"
-              />
-            </ng-container>
-
-            <ng-template #defaultAvatar>
-              <ion-icon
-                name="person-circle-outline"
-                class="photo-icon"
-              ></ion-icon>
-            </ng-template>
-
-            <div
-              class="status-indicator"
-              [ngClass]="getStatusClass(professional.status)"
-            ></div>
-          </div>
-        </div>
-
-        <div class="info-column">
-          <div class="info-row top-row">
-            <div class="name-section">
-              <h2 class="nome-profissional">
-                {{ professional.name + ' ' + professional.lastName }}
-              </h2>
-              <div class="professional-badges">
-                <ion-badge
-                  [color]="professional.useAgenda ? 'secondary' : 'primary'"
-                  class="type-badge"
-                >
-                  <ion-icon
-                    [name]="professional.useAgenda ? 'calendar-outline' : 'list-outline'"
-                  ></ion-icon>
-                  {{ professional.useAgenda ? 'Agenda' : 'Fila' }}
-                </ion-badge>
-                <ion-badge
-                  *ngIf="professional.isNew"
-                  color="success"
-                  class="new-badge"
-                >
-                  Novo
-                </ion-badge>
-              </div>
-            </div>
-
-            <div class="status-section">
-              <!--<div
-                class="status-badge"
-                [ngClass]="getStatusClass(professional.status)"
-              >
-                 <ion-icon
-                  [name]="getStatusIcon(professional.status)"
-                ></ion-icon>
-                <span> {{ getStatusText(professional) }} </span>
-                <ion-icon
-                  *ngIf="professional.status === StatusQueueEnum.paused"
-                  name="help-circle-outline"
-                  (click)="openPauseReason(professional, $event)"
-                ></ion-icon> 
-              </div>-->
-            </div>
-          </div>
-
-          <div class="info-row middle-row">
-            <div class="professional-details">
-              <p class="nome-fila">{{ professional.queueName }}</p>
-              <p class="subtitulo">{{ professional.subtitle }}</p>
-            </div>
-
-            <div class="rating-section" *ngIf="shouldShowRating(professional)">
-              <div class="stars">
-                <ion-icon
-                  *ngFor="let star of getStars(5)"
-                  [name]="getStarIcon(star, professional.rating)"
-                  color="warning"
-                ></ion-icon>
-              </div>
-              <span class="rating-text">
-                ({{ professional.numberOfRatings }})
-              </span>
-            </div>
-          </div>
-
-          <div class="info-row bottom-row">
-            <div *ngIf="!professional.useAgenda" class="queue-info-section">
-              <div class="queue-progress-container">
-                <div class="progress-info">
-                  <span>{{ professional.customersWaiting }} pessoa(s) </span>
-                </div>
-                <div
-                  class="barra-progresso-wrapper"
-                  [attr.title]="getQueueStatusText(professional.customersWaiting)"
-                >
-                  <div
-                    class="barra-progresso"
-                    [style.width.%]="getQueueProgress(professional.customersWaiting)"
-                    [ngStyle]="{
-                      'background-color': getColorProgress(professional.customersWaiting)
-                    }"
-                  ></div>
-                </div>
-              </div>
-            </div>
-
-            <div *ngIf="professional.useAgenda" class="agenda-info-section">
-              <div class="agenda-features">
-                <div
-                  class="feature-item"
-                  *ngIf="professional.averageServiceTime && professional.averageServiceTime !== '00:00:00'"
-                >
-                  <ion-icon name="hourglass-outline" color="medium"></ion-icon>
-                  <span>
-                    {{ formatWaitingTime(professional.averageServiceTime) }} por
-                    serviço
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="additional-info">
-              <ion-chip
-                *ngIf="professional.servicesProvided"
-                class="service-chip"
-              >
-                <ion-icon name="construct-outline"></ion-icon>
-                <ion-label>{{ professional.servicesProvided }}</ion-label>
-              </ion-chip>
-
-              <ion-chip *ngIf="!professional.useAgenda" class="time-chip">
-                <ion-icon name="time-outline"></ion-icon>
-                <ion-label>
-                  {{ formatWaitingTime(professional.averageWaitingTime) }}
-                </ion-label>
-              </ion-chip>
-
-              <ion-chip
-                *ngIf="professional.useAgenda"
-                class="schedule-chip"
-                color="secondary"
-              >
-                <ion-icon name="calendar-outline"></ion-icon>
-                <ion-label>Ver horários</ion-label>
-              </ion-chip>
-            </div>
-          </div>
-        </div>
-      </div>
-    </ion-card>
-  </div>
-
   <ng-template #semAtendentes>
-    <div class="mensagem-vazia">
-      <ion-icon name="people-outline" class="empty-icon"></ion-icon>
-      <p>Nenhum atendente disponível no momento.</p>
-      <p class="empty-subtitle" *ngIf="filterType !== 'all'">
-        Tente alterar o filtro ou volte mais tarde.
-      </p>
-      <p class="empty-subtitle" *ngIf="filterType === 'all'">
-        Volte mais tarde para ver os atendentes disponíveis.
-      </p>
+    <div class="empty-state">
+      <ion-icon name="search-outline"></ion-icon>
+      <p>Nenhum atendente encontrado</p>
     </div>
   </ng-template>
 </ion-content>
