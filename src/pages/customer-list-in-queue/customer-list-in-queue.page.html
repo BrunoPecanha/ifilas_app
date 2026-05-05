@@ -14,318 +14,175 @@
 </app-custom-header>
 
 <ion-content
-  [fullscreen]="true"
-  class="ion-padding"
   [class.content-paused]="isPaused"
   [class.header-hidden]="hideHeader"
   (ionScroll)="onContentScroll($event)"
-  scrollEvents="true"
+  [scrollEvents]="true"
 >
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-    <ion-refresher-content
-      pullingIcon="chevron-down-outline"
-      pullingText="Puxe para atualizar"
-      refreshingSpinner="circles"
-      refreshingText="Atualizando..."
-    >
+    <ion-refresher-content 
+      pullingIcon="arrow-down-outline" 
+      refreshingSpinner="crescent">
     </ion-refresher-content>
   </ion-refresher>
 
-  <div class="stats-section sticky-stats">
-    <div class="stats-grid">
-      <div class="stat-item total">
-        <div class="stat-number">{{ clients.length || 0 }}</div>
-        <div class="stat-label">Total</div>
-      </div>
-      <div class="stat-item in-service">
-        <div class="stat-number">{{ getClientsInServiceCount() }}</div>
-        <div class="stat-label">Em Atendimento</div>
-      </div>
-      <div class="stat-item waiting">
-        <div class="stat-number">{{ getWaitingClientsCount() }}</div>
-        <div class="stat-label">Aguardando</div>
-      </div>
-      <div class="stat-item status">
-        <div
-          class="status-indicator"
-          [class.paused]="isPaused"
-          [class.active]="!isPaused"
-        >
-          <ion-icon
-            [name]="isPaused ? 'pause-circle' : 'play-circle'"
-          ></ion-icon>
-          <span>{{ isPaused ? 'Pausada' : 'Ativa' }}</span>
-        </div>
-        <div class="stat-label">Status fila</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="active-filters-bar" *ngIf="hasActiveFilters()">
-    <div class="active-filters-content">
-      <span class="filters-label">Filtros:</span>
-      <div class="active-chips">
-        <ion-chip
-          *ngFor="let filter of getActiveFilters()"
-          color="primary"
-          outline
-          size="small"
-        >
-          {{ filter.label }}
-          <ion-icon name="close" (click)="removeFilter(filter.key)"></ion-icon>
-        </ion-chip>
-      </div>
-      <ion-button
-        fill="clear"
-        size="small"
-        color="medium"
-        (click)="clearFilters()"
-      >
-        Limpar
-      </ion-button>
-    </div>
-  </div>
-
-  <section class="queue-section">
-    <div *ngIf="clients && clients.length === 0" class="empty-state">
-      <div class="empty-content">
-        <div class="empty-icon">
+  <div class="main-container">
+    <header class="stats-container">
+      <div class="stat-card" [class.active]="!isPaused">
+        <div class="stat-icon-wrapper">
           <ion-icon name="people-outline"></ion-icon>
         </div>
-        <h3>Fila vazia</h3>
-        <p>Não há clientes aguardando atendimento</p>
-        <!-- <ion-button
-          fill="solid"
-          color="primary"
-          (click)="loadAllCustomersInQueueByEmployeeAndStoreId()"
-        >
-          <ion-icon name="refresh-outline" slot="start"></ion-icon>
-          Recarregar
-        </ion-button> -->
-      </div>
-    </div>
-
-    <div class="queue-grid" *ngIf="clients && clients.length > 0">
-      <div
-        *ngFor="let client of clients; let i = index"
-        class="client-card"
-        [class.in-service]="client.inService"
-        [class.price-pending]="client.pricePending"
-        [class.called]="client.timeCalledInQueue"
-      >
-        <div class="queue-position">
-          <div class="position-number">#{{ i + 1 }}</div>
-          <div class="position-line"></div>
+        <div class="stat-data">
+          <span class="stat-value">{{ clients.length || 0 }}</span>
+          <span class="stat-label">Total</span>
         </div>
+      </div>
 
-        <div class="card-content">
-          <div class="card-header">
-            <div class="client-badges">
-              <ion-badge
-                *ngIf="client.canEditName"
-                color="warning"
-                class="custom-badge"
-                >Avulso</ion-badge
-              >
-              <ion-badge
-                *ngIf="client.pricePending"
-                color="danger"
-                class="custom-badge"
-                >Preço Pendente</ion-badge
-              >
-              <ion-badge
-                *ngIf="client.inService"
-                color="success"
-                class="custom-badge"
-              >
-                <ion-icon name="time-outline" size="small"></ion-icon>
-                Em atendimento
-              </ion-badge>
-              <ion-badge
-                *ngIf="client.timeCalledInQueue && !client.inService"
-                color="tertiary"
-                class="custom-badge"
-              >
-                <ion-icon name="megaphone-outline" size="small"></ion-icon>
-                Chamado
-              </ion-badge>
-            </div>
+      <div class="stat-card success">
+        <div class="stat-icon-wrapper">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+        <div class="stat-data">
+          <span class="stat-value">{{ getClientsInServiceCount() }}</span>
+          <span class="stat-label">Atendendo</span>
+        </div>
+      </div>
+
+      <div class="stat-card warning">
+        <div class="stat-icon-wrapper">
+          <ion-icon name="hourglass-outline"></ion-icon>
+        </div>
+        <div class="stat-data">
+          <span class="stat-value">{{ getWaitingClientsCount() }}</span>
+          <span class="stat-label">Aguardando</span>
+        </div>
+      </div>
+
+      <div class="stat-card status-toggle" (click)="toggleQueuePause()">
+        <div class="status-indicator" [class.is-paused]="isPaused"></div>
+        <div class="stat-data">
+          <span class="stat-value status-text">{{ isPaused ? 'Pausada' : 'Ativa' }}</span>
+          <span class="stat-label">Status Fila</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="filter-chips-wrapper" *ngIf="hasActiveFilters()">
+      <div class="filter-scroll">
+        <ion-chip *ngFor="let filter of getActiveFilters()" color="primary" mode="ios">
+          <ion-label>{{ filter.label }}</ion-label>
+          <ion-icon name="close-circle" (click)="removeFilter(filter.key)"></ion-icon>
+        </ion-chip>
+      </div>
+      <ion-button fill="clear" size="small" (click)="clearFilters()">Limpar</ion-button>
+    </section>
+
+    <section class="queue-container">
+      <div *ngIf="clients?.length === 0" class="empty-state-container">
+        <div class="empty-illustration">
+          <ion-icon name="accessibility-outline"></ion-icon>
+        </div>
+        <h3>Fila limpa!</h3>
+        <p>Aguardando o próximo cliente para iniciar o dia.</p>
+        <ion-button fill="outline" (click)="addCustomerToQueue()">Adicionar Cliente</ion-button>
+      </div>
+
+      <div class="client-list-grid" *ngIf="(clients?.length ?? 0) > 0">
+        <div *ngFor="let client of clients; let i = index" 
+             class="modern-client-card"
+             [class.state-in-service]="client.inService"
+             [class.state-pending]="client.pricePending"
+             [class.state-called]="client.timeCalledInQueue && !client.inService">
+          
+          <!-- Lado Esquerdo: Posição -->
+          <div class="card-side-info">
+            <span class="pos-index">#{{ i + 1 }}</span>
+            <div class="vertical-divider"></div>
           </div>
 
-          <div class="card-body">
-            <div class="client-main">
-              <div class="client-info">
-                <div class="name-section">
-                  <ng-container
-                    *ngIf="editingNameMap[client.id]; else showName"
-                  >
-                    <div class="edit-name-container">
-                      <ion-input
-                        [(ngModel)]="editedNames[client.id]"
-                        placeholder="Digite o nome"
-                        class="edit-name-input"
-                        [autofocus]="true"
-                        (ionBlur)="saveEditedName(client)"
-                        (keyup.enter)="saveEditedName(client)"
-                      ></ion-input>
-                      <div class="edit-actions">
-                        <ion-button
-                          fill="clear"
-                          size="small"
-                          (click)="saveEditedName(client)"
-                          color="success"
-                        >
-                          <ion-icon name="checkmark-outline"></ion-icon>
-                        </ion-button>
-                        <ion-button
-                          fill="clear"
-                          size="small"
-                          (click)="cancelEditName(client.id)"
-                          color="medium"
-                        >
-                          <ion-icon name="close-outline"></ion-icon>
-                        </ion-button>
-                      </div>
-                    </div>
-                  </ng-container>
-                  <ng-template #showName>
-                    <h3 class="client-name">{{ client.name }}</h3>
-                    <ion-button
-                      *ngIf="client.canEditName"
-                      fill="clear"
-                      size="small"
-                      (click)="enableEditName(client)"
-                      class="edit-button"
-                    >
-                      <ion-icon name="pencil-outline"></ion-icon>
+          <div class="card-main-content">
+            <!-- Header do Card -->
+            <div class="card-top">
+              <div class="name-edit-group">
+                <ng-container *ngIf="editingNameMap[client.id]; else staticName">
+                  <div class="edit-input-wrapper">
+                    <ion-input [(ngModel)]="editedNames[client.id]" (keyup.enter)="saveEditedName(client)" class="modern-input"></ion-input>
+                    <ion-button fill="clear" (click)="saveEditedName(client)" color="success">
+                      <ion-icon name="checkmark-sharp"></ion-icon>
                     </ion-button>
-                  </ng-template>
-                </div>
-
-                <p class="service-description">
-                  {{ getServiceDescriptions(client) }}
-                </p>
-
-                <div class="time-info">
-                  <div class="time-item">
-                    <ion-icon name="enter-outline" class="time-icon"></ion-icon>
-                    <span>Entrou: {{ client.timeGotInQueue }}</span>
                   </div>
-
-                  <div
-                    *ngIf="client.timeCalledInQueue"
-                    class="time-item called"
-                  >
-                    <ion-icon
-                      name="megaphone-outline"
-                      class="time-icon"
-                    ></ion-icon>
-                    <span>Chamada: {{ client.timeCalledInQueue }}</span>
-                  </div>
-
-                  <div class="time-item waiting">
-                    <ion-icon name="timer-outline" class="time-icon"></ion-icon>
-                    <span
-                      >{{ calculateWaitingTime(client.timeGotInQueue) }}
-                      esperando</span
-                    >
-                  </div>
-                </div>
-
-                <div class="payment-info">
-                  <ion-chip
-                    class="payment-chip"
-                    [color]="getPaymentColor(client.paymentIcon)"
-                  >
-                    <ion-icon [name]="client.paymentIcon"></ion-icon>
-                    <ion-label>{{ client.payment }}</ion-label>
-                  </ion-chip>
-                </div>
+                </ng-container>
+                <ng-template #staticName>
+                  <h2 class="client-name" (click)="client.canEditName && enableEditName(client)">
+                    {{ client.name }}
+                    <ion-icon *ngIf="client.canEditName" name="pencil-sharp" class="edit-hint"></ion-icon>
+                  </h2>
+                </ng-template>
               </div>
 
-              <div class="quick-actions">
-                <ion-button
-                  *ngIf="store?.allowTransfer"
-                  fill="clear"
-                  size="small"
-                  (click)="beginCustomerTransfer(client)"
-                  class="action-button config-btn"
-                  title="Configurar serviço"
-                >
-                  <ion-icon name="swap-horizontal-outline"></ion-icon>
-                </ion-button>
-
-                <ion-button
-                  *ngIf="canEditCustomerPriceAndTime(client)"
-                  fill="clear"
-                  size="small"
-                  (click)="openServiceConfig(client)"
-                  class="action-button config-btn"
-                  title="Configurar serviço"
-                >
-                  <ion-icon name="settings-outline"></ion-icon>
-                </ion-button>
-
-                <ion-button
-                  [disabled]="client.pricePending || !canStartService(client, i)"
-                  fill="clear"
-                  size="small"
-                  (click)="callCustomer(client)"
-                  class="action-button call-button"
-                  title="Chamar cliente"
-                  [color]="client.timeCalledInQueue ? 'success' : 'warning'"
-                >
-                  <ion-icon name="megaphone-outline"></ion-icon>
-                </ion-button>
-
-                <ion-button
-                  size="small"
-                  color="success"
-                  *ngIf="store?.whatsAppNotice"
-                  (click)="openWhatsapp(client)"
-                  class="action-button whatsapp-button"
-                  fill="clear"
-                >
-                  <ion-icon name="logo-whatsapp"></ion-icon>
-                </ion-button>
+              <div class="badge-stack">
+                <ion-badge *ngIf="client.inService" color="success">Em Atendimento</ion-badge>
+                <ion-badge *ngIf="client.pricePending" color="danger">Preço Pendente</ion-badge>
+                <ion-badge *ngIf="client.timeCalledInQueue && !client.inService" color="tertiary">Chamado</ion-badge>
               </div>
             </div>
 
-            <div class="action-buttons">
-              <ion-button
-                [disabled]="client.inService"
-                color="medium"
-                size="small"
-                fill="outline"
-                (click)="openRemoveConfirmation(client)"
-                class="remove-btn"
-              >
-                <ion-icon name="trash-outline" slot="start"></ion-icon>
-                Remover
-              </ion-button>
+            <!-- Detalhes do Serviço -->
+            <p class="service-text">{{ getServiceDescriptions(client) }}</p>
 
-              <ion-button
-                [disabled]="client.pricePending || !canStartService(client, i)"
-                *ngIf="!isPaused"
-                class="service-button"
-                fill="solid"
-                size="small"
-                (click)="confirmStartService(client)"
-                [color]="client.inService ? 'warning' : 'primary'"
-              >
-                <ion-icon
-                  [name]="client.inService ? 'time-outline' : 'play-outline'"
-                  slot="start"
-                ></ion-icon>
-                {{ client.inService ? 'Em atendimento' : 'Iniciar' }}
-              </ion-button>
+            <!-- Timeline de Horários -->
+            <div class="card-metrics">
+              <div class="metric">
+                <ion-icon name="log-in-outline"></ion-icon>
+                <span>{{ client.timeGotInQueue }}</span>
+              </div>
+              <div class="metric waiting" *ngIf="!client.inService">
+                <ion-icon name="timer-outline"></ion-icon>
+                <span>{{ calculateWaitingTime(client.timeGotInQueue) }}</span>
+              </div>
+              <div class="payment-tag" [attr.data-color]="getPaymentColor(client.paymentIcon)">
+                <ion-icon [name]="client.paymentIcon"></ion-icon>
+                <span>{{ client.payment }}</span>
+              </div>
+            </div>
+
+            <!-- Footer de Ações -->
+            <div class="card-actions">
+              <div class="utility-btns">
+                <ion-button fill="clear" color="medium" (click)="beginCustomerTransfer(client)" *ngIf="store?.allowTransfer">
+                  <ion-icon slot="icon-only" name="swap-horizontal-outline"></ion-icon>
+                </ion-button>
+                
+                <ion-button fill="clear" color="medium" (click)="openServiceConfig(client)" *ngIf="canEditCustomerPriceAndTime(client)">
+                  <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+                </ion-button>
+
+                <ion-button fill="clear" color="success" (click)="openWhatsapp(client)" *ngIf="store?.whatsAppNotice">
+                  <ion-icon slot="icon-only" name="logo-whatsapp"></ion-icon>
+                </ion-button>
+              </div>
+
+              <div class="primary-btns">
+                <ion-button fill="clear" color="danger" (click)="openRemoveConfirmation(client)" [disabled]="client.inService">
+                  <ion-icon slot="start" name="trash-outline"></ion-icon>
+                  Remover
+                </ion-button>
+
+                <ion-button 
+                  class="action-main-btn"
+                  [color]="client.inService ? 'warning' : 'primary'"
+                  [disabled]="client.pricePending || !canStartService(client, i)"
+                  (click)="client.timeCalledInQueue && !client.inService ? confirmStartService(client) : callCustomer(client)">
+                  <ion-icon slot="start" [name]="client.inService ? 'hourglass-outline' : (client.timeCalledInQueue ? 'play-outline' : 'megaphone-outline')"></ion-icon>
+                  {{ client.inService ? 'Em Curso' : (client.timeCalledInQueue ? 'Iniciar' : 'Chamar') }}
+                </ion-button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </ion-content>
 
-<div class="footer-spacer"></div>
 <app-footer-menu></app-footer-menu>
