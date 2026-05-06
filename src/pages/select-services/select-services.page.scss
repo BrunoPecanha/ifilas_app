@@ -5,7 +5,7 @@
 }
 
 .section-header {
-  padding: 0 0 24px 0;
+  padding: 20px 0 24px 0;
   margin-bottom: 0;
 }
 
@@ -671,9 +671,18 @@ ion-content::part(scroll) {
   -ms-overflow-style: none;
 }
 
-.ion-padding {
-  --background: #f8f9fa;
-  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
-  position: relative;
-  z-index: 1;
+.content-spacer {
+  height: 80px;
+}
+
+@media (max-width: 768px) {
+  .content-spacer {
+    height: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-spacer {
+    height: 65px;
+  }
 }

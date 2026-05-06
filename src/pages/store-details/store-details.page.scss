@@ -757,3 +757,12 @@
     }
   }
 }
+
+.footer-spacer {
+  height: 100px;
+}
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

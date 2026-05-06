@@ -89,7 +89,6 @@
     </nav>
 
     <main class="tab-content">
-      <!-- ABA: SERVIÇOS -->
       <section *ngIf="selectedTab === 'services'" class="animate-fade-in">
         <div class="items-grid" *ngIf="services.length; else emptyServices">
           <div
@@ -204,7 +203,6 @@
       </div>
 
       <div class="modal-body">
-        <!-- ENDEREÇO -->
         <div class="info-block" *ngIf="store.address">
           <div class="icon-circle shadow-sm">
             <ion-icon name="location"></ion-icon>
@@ -237,7 +235,6 @@
           </div>
         </div>
 
-        <!-- CONTATO -->
         <div class="info-block" *ngIf="store.phoneNumber">
           <div class="icon-circle shadow-sm">
             <ion-icon name="call"></ion-icon>
@@ -248,7 +245,6 @@
           </div>
         </div>
 
-        <!-- REDES SOCIAIS -->
         <div class="social-section" *ngIf="hasSocialMedia()">
           <h4>Redes Sociais</h4>
           <div class="social-buttons">
@@ -290,10 +286,10 @@
     </div>
   </div>
 </ion-content>
+<div class="footer-spacer"></div>
 
 <app-footer-menu></app-footer-menu>
 
-<!-- Templates Vazios -->
 <ng-template #emptyServices>
   <div class="empty-state">
     <ion-icon name="calendar-outline"></ion-icon>

@@ -32,8 +32,8 @@
     </p>
   </div>
 
-  <div class="bottom-cart">
-    <div class="cart-info">
+  <div class="bottom-cart ">
+    <div class="cart-info footer-spacer">
       <div class="price-area">
         <span class="price-label">TOTAL</span>
         <span class="price-value"> {{ quantity * (service?.price || 0) | currency:'BRL' }} </span>
@@ -56,8 +56,10 @@
       <ion-icon name="add"></ion-icon>
       Adicionar
     </button>
+    
   </div>
 
 </ion-content>
-  <div class="footer-spacer"></div>
+
+  
 <app-footer-menu></app-footer-menu>

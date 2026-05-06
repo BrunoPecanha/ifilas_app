@@ -3,24 +3,83 @@
   --soft-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
   --primary-color: #3880ff;
   --secondary-color: #5260ff;
+  --footer-height: 70px; // Altura típica do footer, ajuste conforme necessário
+  display: block;
+  height: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.custom-content {
+  --background: #ffffff;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+// Header fixo no topo (respeitando safe area)
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: transparent;
+  
+  padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
+}
+
+.scrollable-content {
+  padding-top: calc(80px + constant(safe-area-inset-top));
+  padding-top: calc(80px + env(safe-area-inset-top));
+  padding-bottom: var(--footer-height); // Espaço para o footer
+  min-height: 100vh;
+  position: relative;
+}
+
+// Bottom spacer para garantir espaço extra
+.bottom-spacer {
+  height: calc(var(--footer-height) + 20px); // Altura do footer + margem extra
+  width: 100%;
+  clear: both;
 }
 
 .header-loja-dinamico {
   background: #fff;
   border-radius: 0 0 30px 30px;
   overflow: hidden;
-  margin-bottom: -20px;
+  margin-bottom: 0px;
+  position: relative;
+  z-index: 2;
 }
 
 .banner-loja {
   height: 160px;
   position: relative;
+  width: 100%;
 }
 
 .banner-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+}
+
+.banner-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .banner-overlay {
@@ -30,7 +89,7 @@
 }
 
 .store-card {
-  margin-top: -160px;
+  margin-top: 0px;
   padding: 0 20px 20px;
   position: relative;
   z-index: 5;
@@ -45,6 +104,10 @@
   align-items: center;
   gap: 15px;
   box-shadow: var(--soft-shadow);
+}
+
+.logo-wrap {
+  flex-shrink: 0;
 }
 
 .logo-loja {
@@ -65,16 +128,21 @@
   gap: 5px;
 }
 
+.verified-icon {
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
 .descricao-loja {
   font-size: 0.85rem;
   color: #64748b;
   margin: 2px 0 0;
 }
 
-
 .filter-section {
-  padding: 40px 20px 10px;
+  padding: 10px 10px 10px;
   background: transparent;
+  padding-top: 0px;
 }
 
 .modern-segment {
@@ -95,6 +163,7 @@
   font-weight: 600;
   color: #64748b;
   transition: 0.3s;
+  cursor: pointer;
 }
 
 .seg-btn.active {
@@ -110,9 +179,8 @@
   margin-top: 10px;
 }
 
-
 .atendentes-container {
-  padding: 10px 20px 80px;
+  padding: 10px 20px 0px; // Removido o padding-bottom daqui
 }
 
 .atendente-glass-card {
@@ -123,6 +191,7 @@
   box-shadow: var(--soft-shadow);
   border: 1px solid #f1f5f9;
   transition: transform 0.2s;
+  cursor: pointer;
 }
 
 .atendente-glass-card:active {
@@ -133,7 +202,6 @@
   opacity: 0.7;
   filter: grayscale(0.4);
 }
-
 
 .card-header {
   display: flex;
@@ -146,6 +214,7 @@
   position: relative;
   width: 55px;
   height: 55px;
+  flex-shrink: 0;
 }
 
 .prof-img {
@@ -153,6 +222,12 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.prof-icon-placeholder {
+  width: 100%;
+  height: 100%;
+  font-size: 55px;
 }
 
 .status-ring {
@@ -168,6 +243,10 @@
 .status-ring.active { background: #22c55e; }
 .status-ring.paused { background: #f59e0b; }
 .status-ring.closed { background: #ef4444; }
+
+.prof-title {
+  flex: 1;
+}
 
 .prof-title h3 {
   margin: 0;
@@ -189,8 +268,8 @@
   margin-left: auto;
   font-size: 1.4rem;
   opacity: 0.5;
+  flex-shrink: 0;
 }
-
 
 .prof-subtitle {
   font-size: 0.85rem;
@@ -201,6 +280,7 @@
 .tags-row {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .modern-tag {
@@ -220,7 +300,6 @@
   color: var(--primary-color);
 }
 
-
 .card-footer {
   margin-top: 15px;
   padding-top: 15px;
@@ -234,8 +313,14 @@
   margin-bottom: 6px;
 }
 
-.waiting-count { font-weight: 700; color: #1e293b; }
-.waiting-time { color: #64748b; }
+.waiting-count { 
+  font-weight: 700; 
+  color: #1e293b; 
+}
+
+.waiting-time { 
+  color: #64748b; 
+}
 
 .mini-progress-bg {
   height: 6px;
@@ -269,4 +354,37 @@
   font-size: 3rem;
   margin-bottom: 10px;
   opacity: 0.3;
+}
+
+.footer-spacer {
+  height: 200px;
+}
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+@media (min-width: 768px) {
+  .atendentes-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .atendente-glass-card {
+    margin-bottom: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .atendentes-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .scrollable-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
 }

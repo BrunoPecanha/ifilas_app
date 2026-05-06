@@ -270,3 +270,33 @@ ion-content::part(scroll) {
   top: -70px;      
   z-index: 0;
 }
+
+
+.bottom-cart {
+  position: fixed;
+  margin-bottom: 50px;
+}
+
+@media (max-width: 768px) {
+  .bottom-cart {
+    bottom: calc(75px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 480px) {
+  .bottom-cart {
+    bottom: calc(70px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (min-height: 700px) {
+  .bottom-cart {
+    bottom: 90px;
+  }
+}
+
+@media (max-height: 600px) {
+  .bottom-cart {
+    bottom: 70px;
+  }
+}

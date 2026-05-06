@@ -34,7 +34,7 @@
   overflow: visible;
 }
 
-/* remove linha padrão do ionic */
+
 .floating-toolbar::after {
   display: none !important;
 }
@@ -173,4 +173,12 @@ ion-spinner {
   100% {
     box-shadow: 0 2px 10px rgba(255, 59, 48, 0.5);
   }
+}
+.floating-header {
+  padding-top: env(safe-area-inset-top);
+}
+
+.floating-toolbar {
+  padding: 12px 16px;
+  padding-top: calc(12px + env(safe-area-inset-top));
 }

@@ -68,3 +68,52 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Xcode
+build/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# Arquivos de usuário do Xcode
+*.xcuserstate
+*.xcscmblueprint
+*.xccoverage
+*.xcresult
+
+# Arquivos temporários
+*~.nib/
+*.log
+*.tmp
+*.swp
+*.DS_Store
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Arquivos de configuração local
+*.xcconfig.local
+*.xcworkspace/xcuserdata/
