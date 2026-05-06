@@ -1,5 +1,5 @@
 .floating-header {
-  position: sticky;
+   position: fixed; /* ou absolute */
   top: 0;
   z-index: 1000;
   background: transparent;
