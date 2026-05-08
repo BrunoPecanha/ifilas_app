@@ -1,11 +1,10 @@
 :root {
   --page-bg: #f8f9fc;
   --card-bg: #ffffff;
-  --primary-gradient: linear-gradient(135deg, #4361ee, #3f37c9);
-  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-  --radius-lg: 18px;
-  --radius-md: 12px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --radius-lg: 20px;
+  --radius-md: 14px;
 }
 
 ion-content {
@@ -13,7 +12,7 @@ ion-content {
 }
 
 .main-container {
-  max-width: 1200px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 16px;
   padding-bottom: 80px;
@@ -24,7 +23,6 @@ ion-content {
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
   margin-bottom: 24px;
-  margin-top: 0px; /* Compensa o custom header */
 }
 
 .stat-card {
@@ -88,6 +86,7 @@ ion-content {
   box-shadow: 0 0 0 4px #fef3c7;
 }
 
+/* Filter Chips */
 .filter-chips-wrapper {
   display: flex;
   align-items: center;
@@ -104,21 +103,203 @@ ion-content {
   flex: 1;
 }
 
-.modern-client-card {
-  background: var(--card-bg);
-  border-radius: var(--radius-lg);
+/* Client List */
+.client-list {
   display: flex;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-  position: relative;
-  border-left: 6px solid #e2e8f0;
-  transition: all 0.3s ease;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.state-in-service { border-left-color: #10b981; }
-.state-pending { border-left-color: #ef4444; }
-.state-called { border-left-color: #6366f1; animation: pulse-border 2s infinite; }
+/* Modern Card */
+.modern-client-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  display: flex;
+  padding: 16px;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  border: 1px solid #f1f5f9;
+  position: relative;
+}
+
+.modern-client-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.client-number {
+  font-size: 20px;
+  font-weight: 700;
+  color: #cbd5e1;
+  min-width: 32px;
+  text-align: center;
+}
+
+.card-content {
+  flex: 1;
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.client-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.edit-hint {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.badge-stack {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Service Row */
+.service-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+  padding: 8px 0 4px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.service-name {
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.waiting-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f59e0b;
+  background: #fffbeb;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.waiting-time ion-icon {
+  font-size: 14px;
+}
+
+/* Payment Info */
+.payment-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.payment-info ion-icon {
+  font-size: 16px;
+}
+
+/* Action Row - Botão e menu na mesma linha */
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.start-service-btn {
+  flex: 1;
+  --border-radius: 12px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: none;
+  --background: #4361ee;
+  --background-hover: #3f37c9;
+  --box-shadow: 0 2px 6px rgba(67, 97, 238, 0.2);
+  margin: 0;
+}
+
+.start-service-btn[color="warning"] {
+  --background: #f59e0b;
+  --background-hover: #d97706;
+  --box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);
+}
+
+/* Menu wrapper - 3 pontinhos vertical */
+.menu-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.menu-trigger {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  margin: 0;
+  height: 44px;
+}
+
+.menu-trigger ion-icon {
+  font-size: 22px;
+  color: #64748b;
+}
+
+/* Popover List */
+.action-popover-list {
+  min-width: 200px;
+  padding: 8px 0;
+}
+
+.action-popover-list ion-item {
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --min-height: 44px;
+  font-size: 14px;
+}
+
+.action-popover-list ion-icon {
+  font-size: 18px;
+  margin-right: 12px;
+}
+
+/* Card States */
+.state-in-service {
+  border-left: 3px solid #10b981;
+  background: #f0fdf4;
+}
+
+.state-pending {
+  border-left: 3px solid #ef4444;
+}
+
+.state-called {
+  border-left: 3px solid #6366f1;
+  animation: pulse-border 2s infinite;
+}
 
 @keyframes pulse-border {
   0% { border-left-color: #6366f1; }
@@ -126,106 +307,12 @@ ion-content {
   100% { border-left-color: #6366f1; }
 }
 
-.card-side-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 10px;
-  background: #fcfcfd;
-}
-
-.pos-index {
-  font-weight: 900;
-  color: #94a3b8;
-  font-size: 0.9rem;
-}
-
-.card-main-content {
-  flex: 1;
-  padding: 16px;
-}
-
-.card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 8px;
-}
-
-.client-name {
-  margin: 0;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #0f172a;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.edit-hint {
-  font-size: 0.9rem;
-  color: #cbd5e1;
-}
-
-.service-text {
-  color: #475569;
-  font-size: 0.95rem;
-  margin: 0 0 16px 0;
-}
-
-.card-metrics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.metric {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: #64748b;
-  background: #f1f5f9;
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-
-.payment-tag {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 8px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-}
-
-.card-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 12px;
-  margin-top: 10px;
-}
-
-.primary-btns {
-  display: flex;
-  gap: 8px;
-}
-
-.action-main-btn {
-  --border-radius: 10px;
-  font-weight: 700;
-  min-width: 120px;
-}
-
+/* Empty State */
 .empty-state-container {
   text-align: center;
   padding: 60px 20px;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
 }
 
 .empty-illustration {
@@ -234,26 +321,71 @@ ion-content {
   margin-bottom: 16px;
 }
 
-@media (min-width: 768px) {
-  .client-list-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+.empty-state-container h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.empty-state-container p {
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .main-container {
+    padding: 12px;
+  }
+  
+  .stats-container {
+    gap: 8px;
+  }
+  
+  .stat-card {
+    padding: 12px;
+  }
+  
+  .modern-client-card {
+    padding: 12px;
+  }
+  
+  .client-number {
+    font-size: 18px;
+    min-width: 28px;
+  }
+  
+  .service-name {
+    font-size: 13px;
+  }
+  
+  .action-row {
+    gap: 8px;
+  }
+  
+  .menu-trigger {
+    --padding-start: 6px;
+    --padding-end: 6px;
+  }
+  
+  .menu-trigger ion-icon {
+    font-size: 20px;
   }
 }
 
-@media (max-width: 480px) {
-  .card-actions {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .utility-btns, .primary-btns {
-    width: 100%;
-    justify-content: space-between;
-  }
+/* Item destrutivo */
+.danger-item {
+  --color: #dc2626;
+  --background-hover: #fef2f2;
+  --background-activated: #fee2e2;
+  --ripple-color: rgba(220, 38, 38, 0.15);
+}
 
-  .primary-btns ion-button {
-    flex: 1;
-  }
+.danger-item ion-icon {
+  color: #dc2626;
+}
+
+.danger-item ion-label {
+  color: #dc2626;
+  font-weight: 600;
 }

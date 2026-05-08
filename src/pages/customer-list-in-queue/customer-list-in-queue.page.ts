@@ -460,12 +460,12 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
     });
   }
 
-  canStartService(client: CustomerInQueueForEmployeeModel, index: number): boolean {    
-    const hasClientInService = this.clients?.some(c => c.inService);   
-    
-    if(client.inService)
+  canStartService(client: CustomerInQueueForEmployeeModel, index: number): boolean {
+    const hasClientInService = this.clients?.some(c => c.inService);
+
+    if (client.inService)
       return true;
-    
+
     if (!this.store.attendSimultaneously && hasClientInService) {
       return false;
     }
@@ -482,8 +482,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
 
     return true;
   }
-
-
+  
   private getQueueOrAgendaForEmployee() {
     if (!this.employee.id)
       return;
@@ -667,29 +666,7 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
   getWeekdayName(date: Date): string {
     const weekdays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
     return weekdays[date.getDay()];
-  }
-
-  // Filtros (para implementação futura)
-  hasActiveFilters(): boolean {
-    return false; // Implementar conforme necessidade
-  }
-
-  getActiveFilters(): any[] {
-    return []; // Implementar conforme necessidade
-  }
-
-  goToToday() {
-    this.currentDate = new Date();
-    // this.applyFilters(); // Implementar conforme necessidade
-  }
-
-  removeFilter(key: string): void {
-    // Implementar conforme necessidade
-  }
-
-  clearFilters(): void {
-    // Implementar conforme necessidade
-  }
+  }  
 
   calculateWaitTime(entryTime: string): string {
     const now = new Date();
@@ -729,5 +706,44 @@ export class CustomerListInQueuePage implements OnInit, OnDestroy, AfterViewInit
     };
 
     return colorMap[paymentIcon] || 'medium';
+  }
+
+  handleMainAction(client: CustomerInQueueForEmployeeModel, index: number) {
+    if (client.inService) {
+      this.navCtrl.navigateForward(`/customer-service/${client.id}`);
+      return;
+    }
+
+    if (!this.canStartService(client, index)) {
+      this.toastService.show('Não é possível iniciar este atendimento agora', 'warning');
+      return;
+    }
+
+    if (client.pricePending) {
+      this.toastService.show('Defina o preço do serviço antes de iniciar', 'warning');
+      return;
+    }
+
+    
+    if (client.timeCalledInQueue) {
+      this.confirmStartService(client);
+    } else {
+      this.callCustomer(client);
+    }
+  }
+
+  
+  getMainButtonIcon(client: CustomerInQueueForEmployeeModel): string {
+    if (client.inService) {
+      return 'hourglass-outline';
+    }
+    return client.timeCalledInQueue ? 'play-outline' : 'megaphone-outline';
+  }
+
+  getMainButtonText(client: CustomerInQueueForEmployeeModel): string {
+    if (client.inService) {
+      return 'Em Curso';
+    }
+    return client.timeCalledInQueue ? 'Iniciar atendimento' : 'Chamar cliente';
   }
 }
