@@ -766,3 +766,16 @@ ion-content::part(scroll) {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+.header-loja-dinamico {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.banner-wrapper {
+  margin-top: 0;
+}
+
+ion-content::part(scroll) {
+  padding-top: 110px; 
+}
