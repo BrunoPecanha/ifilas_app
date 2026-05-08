@@ -3,7 +3,7 @@
   --soft-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
   --primary-color: #3880ff;
   --secondary-color: #5260ff;
-  --footer-height: 70px; // Altura típica do footer, ajuste conforme necessário
+  --footer-height: 70px; 
   display: block;
   height: 100%;
 }
@@ -26,7 +26,6 @@
   height: 100%;
 }
 
-// Header fixo no topo (respeitando safe area)
 .fixed-header {
   position: fixed;
   top: 0;
@@ -42,14 +41,13 @@
 .scrollable-content {
   padding-top: calc(80px + constant(safe-area-inset-top));
   padding-top: calc(80px + env(safe-area-inset-top));
-  padding-bottom: var(--footer-height); // Espaço para o footer
+  padding-bottom: var(--footer-height);
   min-height: 100vh;
   position: relative;
 }
 
-// Bottom spacer para garantir espaço extra
 .bottom-spacer {
-  height: calc(var(--footer-height) + 20px); // Altura do footer + margem extra
+  height: calc(var(--footer-height) + 20px); 
   width: 100%;
   clear: both;
 }
@@ -180,7 +178,7 @@
 }
 
 .atendentes-container {
-  padding: 10px 20px 0px; // Removido o padding-bottom daqui
+  padding: 10px 20px 0px;
 }
 
 .atendente-glass-card {
