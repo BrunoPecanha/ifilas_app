@@ -36,7 +36,7 @@ export class AppComponent {
       this.sessionService.user$
         .pipe(filter(user => !!user?.id))
         .subscribe(user => {
-           this.notificationService.getUserNotifications(user.id).subscribe();
+          this.notificationService.getUserNotifications(user.id).subscribe();
         });
     }
 
@@ -50,9 +50,9 @@ export class AppComponent {
 
     if (platform === 'android') {
       await StatusBar.show();
-      await StatusBar.setBackgroundColor({ color: '#ffffff' });
-      await StatusBar.setOverlaysWebView({ overlay: false });
-      await StatusBar.setStyle({ style: Style.Default });
+      await StatusBar.setOverlaysWebView({ overlay: true });
+      await StatusBar.setBackgroundColor({ color: '#ffffff00' });
+      await StatusBar.setStyle({ style: Style.Light });
     }
 
     if (platform === 'ios') {

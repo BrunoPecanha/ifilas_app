@@ -932,11 +932,11 @@ ion-content::part(scroll) {
     overflow: hidden !important;
   }
   
-  ion-toolbar {
-    border-bottom-left-radius: 20px !important;
-    border-bottom-right-radius: 20px !important;
-    overflow: hidden !important;
-  }
+  // ion-toolbar {
+  //   // border-bottom-left-radius: 20px !important;
+  //   border-bottom-right-radius: 20px !important;
+  //   overflow: hidden !important;
+  // }
 }
 
 ion-content {
@@ -964,7 +964,7 @@ ion-content {
 .schedule-container {
   position: relative;
   z-index: 1;
-  margin-top: 56px;
+  margin-top: 90px;
 }
 
 app-custom-header {
