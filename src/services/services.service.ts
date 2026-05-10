@@ -24,8 +24,8 @@ export class ServiceService {
     return this.http.post(`${this.apiUrl}/services`, serviceData);
   }
 
-  deleteService(id: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/services`, id);
+  deleteService(id: number): Observable<any> {    
+    return this.http.delete(`${this.apiUrl}/services/${id}`);
   }
 
   updateService(serviceId: number, form: FormData): Observable<any> {

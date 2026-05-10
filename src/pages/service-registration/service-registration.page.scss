@@ -16,6 +16,7 @@
 .custom-searchbar {
   --border-radius: 12px;
   --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-top: -30px;
 }
 
 .loading-state {
@@ -400,7 +401,11 @@ ion-item ion-label {
 }
 
 .hero-section {
-  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--ion-color-primary) 0%,
+    var(--ion-color-primary-shade) 100%
+  );
   padding: 24px 20px;
   position: relative;
 }
@@ -745,15 +750,15 @@ ion-item ion-label {
     --width: 600px;
     --height: 85%;
   }
-  
+
   .hero-section {
     padding: 32px 40px;
   }
-  
+
   .section-content {
     padding: 24px 40px;
   }
-  
+
   .sticky-actions {
     padding: 20px 40px;
   }
