@@ -1,474 +1,304 @@
 <app-custom-header
-  subtitle="AGENDA"
+  title="AGENDA"
+  subtitle="Confira sua programação"
   [showStartButton]="true"
   startIconName="share-social-outline"
-  (onStartClick)="shareSchedule()"
   (onEndClick)="addAppointment($event)"
 >
 </app-custom-header>
 
-<ion-content
-  #content
-  [scrollEvents]="true"
-  (ionScroll)="onContentScroll($event)"
-  fullscreen
-  class="ion-padding"
->
+<ion-content class="bg-light" #content class="ion-padding">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-outline"
+      pullingText="Puxe para atualizar"
+      refreshingSpinner="circles"
+      refreshingText="Atualizando..."
+    >
+    </ion-refresher-content>
   </ion-refresher>
+  <div class="date-stepper-container">
+    <ion-button fill="clear" color="medium" (click)="prevDay()">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </ion-button>
 
-  <div class="schedule-container">
-    <div class="date-section">
-      <div class="date-selector">
-        <ion-button fill="clear" (click)="previousDay()" class="date-nav-btn">
-          <ion-icon name="chevron-back" slot="icon-only"></ion-icon>
-        </ion-button>
-
-        <div class="date-pill" (click)="goToToday()">
-          <ion-icon name="calendar" class="date-pill-icon"></ion-icon>
-          <span class="date-pill-text">{{ formatDate(selectedDate) }}</span>
-          <ion-badge color="primary" *ngIf="isToday()" class="today-indicator"
-            >Hoje</ion-badge
-          >
-        </div>
-
-        <ion-button fill="clear" (click)="nextDay()" class="date-nav-btn">
-          <ion-icon name="chevron-forward" slot="icon-only"></ion-icon>
-        </ion-button>
-      </div>
+    <div class="current-date-display" id="open-date-input">
+      <ion-icon name="calendar-outline" color="primary"></ion-icon>
+      <span class="date-text">{{ formattedSelectedDate }}</span>
+      <ion-badge color="primary" *ngIf="isToday()" class="today-badge"
+        >HOJE</ion-badge
+      >
     </div>
 
-    <div class="stats-section">
-      <div class="stats-grid">
+    <ion-modal
+      trigger="open-date-input"
+      [keepContentsMounted]="true"
+      #datetimeModal
+    >
+      <ng-template>
+        <ion-datetime
+          presentation="date"
+          [value]="selectedDate.toISOString()"
+          (ionChange)="onDateChange($event)"
+          showDefaultButtons="true"
+          doneText="Selecionar"
+          cancelText="Cancelar"
+        ></ion-datetime>
+      </ng-template>
+    </ion-modal>
+
+    <ion-button fill="clear" color="medium" (click)="nextDay()">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-button>
+  </div>
+
+  <div class="calendar-strip">
+    <div
+      class="day-item"
+      *ngFor="let day of weekDays"
+      [class.selected]="day.isSelected"
+      (click)="selectDate(day)"
+    >
+      <span class="day-name">{{day.dayName}}</span>
+      <span class="day-number">{{day.dayNumber}}</span>
+    </div>
+  </div>
+
+  <div class="stats-row" *ngIf="getConsolidatedStats() as stats">
+    <div class="stat-card total">
+      <span class="label">TOTAL</span>
+      <span class="value">{{stats.total}}</span>
+    </div>
+    <div class="stat-card pending">
+      <span class="label">PEND</span>
+      <span class="value">{{stats.pending}}</span>
+    </div>
+    <div class="stat-card confirmed">
+      <span class="label">CONF</span>
+      <span class="value">{{stats.confirmed}}</span>
+    </div>
+    <div class="stat-card done">
+      <span class="label">REAL</span>
+      <span class="value">{{stats.completed}}</span>
+    </div>
+  </div>
+
+  <div class="search-container">
+    <ion-searchbar
+      search-icon="search-outline"
+      placeholder="Buscar cliente..."
+      (ionInput)="filterAppointments($event)"
+      class="custom-search"
+    >
+    </ion-searchbar>
+  </div>
+
+  <div class="filters-strip">
+    <ion-button
+      class="filter-btn"
+      shape="round"
+      *ngFor="let filter of [
+      { label: 'Todos', value: 'all' },
+      { label: 'Pendentes', value: 'pending' },
+      { label: 'Confirmados', value: 'confirmed' },
+      { label: 'Em andamento', value: 'inservice' },
+      { label: 'Realizados', value: 'done' }
+    ]"
+      [color]="isFilterSelected(filter.value) ? 'primary' : 'medium'"
+      [fill]="isFilterSelected(filter.value) ? 'solid' : 'outline'"
+      (click)="setFilter(filter.value)"
+    >
+      {{ filter.label }}
+    </ion-button>
+  </div>
+
+  <div
+    class="timeline-container"
+    cdkDropListGroup
+    *ngIf="(filteredTimeSlots?.length ?? 0) > 0; else emptyState"
+  >
+    <div class="time-slot-group" *ngFor="let slot of filteredTimeSlots">
+      <div class="time-col">
+        <p class="time-text">{{ slot.time }}</p>
+        <div *ngFor="let customer of slot.customers">
+          <small class="service-count">
+            {{ customer.servicesDescrip?.length || 0 }} serv
+          </small>
+        </div>
+      </div>
+
+      <div
+        class="cards-col"
+        cdkDropList
+        id="slot-{{ slot.time }}"
+        [cdkDropListData]="slot.customers"
+        [cdkDropListConnectedTo]="allDropListIds"
+        #slotList="cdkDropList"
+        (cdkDropListDropped)="onDrop($event, slot)"
+      >
         <div
-          class="stat-card"
-          (click)="toggleStatusFilter(getStatusFilterByValue('confirmed'))"
+          *ngFor="let customer of slot.customers"
+          class="appointment-card"
+          cdkDrag
+          [cdkDragData]="customer"
+          [cdkDragDisabled]="!canDrag(customer)"
+          [cdkDragStartDelay]="{ touch: 500, mouse: 0 }"
+          (cdkDragStarted)="onDragStarted()"
+          (cdkDragEnded)="onDragEnded()"
+          (cdkDragMoved)="onDragMoved($event)"
+          (click)="!isDragging && openCustomerDetails(customer)"
         >
-          <div class="stat-value success">
-            {{ getConsolidatedStats().confirmed }}
-          </div>
-          <div class="stat-label">Confirmados</div>
-        </div>
-        <div
-          class="stat-card"
-          (click)="toggleStatusFilter(getStatusFilterByValue('pending'))"
-        >
-          <div class="stat-value warning">
-            {{ getConsolidatedStats().pending }}
-          </div>
-          <div class="stat-label">Pendentes</div>
-        </div>
-        <div
-          class="stat-card"
-          (click)="toggleStatusFilter(getStatusFilterByValue('completed'))"
-        >
-          <div class="stat-value primary">
-            {{ getConsolidatedStats().completed }}
-          </div>
-          <div class="stat-label">Realizados</div>
-        </div>
-        <div class="stat-card" (click)="clearFilters()">
-          <div class="stat-value tertiary">
-            {{ getConsolidatedStats().total }}
-          </div>
-          <div class="stat-label">Total</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="controls-section">
-      <div class="search-wrapper">
-        <ion-searchbar
-          [(ngModel)]="searchQuery"
-          (ionInput)="filterAppointments($event)"
-          placeholder="Buscar cliente..."
-          debounce="500"
-          class="ios-searchbar"
-          mode="ios"
-        ></ion-searchbar>
-      </div>
-
-      <div class="view-controls">
-        <ion-buttons>
-          <ion-button
-            fill="clear"
-            (click)="toggleFilters()"
-            class="filter-btn"
-            [class.active]="showFilters"
-          >
-            <ion-icon name="options-outline" slot="icon-only"></ion-icon>
-            <ion-badge
-              color="danger"
-              *ngIf="hasActiveFilters()"
-              class="filter-badge"
-            >
-              {{ getActiveFiltersCount() }}
-            </ion-badge>
-          </ion-button>
-          <ion-segment
-            [value]="currentView"
-            (ionChange)="changeView($event)"
-            mode="ios"
-            class="view-segment"
-          >
-            <ion-segment-button value="grid">
-              <ion-icon name="grid-outline"></ion-icon>
-            </ion-segment-button>
-            <ion-segment-button value="list">
-              <ion-icon name="list-outline"></ion-icon>
-            </ion-segment-button>
-          </ion-segment>
-        </ion-buttons>
-      </div>
-    </div>
-
-    <div class="filters-panel" [class.expanded]="showFilters">
-      <div class="filters-content">
-        <div class="filter-group">
-          <label class="filter-label">Status</label>
-          <div class="filter-chips">
-            <button
-              *ngFor="let status of statusFilters"
-              class="chip"
-              [class.selected]="status.selected"
-              [style.--chip-color]="getStatusColor(status.value)"
-              (click)="toggleStatusFilter(status)"
-            >
-              {{ status.label }}
-              <span class="chip-count">{{ status.count }}</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="filter-group" *ngIf="serviceFilters.length > 0">
-          <label class="filter-label">Serviços</label>
-          <div class="filter-chips">
-            <button
-              *ngFor="let service of serviceFilters"
-              class="chip"
-              [class.selected]="service.selected"
-              [style.--chip-color]="service.color"
-              (click)="toggleServiceFilter(service)"
-            >
-              {{ service.name }}
-              <span class="chip-count">{{ service.count }}</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="filter-actions" *ngIf="hasActiveFilters()">
-          <ion-button
-            fill="clear"
-            size="small"
-            (click)="clearFilters()"
-            mode="ios"
-          >
-            Limpar filtros
-          </ion-button>
-          <ion-button
-            fill="solid"
-            color="primary"
-            size="small"
-            (click)="applyFilters()"
-            mode="ios"
-          >
-            Aplicar
-          </ion-button>
-        </div>
-      </div>
-    </div>
-
-    <div class="active-filters" *ngIf="hasActiveFilters() && !showFilters">
-      <div class="active-filters-scroll">
-        <span class="active-filters-label">Filtros:</span>
-        <div class="active-filter-chips">
-          <ion-chip
-            *ngFor="let filter of getActiveFilters()"
-            color="primary"
-            outline="true"
-            mode="ios"
-          >
-            {{ filter.label }}
-            <ion-icon
-              name="close"
-              (click)="removeFilter(filter.key)"
-            ></ion-icon>
-          </ion-chip>
-          <ion-button
-            fill="clear"
-            size="small"
-            (click)="clearFilters()"
-            class="clear-filters-btn"
-          >
-            Limpar
-          </ion-button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Grid View -->
-    <section *ngIf="selectedDate && currentView === 'grid'" class="grid-view">
-      <div class="time-slots" cdkDropListGroup>
-        <div
-          *ngFor="let slot of filteredTimeSlots"
-          class="time-slot"
-          [class.passed]="isSlotPassed(slot.time)"
-          [class.has-appointments]="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length"
-          [id]="'slot-' + slot.time"
-          cdkDropList
-          [cdkDropListData]="slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers"
-          (cdkDropListDropped)="onDrop($event, slot)"
-          [cdkDropListDisabled]="slot.disabled"
-          #slotList="cdkDropList"
-        >
-          <div class="slot-header">
-            <div class="slot-time">
-              <ion-icon name="time-outline"></ion-icon>
-              <span>{{ slot.time }}</span>
-              <span
-                class="appointment-badge"
-                *ngIf="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length"
-              >
-                {{ slot.groupedCustomer ? 1 : slot.customers?.length }}
-              </span>
-            </div>
-            <ion-button
-              fill="clear"
-              (click)="addAppointment(slot)"
-              [disabled]="isSlotPassed(slot.time) || !slot.available"
-              class="add-slot-btn"
-              mode="ios"
-            >
-              <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </div>
-
-          <div class="slot-content">
-            <div
-              *ngIf="(slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)?.length; else emptySlot"
-            >
-              <div
-                *ngFor="let customer of (slot.groupedCustomer ? [slot.groupedCustomer] : slot.customers)"
-                class="appointment-card"
-                [class]="customer.status"
-                [class.long-press-active]="isLongPressing && customerBeingLongPressed?.id === customer.id"
-                [class.can-delete]="canDeleteCustomer(customer)"
-                cdkDrag
-                (cdkDragMoved)="onDragMoved($event)"
-                [cdkDragData]="customer"
-                (click)="!isLongPressing && openServicesSummary(customer)"
-                [cdkDragDisabled]="!canDrag(customer)"
-                (cdkDragStarted)="onDragStarted()"
-                (cdkDragEnded)="onDragEnded()"
-                (touchstart)="startLongPress(customer, $event)"
-                (touchend)="cancelLongPress()"
-                (touchcancel)="cancelLongPress()"
-                (mousedown)="startLongPress(customer, $event)"
-                (mouseup)="cancelLongPress()"
-                (mouseleave)="cancelLongPress()"
-              >
-                <div class="card-content">
-                  <div class="card-avatar">
-                    <ng-container *ngIf="customer.avatar; else defaultAvatar">
-                      <img [src]="customer.avatar" />
-                    </ng-container>
-                    <ng-template #defaultAvatar>
-                      <div class="avatar-placeholder">
-                        <ion-icon name="person-circle"></ion-icon>
-                      </div>
-                    </ng-template>
-                    <div class="status-dot" [class]="customer.status"></div>
-                  </div>
-
-                  <div class="card-info">
-                    <div class="card-header">
-                      <h4 class="customer-name">{{ customer.name }}</h4>
-                      <ion-badge
-                        [color]="getStatusColor(customer.status)"
-                        mode="ios"
-                        class="status-badge"
-                      >
-                        {{ getStatusText(customer.status) }}
-                      </ion-badge>
-                    </div>
-
-                    <div class="service-tags">
-                      <span
-                        *ngFor="let service of customer.services"
-                        class="service-tag"
-                        [style.background-color]="getServiceColor(service.color) + '20'"
-                        [style.color]="getServiceColor(service.color)"
-                      >
-                        {{ service.name }}
-                      </span>
-                    </div>
-
-                    <div class="appointment-details">
-                      <span class="duration">
-                        <ion-icon name="time-outline"></ion-icon>
-                        {{ customer.totalSlots }} slots
-                      </span>
-                    </div>
-                  </div>
+          <ng-template cdkDragPreview>
+            <div class="drag-preview">
+              <div class="card-content">
+                <div class="card-header">
+                  <h3>{{ customer.name }}</h3>
                 </div>
-
-                <!-- Indicador de long press para exclusão -->
-                <div
-                  class="delete-overlay"
-                  *ngIf="isLongPressing && customerBeingLongPressed?.id === customer.id"
-                >
-                  <div class="delete-progress"></div>
-                  <ion-icon name="trash-outline" class="delete-icon"></ion-icon>
-                  <span class="delete-text">Solte para remover</span>
+                <div class="services-tags">
+                  <span
+                    class="service-tag"
+                    *ngFor="let service of customer.servicesDescrip"
+                  >
+                    {{ service }}
+                  </span>
                 </div>
               </div>
             </div>
+          </ng-template>
 
-            <ng-template #emptySlot>
-              <div class="empty-slot" (click)="addAppointment(slot)">
-                <ion-icon name="add-circle-outline"></ion-icon>
-                <span *ngIf="!slot.disabled">Adicionar agendamento</span>
-                <span *ngIf="slot.disabled">Horário indisponível</span>
-              </div>
-            </ng-template>
+          <ng-template cdkDragPlaceholder>
+            <div class="drag-placeholder"></div>
+          </ng-template>
+
+          <div class="drag-handle">
+            <ion-icon name="reorder-three-outline"></ion-icon>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- List View -->
-    <section *ngIf="selectedDate && currentView === 'list'" class="list-view">
-      <ion-list mode="ios" class="ios-list">
-        <ion-item-sliding
-          *ngFor="let customer of getFilteredCustomers()"
-          mode="ios"
-        >
-          <ion-item [class]="customer.status" class="list-item" mode="ios">
-            <ion-avatar slot="start" class="list-avatar">
-              <ng-container *ngIf="customer.avatar; else defaultAvatar">
-                <img [src]="customer.avatar" />
-              </ng-container>
-              <ng-template #defaultAvatar>
-                <ion-icon name="person-circle"></ion-icon>
-              </ng-template>
-              <div class="status-dot" [class]="customer.status"></div>
-            </ion-avatar>
-
-            <ion-label>
+          <div class="card-content">
+            <div class="card-header">
               <h3>{{ customer.name }}</h3>
-              <p>
-                {{ getSlotTime(customer) }} • {{ customer.totalSlots }} slots
-              </p>
-              <div class="service-tags-list">
-                <span
-                  *ngFor="let service of customer.services"
-                  class="service-tag-list"
-                  [style.background-color]="getServiceColor(service.color) + '20'"
-                  [style.color]="getServiceColor(service.color)"
-                >
-                  {{ service.name }}
-                </span>
-              </div>
-            </ion-label>
-
-            <div class="item-actions">
-              <ion-badge [color]="getStatusColor(customer.status)" mode="ios">
+              <ion-badge [color]="getStatusColor(customer.status)">
                 {{ getStatusText(customer.status) }}
               </ion-badge>
+            </div>
+
+            <div class="services-tags">
+              <span
+                class="service-tag"
+                *ngFor="let service of customer.servicesDescrip"
+              >
+                {{ service }}
+              </span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="card-actions">
               <ion-button
-                fill="clear"
-                (click)="confirmStartCustomerService(customer)"
-                class="action-btn"
-                mode="ios"
+                class="main-btn"
+                [color]="getStatusColor(customer.status)"
+                fill="solid"
+                (click)="$event.stopPropagation(); handleMainAction(customer)"
               >
                 <ion-icon
-                  [name]="getActionIcon(customer.status)"
-                  slot="icon-only"
+                  [name]="getMainButtonIcon(customer.status)"
+                  slot="start"
                 ></ion-icon>
+
+                {{ getMainButtonText(customer) }}
               </ion-button>
+
+              <div class="menu-wrapper">
+                <ion-button
+                  fill="clear"
+                  size="small"
+                  class="menu-trigger"
+                  id="appointment-menu-{{ customer.id }}"
+                  (click)="$event.stopPropagation()"
+                >
+                  <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                </ion-button>
+
+                <ion-popover
+                  #popover
+                  trigger="appointment-menu-{{ customer.id }}"
+                  triggerAction="click"
+                  size="auto"
+                >
+                  <ng-template>
+                    <ion-list class="action-popover-list">
+                      <ion-item
+                        button
+                        detail="false"
+                        [disabled]="customer.status !== 'confirmed' && customer.status !== 'pending'"
+                        (click)="
+          $event.stopPropagation();
+          popover.dismiss();
+          editAppointment(customer)
+        "
+                      >
+                        <ion-icon slot="start" name="pencil-outline"></ion-icon>
+
+                        <ion-label>Editar serviços</ion-label>
+                      </ion-item>
+
+                      <ion-item
+                        button
+                        detail="false"
+                        [disabled]="customer.status !== 'confirmed' && customer.status !== 'pending'"
+                        (click)=" $event.stopPropagation();
+                                  popover.dismiss();
+                                  beginCustomerTransfer(customer)"
+                      >
+                        <ion-icon
+                          slot="start"
+                          name="swap-horizontal-outline"
+                        ></ion-icon>
+
+                        <ion-label>Transferir</ion-label>
+                      </ion-item>
+
+                      <ion-item
+                        button
+                        detail="false"
+                        [disabled]="customer.status !== 'confirmed' && customer.status !== 'pending'"
+                        (click)="
+                        $event.stopPropagation();
+                        popover.dismiss();
+                        openEditAppointmentModal(customer)"
+                      >
+                        <ion-icon
+                          slot="start"
+                          name="calendar-outline"
+                        ></ion-icon>
+
+                        <ion-label>Editar agendamento</ion-label>
+                      </ion-item>
+                    </ion-list>
+                  </ng-template>
+                </ion-popover>
+              </div>
             </div>
-          </ion-item>
-
-          <ion-item-options side="end" *ngIf="isServiceDone(customer)">
-            <ion-item-option
-              color="primary"
-              (click)="confirmStartCustomerService(customer)"
-              mode="ios"
-            >
-              <ion-icon
-                slot="icon-only"
-                [name]="getActionIcon(customer.status)"
-              ></ion-icon>
-            </ion-item-option>
-            <ion-item-option
-              color="tertiary"
-              [disabled]="!canEditAppointment(customer) || !canShowPaymentDetails"
-              (click)="editAppointment(customer)"
-              mode="ios"
-            >
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-item-option>
-            <ion-item-option
-              *ngIf="store?.allowTransfer"
-              color="warning"
-              (click)="beginCustomerTransfer(customer)"
-              mode="ios"
-            >
-              <ion-icon
-                slot="icon-only"
-                name="swap-horizontal-outline"
-              ></ion-icon>
-            </ion-item-option>
-          </ion-item-options>
-        </ion-item-sliding>
-      </ion-list>
-    </section>
-
-    <!-- No Results -->
-    <div
-      *ngIf="filteredTimeSlots.length === 0 && currentView === 'grid'"
-      class="empty-state"
-    >
-      <ion-icon name="calendar-outline"></ion-icon>
-      <h3>Nenhum agendamento</h3>
-      <p>Não há agendamentos para esta data</p>
-      <ion-button
-        fill="clear"
-        color="primary"
-        (click)="addAppointment(null)"
-        mode="ios"
-      >
-        Criar novo agendamento
-      </ion-button>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div
-      *ngIf="getFilteredCustomers().length === 0 && currentView === 'list'"
-      class="empty-state"
-    >
-      <ion-icon name="list-outline"></ion-icon>
-      <h3>Nenhum agendamento</h3>
-      <p>Não há agendamentos para esta data</p>
-      <ion-button
-        fill="clear"
-        color="primary"
-        (click)="addAppointment(null)"
-        mode="ios"
-      >
-        Criar novo agendamento
-      </ion-button>
-    </div>
-
-    <!-- Quick Modal -->
-    <span *ngIf="canShowPaymentDetails">
-      <app-quick-modal
-        [isOpen]="isModalOpen"
-        [mode]="modalMode"
-        [customer]="selectedCustomer"
-        (close)="isModalOpen = false"
-      ></app-quick-modal>
-    </span>
   </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="calendar-clear-outline"></ion-icon>
+      </div>
+
+      <h2>Nenhum agendamento</h2>
+
+      <p>
+        Não existem agendamentos para
+        <strong>{{ formattedSelectedDate }}</strong>.
+      </p>
+    </div>
+  </ng-template>
 </ion-content>
 
 <app-footer-menu></app-footer-menu>

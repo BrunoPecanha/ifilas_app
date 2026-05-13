@@ -11,6 +11,7 @@ export class ConfirmationPage {
   userId: number = 0;
   editingExistingAppointment = false;
   isOwner = false;
+  isQueue = true;
 
   constructor(private router: Router) {
     this.getQueryParams();
@@ -21,6 +22,7 @@ export class ConfirmationPage {
     const userId = nav?.extras.queryParams?.['userId'];
     const editingExistingAppointment = nav?.extras.queryParams?.['editingExistingAppointment'];
     this.isOwner = nav?.extras.queryParams?.['isOwner'];
+    this.isQueue = nav?.extras.queryParams?.['isQueue'];
 
     this.userId = userId || 0;
     this.editingExistingAppointment = editingExistingAppointment || false;
@@ -28,7 +30,13 @@ export class ConfirmationPage {
 
   goToMainPage() {
     if (this.isOwner) {
-      this.router.navigate(['/owner-schedule']);
+      if (!this.isQueue) {
+        this.router.navigate(['/owner-schedule']);
+      }
+      else {
+        this.router.navigate(['/customer-list-in-queue']);
+      }
+
       return;
     }
 
@@ -39,5 +47,5 @@ export class ConfirmationPage {
         state: { from: 'confirmation' }
       }
     });
-  } 
+  }
 }

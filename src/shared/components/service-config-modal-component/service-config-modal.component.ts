@@ -54,6 +54,35 @@ export class ServiceConfigModalComponent implements OnInit {
     }
   }
 
+  // Novos métodos para gerenciar horas/minutos
+  getHours(index: number): number {
+    const durationInMinutes = this.servicesArray.at(index).get('duration')?.value || 0;
+    return Math.floor(durationInMinutes / 60);
+  }
+
+  getMinutes(index: number): number {
+    const durationInMinutes = this.servicesArray.at(index).get('duration')?.value || 0;
+    return durationInMinutes % 60;
+  }
+
+  onHoursChange(event: any, index: number) {
+    const hours = parseInt(event.target.value, 10) || 0;
+    const currentMinutes = this.getMinutes(index);
+    const totalMinutes = (hours * 60) + currentMinutes;
+    
+    this.servicesArray.at(index).get('duration')?.setValue(totalMinutes);
+    this.servicesArray.at(index).get('duration')?.markAsTouched();
+  }
+
+  onMinutesChange(event: any, index: number) {
+    const minutes = parseInt(event.target.value, 10) || 0;
+    const currentHours = this.getHours(index);
+    const totalMinutes = (currentHours * 60) + minutes;
+    
+    this.servicesArray.at(index).get('duration')?.setValue(totalMinutes);
+    this.servicesArray.at(index).get('duration')?.markAsTouched();
+  }
+
   closeModal() {
     this.modalCtrl.dismiss();
   }
@@ -74,5 +103,4 @@ export class ServiceConfigModalComponent implements OnInit {
       this.modalCtrl.dismiss(result);
     }
   }
-
 }

@@ -91,7 +91,7 @@ export class AuthInterceptor implements HttpInterceptor {
             throw new Error('Token inválido no refresh');
           }
 
-          // salva novo token
+          
           this.sessionService.setToken(newToken);
           this.authService.setToken(newToken);
 

@@ -1,4 +1,4 @@
-<ion-header  class="floating-header" mode="ios" [class.header-hidden]="hideOnScroll && isHidden" [class.floating-header]="floating">
+<ion-header class="floating-header" mode="ios" [class.header-hidden]="hideOnScroll && isHidden" [class.floating-header]="floating">
   <ion-toolbar class="floating-toolbar">
     <ion-buttons slot="start">
       <ion-button
@@ -20,20 +20,7 @@
 
     <ion-title class="title-container">
       <div class="title">{{ title }}</div>
-      <div
-        *ngIf="subtitle && !hideSubtitle"
-        class="subtitle"
-        [class.hidden]="hideSubtitle"
-      >
-        {{ subtitle }}
-      </div>
-         <div
-        *ngIf="otherSubtitle && !hideOtherSubtitle"
-        class="other-subtitle"
-        [class.hidden]="hideOtherSubtitle"
-      >
-        {{ otherSubtitle }}
-      </div>
+      <div class="subtitle">{{ subtitle }}</div>
     </ion-title>
 
     <ion-buttons slot="end">

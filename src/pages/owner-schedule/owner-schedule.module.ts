@@ -12,6 +12,8 @@ import { CpfSearchModalComponent } from './modals/cpf-search-modal/cpf-search-mo
 import { CustomerTypeModalComponent } from './modals/customer-type-modal/customer-type-modal.component';
 import { WalkInCustomerModalComponent } from './modals/walk-in-customer-modal/walk-in-customer-modal.component';
 import { TransferCustomerModalComponent } from "./modals/transfer-modal/transfer-customer-modal.component";
+import { CustomerDetailModalComponent } from './modals/detail-modal/customer-detail-modal.component';
+import { EditServiceComponent } from './modals/edit-service-modal/edit-service-modal.component';
 
 @NgModule({
   imports: [
@@ -27,7 +29,9 @@ import { TransferCustomerModalComponent } from "./modals/transfer-modal/transfer
     CustomerTypeModalComponent,
     CpfSearchModalComponent,
     WalkInCustomerModalComponent,
-    TransferCustomerModalComponent
+    TransferCustomerModalComponent,
+    CustomerDetailModalComponent,
+    EditServiceComponent
   ]
 })
 export class OwnerSchedulePageModule { }

@@ -1,862 +1,420 @@
-.schedule-container {
-  padding: 16px;
-  padding-bottom: calc(100px + env(safe-area-inset-bottom));
-  background: #f8f8f8;
-  min-height: 100%;
+.bg-light {
+  --background: #fdfdfd;
 }
 
-.date-section {
-  margin-bottom: 20px;
-}
-
-.date-selector {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-.date-nav-btn {
-  --padding-start: 8px;
-  --padding-end: 8px;
-  --color: #007aff;
-  width: 44px;
-  height: 44px;
-  margin: 0;
-  
-  ion-icon {
-    font-size: 24px;
-  }
-}
-
-.date-pill {
-  background: rgba(0, 122, 255, 0.1);
-  padding: 8px 20px;
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &:active {
-    background: rgba(0, 122, 255, 0.2);
-    transform: scale(0.98);
-  }
-}
-
-.date-pill-icon {
-  font-size: 20px;
-  color: #007aff;
-}
-
-.date-pill-text {
-  font-size: 17px;
-  font-weight: 500;
-  color: #1c1c1e;
-}
-
-.today-indicator {
-  background: #007aff;
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 16px;
-  font-weight: 600;
-}
-
-.stats-section {
-  margin-bottom: 20px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.stat-card {
-  background: white;
-  padding: 16px 8px;
-  border-radius: 16px;
-  text-align: center;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &:active {
-    transform: scale(0.98);
-    background: #f8f8f8;
-  }
-}
-
-.stat-value {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 4px;
-  
-  &.success { color: #34c759; }
-  &.warning { color: #ff9500; }
-  &.primary { color: #007aff; }
-  &.tertiary { color: #5856d6; }
-}
-
-.stat-label {
-  font-size: 13px;
-  color: #8e8e93;
-  font-weight: 500;
-}
-
-
-.controls-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.search-wrapper {
-  flex: 1;
-}
-
-.ios-searchbar {
-  --background: #e5e5ea;
-  --border-radius: 12px;
-  --box-shadow: none;
-  --color: #1c1c1e;
-  --placeholder-color: #8e8e93;
-  --icon-color: #8e8e93;
-  padding: 0;
-  height: 44px;
-}
-
-.view-controls {
-  display: flex;
-  align-items: center;
-}
-
-.filter-btn {
-  --padding-start: 10px;
-  --padding-end: 10px;
-  --color: #007aff;
+.ion-padding {
+  --background: #f8f9fa;
+  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
   position: relative;
-  margin-right: 8px;
-  
-  ion-icon {
-    font-size: 22px;
-  }
-  
-  &.active {
-    --color: #007aff;
-    background: rgba(0, 122, 255, 0.1);
-    border-radius: 8px;
-  }
+  z-index: 1;
 }
 
-.filter-badge {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  font-size: 10px;
-  padding: 2px 4px;
-  min-width: 16px;
-  height: 16px;
-}
-
-.view-segment {
-  background: #e5e5ea;
-  border-radius: 10px;
-  padding: 2px;
-  width: auto;
-  
-  ion-segment-button {
-    --background: transparent;
-    --background-checked: white;
-    --color: #8e8e93;
-    --color-checked: #007aff;
-    --border-radius: 8px;
-    --indicator-color: transparent;
-    min-width: 44px;
-    min-height: 36px;
-    
-    ion-icon {
-      font-size: 20px;
-    }
-  }
-}
-
-// Filters Panel iOS Style
-.filters-panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: white;
-  border-radius: 16px;
-  margin-bottom: 0;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  
-  &.expanded {
-    max-height: 400px;
-    margin-bottom: 16px;
-  }
-}
-
-.filters-content {
-  padding: 20px;
-}
-
-.filter-group {
-  margin-bottom: 20px;
-  
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.filter-label {
-  display: block;
-  font-size: 15px;
-  font-weight: 600;
-  color: #1c1c1e;
-  margin-bottom: 12px;
-}
-
-.filter-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.chip {
-  background: #f2f2f7;
-  border: none;
-  border-radius: 30px;
-  padding: 8px 16px;
-  font-size: 14px;
-  color: #1c1c1e;
+.date-stepper-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  background: #f8f9fa;
+  border-radius: 20px;
+  margin: 12px 10px 0 10px;
+  padding: 4px 8px;
+
+  ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    margin: 0;
+    height: 36px;
+  }
+}
+
+.current-date-display {
   cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &.selected {
-    background: rgba(0, 122, 255, 0.1);
-    color: #007aff;
-    font-weight: 500;
-  }
-  
-  &:active {
-    transform: scale(0.96);
-  }
-}
-
-.chip-count {
-  background: rgba(0, 0, 0, 0.05);
-  padding: 2px 6px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.filter-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid #e5e5ea;
-}
-
-// Active Filters Bar
-.active-filters {
-  background: white;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  padding: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.active-filters-scroll {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  white-space: nowrap;
-}
-
-.active-filters-label {
-  font-size: 14px;
-  color: #8e8e93;
-  font-weight: 500;
-}
-
-.active-filter-chips {
   display: flex;
   align-items: center;
   gap: 8px;
-}
+  padding: 4px 8px;
 
-.clear-filters-btn {
-  --color: #007aff;
-  --padding-start: 8px;
-  --padding-end: 8px;
-  height: 32px;
-  font-size: 14px;
-}
+  .date-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #222;
+  }
 
-// Grid View
-.grid-view {
-  padding-bottom: 20px;
-}
-
-.time-slots {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
-}
-
-.time-slot {
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s ease;
-  
-  &.passed {
+  &:active {
     opacity: 0.7;
   }
-  
-  &.has-appointments {
-    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.12);
-  }
 }
 
-.slot-header {
+.calendar-strip {
+  display: flex;
+  overflow-x: auto;
   padding: 16px;
-  background: #f8f8f8;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #e5e5ea;
-}
-
-.slot-time {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #1c1c1e;
-  
-  ion-icon {
-    color: #007aff;
-    font-size: 18px;
-  }
-}
-
-.appointment-badge {
-  background: #007aff;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-left: 8px;
-}
-
-.add-slot-btn {
-  --color: #007aff;
-  --padding-start: 8px;
-  --padding-end: 8px;
-  height: 36px;
-  
-  ion-icon {
-    font-size: 22px;
-  }
-  
-  &[disabled] {
-    --color: #c4c4c6;
-    opacity: 0.5;
-  }
-}
-
-.slot-content {
-  padding: 12px;
-  min-height: 120px;
-}
-
-// Appointment Card
-.appointment-card {
-  background: white;
-  border-radius: 14px;
-  margin-bottom: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid #e5e5ea;
-  
-  &:last-child {
-    margin-bottom: 0;
-  }
-  
-  &:active {
-    transform: scale(0.99);
-    background: #f8f8f8;
-  }
-  
-  &.confirmed { border-left: 4px solid #34c759; }
-  &.pending { border-left: 4px solid #ff9500; }
-  &.completed { border-left: 4px solid #007aff; }
-  &.cancelled { border-left: 4px solid #ff3b30; }
-  
-  &.cdk-drag-preview {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    border-radius: 16px;
-  }
-}
-
-.card-content {
-  padding: 12px;
-  display: flex;
   gap: 12px;
-}
+  scrollbar-width: none;
 
-.card-avatar {
-  position: relative;
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-  
-  img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
+  &::-webkit-scrollbar {
+    display: none;
   }
-}
 
-.avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: #e5e5ea;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  ion-icon {
-    font-size: 32px;
-    color: #8e8e93;
-  }
-}
-
-.status-dot {
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 2px solid white;
-  
-  &.confirmed { background: #34c759; }
-  &.pending { background: #ff9500; }
-  &.completed { background: #007aff; }
-  &.cancelled { background: #ff3b30; }
-}
-
-.card-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.customer-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1c1c1e;
-  margin: 0;
-}
-
-.status-badge {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 12px;
-}
-
-.service-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 6px;
-}
-
-.service-tag {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-weight: 500;
-  background: rgba(0, 122, 255, 0.1);
-  color: #007aff;
-}
-
-.appointment-details {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.duration {
-  font-size: 12px;
-  color: #8e8e93;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  
-  ion-icon {
-    font-size: 14px;
-  }
-}
-
-// Empty Slot
-.empty-slot {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  color: #8e8e93;
-  background: #f8f8f8;
-  border-radius: 12px;
-  border: 1px dashed #e5e5ea;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  ion-icon {
-    font-size: 28px;
-    margin-bottom: 8px;
-    color: #c4c4c6;
-  }
-  
-  span {
-    font-size: 14px;
-  }
-  
-  &:active {
-    background: #e5e5ea;
-    transform: scale(0.98);
-  }
-}
-
-// Trash Zone
-.trash-zone {
-  position: fixed;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%) scale(0.9);
-  background: rgba(255, 59, 48, 0.1);
-  backdrop-filter: blur(12px);
-  padding: 16px 24px;
-  border-radius: 40px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #ff3b30;
-  font-weight: 600;
-  font-size: 16px;
-  z-index: 9999;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 59, 48, 0.2);
-  
-  ion-icon {
-    font-size: 28px;
-  }
-  
-  &.visible {
-    opacity: 1;
-    pointer-events: all;
-    transform: translateX(-50%) scale(1);
-  }
-  
-  &.hover {
-    background: rgba(255, 59, 48, 0.2);
-    transform: translateX(-50%) scale(1.05);
-  }
-}
-
-// List View
-.list-view {
-  padding-bottom: 20px;
-}
-
-.ios-list {
-  background: transparent;
-  
-  ion-item-sliding {
-    margin-bottom: 8px;
-    border-radius: 14px;
-    overflow: hidden;
-  }
-}
-
-.list-item {
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 12px;
-  --padding-bottom: 12px;
-  --border-radius: 14px;
-  --background: white;
-  margin-bottom: 8px;
-  border: 1px solid #e5e5ea;
-  
-  &.confirmed { --border-left: 4px solid #34c759; }
-  &.pending { --border-left: 4px solid #ff9500; }
-  &.completed { --border-left: 4px solid #007aff; }
-  &.cancelled { --border-left: 4px solid #ff3b30; }
-  
-  &::part(native) {
-    border-radius: 14px;
-  }
-}
-
-.list-avatar {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  
-  img {
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  ion-icon {
-    font-size: 44px;
-    color: #8e8e93;
-  }
-}
-
-.service-tags-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 4px;
-}
-
-.service-tag-list {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 8px;
-  font-weight: 500;
-}
-
-.item-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.action-btn {
-  --color: #007aff;
-  --padding-start: 6px;
-  --padding-end: 6px;
-  height: 36px;
-}
-
-// Empty State
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 60px 20px;
-  background: white;
-  border-radius: 24px;
-  margin: 20px 0;
-  
-  ion-icon {
-    font-size: 64px;
-    color: #c4c4c6;
-    margin-bottom: 20px;
-  }
-  
-  h3 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #1c1c1e;
-    margin: 0 0 8px 0;
-  }
-  
-  p {
-    font-size: 16px;
-    color: #8e8e93;
-    margin: 0 0 20px 0;
-  }
-}
-
-// Drag and Drop
-.cdk-drag-placeholder {
-  opacity: 0.3;
-}
-
-.cdk-drop-list-dragging .appointment-card:not(.cdk-drag-placeholder) {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.cdk-drop-list.drag-invalid {
-  background-color: rgba(255, 59, 48, 0.05);
-  border: 2px dashed #ff3b30;
-  border-radius: 16px;
-}
-
-// Responsive
-@media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .time-slots {
-    grid-template-columns: 1fr;
-  }
-  
-  .controls-section {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .date-pill {
-    padding: 8px 16px;
-  }
-  
-  .date-pill-text {
-    font-size: 15px;
-  }
-}
-
-.trash-contextual {
-  position: fixed;
-  bottom: calc(90px + env(safe-area-inset-bottom));
-  left: 50%;
-  transform: translateX(-50%) scale(0.8);
-  opacity: 0;
-
-  background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(12px);
-
-  border-radius: 30px;
-  padding: 14px 22px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  transition: all .25s ease;
-  z-index: 9999;
-  pointer-events: auto;
-}
-
-.trash-contextual.visible {
-  opacity: 1;
-  transform: translateX(-50%) scale(1);
-}
-
-.trash-contextual.hover {
-  background: #eb445a;
-  transform: translateX(-50%) scale(1.12);
-  box-shadow: 0 10px 30px rgba(235,68,90,0.45);
-}
-
-.trash-inner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.trash-icon {
-  font-size: 26px;
-  color: white;
-  transition: transform .2s ease;
-}
-
-.trash-contextual.hover .trash-icon {
-  transform: scale(1.25) rotate(-8deg);
-}
-
-.trash-label {
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: .3px;
-}
-
-.trash-contextual {
-  min-width: 220px;
-  height: 60px;
-}
-
-.appointment-card {
-  position: relative;
-  overflow: hidden;
-  
-  &.can-delete {
-    cursor: pointer;
-  }
-  
-  &.long-press-active {
-    .delete-overlay {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .delete-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(var(--ion-color-danger-rgb), 0.95);
+  .day-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    transform: translateY(100%);
-    transition: all 0.3s ease;
-    z-index: 10;
-    backdrop-filter: blur(4px);
-    
-    .delete-progress {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 4px;
-      background: white;
-      width: 100%;
-      animation: deleteProgress 0.5s linear forwards;
+    min-width: 50px;
+    height: 65px;
+    border-radius: 12px;
+    color: #666;
+
+    .day-name {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 4px;
     }
-    
-    .delete-icon {
-      font-size: 32px;
-      color: white;
-      margin-bottom: 8px;
-      animation: deletePulse 0.5s ease infinite;
+
+    .day-number {
+      font-size: 18px;
+      font-weight: 700;
     }
-    
-    .delete-text {
-      color: white;
-      font-size: 14px;
-      font-weight: 500;
+
+    &.selected {
+      background-color: var(--ion-color-primary);
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(var(--ion-color-primary-rgb), 0.3);
     }
+  }
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  gap: 8px;
+
+  .stat-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+
+    .label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #888;
+      margin-bottom: 4px;
+    }
+
+    .value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    &.pending {
+      background: #fffdf5;
+      border-color: #ffeba1;
+
+      .label,
+      .value {
+        color: var(--ion-color-warning);
+      }
+    }
+
+    &.confirmed {
+      background: #f4f8ff;
+      border-color: #cde0ff;
+
+      .label,
+      .value {
+        color: var(--ion-color-primary);
+      }
+    }
+
+    &.done {
+      background: #f5fdf7;
+      border-color: #c1f0cf;
+
+      .label,
+      .value {
+        color: var(--ion-color-success);
+      }
+    }
+  }
+}
+
+.search-container {
+  padding: 14px 10px;
+
+  .custom-search {
+    --box-shadow: none;
+    --background: #f4f5f8;
+    --border-radius: 12px;
+  }
+}
+
+.filters-strip {
+  display: flex;
+  overflow-x: auto;
+  padding: 0 10px 14px 10px;
+  gap: 8px;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-btn {
+    --border-radius: 20px;
+    margin: 0;
+    height: 36px;
+    font-size: 12px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+}
+
+.timeline-container {
+  padding: 0 6px 30px 6px;
+
+  .time-slot-group {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 6px;
+  }
+
+  .time-col {
+    width: 48px;
+    text-align: center;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .cards-col {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .appointment-card {
+    display: flex;
+    width: 100%;
+    min-height: 168px;
+    margin-bottom: 20px;
+    gap: 6px;
+    padding: 12px 12px 10px 10px;
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+  }
+
+  .drag-handle {
+    color: #d1d5db;
+    font-size: 18px;
+    padding-top: 2px;
+    width: 16px;
+    min-width: 16px;
+  }
+
+  .card-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card-header {
+    display: flex;
+    margin-bottom: 8px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 8px;
+
+    h3 {
+      margin: 0;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 16.5px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+  }
+
+  .services-tags {
+    display: flex;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .service-tag {
+    padding: 4px 10px;
+    border-radius: 9999px;
+    background: #f3f4f6;
+    color: #4b5563;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .divider {
+    height: 1px;
+    margin: 14px 0;
+    background: #e5e7eb;
+  }
+
+  .card-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: calc(100% + 18px);
+    margin-left: -18px;
+  }
+
+  .main-btn {
+    flex: 1;
+    height: 40px;
+    margin: 0;
+
+    --border-radius: 12px;
+    --box-shadow: none;
+
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: none;
+  }
+
+  .icon-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .main-btn {
+    transition: 0.2s ease;
+  }
+
+  .main-btn:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+
+  .icon-btn {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+
+    --border-radius: 14px;
+    --background: #f8fafc;
+    --color: #64748b;
+    --border-color: #e2e8f0;
+    --border-style: solid;
+    --border-width: 1px;
+
+    ion-icon {
+      font-size: 21px;
+    }
+  }
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+.success-chip {
+  background: #ecfdf3;
+  color: #22c55e;
+}
+
+.status-chip[color="success"] {
+  --background: #ecfdf3;
+  --color: #22c55e;
+}
+
+.status-chip[color="primary"] {
+  --background: #dbeafe;
+  --color: #2563eb;
+}
+
+.status-chip[color="warning"] {
+  --background: #fef3c7;
+  --color: #d97706;
+}
+
+.status-chip[color="secondary"] {
+  --background: #e0f2fe;
+  --color: #0284c7;
+}
+
+ion-modal {
+  --height: auto;
+  --width: 350px;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state {
+  min-height: 45vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px 80px;
+  text-align: center;
+
+  .empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 92px;
+    height: 92px;
+    margin-bottom: 20px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #eef4ff 0%, #f5f7ff 100%);
+
+    ion-icon {
+      font-size: 42px;
+      color: var(--ion-color-primary);
+    }
+  }
+
+  h2 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1f2937;
+  }
+
+  p {
+    max-width: 280px;
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #6b7280;
+  }
+
+  ion-button {
+    height: 48px;
+    margin-top: 24px;
+    --border-radius: 16px;
+    --box-shadow: none;
+    font-weight: 700;
+    text-transform: none;
   }
 }
 
@@ -865,118 +423,189 @@ ion-content::part(scroll) {
   -ms-overflow-style: none;
 }
 
-
-@keyframes deleteProgress {
-  from { width: 0%; }
-  to { width: 100%; }
+.time-text {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+  color: #111827;
 }
 
-@keyframes deletePulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
-
-.delete-confirm-alert {
-  .alert-wrapper {
-    border-radius: 16px;
-    
-    .alert-head {
-      padding: 20px 20px 10px;
-      
-      .alert-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--ion-color-danger);
-      }
-    }
-    
-    .alert-message {
-      padding: 10px 20px;
-      font-size: 16px;
-      color: var(--ion-color-dark);
-      
-      strong {
-        color: var(--ion-color-danger);
-      }
-    }
-    
-    .alert-button-group {
-      padding: 10px 16px 16px;
-      
-      .alert-button {
-        border-radius: 12px;
-        font-weight: 500;
-        
-        &.alert-delete {
-          background: var(--ion-color-danger);
-          color: white;
-        }
-      }
-    }
-  }
-}
-
-:host {
+.service-count {
   display: block;
-  height: 100%;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
 }
 
-::ng-deep app-custom-header {
-  border-bottom-left-radius: 20px !important;
-  border-bottom-right-radius: 20px !important;
-  overflow: hidden !important;
-  
-  .header-toolbar {
-    border-bottom-left-radius: 20px !important;
-    border-bottom-right-radius: 20px !important;
-    overflow: hidden !important;
-  }
-  
-  // ion-toolbar {
-  //   // border-bottom-left-radius: 20px !important;
-  //   border-bottom-right-radius: 20px !important;
-  //   overflow: hidden !important;
-  // }
+.appointment-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: grab;
 }
 
-ion-content {
-  --offset-top: 0px;
-  
-  &::part(scroll) {
-    margin-top: 0;
-    padding-top: 0;
-  }
+.appointment-card:active {
+  cursor: grabbing;
 }
 
-.header-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 56px;
-  background: var(--ion-background-color);
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  z-index: 99;
-  pointer-events: none;
+.drag-preview {
+  width: 320px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.15),
+    0 8px 10px -6px rgb(0 0 0 / 0.15);
+  padding: 14px;
+  border: 2px solid var(--ion-color-primary);
+  transform: scale(0.95);
+  opacity: 0.95;
 }
 
-.schedule-container {
-  position: relative;
-  z-index: 1;
-  margin-top: 90px;
+.drag-placeholder {
+  height: 168px;
+  border: 2px dashed #94a3b8;
+  background: rgba(148, 163, 184, 0.08);
+  border-radius: 18px;
+  margin-bottom: 20px;
+  transition: all 0.2s ease;
 }
 
-app-custom-header {
-  position: sticky;
-  top: 0;
+.cdk-drag-dragging {
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4) !important;
+  transform: scale(0.97) rotate(2deg);
+  opacity: 0.9;
   z-index: 1000;
-  background: var(--ion-background-color);
 }
 
-.ion-padding {
-  --background: #f8f9fa;
-  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
+.cdk-drag-animating {
+  transition: transform 300ms cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+}
+
+.appointment-card:hover:not(.cdk-drag-dragging) {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.cards-col.cdk-drop-list-dragging {
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 12px;
+  transition: background 0.3s ease;
+}
+
+.appointment-card ion-badge {
+  --background: inherit !important;
+  --color: inherit !important;
   position: relative;
-  z-index: 1;
+  z-index: 2;
+}
+
+.appointment-card ion-badge {
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.appointment-card ion-badge[color="success"] {
+  --background: #dcfce7;
+  --color: #16a34a;
+
+  background: #dcfce7 !important;
+  color: #16a34a !important;
+}
+
+.appointment-card ion-badge[color="primary"] {
+  --background: #dbeafe;
+  --color: #2563eb;
+
+  background: #dbeafe !important;
+  color: #2563eb !important;
+}
+
+.appointment-card ion-badge[color="warning"] {
+  --background: #fef3c7;
+  --color: #d97706;
+
+  background: #fef3c7 !important;
+  color: #d97706 !important;
+}
+
+ion-button[color="primary"].main-btn {
+  --background: #dbeafe;
+  --color: #1d4ed8;
+}
+
+ion-button[color="success"].main-btn {
+  --background: #dcfce7;
+  --color: #16a34a;
+}
+
+ion-button[color="warning"].main-btn {
+  --background: #fef3c7;
+  --color: #d97706;
+}
+
+ion-button[color="medium"].main-btn {
+  --background: #f3f4f6;
+  --color: #6b7280;
+}
+
+.menu-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.menu-trigger {
+  margin: 0;
+
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+
+  min-width: 42px;
+  min-height: 42px;
+
+  border-radius: 12px;
+}
+
+.menu-trigger ion-icon {
+  font-size: 22px;
+  color: #64748b;
+}
+
+
+.action-popover-list {
+  min-width: 220px;
+  padding: 8px 0;
+}
+
+.action-popover-list ion-item {
+  --min-height: 46px;
+  --padding-start: 14px;
+  --padding-end: 14px;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.action-popover-list ion-icon {
+  font-size: 18px;
+  margin-right: 12px;
+  color: #64748b;
+}
+
+.action-popover-list ion-label {
+  color: #0f172a;
+}
+
+.danger-item {
+  --color: #dc2626;
+  --background-hover: #fef2f2;
+  --background-activated: #fee2e2;
+}
+
+.danger-item ion-icon,
+.danger-item ion-label {
+  color: #dc2626;
 }

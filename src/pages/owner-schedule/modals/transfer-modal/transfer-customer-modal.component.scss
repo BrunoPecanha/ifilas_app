@@ -264,3 +264,8 @@
 .status-indicator.active {
   background: #28a745;
 }
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

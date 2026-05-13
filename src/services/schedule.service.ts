@@ -10,6 +10,8 @@ import { AttendantsScheduleResponse } from 'src/models/responses/attendants-sche
 
 @Injectable({ providedIn: 'root' })
 export class ScheduleService {
+
+
   constructor(private http: HttpClient) { }
 
   private apiUrl = environment.apiUrl + '/schedule';
@@ -23,6 +25,10 @@ export class ScheduleService {
     );
   }
 
+  reopenCustomerService(id: any): Observable<any> {
+    throw new Error("Method not implemented.");
+  }
+
   getCustomerScheduleForDay(customerId: number, date: Date): Observable<any> {
     const localISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
       .toISOString()
@@ -34,8 +40,8 @@ export class ScheduleService {
     return this.http.patch(`${this.apiUrl}/${customerId}/name`, { name: newName });
   }
 
-  updateCustomerAgendaAsync(customerId: number, newAgendaTime: string) {
-    return this.http.patch(`${this.apiUrl}/${customerId}/customer-agenda`, { newAgendaTime: newAgendaTime });
+  updateCustomerAgendaAsync(customerId: number, newAgendaTime: string, targetCustomer?: number) {
+    return this.http.patch(`${this.apiUrl}/${customerId}/customer-agenda`, { newAgendaTime: newAgendaTime, targetCustomer: targetCustomer });
   }
 
   updateSchedule(scheduleId: number, command: ScheduleCreateRequest): Observable<ScheduleResponse> {
@@ -92,6 +98,11 @@ export class ScheduleService {
     };
 
     return this.http.put(`${this.apiUrl}/remove`, command);
+  }
+
+  // Adicione este método se ainda não existir
+  cancelAppointment(appointmentId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/appointments/${appointmentId}`);
   }
 
   transferCustomer(payload: {

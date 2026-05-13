@@ -4,5 +4,8 @@ export interface CustomerServiceModel {
     icon: string;
     total: number;
     finalPrice: number;
+    finalDuration: number;
+    duration: number;
+    price: number;
     quantity: number;
   }

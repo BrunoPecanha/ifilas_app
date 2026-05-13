@@ -12,7 +12,6 @@
   gap: 16px;
 }
 
-/* CARD BASE */
 .establishment-card {
   position: relative;
   background: white;
@@ -32,7 +31,6 @@
   }
 }
 
-/* LATERAL COLORIDA */
 .side-indicator {
   position: absolute;
   left: 0;
@@ -41,7 +39,6 @@
   height: 100%;
 }
 
-/* HEADER */
 .card-header {
   display: flex;
   align-items: center;
@@ -49,7 +46,6 @@
   padding: 18px;
 }
 
-/* STORE INFO */
 .store-info {
   display: flex;
   align-items: center;
@@ -139,7 +135,6 @@
   color: #c7c7cc;
 }
 
-/* LOADING */
 .loading-overlay {
   position: absolute;
   inset: 0;
@@ -161,7 +156,6 @@
   }
 }
 
-/* EMPTY */
 .empty-state {
   padding: 60px 20px;
   text-align: center;
@@ -210,4 +204,9 @@
   &.closed {
     background: #ff3b30; 
   }
+}
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }

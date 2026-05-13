@@ -5,11 +5,11 @@ import { ToastController } from '@ionic/angular';
   providedIn: 'root',
 })
 export class ToastService {
-  constructor(private toastController: ToastController) {}
+  constructor(private toastController: ToastController) { }
 
   async show(
     message: string,
-    color: 'success' | 'danger' | 'warning' | 'medium' = 'success'
+    color: 'success' | 'primary' | 'danger' | 'warning' | 'medium' = 'success'
   ) {
     const toast = await this.toastController.create({
       message,
@@ -31,5 +31,9 @@ export class ToastService {
 
   async warning(message: string) {
     await this.show(message, 'warning');
+  }
+
+  async primary(message: string) {
+    await this.show(message, 'primary');
   }
 }

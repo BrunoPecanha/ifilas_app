@@ -68,7 +68,7 @@ export class TransferCustomerModalComponent implements OnInit {
     this.selectedProfessional = prof;
   }
 
-  confirmTransfer() {
+  confirmTransfer() {    
     if (!this.selectedProfessional)
       return;
 

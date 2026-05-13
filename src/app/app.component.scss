@@ -93,3 +93,11 @@ ion-item {
   border-bottom-right-radius: 16px;
   color: #fff;
 }
+
+ion-loading {
+  --z-index: 999999 !important;
+}
+
+.loading-wrapper {
+  z-index: 999999 !important;
+}

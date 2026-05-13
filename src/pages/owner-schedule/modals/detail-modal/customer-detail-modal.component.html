@@ -1,0 +1,118 @@
+<div class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="status-realizado">
+        <span class="green-dot" [ngClass]="customer?.status"></span>
+
+        <span class="status-text">
+          {{ getStatusDescription(customer?.status) | uppercase }}
+        </span>
+      </div>
+
+      <button class="close-btn" (click)="dismiss()" [disabled]="isDeleting">
+        ✕
+      </button>
+    </div>
+
+    <div class="client-info">
+      <h1 class="client-name">
+        <span class="name-text">{{ customer?.name }}</span>
+
+        <span *ngIf="customer?.isTransfered" class="transfer-badge">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+          Transferido
+        </span>
+      </h1>
+      <div class="contact-info">
+        <div
+          class="info-row payment-row"
+          *ngIf="customer?.paymentMethodId !== null"
+        >
+          <ion-icon
+            class="payment-icon"
+            [name]="getPaymentIcon(customer?.paymentMethodId)"
+            [style.color]="getPaymentColor(customer?.paymentMethodId)"
+          >
+          </ion-icon>
+
+          <span class="payment-text">
+            {{ getPaymentName(customer?.paymentMethodId) }}
+          </span>
+        </div>
+
+        <div class="info-row">
+          <span class="icon">🕒</span>
+          <span>
+            {{ customer?.slotStart }}
+            <span *ngIf="customer?.slotEnd"> - {{ customer?.slotEnd }} </span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="services-section">
+      <h2 class="section-title">
+        SERVIÇOS ({{ customer?.services?.length || 0 }})
+      </h2>
+
+      <div class="service-item" *ngFor="let service of customer?.services">
+        <div>
+          <div class="service-name">
+            {{ service?.name || service }} ({{ service.quantity }}x)
+          </div>
+
+          <div class="service-duration" *ngIf="service?.finalDuration">
+            {{ service?.finalDuration }} min
+          </div>
+          <div class="service-duration" *ngIf="!service?.finalDuration">
+            Não informado
+          </div>
+        </div>
+
+        <div class="service-price">
+          <ng-container *ngIf="service?.price">
+            {{ showPrice(service.finalPrice) }}
+          </ng-container>
+
+          <ng-container *ngIf="!service?.price && !service?.finalPrice"> -- </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="total-section">
+      <div class="total-label">Total</div>
+
+      <div class="total-value">
+        {{ showPrice(getTotalPrice()) }}
+      </div>
+    </div>
+
+    <div class="observation-section" *ngIf="customer?.notes">
+      <label class="obs-label"> OBSERVAÇÃO </label>
+
+      <div class="obs-box">
+        {{ customer?.notes }}
+      </div>
+    </div>
+
+    <button
+      class="delete-btn"
+      (click)="deleteAppointment()"
+      [disabled]="
+        isDeleting ||
+        (customer.status !== 'confirmed' && customer.status !== 'pending')
+      "
+      [class.disabled-btn]="
+        isDeleting ||
+        (customer.status !== 'confirmed' && customer.status !== 'pending')
+      "
+    >
+      <ion-spinner *ngIf="isDeleting" name="crescent"></ion-spinner>
+
+      <ng-container *ngIf="!isDeleting">
+        <span class="trash-icon">🗑</span>
+        Excluir atendimento
+      </ng-container>
+    </button>
+  </div>
+</div>

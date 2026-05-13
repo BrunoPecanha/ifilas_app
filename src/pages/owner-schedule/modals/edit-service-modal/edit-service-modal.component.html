@@ -1,0 +1,181 @@
+<app-custom-header
+  title="EDITAR ATENDIMENTO"
+  subtitle="Ajustar atendimento de cliente"
+  [showStartButton]="true"
+  startIconName="close-outline"
+  (onStartClick)="close()"
+  [showEndButton]="true"
+  endIconName="checkmark-outline"
+  (onEndClick)="save()"
+>
+</app-custom-header>
+
+<ion-content class="ion-padding">
+  <div class="header-subtitle">
+    Ajuste o horário ou os serviços de
+    <strong>{{ customer?.name }}</strong
+    >.
+  </div>
+
+  <!-- DATA / HORA -->
+  <div class="datetime-section">
+    <!-- DATA -->
+    <div class="datetime-card" (click)="openDateModal()">
+      <div class="datetime-label">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <span>DATA</span>
+      </div>
+
+      <div class="datetime-value">
+        {{ editableDate | date : "dd/MM/yyyy" }}
+      </div>
+    </div>
+
+    <!-- HORÁRIO -->
+    <div class="datetime-card" (click)="openTimeModal()">
+      <div class="datetime-label">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>HORÁRIO</span>
+      </div>
+
+      <div class="datetime-value">
+        {{ editableTime }}
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER SERVIÇOS -->
+  <div class="services-header">
+    <span class="count"> SERVIÇOS ({{ totalItems }}) </span>
+
+    <span class="total-price">
+      R$ {{ totalPrice.toFixed(2).replace(".", ",") }}
+    </span>
+  </div>
+
+  <!-- LISTA -->
+  <ion-list lines="none">
+    <div
+      *ngFor="let s of services"
+      class="service-card"
+      [class.selected]="s.quantity > 0"
+    >
+      <!-- INFO -->
+      <div class="service-info">
+        <div class="service-name">
+          {{ s.name }}
+        </div>
+
+        <div class="service-details">
+          <div class="detail-item">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ s.duration }}</span>
+          </div>
+
+          <div class="price-label">
+            R$ {{ s.price.toFixed(2).replace(".", ",") }}
+          </div>
+        </div>
+      </div>
+
+      <!-- AÇÕES -->
+      <div class="service-actions">
+        <!-- BOTÃO ADD -->
+        <ion-button
+          *ngIf="s.quantity === 0"
+          fill="solid"
+          color="light"
+          (click)="add(s)"
+          class="btn-add"
+        >
+          <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+        </ion-button>
+
+        <!-- QUANTIDADE -->
+        <div *ngIf="s.quantity > 0" class="quantity-selector">
+          <ion-button fill="clear" (click)="remove(s)">
+            <ion-icon name="remove-outline"></ion-icon>
+          </ion-button>
+
+          <span>
+            {{ s.quantity }}
+          </span>
+
+          <ion-button fill="clear" (click)="add(s)">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </ion-list>
+</ion-content>
+
+<ion-modal
+  #dateModal
+  [isOpen]="isDateModalOpen"
+  [initialBreakpoint]="0.65"
+  [breakpoints]="[0, 0.65, 0.95]"
+  [handle]="true"
+  class="datetime-modal"
+  (didDismiss)="setDateModalOpen(false)"
+>
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>Selecionar Data</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setDateModalOpen(false)">
+            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <div class="ion-padding">
+      <ion-datetime
+        presentation="date"
+        size="cover"
+        [value]="editableDate"
+        (ionChange)="onDateChange($event)"
+        locale="pt-BR"
+      ></ion-datetime>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<ion-modal
+  #timeModal
+  [isOpen]="isTimeModalOpen"
+  [initialBreakpoint]="0.5"
+  [breakpoints]="[0, 0.5, 0.85]"
+  [handle]="true"
+  class="datetime-modal"
+  (didDismiss)="setTimeModalOpen(false)"
+>
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>Selecionar Horário</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setTimeModalOpen(false)">
+            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <div class="ion-padding">
+      <ion-datetime
+        size="cover"
+        presentation="time"
+        [value]="editableTime"
+        locale="pt-BR"
+        showDefaultButtons="true"
+        doneText="Confirmar"
+        cancelText="Cancelar"
+        (ionChange)="onTimeChange($event)"
+        (ionConfirm)="confirmTime()"
+      ></ion-datetime>
+    </div>
+  </ng-template>
+</ion-modal>

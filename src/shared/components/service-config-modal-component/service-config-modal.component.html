@@ -1,16 +1,16 @@
 <app-custom-header
-  subtitle="VALORES VARIÁVEIS"
+  title="VALORES VARIÁVEIS"
+  subtitle="Informe o valores finais"
   startIconName="close-outline"
   [showStartButton]="true"
   [endDisabled]="!form.valid"
-  startIconName="close-outline"
   (onStartClick)="closeModal()"
   [showEndButton]="true"
   endIconName="checkmark"
   (onEndClick)="save()"
 ></app-custom-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" fullscreen>
   <form [formGroup]="form" class="form-container">
     <div formArrayName="services">
       <ion-card
@@ -26,46 +26,120 @@
               color="primary"
               class="service-icon"
             ></ion-icon>
-            {{ group.get("name")?.value }} ({{group.get("quantity")?.value}}x)
+            {{ group.get("name")?.value }}
           </ion-card-title>
+          <ion-badge color="primary" class="quantity-badge">
+            {{ group.get("quantity")?.value }}x
+          </ion-badge>
         </ion-card-header>
 
         <ion-card-content class="card-content">
-          <ion-item fill="solid" class="form-item">
-            <ion-label position="stacked" class="input-label">Preço (R$)</ion-label>
-            <ion-icon
-              slot="start"
-              name="cash-outline"
-              color="medium"
-              class="input-icon"
-            ></ion-icon>
-            <ion-input
-              formControlName="price"
-              type="number"
-              inputmode="decimal"
-              placeholder="0,00"
-              class="custom-input"
-              (ionChange)="formatCurrency(i)"
-            ></ion-input>
-          </ion-item>
+          <!-- Preço -->
+          <div class="input-group">
+            <div class="input-header">
+              <ion-icon name="cash-outline" class="input-header-icon"></ion-icon>
+              <span class="input-title">Preço</span>
+              <ion-text color="medium" class="input-unit">R$</ion-text>
+            </div>
+            <ion-item fill="outline" class="form-item">
+              <ion-input
+                formControlName="price"
+                type="number"
+                inputmode="decimal"
+                placeholder="0,00"
+                min="0"
+                step="0.01"
+                class="custom-input"
+                (ionChange)="formatCurrency(i)"
+              ></ion-input>
+              <ion-icon
+                *ngIf="group.get('price')?.touched && group.get('price')?.errors"
+                name="alert-circle"
+                color="danger"
+                slot="end"
+              ></ion-icon>
+            </ion-item>
+            <ion-text
+              *ngIf="group.get('price')?.touched && group.get('price')?.errors?.['required']"
+              color="danger"
+              class="error-text"
+            >
+              Preço é obrigatório
+            </ion-text>
+            <ion-text
+              *ngIf="group.get('price')?.touched && group.get('price')?.errors?.['min']"
+              color="danger"
+              class="error-text"
+            >
+              Valor mínimo: R$ 0,01
+            </ion-text>
+          </div>
 
-          <ion-item fill="solid" class="form-item">
-            <ion-label position="stacked" class="input-label">Duração (minutos)</ion-label>
-            <ion-icon
-              slot="start"
-              name="time-outline"
-              color="medium"
-              class="input-icon"
-            ></ion-icon>
-            <ion-input
-              formControlName="duration"
-              type="number"
-              inputmode="numeric"
-              placeholder="0"
-              min="1"
-              class="custom-input"
-            ></ion-input>
-          </ion-item>
+          <!-- Duração com componente de tempo -->
+          <div class="input-group">
+            <div class="input-header">
+              <ion-icon name="timer-outline" class="input-header-icon"></ion-icon>
+              <span class="input-title">Duração</span>
+            </div>
+            
+            <div class="time-picker-container">
+              <div class="time-input-wrapper">
+                <ion-item fill="outline" class="form-item hour-item">
+                  <ion-input
+                    [value]="getHours(i)"
+                    type="number"
+                    inputmode="numeric"
+                    placeholder="0"
+                    min="0"
+                    max="9"
+                    class="custom-input time-input"
+                    (ionInput)="onHoursChange($event, i)"
+                    [disabled]="group.get('duration')?.disabled"
+                  ></ion-input>
+                  <span class="time-label">h</span>
+                </ion-item>
+
+                <span class="time-separator">:</span>
+
+                <ion-item fill="outline" class="form-item minute-item">
+                  <ion-input
+                    [value]="getMinutes(i)"
+                    type="number"
+                    inputmode="numeric"
+                    placeholder="00"
+                    min="0"
+                    max="59"
+                    class="custom-input time-input"
+                    (ionInput)="onMinutesChange($event, i)"
+                    [disabled]="group.get('duration')?.disabled"
+                  ></ion-input>
+                  <span class="time-label">min</span>
+                </ion-item>
+              </div>
+            </div>
+
+            <ion-text
+              *ngIf="group.get('duration')?.touched && group.get('duration')?.errors?.['required']"
+              color="danger"
+              class="error-text"
+            >
+              Duração é obrigatória
+            </ion-text>
+            <ion-text
+              *ngIf="group.get('duration')?.touched && group.get('duration')?.errors?.['min']"
+              color="danger"
+              class="error-text"
+            >
+              Duração mínima: 1 minuto
+            </ion-text>
+            <ion-text
+              *ngIf="group.get('duration')?.touched && group.get('duration')?.errors?.['max']"
+              color="danger"
+              class="error-text"
+            >
+              Duração máxima: 10 horas
+            </ion-text>
+          </div>
         </ion-card-content>
       </ion-card>
     </div>

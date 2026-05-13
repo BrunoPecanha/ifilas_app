@@ -459,7 +459,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
   }
 
 
-  async searchCep() {    
+  async searchCep() {
     const cepControl = this.cadastroForm.get('cep');
     if (!cepControl || cepControl.invalid) {
       return;
@@ -495,7 +495,7 @@ export class CompanyConfigurationsPage implements OnDestroy {
       console.error('Erro no searchCep:', error);
       this.showCepError('Erro inesperado. Tente novamente.');
     }
-  } 
+  }
 
   private async showCepError(message: string) {
     const alert = await this.alertController.create({
@@ -632,12 +632,14 @@ export class CompanyConfigurationsPage implements OnDestroy {
     return colors[type] || '#8e8e93';
   }
 
-  paymentIcons: Record<PaymentMethodEnum, string> = {
+  paymentIcons: Record<number, string> = {
     [PaymentMethodEnum.pix]: 'phone-portrait-outline',
     [PaymentMethodEnum.card]: 'card-outline',
     [PaymentMethodEnum.cash]: 'cash-outline',
+    [PaymentMethodEnum.automaticDebit]: 'refresh-circle-outline',
     [PaymentMethodEnum.boleto]: 'document-text-outline',
-    [PaymentMethodEnum.bankTransfer]: 'swap-horizontal-outline'
+    [PaymentMethodEnum.bankTransfer]: 'swap-horizontal-outline',
+    [PaymentMethodEnum.mealTicket]: 'restaurant-outline'
   };
 
   getPaymentIcon(type: PaymentMethodEnum): string {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { PaymentModel } from 'src/models/payment-model';
 import { UpdateCustomerToQueueRequest } from 'src/models/requests/update-customer-to-queue-request';
 import { PaymentsResponse } from 'src/models/responses/payment-response';
@@ -379,7 +379,8 @@ export class CheckoutPage implements OnInit {
       userId: this.userId,
       editingExistingAppointment: this.editingExistingAppointment,
       flow: flow,
-      isOwner: this.sessionService.getProfile() === 1 || this.sessionService.getProfile() === 2
+      isOwner: this.sessionService.getProfile() === 1 || this.sessionService.getProfile() === 2,
+      isQueue: this.queueId != 0
     };
     this.router.navigate(['/confirmation'], { queryParams });
   }

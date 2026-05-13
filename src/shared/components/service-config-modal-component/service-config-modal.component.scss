@@ -1,6 +1,7 @@
 :host {
   display: block;
-  max-width: 600px;
+  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
   border-radius: 16px;
   background: var(--ion-color-light);
@@ -13,7 +14,9 @@
 }
 
 .service-card {
-  margin: -15px;
+  margin-bottom: 20px;
+  margin-left: 0;
+  margin-right: 0;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --background: #fff;
@@ -26,59 +29,164 @@
   }
 
   .card-header {
-    padding: 16px 16px 8px;
-    background: linear-gradient(to right, rgba(var(--ion-color-primary-rgb), 0.1), transparent);
+    padding: 16px 16px 12px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     .card-title {
       font-size: 1.1rem;
       font-weight: 600;
       display: flex;
       align-items: center;
-      color: var(--ion-color-primary);
+      color: var(--ion-color-dark);
       
       .service-icon {
         font-size: 1.4rem;
         margin-right: 10px;
+        color: var(--ion-color-primary);
       }
+    }
+
+    .quantity-badge {
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 12px;
     }
   }
 
   .card-content {
-    padding: 12px 16px 16px;
+    padding: 20px 16px;
+  }
+}
+
+.input-group {
+  margin-bottom: 24px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.input-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  
+  .input-header-icon {
+    font-size: 1.1rem;
+    color: var(--ion-color-primary);
+    margin-right: 8px;
+  }
+  
+  .input-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+  
+  .input-unit {
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-left: auto;
+    background: rgba(var(--ion-color-primary-rgb), 0.1);
+    padding: 2px 8px;
+    border-radius: 8px;
   }
 }
 
 .form-item {
   --background: #f8f9fa;
   --border-radius: 12px;
-  --padding-start: 12px;
+  --padding-start: 0;
   --padding-end: 12px;
-  --inner-padding-end: 0;
-  margin-bottom: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-bottom: 0;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
 
-  .input-label {
-    font-size: 0.85rem;
-    color: var(--ion-color-medium);
-    margin-bottom: 4px;
-    font-weight: 500;
+  &.ion-touched.ion-invalid {
+    border-color: var(--ion-color-danger);
+    --background: #fff5f5;
   }
 
-  .input-icon {
-    font-size: 1.2rem;
-    margin-right: 10px;
-    color: var(--ion-color-primary);
+  &.ion-touched.ion-valid {
+    border-color: var(--ion-color-success);
   }
+}
 
-  .custom-input {
-    --padding-top: 12px;
-    --padding-bottom: 12px;
-    --padding-start: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--ion-color-dark);
+.custom-input {
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  --padding-start: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ion-color-dark);
+  
+  &::part(input) {
+    &::placeholder {
+      color: var(--ion-color-medium);
+      opacity: 0.6;
+    }
   }
+}
+
+// Time Picker Styles
+.time-picker-container {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.time-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.hour-item,
+.minute-item {
+  flex: 1;
+  max-width: 130px;
+  --background: #fff;
+}
+
+.time-input {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  --padding-start: 8px;
+  
+  input {
+    text-align: center;
+  }
+}
+
+.time-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  margin-right: 4px;
+  position: absolute;
+  right: 8px;
+  pointer-events: none;
+}
+
+.time-separator {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  margin: 0 2px;
+}
+
+.error-text {
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 6px;
+  padding-left: 4px;
 }
 
 @media (min-width: 768px) {
@@ -93,11 +201,13 @@
   }
 
   .service-card {
-    margin-bottom: 28px;
-
     .card-header .card-title {
       font-size: 1.2rem;
     }
+  }
+
+  .time-picker-container {
+    max-width: 100%;
   }
 }
 
