@@ -379,16 +379,12 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     switch (status) {
       case 'pending':
         return 'time-outline';
-
       case 'confirmed':
         return 'checkmark-circle-outline';
-
       case 'inservice':
         return 'play-circle-outline';
-
       case 'done':
         return 'checkmark-done-circle-outline';
-
       default:
         return 'ellipse-outline';
     }
@@ -488,7 +484,6 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     this.appointments = this.appointments.filter(a => a.id !== customer.id);
     this.recalculateSlots();
   }
-
 
   filterAppointments(event: any) {
     this.searchTerm = (event?.detail?.value || '').trim().toLowerCase();
@@ -695,7 +690,6 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
 
     if (customer.status === 'confirmed') {
       this.startCustomerService(customer);
-
     } else if (customer.status === 'inservice') {
       this.finishCustomerService(customer);
     }
@@ -867,15 +861,18 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
       return;
     }
 
-    const movingDuration = this.getCustomerDuration(movingCustomer);
-    const targetDuration = targetCustomer ? this.getCustomerDuration(targetCustomer) : 0;
-    const willExceed = this.willExceedPlannedTime(
-      targetSlot.time,
-      movingDuration,
-      targetDuration
+    const hasOverlap = this.hasRealOverlapAfterSwap(
+      movingCustomer,
+      targetCustomer,
+      targetSlot.time
     );
 
-    if (willExceed && targetCustomer) {
+    if (hasOverlap) {
+      const movingDuration = this.getCustomerDuration(movingCustomer);
+      const targetDuration = targetCustomer
+        ? this.getCustomerDuration(targetCustomer)
+        : 0;
+
       const confirmed = await this.confirmTimeExceedSwap(
         movingCustomer,
         targetCustomer,
@@ -899,22 +896,18 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
         header = 'Iniciar Atendimento';
         message = `Deseja iniciar o atendimento de ${customer.name}?`;
         break;
-
       case 'done':
         header = 'Reabrir Atendimento';
         message = `Deseja reabrir o atendimento de ${customer.name}?`;
         break;
-
       case 'pending':
         header = 'Confirmar Atendimento';
         message = `Deseja confirmar o atendimento de ${customer.name}?`;
         break;
-
       case 'inservice':
         header = 'Finalizar Atendimento';
         message = `Deseja finalizar o atendimento de ${customer.name}?`;
         break;
-
       default:
         return true;
     }
@@ -935,9 +928,7 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     });
 
     await alert.present();
-
     const { role } = await alert.onDidDismiss();
-
     return role === 'confirm';
   }
 
@@ -945,21 +936,37 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     if (!customer)
       return this.slotDuration;
 
-    return customer.durationMinutes ||
-      (customer.slotStart && customer.slotEnd
-        ? this.toMinutes(customer.slotEnd) - this.toMinutes(customer.slotStart)
-        : this.slotDuration);
-  }
+    if (customer.durationMinutes && customer.durationMinutes > 0) {
+      return customer.durationMinutes;
+    }
 
-  private willExceedPlannedTime(newTime: string, movingDur: number, targetDur: number): boolean {
-    const maxAllowedPerSlot = this.slotDuration * 2;
-    return movingDur > maxAllowedPerSlot || (targetDur > 0 && targetDur > maxAllowedPerSlot);
+    if (customer.slotStart && customer.slotEnd) {
+      const startMinutes = this.toMinutes(customer.slotStart);
+      const endMinutes = this.toMinutes(customer.slotEnd);
+      const duration = endMinutes - startMinutes;
+
+      if (duration > 0) {
+        return duration;
+      }
+
+      if (customer.services && customer.services.length > 0) {
+        const servicesDuration = customer.services.reduce(
+          (sum: number, s: any) => sum + ((s.finalDuration || 0) * (s.quantity || 1)),
+          0
+        );
+        if (servicesDuration > 0) {
+          return servicesDuration;
+        }
+      }
+    }
+
+    return this.slotDuration;
   }
 
   private async confirmTimeExceedSwap(moving: any, target: any, movingDur: number, targetDur: number): Promise<boolean> {
     const alert = await this.alertController.create({
       header: '⚠️ Tempo pode ultrapassar',
-      message: `A troca de ${moving.name} (${movingDur} min) com ${target.name} (${targetDur} min) pode exceder o tempo planejado no slot. Deseja confirmar mesmo assim?`,
+      message: `A troca de ${moving.name} (${movingDur} min) com ${target.name} (${targetDur} min) pode exceder o tempo planejado. Deseja confirmar mesmo assim?`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         { text: 'Sim, Confirmar Troca', role: 'confirm' }
@@ -975,18 +982,30 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     const oldTime = movingCustomer.slotStart;
 
     movingCustomer.slotStart = targetSlot.time;
+    const movingDuration = this.getCustomerDuration(movingCustomer);
+    movingCustomer.slotEnd = this.addMinutesToTime(movingCustomer.slotStart, movingDuration);
+
     if (targetCustomer) {
       targetCustomer.slotStart = oldTime;
+      const targetDuration = this.getCustomerDuration(targetCustomer);
+      targetCustomer.slotEnd = this.addMinutesToTime(targetCustomer.slotStart, targetDuration);
     }
 
     const movingAppt = this.appointments.find(a => a.id === movingCustomer.id);
     const targetAppt = targetCustomer ? this.appointments.find(a => a.id === targetCustomer.id) : null;
 
-    if (movingAppt)
-      movingAppt.slotStart = targetSlot.time;
+    if (movingAppt) {
+      movingAppt.slotStart = movingCustomer.slotStart;
+      movingAppt.slotEnd = movingCustomer.slotEnd;
+      movingAppt.durationMinutes = movingDuration;
+    }
 
-    if (targetAppt)
-      targetAppt.slotStart = oldTime;
+    if (targetAppt && targetCustomer) {
+      const targetDuration = this.getCustomerDuration(targetCustomer);
+      targetAppt.slotStart = targetCustomer.slotStart;
+      targetAppt.slotEnd = targetCustomer.slotEnd;
+      targetAppt.durationMinutes = targetDuration;
+    }
 
     this.service.updateCustomerAgendaBySwapAsync(
       movingCustomer.id,
@@ -996,14 +1015,13 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
       next: () => {
         this.toastController.show('Troca realizada com sucesso!', 'success');
         this.recalculateSlots();
+        this.loadSchedulesForDate();
       },
       error: (err) => {
         console.error(err);
         this.toastController.show('Erro ao realizar a troca', 'danger');
       }
     });
-
-    this.loadSchedulesForDate();
   }
 
   private toMinutes(time: string): number {
@@ -1020,7 +1038,6 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
   }
 
   async openEditAppointmentModal(customer: any) {
-
     const modal = await this.modalController.create({
       component: EditServiceComponent,
       componentProps: {
@@ -1032,7 +1049,6 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     });
 
     await modal.present();
-
     const { data } = await modal.onDidDismiss();
 
     if (!data)
@@ -1048,41 +1064,85 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
       }))
     };
 
-    console.log(command);
-
-    this.service.updateCustomerAgendaAsync(command)
-      .subscribe({
-        next: async (response) => {
-
-          console.log(response);
-
-          this.loadSchedulesForDate();
-
-          this.toastController.show(
-            'Atendimento atualizado com sucesso.',
-            'success'
-          );
-        },
-
-        error: (err) => {
-
-          console.error(err);
-
-          this.toastController.show(
-            'Erro ao atualizar atendimento.',
-            'danger'
-          );
-        }
-      });
+    this.service.updateCustomerAgendaAsync(command).subscribe({
+      next: async (response) => {
+        this.loadSchedulesForDate();
+        this.toastController.show('Atendimento atualizado com sucesso.', 'success');
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastController.show('Erro ao atualizar atendimento.', 'danger');
+      }
+    });
   }
 
   hasProblematicService(customer: any): boolean {
     if (!customer.services || customer.services.length === 0) {
       return false;
     }
-
     return customer.services.some((service: any) => {
       return (service.finalPrice === 0.00 || service.finalDuration === 0);
+    });
+  }
+
+  private hasRealOverlapAfterSwap(
+    movingCustomer: any,
+    targetCustomer: any | null,
+    targetSlotTime: string
+  ): boolean {
+    const movingDuration = this.getCustomerDuration(movingCustomer);
+    const oldMovingStart = movingCustomer.slotStart;
+
+    const movingNewStart = targetSlotTime;
+    const movingNewEnd = this.addMinutesToTime(movingNewStart, movingDuration);
+    const movingStartMin = this.toMinutes(movingNewStart);
+    const movingEndMin = this.toMinutes(movingNewEnd);
+
+    let targetStartMin = 0;
+    let targetEndMin = 0;
+    let hasTarget = false;
+
+    if (targetCustomer) {
+      const targetDuration = this.getCustomerDuration(targetCustomer);
+      const targetNewStart = oldMovingStart;
+      const targetNewEnd = this.addMinutesToTime(targetNewStart, targetDuration);
+      targetStartMin = this.toMinutes(targetNewStart);
+      targetEndMin = this.toMinutes(targetNewEnd);
+      hasTarget = true;
+    }
+
+    if (hasTarget) {
+      const movingOverlapWithTarget = movingStartMin < targetEndMin && movingEndMin > targetStartMin;
+      if (movingOverlapWithTarget) {
+        return true;
+      }
+    }
+
+    const movingId = movingCustomer.id;
+    const targetId = targetCustomer?.id;
+
+    return this.appointments.some(appt => {
+      const apptId = appt.id;
+      if (apptId === movingId || apptId === targetId) {
+        return false;
+      }
+
+      const apptStart = this.toMinutes(appt.slotStart);
+      const apptEnd = this.toMinutes(appt.slotEnd);
+      const movingOverlap = movingStartMin < apptEnd && movingEndMin > apptStart;
+
+      if (movingOverlap) {
+        return true;
+      }
+
+      if (hasTarget) {
+        const targetOverlap = targetStartMin < apptEnd && targetEndMin > apptStart;
+        if (targetOverlap) {
+          return true;
+        }
+      }
+
+      return false;
     });
   }
 
@@ -1102,10 +1162,7 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
       }));
 
     if (!servicesMapped.length) {
-      this.toastController.show(
-        'Este atendimento não possui serviços configuráveis',
-        'medium'
-      );
+      this.toastController.show('Este atendimento não possui serviços configuráveis', 'medium');
       return;
     }
 
@@ -1118,42 +1175,32 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     });
 
     await modal.present();
-
     const { data } = await modal.onDidDismiss();
 
     if (!data)
       return;
 
-    this.customerService
-      .hasScheduleOverlapAsync(data)
-      .subscribe({
-        next: async (hasOverlap) => {
-
-          if (hasOverlap) {
-            const confirm = await this.confirmOverlap();
-
-            if (!confirm) {
-              return;
-            }
+    this.customerService.hasScheduleOverlapAsync(data).subscribe({
+      next: async (hasOverlap) => {
+        if (hasOverlap) {
+          const confirm = await this.confirmOverlap();
+          if (!confirm) {
+            return;
           }
-
-          this.saveAppointmentServices(customer, data);
-        },
-        error: () => {
-          this.toastController.show(
-            'Erro ao validar conflito de horário',
-            'danger'
-          );
         }
-      });
+        this.saveAppointmentServices(customer, data);
+      },
+      error: () => {
+        this.toastController.show('Erro ao validar conflito de horário', 'danger');
+      }
+    });
   }
 
   private async confirmOverlap(): Promise<boolean> {
     return new Promise(async (resolve) => {
       const alert = await this.alertController.create({
         header: 'Conflito de horário',
-        message:
-          'Este atendimento vai se sobrepor a outro agendamento. Deseja continuar mesmo assim?',
+        message: 'Este atendimento vai se sobrepor a outro agendamento. Deseja continuar mesmo assim?',
         buttons: [
           {
             text: 'Cancelar',
@@ -1167,7 +1214,6 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
           }
         ]
       });
-
       await alert.present();
     });
   }
@@ -1189,19 +1235,12 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     );
 
     const appt = this.appointments.find(a => a.id === customer.id);
-
     if (!appt)
       return;
 
     appt.durationMinutes = totalMinutes;
     appt.slotEnd = this.addMinutesToTime(appt.slotStart, totalMinutes);
-
-    appt.totalSlots = this.calculateTotalSlots(
-      appt.slotStart,
-      appt.slotEnd,
-      this.originalSlotsTemplate
-    );
-
+    appt.totalSlots = this.calculateTotalSlots(appt.slotStart, appt.slotEnd, this.originalSlotsTemplate);
     customer.totalSlots = appt.totalSlots;
     this.recalculateSlots();
   }
@@ -1214,33 +1253,23 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`;
   }
 
-
   saveAppointmentServices(customer: any, servicesUpdate: any) {
-    this.customerService
-      .updatePriceAndTimeForVariableServiceAsync(servicesUpdate)
-      .subscribe({
-        next: () => {
-
-          this.toastController.show('Serviços atualizados com sucesso', 'success');
-
-          servicesUpdate.customerServices.forEach((updated: any) => {
-
-            const original = customer.services.find(
-              (s: any) => s.serviceId === updated.serviceId
-            );
-
-            if (original) {
-              original.finalPrice = updated.price;
-              original.finalDuration = updated.duration;
-            }
-          });
-
-          this.recalcCustomer(customer);
-          this.applyFilters();
-        },
-        error: () => {
-          this.toastController.show('Erro ao atualizar serviços', 'danger');
-        }
-      });
+    this.customerService.updatePriceAndTimeForVariableServiceAsync(servicesUpdate).subscribe({
+      next: () => {
+        this.toastController.show('Serviços atualizados com sucesso', 'success');
+        servicesUpdate.customerServices.forEach((updated: any) => {
+          const original = customer.services.find((s: any) => s.serviceId === updated.serviceId);
+          if (original) {
+            original.finalPrice = updated.price;
+            original.finalDuration = updated.duration;
+          }
+        });
+        this.recalcCustomer(customer);
+        this.applyFilters();
+      },
+      error: () => {
+        this.toastController.show('Erro ao atualizar serviços', 'danger');
+      }
+    });
   }
 }
