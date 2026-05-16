@@ -160,9 +160,45 @@ export class ServiceRegistrationPage implements OnInit {
     this.serviceForm.patchValue({ price: value }, { emitEvent: false });
   }
 
+  private validateVariableFields(): boolean {
+    const form = this.serviceForm.value;
+
+    if (form.variablePrice) {
+      const price = this.parsePriceInput(form.price);
+
+      if (!price || price <= 0) {
+        this.presentAlert(
+          'Informe um preço válido para serviços com preço variável.',
+          'Preço obrigatório'
+        );
+        return false;
+      }
+    }
+
+    if (form.variableTime) {
+      const totalMinutes =
+        (Number(form.durationHours) || 0) * 60 +
+        (Number(form.durationMinutes) || 0);
+
+      if (totalMinutes <= 0) {
+        this.presentAlert(
+          'Informe uma duração válida para serviços com tempo variável.',
+          'Tempo obrigatório'
+        );
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   async saveService() {
     if (this.serviceForm.invalid) {
       this.markFormGroupTouched(this.serviceForm);
+      return;
+    }
+
+    if (!this.validateVariableFields()) {
       return;
     }
 
