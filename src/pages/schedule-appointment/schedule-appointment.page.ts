@@ -87,17 +87,25 @@ export class ScheduleAppointmentPage implements OnInit, AfterViewInit {
   }
 
   loadStoreAgenda() {
-    this.service.getEmployeeAgendaForCostumers(this.storeId, this.professionalId, new Date().toISOString().substring(0, 10)).subscribe(res => {
+    const now = new Date();
+    const localDate =`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;      
+
+    this.service.getEmployeeAgendaForCostumers(this.storeId, this.professionalId, localDate).subscribe(res => {
       this.selectedStore = res.data.store;
       this.daysWindow = res.data.daysWindow;
+
       this.availableDates = res.data.availableDates.map((d: any) => {
-        const [year, month, day] = d.date.split('T')[0].split('-').map(Number);
+        const [year, month, day] = d.date
+          .split('T')[0]
+          .split('-')
+          .map(Number);
 
         return {
           ...d,
           date: new Date(year, month - 1, day)
         };
       });
+
       this.updateVisibleDates();
     });
   }

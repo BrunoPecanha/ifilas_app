@@ -1,6 +1,6 @@
 import { Component, OnInit, QueryList, ViewChild, ViewChildren, AfterViewInit } from "@angular/core";
 import { ScheduleService } from "src/services/schedule.service";
-import { CdkDragDrop, CdkDragMove, CdkDropList, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDragMove, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserModel } from "src/models/user-model";
 import { SessionService } from "src/services/session.service";
 import { StoresService } from "src/services/stores.service";
@@ -988,7 +988,7 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
     if (targetAppt)
       targetAppt.slotStart = oldTime;
 
-    this.service.updateCustomerAgendaAsync(
+    this.service.updateCustomerAgendaBySwapAsync(
       movingCustomer.id,
       targetSlot.time,
       targetCustomer?.id
@@ -1000,9 +1000,10 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
       error: (err) => {
         console.error(err);
         this.toastController.show('Erro ao realizar a troca', 'danger');
-        this.loadSchedulesForDate();
       }
     });
+
+    this.loadSchedulesForDate();
   }
 
   private toMinutes(time: string): number {
@@ -1019,6 +1020,7 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
   }
 
   async openEditAppointmentModal(customer: any) {
+
     const modal = await this.modalController.create({
       component: EditServiceComponent,
       componentProps: {
@@ -1033,9 +1035,55 @@ export class OwnerSchedulePage implements OnInit, AfterViewInit {
 
     const { data } = await modal.onDidDismiss();
 
-    if (data) {
-      console.log(data);
+    if (!data)
+      return;
+
+    const command = {
+      customerId: data.customerId,
+      date: `${data.newDate}T00:00:00Z`,
+      startTime: `${data.newTime}:00`,
+      services: data.services.map((service: any) => ({
+        serviceId: service.id,
+        quantity: service.quantity
+      }))
+    };
+
+    console.log(command);
+
+    this.service.updateCustomerAgendaAsync(command)
+      .subscribe({
+        next: async (response) => {
+
+          console.log(response);
+
+          this.loadSchedulesForDate();
+
+          this.toastController.show(
+            'Atendimento atualizado com sucesso.',
+            'success'
+          );
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          this.toastController.show(
+            'Erro ao atualizar atendimento.',
+            'danger'
+          );
+        }
+      });
+  }
+
+  hasProblematicService(customer: any): boolean {
+    if (!customer.services || customer.services.length === 0) {
+      return false;
     }
+
+    return customer.services.some((service: any) => {
+      return (service.finalPrice === 0.00 || service.finalDuration === 0);
+    });
   }
 
   async editAppointment(customer: any) {

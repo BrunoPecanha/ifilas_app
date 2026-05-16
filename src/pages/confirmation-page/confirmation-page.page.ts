@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { SessionService } from 'src/services/session.service';
 
 @Component({
   selector: 'app-confirmation',
@@ -13,7 +14,7 @@ export class ConfirmationPage {
   isOwner = false;
   isQueue = true;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private sessionService: SessionService,) {
     this.getQueryParams();
   }
 
@@ -36,16 +37,18 @@ export class ConfirmationPage {
       else {
         this.router.navigate(['/customer-list-in-queue']);
       }
-
-      return;
+    }
+    else {
+      this.router.navigate(['/queue'], {
+        queryParams: {
+          userId: this.userId,
+          editingExistingAppointment: this.editingExistingAppointment,
+          state: { from: 'confirmation' }
+        }
+      });
     }
 
-    this.router.navigate(['/queue'], {
-      queryParams: {
-        userId: this.userId,
-        editingExistingAppointment: this.editingExistingAppointment,
-        state: { from: 'confirmation' }
-      }
-    });
+    this.sessionService.removeGenericKey('selectedServices');
+    this.sessionService.removeGenericKey('paymentMethod');
   }
 }

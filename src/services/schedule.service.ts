@@ -11,10 +11,17 @@ import { AttendantsScheduleResponse } from 'src/models/responses/attendants-sche
 @Injectable({ providedIn: 'root' })
 export class ScheduleService {
 
-
   constructor(private http: HttpClient) { }
 
   private apiUrl = environment.apiUrl + '/schedule';
+
+  checkIfHasConflict(command: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/conflict-agenda`, command).pipe(
+      catchError(error => {
+        return throwError(() => error);
+      })
+    );
+  }
 
   addCustomerToSchedule(command: AddCustomerToScheduleRequest): Observable<ScheduleResponse> {
     return this.http.post<any>(`${this.apiUrl}/addCustomer`, command).pipe(
@@ -40,8 +47,12 @@ export class ScheduleService {
     return this.http.patch(`${this.apiUrl}/${customerId}/name`, { name: newName });
   }
 
-  updateCustomerAgendaAsync(customerId: number, newAgendaTime: string, targetCustomer?: number) {
+  updateCustomerAgendaBySwapAsync(customerId: number, newAgendaTime: string, targetCustomer?: number) {
     return this.http.patch(`${this.apiUrl}/${customerId}/customer-agenda`, { newAgendaTime: newAgendaTime, targetCustomer: targetCustomer });
+  }
+
+  updateCustomerAgendaAsync(command: any) {
+    return this.http.put( `${this.apiUrl}/customer-agenda`, command);
   }
 
   updateSchedule(scheduleId: number, command: ScheduleCreateRequest): Observable<ScheduleResponse> {
@@ -83,9 +94,6 @@ export class ScheduleService {
   }
 
   getOwnerAgendaForDate(storeId: number, employeeId: number, date: string): Observable<AttendantsScheduleResponse> {
-    // const localDateTime = this.toLocalDateTimeString(date);
-    // const encodedDate = encodeURIComponent(localDateTime);
-
     return this.http.get<AttendantsScheduleResponse>(
       `${this.apiUrl}/owner-agenda/${employeeId}/${storeId}/${date}`
     );
@@ -100,7 +108,6 @@ export class ScheduleService {
     return this.http.put(`${this.apiUrl}/remove`, command);
   }
 
-  // Adicione este método se ainda não existir
   cancelAppointment(appointmentId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/appointments/${appointmentId}`);
   }

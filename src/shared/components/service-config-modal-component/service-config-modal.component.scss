@@ -10,7 +10,7 @@
 }
 
 .form-container {
-  padding: 16px;
+  padding: 0px;
 }
 
 .service-card {
@@ -211,11 +211,12 @@
   }
 }
 
-.ion-padding {
+ion-content {
   --background: #f8f9fa;
-  --padding-bottom: calc(40px + 20px + 30px + env(safe-area-inset-bottom));
-  position: relative;
-  z-index: 1;
+}
+
+.form-container {
+  padding-bottom: 170px;
 }
 
 ion-content::part(scroll) {

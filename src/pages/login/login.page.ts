@@ -18,7 +18,7 @@ export class LoginPage implements OnInit {
   showPassword: boolean = false;
   password: string = '';
   email: string = '';
-  appVersion: string = '1.0.0';
+  appVersion: string = 'Android • Beta • v1.0.10';
 
   get emailControl() {
     return this.loginForm.get('email');

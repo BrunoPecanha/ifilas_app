@@ -17,7 +17,6 @@
     >.
   </div>
 
-  <!-- DATA / HORA -->
   <div class="datetime-section">
     <!-- DATA -->
     <div class="datetime-card" (click)="openDateModal()">
@@ -31,7 +30,6 @@
       </div>
     </div>
 
-    <!-- HORÁRIO -->
     <div class="datetime-card" (click)="openTimeModal()">
       <div class="datetime-label">
         <ion-icon name="time-outline"></ion-icon>
@@ -44,7 +42,6 @@
     </div>
   </div>
 
-  <!-- HEADER SERVIÇOS -->
   <div class="services-header">
     <span class="count"> SERVIÇOS ({{ totalItems }}) </span>
 
@@ -53,14 +50,12 @@
     </span>
   </div>
 
-  <!-- LISTA -->
   <ion-list lines="none">
     <div
-      *ngFor="let s of services"
+      *ngFor="let s of serviceOptions"
       class="service-card"
       [class.selected]="s.quantity > 0"
     >
-      <!-- INFO -->
       <div class="service-info">
         <div class="service-name">
           {{ s.name }}
@@ -78,9 +73,7 @@
         </div>
       </div>
 
-      <!-- AÇÕES -->
-      <div class="service-actions">
-        <!-- BOTÃO ADD -->
+      <div class="service-actions">      
         <ion-button
           *ngIf="s.quantity === 0"
           fill="solid"
@@ -91,7 +84,6 @@
           <ion-icon slot="icon-only" name="add-outline"></ion-icon>
         </ion-button>
 
-        <!-- QUANTIDADE -->
         <div *ngIf="s.quantity > 0" class="quantity-selector">
           <ion-button fill="clear" (click)="remove(s)">
             <ion-icon name="remove-outline"></ion-icon>

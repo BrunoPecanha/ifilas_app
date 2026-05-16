@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
@@ -254,7 +255,7 @@ export class CheckoutPage implements OnInit {
 
   async confirmCheckout() {
     if (!this.selectedPaymentMethod) {
-      await this.toastController.show('Por favor, selecione uma forma de pagamento', 'warning')      
+      await this.toastController.show('Por favor, selecione uma forma de pagamento', 'warning')
       return;
     }
 
@@ -298,7 +299,7 @@ export class CheckoutPage implements OnInit {
 
   async processCheckout() {
     const loading = await this.alertController.create({
-      header: 'Processando...',
+      header: 'Enviando para o estabelecimento...',
       message: 'Confirmando...',
       backdropDismiss: false
     });
@@ -368,9 +369,10 @@ export class CheckoutPage implements OnInit {
 
       this.sessionService.removeGenericKey('queueCheckoutContext');
 
-    } catch (err) {
+    } catch (error ) {
       await loading.dismiss();
-      console.error(err);
+      const err = error as HttpErrorResponse;
+      await this.toastController.show(err.error, 'danger');
     }
   }
 

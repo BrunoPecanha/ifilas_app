@@ -139,6 +139,7 @@
         <div
           *ngFor="let customer of slot.customers"
           class="appointment-card"
+          [class.card-warning]="hasProblematicService(customer)"
           cdkDrag
           [cdkDragData]="customer"
           [cdkDragDisabled]="!canDrag(customer)"
@@ -152,7 +153,22 @@
             <div class="drag-preview">
               <div class="card-content">
                 <div class="card-header">
-                  <h3>{{ customer.name }}</h3>
+                  <h3>
+                    {{ customer.name }}
+                    <ion-icon
+                      *ngIf="hasProblematicService(customer)"
+                      name="warning-outline"
+                      color="danger"
+                      style="
+                        font-size: 18px;
+                        vertical-align: middle;
+                        margin-left: 6px;
+                      "
+                    ></ion-icon>
+                  </h3>
+                  <ion-badge [color]="getStatusColor(customer.status)">
+                    {{ getStatusText(customer.status) }}
+                  </ion-badge>
                 </div>
                 <div class="services-tags">
                   <span
